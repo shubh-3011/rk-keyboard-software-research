@@ -87,3 +87,7 @@ runs them. They are documented as findings, not recommendations to replay.
 The catalog and product names are RK trademarks. Research notes and scripts
 are licensed under MIT; see [LICENSE](LICENSE) and
 [data provenance](DATA-PROVENANCE.md).
+
+The related [Keydeck RK Studio project](https://github.com/shubh-3011/keydeck-rk-studio)
+is a separate local/web profile editor. This repository is the standalone
+research archive.
