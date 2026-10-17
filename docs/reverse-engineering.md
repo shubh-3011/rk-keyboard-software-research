@@ -582,6 +582,42 @@ looked up from `+0x2144`, with nibble inputs at `+0x2140`, `+0x214C`, and
 `+0x53+2i`/`+0x54+2i` for item pairs. These offsets are a recovered binary
 layout, not names for undocumented controls.
 
+### Brightness profile, UI, and serializer path
+
+The profile initializer `FUN_004513B0` at `0x004513B0` formats the active
+profile path as `%sDev\\%04X\\%s` with `KB.ini`, then reads `[OPT] LightUI`,
+`LightHW`, and `DefBri` through `GetPrivateProfileStringW` and
+`GetPrivateProfileIntW`. `LightUI` is parsed by `FUN_0044DC70` into the byte
+table at `0x00611854` (parse limit argument `0x14`). If it is absent or does
+not parse, initialization falls back to `BriNum`; without a positive
+`BriNum`, the code creates five or six sequential values according to the
+profile's `Fw` field. With a valid `LightUI`, `LightHW` is parsed into the
+separate byte table at `0x00611868`; if that list is absent or invalid, the
+initializer copies the UI values into the hardware table. `DefBri` is then
+read into global `0x00611850`, defaulting to `4`.
+
+`FUN_0045A430` at `0x0045A430` initializes each 0x30-byte runtime lighting
+record with `0x00611850` at record offset `+4` (object offset `+0x2144` for
+the first record). The static consumers treat this field as an index: the
+RKKB routine `FUN_00413BF0` at `0x00413BF0` uses the record's `+4` value to
+index `0x00611868`, then places the translated byte at offset `5` in its
+inner LED-data buffer, whose first two bytes are `02 29`. The shared
+G5/3632 packer `FUN_00411900` also indexes `0x00611868` from a lighting
+record and writes the result into its item-pair output; for the selected
+mode it writes a translated brightness byte at output `+0x5E`. This
+establishes a profile-table-to-serialized-byte path for these inspected
+branches. It does not establish brightness units, a physical luminance
+percentage, or a universal payload for every profile and family.
+
+There is also a UI-value path: `FUN_00422220` at `0x00422220`, when its
+selector argument is `0x95`, formats the value at `0x00611854 + index` for a
+runtime control. This supports use of `LightUI` as a displayed value list;
+the selector has not been tied to a particular visible widget or command
+handler. English `Text/en/text.xml` labels `tc_adv_str1` “Light Brightness”
+and `tc_kbin10`, `tc_kbin11`, and `tc_kbin12` are “Brightness +”, “Brightness -”,
+and “Brightness Loop”. The XML confirms those localized labels, but the
+native control IDs and event handlers for those labels remain unresolved.
+
 ### Keymap and macro mapping details
 
 `FUN_00411260` consumes four layers from a runtime map object at `+0x38`.
@@ -759,10 +795,11 @@ established. The SendWeb route scans four layers of 132 key records for tag
 offset `+0x3E21`. G5 sends it as command `0x12` using the device report ID and
 waits 25 ms; the 3632 route sends command `0x12`, option `0`, and waits
 15 ms. The string's format and the control that supplies it remain unknown.
-These are active write routes and were not invoked. Static inspection still
-does not recover a dependable brightness-byte mapping; debounce, tap, and
-sleep settings have identified fields, while other LED payload bytes remain
-opaque.
+These are active write routes and were not invoked. The targeted brightness
+trace above maps `LightHW` table selections into family-specific serialized
+bytes; their units and physical luminance remain unknown. Debounce, tap, and
+sleep fields are also identified, while other LED payload bytes and their UI
+bindings remain partly opaque.
 
 The [settings serializer audit](rk-setting-serializer-audit.md) maps the
 apply-flag branches, family-specific command paths, and the separate screen

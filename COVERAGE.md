@@ -44,13 +44,22 @@ model or runtime map.
   meanings remain open. See
   `docs/rk-settings-apply-worker-audit.md` and
   `docs/rk-setting-serializer-audit.md`.
+- A targeted profile trace maps `[OPT] DefBri`, `LightUI`, and `LightHW` into
+  the runtime brightness selector, a UI value-display helper, and
+  family-specific serializer bytes. All eight installed S98 profiles use
+  `DefBri=5` and six-value UI/hardware lists; physical brightness units and
+  the visible control's command handler remain unresolved. See the
+  [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path).
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
   cross-referenced to a statically recovered complete updater message map in
   `docs/rk-dialog-resource-audit.md`.
 - The updater serial receive worker is traced through its queue, posted
   message `0x401`, and state-dispatch routine. The 3632 response reader's
-  status tests, queue timeout, and retry behavior are also documented.
+  status tests, queue timeout, and retry behavior are documented; its 20-byte
+  `ReadFile` loop is linked by matching object queue offsets to the response
+  consumer as a static producer candidate. Same-instance runtime reachability
+  and status-record semantics remain unresolved.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced, while widget/command binding remains open.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
@@ -90,9 +99,11 @@ model or runtime map.
   command/response paths. The 15 updater dispatch slots are separately mapped.
   A conditional UART response-to-file sink is present in states 7 and 11, but
   its file gate is directly initialized to zero, no nonzero direct setter or
-  stream-open path was found; states 10/11 also form a closed direct cycle
-  with no incoming transition from initialized state 0. Indirect/external
-  activation remains unresolved.
+  stream-open path was found; the state-3/4/6/7 and state-10/11 subgraphs have
+  no direct incoming transition from initialized state 0. Indirect/external
+  activation remains unresolved. The updater also has two six-byte feature
+  reads in a post-transfer helper; they do not constitute a complete firmware
+  read.
 - A read-only command that can safely and completely copy firmware from an
   attached keyboard. The conditional UART sink is not a demonstrated,
   complete firmware backup method.

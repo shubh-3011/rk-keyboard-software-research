@@ -103,15 +103,31 @@ runtime flag sources and physical transport mapping are not fully established.
 
 ## Other updater reads and file I/O
 
-The ordinary import cross-reference inventory lists nine `HidD_GetFeature`
-call instructions in `Update.exe`: `0x004023CF`, `0x0040269B`, `0x0040289C`,
-`0x00402985`, `0x0040308C`, `0x0040389C`, `0x0040980D`, `0x0040BC16`, and
-`0x0040BF57`. The traced ones divide into section-B/C verification,
-BLE/version/status handling, and an updater mode/connection helper. The
-`0x0040980D` routine also has a nearby `HidD_SetFeature` at `0x004097A8`;
-therefore this is not evidence of passive capture. No inspected feature-read
-path streams a full firmware image to a host file. A separate conditional
-UART response-to-file path is present and described below.
+The import cross-reference inventory lists nine direct-call
+`HidD_GetFeature` sites in `Update.exe`: `0x004023CF`, `0x0040269B`,
+`0x0040289C`, `0x00402985`, `0x0040308C`, `0x0040389C`, `0x0040980D`,
+`0x0040BC16`, and `0x0040BF57`. Rechecking the static HID-caller export and
+the binary also found two register-indirect calls through the import address:
+`0x00402ED3` and `0x00402EFB` in `FUN_00402E80`. The direct-IAT xref table
+records the IAT operand load at `0x00402ECE` as a non-call reference, so a
+direct-call-only read of that table misses these two invocations.
+
+`FUN_00402B20` calls `FUN_00402E80` at `0x00402C73` after its section-B
+transfer/verification loop succeeds. The helper allocates a six-byte buffer,
+sends a feature report through `HidD_SetFeature` at `0x00402EBA`, writes
+report bytes beginning `05 72` at `0x00402EC7`, then calls
+`HidD_GetFeature` with length 6 at `0x00402ED3`. It extracts bytes 2–5 and
+performs a second six-byte `HidD_GetFeature` call at `0x00402EFB`; the helper
+then continues with short feature writes. This is additional updater protocol
+traffic, not evidence of a complete firmware read: the two reads in this
+helper use six-byte buffers and are nested in the section-B update path. The
+meaning of the exchanged values remains unresolved. The other traced feature
+reads divide into section-B/C verification, BLE/version/status handling, and
+an updater mode/connection helper. The `0x0040980D` routine also has a nearby
+`HidD_SetFeature` at `0x004097A8`; therefore it is not evidence of passive
+capture. No inspected feature-read path streams a full firmware image to a
+host file. A separate conditional UART response-to-file path is present and
+described below.
 
 The updater also contains a separate serial transport and event-driven
 dispatcher. `FUN_00404E60` calls `CreateFileW` at `0x00404F09` with
@@ -203,18 +219,19 @@ generic HID read helper has request writes associated with the read. The
 UART code suggests a possible chunked response export, but the file gate is
 directly initialized to zero, no nonzero direct setter was found, and no
 stream-open/file-name path was recovered. In the direct UART state graph,
-the state-10/11 chunk loop also has no incoming transition from the initial
-state 0. That path is not evidence of a reachable, working passive firmware
-backup feature.
+the state-7 sink belongs to a state-3/4/6/7 subgraph with no direct entry
+from initialized state 0, and the state-10/11 chunk loop likewise has no
+direct incoming transition from state 0. Neither path is evidence of a
+reachable, working passive firmware backup feature.
 
 **Unresolved:** UART command/response semantics, any indirect or external
-transition into its state-10/11 read loop, stream-pointer and file-name setup,
-all indirect writes to the file gate, undocumented bootloader commands, and
-the exact protocol revision of the connected S98 are not reconstructed.
-Static analysis cannot prove extraction is impossible, but it does not
-demonstrate a complete read-only backup workflow. The hardware constraint
-remains in force: do not test this uncertainty by opening HID, sending a
-report, running the updater, or entering a bootloader.
+transition into the state-7 or state-10/11 file paths, stream-pointer and
+file-name setup, all indirect writes to the file gate, undocumented
+bootloader commands, and the exact protocol revision of the connected S98
+are not reconstructed. Static analysis cannot prove extraction is
+impossible, but it does not demonstrate a complete read-only backup workflow.
+The hardware constraint remains in force: do not test this uncertainty by
+opening HID, sending a report, running the updater, or entering a bootloader.
 
 ## Evidence files
 

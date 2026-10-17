@@ -56,6 +56,21 @@ initializer, file-open call, or filename flow to that global was recovered.
 The stream and related buffers are in the PE's zero-filled `.data` virtual
 tail.
 
+### State 7 entry analysis
+
+State 7 is the other state with a response-to-file sink. The direct state-store
+map above places its transition in a closed subgraph: state 7 is set only by
+the state-6 handler at `0x00408694`; state 6 is set by `FUN_004089D0` at
+`0x00408A73`; that helper is called from the state-7 follow-up at
+`0x004088F0` and state-4 completion at `0x004084EE`; state 4 is set from
+state 3 at `0x004083BC`; and state 3 is set from state 4 at `0x00408576`.
+Initialization sets the state global to zero at `0x00407231`. No direct
+state-store edge from initialization or another listed state enters the
+state-3/4/6/7 subgraph. Consequently, the direct global-store graph does not
+establish a path from initialized state 0 to the state-7 file sink. This does
+not exclude an indirect/computed store, an external invocation, or a missed
+control path.
+
 ### State 10/11 entry analysis
 
 The dispatcher reads state global `0x005C5F58` at `0x00407E3B`. Direct stores

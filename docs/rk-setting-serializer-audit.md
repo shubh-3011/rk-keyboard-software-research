@@ -28,6 +28,49 @@ the [main reverse-engineering report](reverse-engineering.md) and
 model name alone is not enough to assign a physical revision to one of these
 classes.
 
+The profile-backed `DefBri`/`LightUI`/`LightHW` selection and its translated
+brightness bytes are traced in the [main report's brightness section](reverse-engineering.md#brightness-profile-ui-and-serializer-path).
+The profile values are mapped into serialized fields, while physical units
+and the originating control handler remain unresolved.
+
+### 3632 response receive path
+
+The 3632 command response queue has a statically identifiable producer
+candidate. The
+reader loop at `0x0040D120` reads 20-byte records from the device handle at
+object offset `+0x04` through `ReadFile` (`0x0040D1D1`), using an overlapped
+structure. If the read is pending, it waits on two event handles with
+`WaitForMultipleObjects` (`0x0040D1FD`); the completion branch dispatches the
+record to `0x0040D2E0`. This is static control-flow evidence; it does not show
+that the thread ran or that a device was contacted during this audit.
+
+At `0x0040D2E0`, records whose byte 1 is `0x0A` take a separate status/event
+path. For the remaining records, the handler appends all 20 bytes to the
+queue object at device offset `+0x288` through `FUN_0043C2C0` (`0x0040D365`).
+The 3632 `AccessData` writer/reader at `FUN_0040D7E0` resets queue-related
+state at offsets `+0x294` through `+0x2A0`, then `FUN_0040D370` requests
+20-byte records from its queue at object offset `+0x288` and selects a
+response by command byte 1. The matching per-object offsets and record size
+establish a concrete static producer candidate for ordinary 3632 responses.
+
+**Proven statically:** the fixed record size, handle field used by the read
+loop, the special byte-1 `0x0A` branch, ordinary-record enqueue call, and
+matching queue offset used by `FUN_0040D7E0` / `FUN_0040D370`. The receive
+handler does not recompute the response checksum: `FUN_0040D370` accepts a
+record when byte 1 matches the requested command and byte 2 bit 7 is clear;
+its `0xFF` marker and status-bit paths return separate error codes.
+
+**Inferred:** the receive loop is the producer that supplies responses to
+serialized 3632 commands because its per-device queue offset and 20-byte
+record size match the consumer's queue reads. This relationship is based on
+static object-offset/control-flow agreement, not a runtime trace.
+
+**Unresolved:** the protocol meaning of the `0x0A` status records and bytes 0
+and 2, the source and validation of any response checksum, and which physical
+3632 revisions emit these records. The queue path is not evidence of a passive
+firmware-read protocol. No reader, writer, HID handle, or keyboard interface
+was activated.
+
 ## Apply flags and serialized features
 
 The following branches were traced inside `FUN_00411B90`. Addresses in this

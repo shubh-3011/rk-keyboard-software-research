@@ -133,7 +133,14 @@ The installed config names eight S98 variants: `0174`, `01AF`, `01BF`, `0223`,
 `0224`, `022B`, `022F`, and `0230`. All eight have raw `Fw=1`, `RGBKb=1`,
 `ShowScreen=1`, `RGBScreen=1`, 320×172 screen dimensions, and a 60-frame
 limit. All store LED slots 1–17 and 19–20, with no slot 18 or 21. Their raw
-`Psd` strings are distinct. All eight omit wireless VID/PID fields.
+`Psd` strings are distinct. All eight omit wireless VID/PID fields. They also
+store `DefBri=5`, `LightUI=0,4,8,12,16,20`, and
+`LightHW=0,4,8,12,16,20`. The native profile initializer treats `DefBri` as
+an index into the runtime lighting values, then the serializer maps that
+index through `LightHW`; for these profile defaults the selected table value
+is `20`. The physical brightness scale and user-control event mapping remain
+unresolved. See the
+[brightness profile/UI/serializer trace](reverse-engineering.md#brightness-profile-ui-and-serializer-path).
 
 The [S98 variant ledger](rk-s98-profile-variants.csv) gives each profile's
 raw `Psd`, mapping counts, screen fields, handler-map entry, and every raw

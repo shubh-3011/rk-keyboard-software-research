@@ -91,8 +91,11 @@ option names, all 6,506 assignments, value forms, omissions, and comments.
 Some individual runtime paths are well-supported: `Fw` selects the initial
 RKKB versus G5 handler family; model-table initialization reads VID/PID,
 `ShowScreen`, `Fw`, `DevTy`, and wireless IDs; and the 3632 companion path
-compares six bytes whose origin is unresolved. A field name or literal match
-alone does not establish units or device behavior.
+compares six bytes whose origin is unresolved. A targeted exception traces
+`DefBri`, `LightUI`, and `LightHW` from profile loading into brightness-value
+display and serializer data; the physical scale and specific UI event handler
+remain unresolved. A field name or literal match alone does not establish
+units or device behavior.
 
 No complete path has been recovered from the `KB.ini` parser through every
 `KEY`, `FN`, `LedOpt`, and `OPT` cell into UI state, device-family virtual
