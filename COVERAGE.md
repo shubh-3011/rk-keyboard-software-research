@@ -34,10 +34,12 @@ model or runtime map.
   configuration/UI/report-builder path, but this is still not a full
   function-level reanalysis. Side LED is enabled in profiles `02B4` and
   `0258`; only the first has side-light artwork/localization in this package.
-  The report builder reaches a generic HID feature writer, but exact event
-  handlers, packet meaning, model compatibility, and runtime behavior remain
-  unresolved. See
-  [`docs/rk-v4.6-side-led-static-audit.md`](docs/rk-v4.6-side-led-static-audit.md).
+  A ten-entry MFC message map and state-record path into the report builder are
+  recovered; whether a given UI event schedules that builder remains open.
+  The report builder reaches a generic HID feature writer, but event meanings,
+  packet fields, model compatibility, and runtime behavior remain unresolved.
+  See the [Side LED audit](docs/rk-v4.6-side-led-static-audit.md) and its
+  [message-map follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md).
   Other detailed native control-flow reports remain tied to the 4.06 binaries.
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
@@ -60,9 +62,12 @@ model or runtime map.
   hash-pinned 4.6 driver recovered its own zero, general nonzero, and dedicated
   `Fw=3` selector/constructor branches for all 265 profile rows. The single
   `Fw=3` row is M20 `258A:0208`; the selector's physical-device and downstream
-  protocol compatibility remain unvalidated. See
+  protocol compatibility remain unvalidated. RTTI links that constructor to
+  `CDev3632`; the audit maps its vtable and 20-byte read/write transport while
+  leaving selector meanings and hardware compatibility unresolved. See
   [`docs/rk-v4.6-profile-selector-audit.md`](docs/rk-v4.6-profile-selector-audit.md)
-  and its [row-level map](docs/rk-v4.6-profile-selector-map.csv).
+  and its [row-level map](docs/rk-v4.6-profile-selector-map.csv), plus the
+  [`CDev3632` vtable audit](docs/rk-v4.6-fw3-cdev3632-vtable-audit.md).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official

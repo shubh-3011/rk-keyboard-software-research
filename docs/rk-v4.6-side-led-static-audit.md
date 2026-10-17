@@ -128,11 +128,13 @@ that any physical keyboard accepts the packet.
 
 ## Unresolved
 
-- The complete message-map entries and click/selection handlers for
-  `CSideLedDlg` were not decoded. `0x0045D4C0` returns a descriptor at
-  `0x005E1138`; a candidate table pointer is visible in nearby data, but the
-  entry layout did not decode reliably. No specific user action can therefore
-  be tied to a particular Side LED report update.
+- The follow-up
+  [`rk-v4.6-side-led-message-map-follow-up.md`](rk-v4.6-side-led-message-map-follow-up.md)
+  decodes the ten MFC message entries and traces selection-like callbacks into
+  the shared Side LED state records. The symbolic meaning of the custom
+  messages remains unresolved, and no direct callback-to-report-builder call
+  was recovered; a specific user action still cannot be tied to a particular
+  HID write.
 - The six comma-separated fields in each `SideLedOptN` record are not
   semantically labeled. The report byte offsets are known, but protocol field
   meanings, report IDs, checksums, and firmware interpretation are not.

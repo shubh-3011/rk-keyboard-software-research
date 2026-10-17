@@ -66,9 +66,11 @@ For values 1 and 2, the caller selects the same general nonzero constructor
 path. This states the selection implemented in this binary; it does not prove
 every firmware version under those profiles accepts the same reports. The
 new `Fw=3` path is distinct from that general nonzero branch both in its
-capability gate and its constructed object. The static evidence does not
-identify the dedicated object's product/model name, so the report records its
-constructor address rather than assigning it a transport-family label.
+capability gate and its constructed object. The constructor's RTTI and vtable
+are mapped separately in the
+[`Fw=3 CDev3632 vtable audit`](rk-v4.6-fw3-cdev3632-vtable-audit.md). That
+class identity describes the implementation selected by this code path, not a
+validated physical model or firmware revision.
 
 ## Reconciliation with the extracted KB.ini rows
 
