@@ -25,6 +25,7 @@
 - [HID enumeration and device notifications](rk-device-enumeration-notification-audit.md)
 - [Updater UART receive state machine](rk-updater-uart-state-machine.md)
 - [Updater and firmware readback](rk-firmware-readback-audit.md)
+- [Settings serializer and command paths](rk-setting-serializer-audit.md)
 - [Static dialog resources and selected updater control handlers](rk-dialog-resource-audit.md)
 - [Installer/uninstaller scripts](rk-installer-uninstaller-script-audit.md)
 - [Public product names compared with this package snapshot](rk-public-model-coverage-gaps.md)

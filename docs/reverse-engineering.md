@@ -720,8 +720,9 @@ G5 sends command `6` after 25 ms; the 3632 wrapper sends command `2` after
 `0x10` gates entry to the update; their user-visible meanings and channel
 ordering are unresolved.
 
-`FUN_004102D0` is the one-byte reset helper: G5 sends command `0x0B`, option
-`1`, then waits 25 ms; the 3632 path calls its virtual method at `+0x38`.
+`FUN_004102D0` is the one-byte reset helper: G5 sends command `0x11`, option
+`1`, and passes `0x19` as the transport timing argument; the 3632 path calls
+its virtual method at `+0x38`.
 Within `FUN_00411B90`, flag `0x10` and global `0x612B8C` gate a logged reset
 path that calls the same virtual method and may clear a dirty mask based on
 the return value. The LED packers can overlay three `(offset, value)` pairs
@@ -735,6 +736,10 @@ These are active write routes and were not invoked. Static inspection still
 does not recover a dependable brightness-byte mapping; debounce, tap, and
 sleep settings have identified fields, while other LED payload bytes remain
 opaque.
+
+The [settings serializer audit](rk-setting-serializer-audit.md) maps the
+apply-flag branches, family-specific command paths, and the separate screen
+writer path. It records the remaining UI, macro-serializer, and payload gaps.
 
 This is a function-level feature map, not a complete MFC button-handler map.
 The PE contains ten dialog resources, but the app-looking templates are

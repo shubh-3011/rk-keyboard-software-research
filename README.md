@@ -69,6 +69,7 @@ as confirmed.
 - [Dynamic API resolution paths](docs/rk-dynamic-api-resolution-audit.md)
 - [Updater UART receive state machine](docs/rk-updater-uart-state-machine.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
+- [Settings serializer and command paths](docs/rk-setting-serializer-audit.md)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
 - [Dated public model list compared with the 4.06 profile catalog](docs/rk-public-model-coverage-gaps.md)

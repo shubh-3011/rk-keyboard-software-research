@@ -23,6 +23,10 @@ model or runtime map.
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
   scripts.
+- The shared settings serializer's keymap, macro, lighting, RGB, and color
+  group branches are mapped to G5/3632 commands; screen writer callers and
+  several payload meanings remain unresolved. See
+  `docs/rk-setting-serializer-audit.md`.
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
   cross-referenced to `WM_COMMAND` handlers in
