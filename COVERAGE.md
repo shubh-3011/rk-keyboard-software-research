@@ -32,8 +32,9 @@ model or runtime map.
   The `PostQuitMessage` wrapper path is tied to seven callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
   inventoried and statically reviewed across the driver, installer helper,
-  updater, and uninstaller. Some caller-fed module/export values, cached
-  pointer consumers, external callers, and runtime execution remain open; see
+  updater, and uninstaller. Other resolver callsites outside the focused
+  follow-up still have caller-fed values, cached-pointer consumers, external
+  callers, or runtime reachability gaps; see
   `docs/rk-dynamic-api-resolution-audit.md`.
 - A focused follow-up resolves fixed export strings and static cached-pointer
   consumers for the DeviceDriver UxTheme wrappers and Update common-control,
@@ -86,16 +87,26 @@ model or runtime map.
   `docs/rk-ui-control-command-crosswalk.md`.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
   confidence-ranked report separating visual rectangle coordinates from
-  candidate action, keycode, and matrix-index meanings; end-to-end profile to
-  device translation remains unresolved. A new RKKB trace maps four 132-record
-  layers through an action translator and 132-slot lookup table; the complete
-  profile parser path remains open. It also identifies the fixed `04 00` plus
-  `0x780` write as a macro-staging path in its recovered caller context, not a
-  proven full keymap transfer. See `docs/rk-keymap-translation-audit.md`.
+  candidate action and keycode meanings. The `[KEY]` parser now maps tuple
+  cells 1–10 into coordinate arrays and 16-byte action records, with cell 8
+  feeding the RKKB 132-slot lookup byte. Four translated layers are also
+  traced, but their construction from profile/Fn/UI state and the picker
+  commit path remain unresolved. The fixed `04 00` plus `0x780` write is a
+  macro-staging path in its recovered caller context, not a proven full
+  keymap transfer. See `docs/rk-keymap-ui-path-audit.md` and
+  `docs/rk-keymap-translation-audit.md`.
 - The macro audit maps the 834-byte `.mck` record, reversible byte rotation,
   raw concatenated `mac.dct` persistence, import/export branches, and three
-  family-specific serialization paths. Recorder capture and wire-event fields
-  remain unresolved; see `docs/rk-macro-format-and-path-audit.md`.
+  family-specific serialization paths. The editor follow-up maps custom
+  message handlers, dirty bits, and mouse-hook callsites but finds no proven
+  physical-key capture producer or event-row constructor; see
+  `docs/rk-macro-format-and-path-audit.md` and
+  `docs/rk-macro-capture-path-audit.md`.
+- The audio follow-up traces WASAPI loopback capture, 24 visualization bands,
+  profile/audio configuration fields, and a distinct RKKB music-data writer.
+  The capture-to-writer edge, UI controls, `audio.dct` schema, and equivalent
+  G5/3632 output remain unresolved; see
+  `docs/rk-audio-reactive-path-audit.md`.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
   byte, acknowledgements, retries, and cancellation path. Image conversion,

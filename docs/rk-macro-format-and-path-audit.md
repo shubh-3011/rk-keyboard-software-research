@@ -221,4 +221,6 @@ The following remain unresolved:
 For related evidence, see the [main reverse-engineering report](reverse-engineering.md#keymap-and-macro-mapping-details),
 [serializer audit](rk-setting-serializer-audit.md),
 [profile tuple semantics](rk-profile-tuple-semantics.md), and
-[MFC message-map audit](rk-mfc-message-map-audit.md).
+[MFC message-map audit](rk-mfc-message-map-audit.md). For the recorder's
+input-hook and event-capture gaps, see the
+[macro capture path audit](rk-macro-capture-path-audit.md).

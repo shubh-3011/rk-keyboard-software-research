@@ -35,9 +35,11 @@ K2=0x09,0x01,0x02000194
 The first four `[KEY]` values are the visual rectangle coordinates described
 in the [profile schema audit](rk-profile-schema-audit.md). In this profile,
 the next value is usually `0x02`; the following value matches familiar
-Windows virtual-key values for standard keys (Esc `0x1B`, F1 `0x70`). The
-eighth value ranges across the 0–131 range in the profile corpus. These are
-strong pattern observations, not a recovered field-by-field loader mapping.
+Windows virtual-key values for standard keys (Esc `0x1B`, F1 `0x70`). A new
+[profile-to-UI path audit](rk-keymap-ui-path-audit.md) confirms that tuple
+cell 8 is copied into record byte `+4`, which the RKKB translator reads as its
+132-slot output index. The remaining action and auxiliary fields still need
+semantic decoding.
 
 In the RKKB path, `FUN_00413B20` (`0x00413B20`) walks exactly `0x84` (132)
 records, advancing the input by `0x10` (16) bytes per record. For each record
@@ -133,18 +135,19 @@ is placed in the 0x780-byte block.
   Standard keys match familiar VK constants, but no path proves that column 6
   becomes a specific native record field or is used as a Windows VK in the
   serialized output.
-- **Candidate: `[KEY]` column 8 is a matrix/output index.** Its corpus values
-  fit 0–131, while native code logs `MatrixInx` and enforces the same upper
-  bound. However, the runtime lookup is a separate 132-entry table, and a
-  source-to-table assignment for the raw column has not been found.
+- **Confirmed: `[KEY]` column 8 supplies the RKKB slot-index byte.** The
+  profile parser copies this cell to byte `+4` of a 16-byte action record;
+  the RKKB translator reads that byte as a bounded 0–131 output slot. See the
+  [profile-to-UI path audit](rk-keymap-ui-path-audit.md). The purpose of the
+  optional ninth and tenth cells remains unresolved.
 - **Candidate: `[FN1]`/`[FN2]` tuples describe alternate actions at the same
   visual key IDs.** Their section/key naming supports that reading, but no
   static parser trace connects a sample row such as `FN1/K2` to one of the
   four native 16-byte records or to the `10 F8` payload.
-- **Unresolved: profile tuple columns to runtime record offsets.** The
-  installed profile files, runtime record format, and action translator have
-  each been identified, but a complete parser-to-record path has not been
-  recovered.
+- **Partially resolved: profile tuple columns to runtime records.** The
+  `[KEY]` parser's base action record and cell-8 slot-index path are mapped.
+  Construction of the four translated runtime layers from `[KEY]`, `[FN1]`,
+  `[FN2]`, and edited UI state remains unresolved.
 - **Unresolved: full `0x780` payload schema.** The wrapper length and prefix
   are proven; caller context ties it to macro staging, while the error string
   says “SendKey”. No runtime capture is available, and this static audit does
