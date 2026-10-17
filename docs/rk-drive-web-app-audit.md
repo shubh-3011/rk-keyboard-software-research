@@ -18,10 +18,11 @@ The other chunks are named `communication`, `dongleCommunication`,
 `mouseCommunication`, `qiwangCommunication`, `qiwangCommunicationAdaptive`,
 and `rongyuanCommunication` in their bundle filenames.
 
-The scanner extracts the registered-device object metadata from the entry
-bundle. It does not copy the bundle, reverse every minified function, or treat
-strings as proof of a reachable feature. Recreate the metadata snapshot from
-the repository root with:
+The scanner extracts registered-device metadata and the declarative model
+configuration fields from the entry bundle. It does not copy or execute the
+bundle, reverse every minified function, or treat strings as proof of a
+reachable feature. Recreate the metadata snapshot from the repository root
+with:
 
 ```powershell
 python scripts/extract_rk_drive_catalog.py
@@ -45,11 +46,19 @@ or every hardware revision.
 
 Each row exposes a displayed model/region name, image basename, VID, PID,
 HID usage page and usage, connection type, device type, and protocol family.
-Neighboring object fields also refer to key text, layer/table definitions,
-key layouts, light-effect lists, and protocol factories. Their presence
-supports that the web bundle has model-specific UI and communication
-definitions. It does not prove that every route is reachable or works with a
-physical device.
+The scanner also records the row's declared key layers, Windows/macOS tables,
+number of layout groups, and lighting-effect names with their raw `speed`,
+`brightness`, `color`, `mixColor`, and `sleep` fields. These are static fields
+from the public JS object; no protocol factory or device method is called.
+
+In this snapshot, 158 descriptors list Normal/Fn 1/Fn 2/Tap layers, nine list
+Normal/Fn 1/Tap, six list Normal/Fn, two list Normal/Fn 1/Fn 2, and two list
+Normal only. 171 list both Windows and macOS tables; six omit a table list.
+Each row has two key-layout groups. Of 177 connection descriptors, 106 list
+16 lighting-effect entries, 42 list 19, two list 15, and 27 have no entries.
+The mode controls are kept as the static effect-object fields found in the
+bundle; a name or control flag does not prove it is supported by every
+firmware revision.
 
 For **RK-S98**, the bundle has ten displayed label variants and twenty
 connection rows. The base-label USB entry is VID `0x258A`, PID `0x01AF`; its
@@ -74,6 +83,15 @@ toggle, mod-tap, and macro. The bundle also contains separate mouse UI assets
 and a mouse communication chunk. The 177-row catalog produced here is
 keyboard-only; a separate mouse registry has not been reconstructed.
 
+The public UI text also exposes key mapping, key-layer/Windows/macOS table
+selection, macro recording and editing, lighting modes, TFT image/frame
+management, performance settings, advanced-key editing, keyboard settings,
+function settings, and mouse DPI/performance pages. Those strings and menu
+assets are an inventory of candidate surfaces, not proof that a particular
+model supports every control. The derived catalog preserves only the
+model-declared layers/tables/layout counts/effect definitions; the rest still
+needs page, capability-gate, handler, and transport-path analysis.
+
 The browser app includes WebHID chooser and device-change paths in its bundle.
 The entry code also contains report send/receive functions, firmware/boot-mode
 paths, and device protocol implementations. Static presence alone does not
@@ -97,11 +115,11 @@ validation.
 | Web Driver feature family in static bundle | Keydeck status | Remaining gap |
 | --- | --- | --- |
 | Device chooser and USB/2.4 GHz descriptors | Registry metadata and descriptor-only candidate matching | No report access, exact physical revision recognition, or hardware writes |
-| Key map and layers | Local profile editor | No compatible command serializer or device apply path |
-| Lighting and model-specific effect lists | Local lighting preferences | Effect labels and preference values are not device payloads |
-| Macro UI and macro-related assets | Local sequence/profile data | No playback, persistence format parity, or transfer to device |
+| Key map, layers, Windows/macOS tables, and layout groups | Local keymap editor plus model-specific registry facts | The Web Driver layout is not the same as the installed 4.06 profile schema; no compatible command serializer or device apply path |
+| Lighting and model-specific effect definitions | Local lighting preferences; the RK catalog page now shows declared mode names and controls | Effect labels and preference values are not device payloads |
+| Macro UI and macro-related assets | Local macro sequence/profile data | No recording/playback, persistence format parity, or transfer to device |
 | TFT/screen page and media references | Local screen profile and image metadata | No image conversion or transfer to device |
-| Settings, advanced, behavior, DKS, snap, SOCD, toggle, mod-tap | Not implemented as model-gated editing | No verified profile schema or control-to-packet mapping for the web registry |
+| Performance, keyboard/function settings, advanced keys, DKS, snap, SOCD, toggle, mod-tap | Not implemented as model-gated editing | No verified profile schema or control-to-packet mapping for the web registry |
 | Mouse pages and communication module | Not catalogued in this keyboard pass | Mouse model registry and feature map remain open |
 | Firmware and boot-mode paths | Not exposed in Keydeck | Requires a separate updater and firmware safety analysis |
 | Native tray, login startup, and Windows UI | Not part of the hosted web app | The research EXE is a Python/WebView2 prototype; the native reconstruction is not built |

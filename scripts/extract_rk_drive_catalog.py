@@ -20,9 +20,71 @@ ENTRY_PATTERN = re.compile(r"<script[^>]+src=[\"']([^\"']+\.js(?:\?[^\"']*)?)[\"
 DEVICE_PATTERN = re.compile(
     r'\{name:"([^"]+)",image:"([^"]+)",vendorId:(\d+),productId:(\d+),'
     r'usagePage:(\d+),usage:(\d+),connectType:([^,}]+),deviceType:([^,}]+),'
-    r'protocolType:([^,}]+)'
+    r'protocolType:([^,}]+),keyText:([^,}]+),keyMatrixLayer:\[([^\]]*)\],'
+    r'keyMatrixTable:\[([^\]]*)\],keyLayout:\{(.*?)\},'
+    r'lightEffects:([A-Za-z_$][\w$]*),protocol:',
+    re.DOTALL,
 )
-IMAGE_PATTERN = re.compile(r"image:\"([^\"]+)\"")
+EFFECT_PATTERN = re.compile(
+    r"\{effect:pt\.([A-Za-z_$][\w$]*),speed:(![01]),brightness:(![01]),"
+    r"color:(void 0|![01]),mixColor:(![01]),sleep:(\d+)\}"
+)
+
+
+def array_assignment_body(script: str, symbol: str) -> str:
+    """Read one minified array declaration without evaluating the vendor bundle."""
+    match = re.search(rf"(?<![\w$]){re.escape(symbol)}=\[", script)
+    if not match:
+        return ""
+    start = match.end()
+    depth = 1
+    in_string = ""
+    escaped = False
+    index = start
+    while index < len(script) and depth:
+        char = script[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == in_string:
+                in_string = ""
+        elif char in "\"'`":
+            in_string = char
+        elif char == "[":
+            depth += 1
+        elif char == "]":
+            depth -= 1
+        index += 1
+    return script[start:index - 1] if depth == 0 else ""
+
+
+def js_enum_items(value: str, prefix: str, labels: dict[str, str]) -> list[str]:
+    """Map a short enum-reference list to readable labels, preserving unknowns."""
+    result: list[str] = []
+    for token in value.split(","):
+        token = token.strip()
+        match = re.fullmatch(rf"{re.escape(prefix)}\.([A-Za-z_$][\w$]*)", token)
+        if match:
+            name = match.group(1)
+            result.append(labels.get(name, name))
+    return result
+
+
+def extract_lighting_effects(array_body: str) -> list[dict[str, object]]:
+    effects: list[dict[str, object]] = []
+    for match in EFFECT_PATTERN.finditer(array_body):
+        name, speed, brightness, color, mix_color, sleep = match.groups()
+        effects.append({
+            "name": name,
+            "speed": speed == "!0",
+            "brightness": brightness == "!0",
+            "colorValueDefined": color != "void 0",
+            "mixColor": mix_color == "!0",
+            "sleepValue": int(sleep),
+        })
+    return effects
 
 
 def fetch(url: str) -> bytes:
@@ -48,8 +110,26 @@ def csv_writer(path: Path, fields: list[str], rows: list[dict[str, object]]) -> 
 def parse_device_records(script: str) -> list[dict[str, object]]:
     records: list[dict[str, object]] = []
     seen: set[tuple[object, ...]] = set()
+    layer_labels = {
+        "Nomal": "Normal",
+        "FN": "Fn",
+        "FN1": "Fn 1",
+        "FN2": "Fn 2",
+        "Tap": "Tap",
+    }
+    table_labels = {"WIN": "Windows", "MAC": "macOS"}
+    lighting_symbols = {
+        match.group(14) for match in DEVICE_PATTERN.finditer(script)
+    }
+    lighting_profiles = {
+        symbol: extract_lighting_effects(array_assignment_body(script, symbol))
+        for symbol in lighting_symbols
+    }
     for match in DEVICE_PATTERN.finditer(script):
-        name, image, vid, pid, usage_page, usage, connect, kind, protocol = match.groups()
+        (
+            name, image, vid, pid, usage_page, usage, connect, kind, protocol,
+            _key_text, layer_refs, table_refs, layout_body, lighting_symbol,
+        ) = match.groups()
         row: dict[str, object] = {
             "name": name,
             "image_asset": image,
@@ -67,6 +147,13 @@ def parse_device_records(script: str) -> list[dict[str, object]]:
             ),
             "device_type": kind.removeprefix("ws."),
             "protocol_type": protocol.removeprefix("bs."),
+            "web_configurator": {
+                "key_layers": js_enum_items(layer_refs, "It", layer_labels)
+                or js_enum_items(layer_refs, "Hn", layer_labels),
+                "key_tables": js_enum_items(table_refs, "g", table_labels),
+                "layout_group_count": len(re.findall(r"(?:^|,)\d+:\{", layout_body)),
+                "lighting_effects": lighting_profiles.get(lighting_symbol, []),
+            },
         }
         key = tuple(row[field] for field in (
             "name", "image_asset", "vendor_id", "product_id", "usage_page",
@@ -137,9 +224,26 @@ def main() -> int:
         "name", "image_asset", "image_url", "vendor_id", "vendor_id_hex",
         "product_id", "product_id_hex", "usage_page", "usage_page_hex", "usage",
         "usage_hex", "connection", "device_type", "protocol_type",
+        "key_layers", "key_tables", "layout_group_count", "lighting_effect_count",
+        "lighting_effects_json",
         "source_bundle_url", "source_bundle_sha256", "retrieved_at_utc",
     ]
-    csv_writer(args.out_dir / "rk-drive-keyboard-catalog.csv", catalog_fields, records)
+    catalog_rows = [
+        {
+            **row,
+            "key_layers": " | ".join(row["web_configurator"]["key_layers"]),
+            "key_tables": " | ".join(row["web_configurator"]["key_tables"]),
+            "layout_group_count": row["web_configurator"]["layout_group_count"],
+            "lighting_effect_count": len(row["web_configurator"]["lighting_effects"]),
+            "lighting_effects_json": json.dumps(
+                row["web_configurator"]["lighting_effects"],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+        }
+        for row in records
+    ]
+    csv_writer(args.out_dir / "rk-drive-keyboard-catalog.csv", catalog_fields, catalog_rows)
 
     image_models: dict[str, set[str]] = {}
     for record in records:

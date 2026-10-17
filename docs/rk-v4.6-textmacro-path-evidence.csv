@@ -1,0 +1,19 @@
+evidence_id,va,role,evidence,confidence
+path_format,0x005CFD8C,UTF-16 literal,"%s%04X\\%s",proven
+path_leaf,0x005D50F0,UTF-16 literal,textmacro.dct,proven
+path_base_arg,0x006352B0,formatter argument,".data virtual-only tail; runtime value unresolved",proven
+path_formatter,0x00575B4E,formatter wrapper,"forwards destination limits format and varargs to 0x00575846",proven
+write_helper,0x0041F540,path and file helper,"formats path; CreateFileW GENERIC_READ|GENERIC_WRITE CREATE_ALWAYS; WriteFile 0xC8C8 bytes from 0x0060D3C4",proven
+write_api,0x0041F5C1,Win32 file call,WriteFile IAT call,proven
+write_call_1,0x004215DE,direct caller,call 0x0041F540 from routine beginning 0x00421350,proven
+write_call_2,0x0045A057,direct caller,call 0x0041F540 in routine 0x00459F50 when 0x0062B8B3 is nonzero,proven
+read_helper,0x004597E0,path and file helper,"formats path; CreateFileW GENERIC_READ OPEN_EXISTING; ReadFile 0xC8C8 bytes into 0x0060D3C4",proven
+read_api,0x00459861,Win32 file call,ReadFile IAT call,proven
+read_call,0x0045A0EE,direct caller,call 0x004597E0 in routine 0x00459F50 when 0x0062B8B3 is nonzero,proven
+show_macro_profile,0x00454A06,profile loader,"GetPrivateProfileStringW uses key ShowTextMacro; result stored at 0x0062B8B3 at 0x00454A17",proven
+buffer_span,0x0060D3C4-0x00619C8C,global storage,"0xC8C8 bytes; read/write buffer",proven
+record_layout,0x0041F480,record table,"50 entries at stride 0x404; first DWORD used as lookup key",proven
+text_field,0x00575E47,text copy helper,"16-bit unit copy and terminator; caller uses record offset +4 and limit 0x200",proven
+load_save_wrapper_call_1,0x0045C620,caller of 0x00459F50,"passes a 16-bit object field from offset 0x24E",proven
+load_save_wrapper_call_2,0x0046C211,caller of 0x00459F50,"passes a 16-bit object field from offset 0x24E",proven
+ui_event_mapping,0x00421350,dispatch context,"exact MFC handler/message-map linkage not recovered",unresolved

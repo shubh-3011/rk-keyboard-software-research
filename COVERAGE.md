@@ -7,9 +7,10 @@ model or runtime map.
 
 - A dated static snapshot of the public RK Drive Web App enumerates seven JS
   bundles, 177 keyboard connection descriptors, 96 display labels, and 91
-  official-hosted image references. This is the browser app's observed
-  registry, not every RK product. Mouse registry and complete runtime feature
-  reachability remain open; see
+  official-hosted image references. Its extracted model declarations also
+  record key layers, OS tables, layout-group counts, and lighting-effect
+  fields. This is the browser app's observed registry, not every RK product.
+  Mouse registry and complete runtime feature reachability remain open; see
   [`docs/rk-drive-web-app-audit.md`](docs/rk-drive-web-app-audit.md).
 
 ## Additional official 4.6 Windows Hub Driver snapshot
@@ -41,13 +42,27 @@ model or runtime map.
   See the [Side LED audit](docs/rk-v4.6-side-led-static-audit.md) and its
   [message-map follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md).
   Other detailed native control-flow reports remain tied to the 4.06 binaries.
+- A separate 4.6 screen/GIF trace maps image selection and profile GIF loading,
+  RGB565 frame conversion, G5 vtable methods for parameter/page transfer, and
+  the `HidD_SetFeature` writer path. It does not establish that the selected
+  image owns the frame buffer sent to that path, nor that a physical model
+  accepts it. See
+  [`docs/rk-v4.6-screen-gif-ui-transport-audit.md`](docs/rk-v4.6-screen-gif-ui-transport-audit.md).
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
-  local macro-file references. Its linear-sweep results are not CFG
-  reachability or runtime proof; 16 imports lack a recognized transfer, and
-  one branch-spanning SetupAPI route is documented outside the conservative
-  CSV heuristic. See
-  [`docs/rk-v4.6-native-api-call-path-audit.md`](docs/rk-v4.6-native-api-call-path-audit.md).
+  local macro-file references. A follow-up maps the prior 16 unresolved
+  imports to one IAT load each and 31 register-indirect call candidates; this
+  is static transfer evidence, not CFG reachability or runtime proof. One
+  branch-spanning SetupAPI route is documented outside the conservative CSV
+  heuristic. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md)
+  and [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md).
+- A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
+  `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
+  (`0xC8C8` bytes). The exact path base, MFC event association, and relation to
+  keyboard reports remain unresolved; this is host-file persistence evidence,
+  not firmware storage. See
+  [`docs/rk-v4.6-textmacro-path-audit.md`](docs/rk-v4.6-textmacro-path-audit.md)
+  and its [evidence CSV](docs/rk-v4.6-textmacro-path-evidence.csv).
 - In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
