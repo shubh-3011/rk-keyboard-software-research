@@ -71,7 +71,8 @@ as confirmed.
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
-- [Public product names not found in the 4.06 profile catalog](docs/rk-public-model-coverage-gaps.md)
+- [Dated public model list compared with the 4.06 profile catalog](docs/rk-public-model-coverage-gaps.md)
+- [Dated storefront model list and profile-name crosswalk](docs/rk-storefront-model-crosswalk.csv)
 - [All audit documents and evidence tables](docs/)
 
 ## Open-source Windows workbench
@@ -110,6 +111,8 @@ python scripts/extract_rk_catalog.py `
 python scripts/audit_profile_schema.py `
   --rk-root "C:\Program Files (x86)\RK Keyboard Software" `
   --repo .
+
+python scripts/compare_storefront_models.py
 
 python -m pip install -r requirements-audit.txt
 python scripts/audit_dialog_resources.py `

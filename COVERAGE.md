@@ -35,22 +35,31 @@ model or runtime map.
 - Main-app HID enumeration and USB/HID interface notification filters are
   traced through register-indirect API calls; runtime event delivery and
   device-to-profile selection remain unobserved.
+- A dated snapshot of RK's public storefront navigation records 43 listed
+  variants across 33 model tokens and compares them with the installed
+  profile names. The resulting candidates are not treated as compatible
+  devices; see `docs/rk-public-model-coverage-gaps.md`.
 
 ## Not established
 
 - That the 4.06 package contains every RK keyboard model, regional variant,
   receiver, or firmware generation. Other package versions must be added and
   compared separately.
+- A complete current or historical catalog of RK products, or an exact
+  product-to-driver/software matrix. The storefront snapshot is a dated
+  discovery input and does not prove which official driver, firmware family,
+  or protocol a model uses.
 - A unique one-to-one mapping between each profile code and every physical
   keyboard revision. Several families share identifiers or have conditional
   wireless/companion paths.
 - Full call graphs for every native procedure, all indirect/COM/callback
   targets, or the runtime branch taken on a given PC.
 - Every MFC control label and action, every profile tuple's meaning, all
-  packet fields, or the full UART command/response state machine. A conditional
-  UART response-to-file sink is present in states 7 and 11, but its file gate
-  is directly initialized to zero, no nonzero direct setter or stream-open
-  path was found, and runtime activation is unresolved.
+  packet fields, or the protocol meaning and runtime reachability of the UART
+  command/response paths. The 15 updater dispatch slots are separately mapped.
+  A conditional UART response-to-file sink is present in states 7 and 11, but
+  its file gate is directly initialized to zero, no nonzero direct setter or
+  stream-open path was found, and runtime activation is unresolved.
 - A read-only command that can safely and completely copy firmware from an
   attached keyboard. The conditional UART sink is not a demonstrated,
   complete firmware backup method.

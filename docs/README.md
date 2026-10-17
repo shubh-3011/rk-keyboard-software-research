@@ -27,7 +27,9 @@
 - [Updater and firmware readback](rk-firmware-readback-audit.md)
 - [Static dialog resources and selected updater control handlers](rk-dialog-resource-audit.md)
 - [Installer/uninstaller scripts](rk-installer-uninstaller-script-audit.md)
-- [Public product names missing from this package snapshot](rk-public-model-coverage-gaps.md)
+- [Public product names compared with this package snapshot](rk-public-model-coverage-gaps.md)
+- [Dated storefront model-token inputs](rk-public-storefront-models.csv)
+- [Generated storefront-to-profile name crosswalk](rk-storefront-model-crosswalk.csv)
 - [MFC command-map candidates](rk-mfc-command-map-candidates.csv)
 - [MFC message-map owner evidence](rk-mfc-map-owner-evidence.csv)
 

@@ -18,8 +18,14 @@ for the binaries they analyze.
 - `docs/*.md` contains original analysis notes about those files and native
   control flow. Every report separates evidence from inference and open
   questions.
-- `scripts/` contains read-only parsers for rebuilding the profile catalog
-  and schema tables from a local package. These scripts never open a device.
+- `scripts/` contains local analysis tools for rebuilding profile metadata,
+  schema tables, and the dated model-name crosswalk. They read package/source
+  files and write only derived outputs; they never open a device.
+- `docs/rk-public-storefront-models.csv` is a dated transcription of model
+  labels in RK's public storefront navigation, not a complete global or
+  historical inventory. `scripts/compare_storefront_models.py` compares those
+  labels with `models.json` profile names and produces a candidate-name
+  crosswalk; string matches are not compatibility claims.
 
 ## Excluded material
 

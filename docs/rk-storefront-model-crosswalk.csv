@@ -1,0 +1,34 @@
+model_token,storefront_labels,profile_name_token_match,candidate_profile_codes,candidate_profile_names,interpretation
+RK61,RK61 New Color-Block Edition; RK61 QWERTY Layout,yes,00B8; 0060; 00C9; 00ED; 007A,RK61 Bluetooth Dual Mode; RK61 Keyboard; RK61 N RGB Bluetooth Dual Mode; RK61 N RGB Bluetooth Dual Mode; RK61 RGB Bluetooth Dual Mode,Name-token candidates only; software selection and hardware compatibility unproven.
+RK61-DE,RK61-DE QWERTZ Layout,no,,,No exact profile name token; mapping to this package unresolved.
+R65,R65 Wired QMK/VIA; R65 Tri-Mode QMK/VIA,yes,01AD; 01F7; 014A; 0172; 0184,R65RGB ISO Keyboard; RK-R65 Keyboard; RK-R65RGB; RK-R65RGB Wired Keyboard; RK-R65RGBSingle mode,Name-token candidates only; software selection and hardware compatibility unproven.
+RK68,RK68 RGB Backlit; RK68 Single Color Backlit,yes,008B; 0103; 008E,RK68 Bluetooth Dual Mode; RK68 N ISO Return Keyboard Bluetooth; RK68 a switch Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+C68,C68 Magnetic Switch,no,,,No exact profile name token; mapping to this package unresolved.
+A72,A72 Ergonomic Alice Layout,no,,,No exact profile name token; mapping to this package unresolved.
+F68,F68 Foldable Low Profile,yes,014E,RK-F68,Name-token candidates only; software selection and hardware compatibility unproven.
+RK84,RK84 Limited Edition; RK84 US/DE Layout; RK84 Wired RGB Version,yes,00F4,RK84 RGB ISO Return Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+L75,L75 M1-M5 Custom Keys,yes,0201; 01E5,RK L75 ISO Return Keyboard; RK L75 three-mode,Name-token candidates only; software selection and hardware compatibility unproven.
+R75,R75 Wired QMK/VIA; R75 Tri-Mode QMK/VIA,yes,0151; 015E; 015B; 017E; 01FC; 017F,R75RGB; R75RGB wired; RK-R75; RK-R75 ISO Return Keyboard; RK-R75 Keyboard; RK-R75RGBSingle mode,Name-token candidates only; software selection and hardware compatibility unproven.
+C84,C84 Magnetic Switch,no,,,No exact profile name token; mapping to this package unresolved.
+N80,N80 Low-Profile,yes,0187,RK N80,Name-token candidates only; software selection and hardware compatibility unproven.
+M75,M75 Side Printed PBT Keycaps; M75 OLED Screen & Knob,yes,0147; 0175; 01AC; 0163,RK-M75; RK-M75 ISO Return Keyboard; RK-M75N ISO Return Keyboard; RK-M75RGB New layout,Name-token candidates only; software selection and hardware compatibility unproven.
+C87,C87 Magnetic Switch,no,,,No exact profile name token; mapping to this package unresolved.
+M87,M87 Dual Knob Design,yes,01A2; 01D6; 01F5,RK M87; RK M87 ISO Return Keyboard; RK M87 Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+R87,R87 PRO Wired QMK/VIA; R87 PRO Tri-Mode QMK/VIA,yes,019F; 01BE; 01CB; 0120; 01C5; 00F7; 01DC; 01E3; 00F6; 0129,R87PRO; R87PRO; R87PRO; R87RGB; RK-R87 ISO Return Keyboard; RK-R87 Wired Keyboard; RK-R87 Wired Keyboard; RK-R87 Wired Keyboard; RK-R87RGB Wired Keyboard; RK-R87S,Name-token candidates only; software selection and hardware compatibility unproven.
+RK87,RK87 2.4Ghz Wireless/Wired,yes,0078; 006B; 0074,RK87 Keyboard; RK87(882) Keyboard; RK87(882) Wired Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+S85,S85 LCD Screen & Knob,yes,0193; 01FA,RK S85; RK S85 ISO Return Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+RK89,RK89 Detachable Frame,yes,00CD,RK89 Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+S98,S98 Pink Edition; S98 QWERTY Layout,yes,0174; 0224; 022B; 022F; 0230; 0223; 01BF; 01AF,RK S98RGB; RK-S98 DE Keyboard; RK-S98 ES Keyboard; RK-S98 Keyboard; RK-S98 RU Keyboard; RK-S98 TH Keyboard; RK-S98RGB ISO Return Keyboard; RK-S98RGB-New,Name-token candidates only; software selection and hardware compatibility unproven.
+C98,C98 Magnetic Switch,no,,,No exact profile name token; mapping to this package unresolved.
+L98,L98 For Left-handed Southpaw,yes,01FB,RK L98 three-mode,Name-token candidates only; software selection and hardware compatibility unproven.
+S98-DE,S98-DE QWERTZ Layout,no,,,No exact profile name token; mapping to this package unresolved.
+S98-ES,S98-ES ES QWERTY Layout,no,,,No exact profile name token; mapping to this package unresolved.
+S98-FR,S98-FR FR AZERTY Layout,no,,,No exact profile name token; mapping to this package unresolved.
+S98-JP,S98-JP JP JIS Layout,no,,,No exact profile name token; mapping to this package unresolved.
+F99,F99 AI-Powered,yes,0218,RK F99,Name-token candidates only; software selection and hardware compatibility unproven.
+C96,C96 Magnetic Switch,no,,,No exact profile name token; mapping to this package unresolved.
+RK96,RK96 Multiple Colorways,yes,01C4; 00A4; 0089,RK96 ISO Return Keyboard; RK96 Keyboard; RK96 RGB Keyboard,Name-token candidates only; software selection and hardware compatibility unproven.
+RK920,RK920 RGB Backlit; RK920 Rainbow Backlit,no,,,No exact profile name token; mapping to this package unresolved.
+S104,S104 Smart Display & Knob,no,,,No exact profile name token; mapping to this package unresolved.
+X104,X104 TOP Structure,no,,,No exact profile name token; mapping to this package unresolved.
+R99,R99 Curved RGB Light Bar,no,,,No exact profile name token; mapping to this package unresolved.
