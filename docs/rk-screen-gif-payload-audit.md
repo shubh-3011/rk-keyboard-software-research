@@ -211,3 +211,7 @@ This evidence covers the installed 4.06 snapshot and its bundled profiles,
 not every Royal Kludge product or firmware. All protocol descriptions above
 come from static code and package data only; no command was tested on a
 physical keyboard.
+
+The follow-up [screen image-conversion audit](rk-screen-image-conversion-path-audit.md)
+maps the GIF-to-PNG cache routines and frame-conversion worker, while leaving
+the visible import and conversion-to-device-writer edges unresolved.

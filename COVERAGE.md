@@ -45,6 +45,13 @@ model or runtime map.
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
   scripts.
+- The host update follow-up maps optional `UpdateURL`/`NoUpdate` and `RGBKb`
+  selection, manifest and later downloads into an AppData-rooted directory,
+  and an optional `Other\<VID>_<PID>\start.exe` process launch. It also
+  confirms that the installed snapshot lacks the original setup executable
+  and source project. Server contents, update authenticity/installation, and
+  the absent helper's behavior remain unresolved; see
+  `docs/rk-host-update-install-path-audit.md`.
 - The shared settings serializer's keymap, macro, lighting, RGB, and color
   group branches are mapped to G5/3632 commands. Separate RKKB writes for
   key/layer, macro-derived, LED, key-color, matrix, Fn, and music paths are
@@ -85,6 +92,11 @@ model or runtime map.
   resolves selected paths such as the generated Apply control and language
   selector, while most feature widget/command bindings remain open; see
   `docs/rk-ui-control-command-crosswalk.md`.
+- A general-settings follow-up separates profile values and the main Apply
+  memory/event edge from host-local `lang.ini`, generic MFC INI/registry, and
+  per-device `.dct` persistence. Reset/factory prompt strings are present, but
+  no prompt-to-reset-handler edge is recovered. See
+  `docs/rk-general-settings-ui-persistence-audit.md`.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
   confidence-ranked report separating visual rectangle coordinates from
   candidate action and keycode meanings. The `[KEY]` parser now maps tuple
@@ -111,7 +123,10 @@ model or runtime map.
   payload, and the frame/page transfer header, optional additive-complement
   byte, acknowledgements, retries, and cancellation path. Image conversion,
   UI reachability, screen-parameter schema, and physical compatibility remain
-  unresolved; see `docs/rk-screen-gif-payload-audit.md`.
+  unresolved. A follow-up maps the GIF-to-PNG cache routine, GDI+ callsites,
+  and frame-conversion worker, but does not establish a file-import or
+  conversion-to-device-writer path; see `docs/rk-screen-gif-payload-audit.md`
+  and `docs/rk-screen-image-conversion-path-audit.md`.
 - Main-app HID enumeration and USB/HID interface notification filters are
   traced through register-indirect API calls and an RTTI-attributed
   `COemDrvDlg` `WM_DEVICECHANGE` message-map entry; runtime event delivery and
