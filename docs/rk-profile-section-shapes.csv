@@ -1,0 +1,568 @@
+profile_code,profile_name,registered_in_Cfg_ini,section,section_present,assignment_count,record_key_min,record_key_max,record_keys_contiguous_between_min_max,missing_record_keys_inside_range_json,tuple_width_counts_json,cell_lexical_type_counts_json,duplicate_record_keys_json
+002A,RK100 Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+002A,RK100 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+002A,RK100 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0048,RK-68Plus,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+0048,RK-68Plus,true,FN1,false,0,,,true,[],{},{},{}
+0048,RK-68Plus,true,FN2,false,0,,,true,[],{},{},{}
+0049,RK-G68 Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+0049,RK-G68 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0049,RK-G68 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+004A,RK61RGB Wired Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+004A,RK61RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+004A,RK61RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+004B,RK100RGB Wireless Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+004B,RK100RGB Wireless Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+004B,RK100RGB Wireless Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+004C,RK87RGB Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+004C,RK87RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+004C,RK87RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+004D,RK71RGB Wired Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+004D,RK71RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+004D,RK71RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+004E,RK71 Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+004E,RK71 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+004E,RK71 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+004F,G87RGB Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+004F,G87RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+004F,G87RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0052,G68 Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+0052,G68 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0052,G68 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0053,RK960 Keyboard,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+0053,RK960 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0053,RK960 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0054,RK987 Single Color,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0054,RK987 Single Color,true,FN1,false,0,,,true,[],{},{},{}
+0054,RK987 Single Color,true,FN2,false,0,,,true,[],{},{},{}
+0055,RK-61 Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+0055,RK-61 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0055,RK-61 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0056,RK100RGB Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0056,RK100RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0056,RK100RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0057,RK857 Single,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+0057,RK857 Single,true,FN1,false,0,,,true,[],{},{},{}
+0057,RK857 Single,true,FN2,false,0,,,true,[],{},{},{}
+0058,RK SINK104 Keyboard,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+0058,RK SINK104 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0058,RK SINK104 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0059,RK84RGB Keyboard,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+0059,RK84RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0059,RK84RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+005A,RK71RGB Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+005A,RK71RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+005A,RK71RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+005B,RK987RGB,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+005B,RK987RGB,true,FN1,false,0,,,true,[],{},{},{}
+005B,RK987RGB,true,FN2,false,0,,,true,[],{},{},{}
+005C,RK-G68RGB-UK Keyboard,true,KEY,true,69,1,69,true,[],"{""8"":69}","{""decimal-integer"":345,""hex-integer"":207}",{}
+005C,RK-G68RGB-UK Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+005C,RK-G68RGB-UK Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+005D,RK857 Keyboard,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+005D,RK857 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+005D,RK857 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+005E,RK68RGB Bluetooth Dual Mode,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+005E,RK68RGB Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+005E,RK68RGB Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+0060,RK61 Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+0060,RK61 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0060,RK61 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0064,RK68RGB Wired Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+0064,RK68RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0064,RK68RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0065,RK61RGB ISO Return Keyboard,true,KEY,true,62,1,62,true,[],"{""8"":62}","{""decimal-integer"":310,""hex-integer"":186}",{}
+0065,RK61RGB ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0065,RK61RGB ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0066,RK61ISO Return Keyboard,true,KEY,true,62,1,62,true,[],"{""8"":62}","{""decimal-integer"":310,""hex-integer"":186}",{}
+0066,RK61ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0066,RK61ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0067,RK100PRO Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0067,RK100PRO Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0067,RK100PRO Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0068,RK987RGB Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0068,RK987RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0068,RK987RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0069,RK71RGB Wireless,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+0069,RK71RGB Wireless,true,FN1,false,0,,,true,[],{},{},{}
+0069,RK71RGB Wireless,true,FN2,false,0,,,true,[],{},{},{}
+006A,RK71 Bluetooth Dual Mode,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+006A,RK71 Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+006A,RK71 Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+006B,RK87(882) Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+006B,RK87(882) Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+006B,RK87(882) Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+006F,RK68Plus Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+006F,RK68Plus Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+006F,RK68Plus Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0070,RK98 RGB Keyboard,true,KEY,true,98,1,98,true,[],"{""8"":98}","{""decimal-integer"":490,""hex-integer"":294}",{}
+0070,RK98 RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0070,RK98 RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0074,RK87(882) Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0074,RK87(882) Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0074,RK87(882) Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0075,G68RGB ISO Return Keyboard,true,KEY,true,69,1,69,true,[],"{""8"":69}","{""decimal-integer"":345,""hex-integer"":207}",{}
+0075,G68RGB ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0075,G68RGB ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0078,RK87 Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0078,RK87 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0078,RK87 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0079,RK68Pro Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+0079,RK68Pro Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0079,RK68Pro Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+007A,RK61 RGB Bluetooth Dual Mode,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+007A,RK61 RGB Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+007A,RK61 RGB Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+007B,RK896 Keyboard,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+007B,RK896 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+007B,RK896 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+007C,RK87T RGBWired Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+007C,RK87T RGBWired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+007C,RK87T RGBWired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+007D,G87RGB Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+007D,G87RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+007D,G87RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0089,RK96 RGB Keyboard,true,KEY,true,96,1,96,true,[],"{""8"":96}","{""decimal-integer"":480,""hex-integer"":288}",{}
+0089,RK96 RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0089,RK96 RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+008B,RK68 Bluetooth Dual Mode,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+008B,RK68 Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+008B,RK68 Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+008C,RK61RGB ISO ReturnWired,true,KEY,true,62,1,62,true,[],"{""8"":62}","{""decimal-integer"":310,""hex-integer"":186}",{}
+008C,RK61RGB ISO ReturnWired,true,FN1,false,0,,,true,[],{},{},{}
+008C,RK61RGB ISO ReturnWired,true,FN2,false,0,,,true,[],{},{},{}
+008E,RK68 a switch Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+008E,RK68 a switch Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+008E,RK68 a switch Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+008F,RK920RGB Keyboard,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+008F,RK920RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+008F,RK920RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0093,RK104 RGB three-mode,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+0093,RK104 RGB three-mode,true,FN1,false,0,,,true,[],{},{},{}
+0093,RK104 RGB three-mode,true,FN2,false,0,,,true,[],{},{},{}
+0094,RK104 RGB Wired,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+0094,RK104 RGB Wired,true,FN1,false,0,,,true,[],{},{},{}
+0094,RK104 RGB Wired,true,FN2,false,0,,,true,[],{},{},{}
+009C,RK89RGB Keyboard,true,KEY,true,89,1,89,true,[],"{""8"":89}","{""decimal-integer"":445,""hex-integer"":267}",{}
+009C,RK89RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+009C,RK89RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+009E,RK92RGB N Keyboard,true,KEY,true,92,1,92,true,[],"{""8"":92}","{""decimal-integer"":460,""hex-integer"":276}",{}
+009E,RK92RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+009E,RK92RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00A1,RK932RGB Keyboard,true,KEY,true,108,1,108,true,[],"{""8"":108}","{""decimal-integer"":540,""hex-integer"":324}",{}
+00A1,RK932RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00A1,RK932RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00A2,68RGB Wired Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+00A2,68RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00A2,68RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00A4,RK96 Keyboard,true,KEY,true,96,1,96,true,[],"{""8"":96}","{""decimal-integer"":480,""hex-integer"":288}",{}
+00A4,RK96 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00A4,RK96 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00A5,RK71RGB N Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+00A5,RK71RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00A5,RK71RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00A6,RK932 Keyboard,true,KEY,true,108,1,108,true,[],"{""8"":108}","{""decimal-integer"":540,""hex-integer"":324}",{}
+00A6,RK932 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00A6,RK932 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00A9,RK68ISO Return Keyboard,true,KEY,true,69,1,69,true,[],"{""8"":69}","{""decimal-integer"":345,""hex-integer"":207}",{}
+00A9,RK68ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00A9,RK68ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00AA,RK750-100RGB Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+00AA,RK750-100RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00AA,RK750-100RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00B3,RK98Wired-100KRGB Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+00B3,RK98Wired-100KRGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00B3,RK98Wired-100KRGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00B4,RK937RGB Wired Keyboaed,true,KEY,true,108,1,108,true,[],"{""8"":108}","{""decimal-integer"":540,""hex-integer"":324}",{}
+00B4,RK937RGB Wired Keyboaed,true,FN1,false,0,,,true,[],{},{},{}
+00B4,RK937RGB Wired Keyboaed,true,FN2,false,0,,,true,[],{},{},{}
+00B5,RK71RGB N BT Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+00B5,RK71RGB N BT Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00B5,RK71RGB N BT Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00B8,RK61 Bluetooth Dual Mode,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00B8,RK61 Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+00B8,RK61 Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+00C0,RK857 Single,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+00C0,RK857 Single,true,FN1,false,0,,,true,[],{},{},{}
+00C0,RK857 Single,true,FN2,false,0,,,true,[],{},{},{}
+00C1,RK98-100KRGB N Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+00C1,RK98-100KRGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00C1,RK98-100KRGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00C3,K87RGB N Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00C3,K87RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00C3,K87RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00C4,RK87RGB N Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00C4,RK87RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00C4,RK87RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00C5,RK-S108RGB,true,KEY,true,108,1,108,true,[],"{""8"":108}","{""decimal-integer"":540,""hex-integer"":324}",{}
+00C5,RK-S108RGB,true,FN1,false,0,,,true,[],{},{},{}
+00C5,RK-S108RGB,true,FN2,false,0,,,true,[],{},{},{}
+00C6,RK858  61   Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00C6,RK858  61   Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00C6,RK858  61   Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00C7,RK61RGB N Wired Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00C7,RK61RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00C7,RK61RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00C8,RK84N RGB Keyboard,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+00C8,RK84N RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00C8,RK84N RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00C9,RK61 N RGB Bluetooth Dual Mode,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00C9,RK61 N RGB Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+00C9,RK61 N RGB Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+00CD,RK89 Keyboard,true,KEY,true,89,1,89,true,[],"{""8"":89}","{""decimal-integer"":445,""hex-integer"":267}",{}
+00CD,RK89 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00CD,RK89 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00D6,RK Round RGB Keyboard,true,KEY,true,73,1,73,true,[],"{""8"":73}","{""decimal-integer"":365,""hex-integer"":219}",{}
+00D6,RK Round RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00D6,RK Round RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00D7,RK SPLIT70 three-mode,true,KEY,true,74,1,74,true,[],"{""8"":74}","{""decimal-integer"":370,""hex-integer"":222}",{}
+00D7,RK SPLIT70 three-mode,true,FN1,false,0,,,true,[],{},{},{}
+00D7,RK SPLIT70 three-mode,true,FN2,false,0,,,true,[],{},{},{}
+00D8,RK98Wired-100K N RGB Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+00D8,RK98Wired-100K N RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00D8,RK98Wired-100K N RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00DA,RK68plus RGB N Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+00DA,RK68plus RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00DA,RK68plus RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00DE,RK883RGB N Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00DE,RK883RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00DE,RK883RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00E0,RK100RGB N Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+00E0,RK100RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00E0,RK100RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00E1,RK61RGB N Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00E1,RK61RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00E1,RK61RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00E7,RKG68RGB N Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+00E7,RKG68RGB N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00E7,RKG68RGB N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00EA,RK71RGB N Wired Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+00EA,RK71RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00EA,RK71RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00EC,RK61RGB N ISO Return Keyboard,true,KEY,true,62,1,62,true,[],"{""8"":62}","{""decimal-integer"":310,""hex-integer"":186}",{}
+00EC,RK61RGB N ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00EC,RK61RGB N ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00ED,RK61 N RGB Bluetooth Dual Mode,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00ED,RK61 N RGB Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+00ED,RK61 N RGB Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+00EF,RK-H87RGB Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00EF,RK-H87RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00EF,RK-H87RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F2,RK87RGB ISO Return Keyboard,true,KEY,true,88,1,88,true,[],"{""8"":88}","{""decimal-integer"":440,""hex-integer"":264}",{}
+00F2,RK87RGB ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F2,RK87RGB ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F3,RK84Pro N RGB Keyboard,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+00F3,RK84Pro N RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F3,RK84Pro N RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F4,RK84 RGB ISO Return Keyboard,true,KEY,true,85,1,85,true,[],"{""8"":85}","{""decimal-integer"":425,""hex-integer"":255}",{}
+00F4,RK84 RGB ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F4,RK84 RGB ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F6,RK-R87RGB Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00F6,RK-R87RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F6,RK-R87RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F7,RK-R87 Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00F7,RK-R87 Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F7,RK-R87 Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F8,RK61plus RGB Keyboard,true,KEY,true,61,1,61,true,[],"{""8"":61}","{""decimal-integer"":305,""hex-integer"":183}",{}
+00F8,RK61plus RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F8,RK61plus RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00F9,RK987RGB N  Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+00F9,RK987RGB N  Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+00F9,RK987RGB N  Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+00FF,RK68RGB N Bluetooth Dual Mode,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+00FF,RK68RGB N Bluetooth Dual Mode,true,FN1,false,0,,,true,[],{},{},{}
+00FF,RK68RGB N Bluetooth Dual Mode,true,FN2,false,0,,,true,[],{},{},{}
+0102,RK-H81RGB,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0102,RK-H81RGB,true,FN1,true,39,2,81,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":39}","{""hex-integer"":117}",{}
+0102,RK-H81RGB,true,FN2,false,0,,,true,[],{},{},{}
+0103,RK68 N ISO Return Keyboard Bluetooth,true,KEY,true,69,1,69,true,[],"{""8"":69}","{""decimal-integer"":345,""hex-integer"":207}",{}
+0103,RK68 N ISO Return Keyboard Bluetooth,true,FN1,false,0,,,true,[],{},{},{}
+0103,RK68 N ISO Return Keyboard Bluetooth,true,FN2,false,0,,,true,[],{},{},{}
+0106,RK-S87 RGB Keyboard,true,KEY,true,87,1,87,true,[],"{""9"":87}","{""decimal-integer"":522,""hex-integer"":261}",{}
+0106,RK-S87 RGB Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0106,RK-S87 RGB Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+010A,RK68RGB N Wired Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+010A,RK68RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+010A,RK68RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+010D,RK84RGB N Wired Keyboard,true,KEY,true,84,1,84,true,[],"{""8"":84}","{""decimal-integer"":420,""hex-integer"":252}",{}
+010D,RK84RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+010D,RK84RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+010F,RK-S87 RGB Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""9"":87}","{""decimal-integer"":522,""hex-integer"":261}",{}
+010F,RK-S87 RGB Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+010F,RK-S87 RGB Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+011C,RK-R104 Single,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+011C,RK-R104 Single,true,FN1,false,0,,,true,[],{},{},{}
+011C,RK-R104 Single,true,FN2,false,0,,,true,[],{},{},{}
+011E,RK-R104 RGB,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+011E,RK-R104 RGB,true,FN1,false,0,,,true,[],{},{},{}
+011E,RK-R104 RGB,true,FN2,false,0,,,true,[],{},{},{}
+0120,R87RGB,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0120,R87RGB,true,FN1,false,0,,,true,[],{},{},{}
+0120,R87RGB,true,FN2,false,0,,,true,[],{},{},{}
+0129,RK-R87S,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0129,RK-R87S,true,FN1,false,0,,,true,[],{},{},{}
+0129,RK-R87S,true,FN2,false,0,,,true,[],{},{},{}
+013A,RKG68 RGB N Wired Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+013A,RKG68 RGB N Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+013A,RKG68 RGB N Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+013E,RK-H81RGB N,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+013E,RK-H81RGB N,true,FN1,true,39,2,81,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":39}","{""hex-integer"":117}",{}
+013E,RK-H81RGB N,true,FN2,false,0,,,true,[],{},{},{}
+0143,R98-RGB2.0,true,KEY,true,99,1,99,true,[],"{""8"":99}","{""decimal-integer"":495,""hex-integer"":297}",{}
+0143,R98-RGB2.0,true,FN1,true,44,1,96,false,"[14,17,21,22,23,24,25,26,27,31,32,33,37,41,42,43,44,45,48,49,51,52,53,55,58,59,61,62,63,65,66,68,69,70,71,72,73,74,75,76,77,78,80,81,82,84,85,86,87,89,91,93]","{""3"":44}","{""hex-integer"":132}",{}
+0143,R98-RGB2.0,true,FN2,false,0,,,true,[],{},{},{}
+0147,RK-M75,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0147,RK-M75,true,FN1,true,30,2,81,false,"[15,16,17,18,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,50,51,52,53,55,56,57,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":30}","{""hex-integer"":90}",{}
+0147,RK-M75,true,FN2,false,0,,,true,[],{},{},{}
+014A,RK-R65RGB,true,KEY,true,67,1,67,true,[],"{""8"":67}","{""decimal-integer"":335,""hex-integer"":201}",{}
+014A,RK-R65RGB,true,FN1,true,38,1,66,false,"[14,15,19,20,21,22,23,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,53,54,58,60,61]","{""3"":38}","{""hex-integer"":114}",{}
+014A,RK-R65RGB,true,FN2,true,38,1,66,false,"[14,15,19,20,21,22,23,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,53,54,58,60,61]","{""3"":38}","{""hex-integer"":114}",{}
+014C,RK-G98,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+014C,RK-G98,true,FN1,true,37,2,97,false,"[17,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,40,41,42,43,44,47,48,49,52,53,54,55,56,59,60,62,63,64,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,90,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+014C,RK-G98,true,FN2,true,37,2,97,false,"[17,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,40,41,42,43,44,47,48,49,52,53,54,55,56,59,60,62,63,64,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,90,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+014D,RK868RGB Wired keyboard,true,KEY,true,74,1,74,true,[],"{""8"":74}","{""decimal-integer"":370,""hex-integer"":222}",{}
+014D,RK868RGB Wired keyboard,true,FN1,false,0,,,true,[],{},{},{}
+014D,RK868RGB Wired keyboard,true,FN2,false,0,,,true,[],{},{},{}
+014E,RK-F68,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+014E,RK-F68,true,FN1,false,0,,,true,[],{},{},{}
+014E,RK-F68,true,FN2,false,0,,,true,[],{},{},{}
+014F,RK932RGB,true,KEY,true,108,1,108,true,[],"{""8"":108}","{""decimal-integer"":540,""hex-integer"":324}",{}
+014F,RK932RGB,true,FN1,false,0,,,true,[],{},{},{}
+014F,RK932RGB,true,FN2,false,0,,,true,[],{},{},{}
+0151,R75RGB,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0151,R75RGB,true,FN1,true,39,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":39}","{""decimal-integer"":9,""hex-integer"":108}",{}
+0151,R75RGB,true,FN2,true,39,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":39}","{""decimal-integer"":9,""hex-integer"":108}",{}
+015B,RK-R75,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+015B,RK-R75,true,FN1,false,0,,,true,[],{},{},{}
+015B,RK-R75,true,FN2,false,0,,,true,[],{},{},{}
+015D,R98 Single Color Wired,true,KEY,true,99,1,99,true,[],"{""8"":99}","{""decimal-integer"":495,""hex-integer"":297}",{}
+015D,R98 Single Color Wired,true,FN1,false,0,,,true,[],{},{},{}
+015D,R98 Single Color Wired,true,FN2,false,0,,,true,[],{},{},{}
+015E,R75RGB wired,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+015E,R75RGB wired,true,FN1,true,35,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":35}","{""decimal-integer"":9,""hex-integer"":96}",{}
+015E,R75RGB wired,true,FN2,true,35,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":35}","{""decimal-integer"":9,""hex-integer"":96}",{}
+0163,RK-M75RGB New layout,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0163,RK-M75RGB New layout,true,FN1,true,30,2,81,false,"[15,16,17,18,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,50,51,52,53,55,56,57,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":30}","{""hex-integer"":90}",{}
+0163,RK-M75RGB New layout,true,FN2,false,0,,,true,[],{},{},{}
+0166,RK-G98 Single three-mode,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0166,RK-G98 Single three-mode,true,FN1,false,0,,,true,[],{},{},{}
+0166,RK-G98 Single three-mode,true,FN2,false,0,,,true,[],{},{},{}
+0167,R98 Single three-mode,true,KEY,true,99,1,99,true,[],"{""8"":99}","{""decimal-integer"":495,""hex-integer"":297}",{}
+0167,R98 Single three-mode,true,FN1,false,0,,,true,[],{},{},{}
+0167,R98 Single three-mode,true,FN2,false,0,,,true,[],{},{},{}
+0169,RK-S75RGB,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0169,RK-S75RGB,true,FN1,true,30,2,81,false,"[15,16,17,18,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,50,51,52,53,55,56,57,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":30}","{""hex-integer"":90}",{}
+0169,RK-S75RGB,true,FN2,false,0,,,true,[],{},{},{}
+0171,RK-H81RGB-N,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0171,RK-H81RGB-N,true,FN1,true,39,2,81,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":39}","{""hex-integer"":117}",{}
+0171,RK-H81RGB-N,true,FN2,false,0,,,true,[],{},{},{}
+0172,RK-R65RGB Wired Keyboard,true,KEY,true,67,1,67,true,[],"{""8"":67}","{""decimal-integer"":335,""hex-integer"":201}",{}
+0172,RK-R65RGB Wired Keyboard,true,FN1,true,38,1,66,false,"[14,15,19,20,21,22,23,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,53,54,58,60,61]","{""3"":38}","{""hex-integer"":114}",{}
+0172,RK-R65RGB Wired Keyboard,true,FN2,true,38,1,66,false,"[14,15,19,20,21,22,23,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,53,54,58,60,61]","{""3"":38}","{""hex-integer"":114}",{}
+0173,RK98RGB ISO Keyboard,true,KEY,true,101,1,101,true,[],"{""8"":101}","{""decimal-integer"":505,""hex-integer"":303}",{}
+0173,RK98RGB ISO Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0173,RK98RGB ISO Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0174,RK S98RGB,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0174,RK S98RGB,true,FN1,true,24,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,33,34,35,36,37,38,39,40,42,43,45,46,47,48,49,50,51,52,53,54,56,57,58,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,84,86,87,88,89,90,91,92,93,94]","{""3"":24}","{""hex-integer"":72}",{}
+0174,RK S98RGB,true,FN2,false,0,,,true,[],{},{},{}
+0175,RK-M75 ISO Return Keyboard,true,KEY,true,82,1,82,true,[],"{""8"":69,""10"":13}","{""decimal-integer"":436,""hex-integer"":246}",{}
+0175,RK-M75 ISO Return Keyboard,true,FN1,true,31,2,81,false,"[15,16,17,18,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,50,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":31}","{""hex-integer"":93}",{}
+0175,RK-M75 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0176,Sink87G,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+0176,Sink87G,true,FN1,false,0,,,true,[],{},{},{}
+0176,Sink87G,true,FN2,false,0,,,true,[],{},{},{}
+0177,RK-R104,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+0177,RK-R104,true,FN1,false,0,,,true,[],{},{},{}
+0177,RK-R104,true,FN2,false,0,,,true,[],{},{},{}
+017E,RK-R75 ISO Return Keyboard,true,KEY,true,82,1,82,true,[],"{""8"":82}","{""decimal-integer"":410,""hex-integer"":246}",{}
+017E,RK-R75 ISO Return Keyboard,true,FN1,true,35,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":35}","{""decimal-integer"":9,""hex-integer"":96}",{}
+017E,RK-R75 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+017F,RK-R75RGBSingle mode,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+017F,RK-R75RGBSingle mode,true,FN1,true,39,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":39}","{""decimal-integer"":9,""hex-integer"":108}",{}
+017F,RK-R75RGBSingle mode,true,FN2,true,39,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":39}","{""decimal-integer"":9,""hex-integer"":108}",{}
+0183,RK 61,true,KEY,true,63,1,63,true,[],"{""8"":63}","{""decimal-integer"":315,""hex-integer"":189}",{}
+0183,RK 61,true,FN1,false,0,,,true,[],{},{},{}
+0183,RK 61,true,FN2,false,0,,,true,[],{},{},{}
+0184,RK-R65RGBSingle mode,true,KEY,true,67,1,67,true,[],"{""8"":67}","{""decimal-integer"":335,""hex-integer"":201}",{}
+0184,RK-R65RGBSingle mode,true,FN1,false,0,,,true,[],{},{},{}
+0184,RK-R65RGBSingle mode,true,FN2,false,0,,,true,[],{},{},{}
+0187,RK N80,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+0187,RK N80,true,FN1,true,39,2,80,false,"[14,16,17,18,19,20,21,22,23,24,25,26,31,37,38,39,45,48,49,51,52,53,55,57,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":39}","{""hex-integer"":117}",{}
+0187,RK N80,true,FN2,false,0,,,true,[],{},{},{}
+0193,RK S85,true,KEY,true,86,1,86,true,[],"{""8"":86}","{""decimal-integer"":430,""hex-integer"":258}",{}
+0193,RK S85,true,FN1,true,38,2,85,false,"[14,16,17,18,19,20,21,22,23,24,28,31,35,37,38,39,42,43,46,47,48,51,52,54,55,56,58,59,60,61,62,63,64,65,66,67,68,70,71,72,74,76,78,79,80,81]","{""3"":36,""4"":2}","{""hex-integer"":114,""text"":2}",{}
+0193,RK S85,true,FN2,false,0,,,true,[],{},{},{}
+019F,R87PRO,true,KEY,true,89,1,89,true,[],"{""8"":89}","{""decimal-integer"":445,""hex-integer"":267}",{}
+019F,R87PRO,true,FN1,true,36,2,87,false,"[17,21,22,23,24,25,26,27,28,29,32,33,34,38,39,40,41,42,45,46,47,48,49,50,51,54,55,57,58,59,61,62,64,65,66,67,68,69,70,71,72,73,74,75,77,79,81,82,83,84]","{""3"":36}","{""hex-integer"":108}",{}
+019F,R87PRO,true,FN2,false,0,,,true,[],{},{},{}
+01A2,RK M87,true,KEY,true,94,1,94,true,[],"{""8"":94}","{""decimal-integer"":470,""hex-integer"":282}",{}
+01A2,RK M87,true,FN1,true,33,2,88,false,"[14,16,17,18,19,20,21,22,23,24,25,26,27,28,32,38,39,40,43,44,45,46,47,48,49,52,53,55,56,57,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,78,79,81,83,84,85]","{""3"":33}","{""hex-integer"":99}",{}
+01A2,RK M87,true,FN2,false,0,,,true,[],{},{},{}
+01AB,RK61plus ISO Return Keyboard,true,KEY,true,62,1,62,true,[],"{""8"":62}","{""decimal-integer"":310,""hex-integer"":186}",{}
+01AB,RK61plus ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01AB,RK61plus ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01AC,RK-M75N ISO Return Keyboard,true,KEY,true,82,1,82,true,[],"{""8"":69,""10"":13}","{""decimal-integer"":436,""hex-integer"":246}",{}
+01AC,RK-M75N ISO Return Keyboard,true,FN1,true,30,2,81,false,"[15,16,17,18,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,43,45,48,49,50,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76,77]","{""3"":30}","{""hex-integer"":90}",{}
+01AC,RK-M75N ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01AD,R65RGB ISO Keyboard,true,KEY,true,68,1,68,true,[],"{""8"":68}","{""decimal-integer"":340,""hex-integer"":204}",{}
+01AD,R65RGB ISO Keyboard,true,FN1,true,38,1,66,false,"[14,15,19,20,21,22,23,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,53,54,58,60,61]","{""3"":38}","{""hex-integer"":114}",{}
+01AD,R65RGB ISO Keyboard,true,FN2,true,38,1,66,false,"[14,15,19,20,21,22,23,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,53,54,58,60,61]","{""3"":38}","{""hex-integer"":114}",{}
+01AF,RK-S98RGB-New,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+01AF,RK-S98RGB-New,true,FN1,true,37,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,46,47,48,49,50,53,54,56,57,58,60,61,62,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+01AF,RK-S98RGB-New,true,FN2,false,0,,,true,[],{},{},{}
+01B8,RK N99,true,KEY,true,99,1,99,true,[],"{""8"":99}","{""decimal-integer"":495,""hex-integer"":297}",{}
+01B8,RK N99,true,FN1,true,38,2,95,false,"[16,18,19,20,21,22,23,24,25,26,27,28,31,33,34,35,41,42,43,46,47,50,51,52,53,54,55,58,59,61,62,63,65,66,67,68,69,70,71,72,73,74,75,76,77,78,80,81,82,84,85,86,87,89,91,92]","{""3"":38}","{""hex-integer"":114}",{}
+01B8,RK N99,true,FN2,false,0,,,true,[],{},{},{}
+01BE,R87PRO,true,KEY,true,89,1,89,true,[],"{""8"":89}","{""decimal-integer"":445,""hex-integer"":267}",{}
+01BE,R87PRO,true,FN1,true,37,2,87,false,"[16,17,21,22,23,24,25,26,27,28,29,34,38,39,40,41,42,45,46,47,48,49,50,51,54,55,57,58,59,61,62,64,65,66,67,68,69,70,71,72,73,74,75,77,79,81,82,83,84]","{""3"":37}","{""hex-integer"":111}",{}
+01BE,R87PRO,true,FN2,false,0,,,true,[],{},{},{}
+01BF,RK-S98RGB ISO Return Keyboard,true,KEY,true,101,1,101,true,[],"{""8"":101}","{""decimal-integer"":505,""hex-integer"":303}",{}
+01BF,RK-S98RGB ISO Return Keyboard,true,FN1,true,37,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+01BF,RK-S98RGB ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01C4,RK96 ISO Return Keyboard,true,KEY,true,97,1,97,true,[],"{""8"":97}","{""decimal-integer"":485,""hex-integer"":291}",{}
+01C4,RK96 ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01C4,RK96 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01C5,RK-R87 ISO Return Keyboard,true,KEY,true,88,1,88,true,[],"{""8"":88}","{""decimal-integer"":440,""hex-integer"":264}",{}
+01C5,RK-R87 ISO Return Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01C5,RK-R87 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01C6,RK F75 three-mode,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+01C6,RK F75 three-mode,true,FN1,true,39,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":39}","{""hex-integer"":117}",{}
+01C6,RK F75 three-mode,true,FN2,false,0,,,true,[],{},{},{}
+01C7,(unregistered; no DevName entry in Cfg.ini),false,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+01C7,(unregistered; no DevName entry in Cfg.ini),false,FN1,false,0,,,true,[],{},{},{}
+01C7,(unregistered; no DevName entry in Cfg.ini),false,FN2,false,0,,,true,[],{},{},{}
+01CB,R87PRO,true,KEY,true,91,1,91,true,[],"{""8"":91}","{""decimal-integer"":455,""hex-integer"":273}",{}
+01CB,R87PRO,true,FN1,true,39,2,88,false,"[16,17,21,22,23,24,25,26,27,28,29,34,38,39,40,41,42,45,46,47,48,49,50,51,54,55,57,58,59,61,62,64,65,66,67,68,69,70,71,72,73,74,75,77,79,81,82,83]","{""3"":39}","{""hex-integer"":117}",{}
+01CB,R87PRO,true,FN2,false,0,,,true,[],{},{},{}
+01D0,RK F75 three-mode,true,KEY,true,83,1,83,true,[],"{""8"":83}","{""decimal-integer"":415,""hex-integer"":249}",{}
+01D0,RK F75 three-mode,true,FN1,true,39,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,34,35,36,37,38,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":39}","{""hex-integer"":117}",{}
+01D0,RK F75 three-mode,true,FN2,false,0,,,true,[],{},{},{}
+01D2,RK F75 Wired,true,KEY,true,81,1,81,true,[],"{""8"":81}","{""decimal-integer"":405,""hex-integer"":243}",{}
+01D2,RK F75 Wired,true,FN1,true,33,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,46,47,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":33}","{""hex-integer"":99}",{}
+01D2,RK F75 Wired,true,FN2,false,0,,,true,[],{},{},{}
+01D6,RK M87 ISO Return Keyboard,true,KEY,true,95,1,95,true,[],"{""8"":95}","{""decimal-integer"":475,""hex-integer"":285}",{}
+01D6,RK M87 ISO Return Keyboard,true,FN1,true,33,2,88,false,"[14,16,17,18,19,20,21,22,23,24,25,26,27,28,32,38,39,40,43,44,45,46,47,48,49,52,53,55,56,57,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,78,79,81,83,84,85]","{""3"":33}","{""hex-integer"":99}",{}
+01D6,RK M87 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01D9,RK-S70 DE Keyboard,true,KEY,true,75,1,75,true,[],"{""8"":75}","{""decimal-integer"":375,""hex-integer"":225}",{}
+01D9,RK-S70 DE Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01D9,RK-S70 DE Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01DC,RK-R87 Wired Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+01DC,RK-R87 Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01DC,RK-R87 Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01DE,RK F75 Wired,true,KEY,true,83,1,83,true,[],"{""8"":83}","{""decimal-integer"":415,""hex-integer"":249}",{}
+01DE,RK F75 Wired,true,FN1,true,33,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,46,47,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,68,69,71,73,75,76]","{""3"":33}","{""hex-integer"":99}",{}
+01DE,RK F75 Wired,true,FN2,false,0,,,true,[],{},{},{}
+01E3,RK-R87 Wired Keyboard,true,KEY,true,89,1,89,true,[],"{""8"":89}","{""decimal-integer"":445,""hex-integer"":267}",{}
+01E3,RK-R87 Wired Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01E3,RK-R87 Wired Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01E5,RK L75 three-mode,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+01E5,RK L75 three-mode,true,FN1,true,41,2,82,false,"[14,18,19,20,21,22,23,24,25,26,28,30,34,36,37,38,45,48,49,51,52,53,55,59,60,61,62,63,64,65,66,68,69,70,72,73,75,77,78,79]","{""3"":41}","{""hex-integer"":123}",{}
+01E5,RK L75 three-mode,true,FN2,false,0,,,true,[],{},{},{}
+01F4,RK T75,true,KEY,true,85,1,85,true,[],"{""8"":85}","{""decimal-integer"":425,""hex-integer"":255}",{}
+01F4,RK T75,true,FN1,true,40,1,82,false,"[14,18,19,20,21,22,23,24,25,26,30,34,35,36,37,38,41,42,45,48,49,51,52,53,55,56,59,60,61,62,63,64,65,66,68,70,72,73,75,77,78,79]","{""3"":40}","{""hex-integer"":120}",{}
+01F4,RK T75,true,FN2,false,0,,,true,[],{},{},{}
+01F5,RK M87 Keyboard,true,KEY,true,99,1,99,true,[],"{""8"":99}","{""decimal-integer"":495,""hex-integer"":297}",{}
+01F5,RK M87 Keyboard,true,FN1,true,33,2,88,false,"[14,16,17,18,19,20,21,22,23,24,25,26,27,28,32,38,39,40,43,44,45,46,47,48,49,52,53,55,56,57,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,78,79,81,83,84,85]","{""3"":33}","{""hex-integer"":99}",{}
+01F5,RK M87 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01F7,RK-R65 Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+01F7,RK-R65 Keyboard,true,FN1,true,35,1,66,false,"[14,15,16,17,18,19,20,21,22,23,25,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,54,58,60,61]","{""3"":35}","{""hex-integer"":105}",{}
+01F7,RK-R65 Keyboard,true,FN2,true,35,1,66,false,"[14,15,16,17,18,19,20,21,22,23,25,30,33,34,36,37,38,40,43,44,45,46,47,48,49,50,52,54,58,60,61]","{""3"":35}","{""hex-integer"":105}",{}
+01FA,RK S85 ISO Return Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+01FA,RK S85 ISO Return Keyboard,true,FN1,true,38,2,85,false,"[14,16,17,18,19,20,21,22,23,24,28,31,35,37,38,39,42,43,46,47,48,51,52,54,55,56,58,59,60,61,62,63,64,65,66,67,68,70,71,72,74,76,78,79,80,81]","{""3"":36,""4"":2}","{""hex-integer"":114,""text"":2}",{}
+01FA,RK S85 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01FB,RK L98 three-mode,true,KEY,true,103,1,103,true,[],"{""8"":103}","{""decimal-integer"":515,""hex-integer"":309}",{}
+01FB,RK L98 three-mode,true,FN1,true,37,2,97,false,"[14,15,16,17,19,20,21,22,23,24,25,26,27,28,29,32,33,34,35,36,40,41,42,43,44,52,53,54,55,56,59,60,62,63,64,66,68,69,70,71,72,73,74,75,76,77,78,79,81,82,83,85,86,87,88,90,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+01FB,RK L98 three-mode,true,FN2,false,0,,,true,[],{},{},{}
+01FC,RK-R75 Keyboard,true,KEY,true,85,1,85,true,[],"{""8"":85}","{""decimal-integer"":425,""hex-integer"":255}",{}
+01FC,RK-R75 Keyboard,true,FN1,true,36,2,80,false,"[15,19,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37,38,40,41,45,48,49,51,52,53,55,56,58,59,60,61,62,63,64,65,67,69,71,73,75,76]","{""3"":36}","{""decimal-integer"":9,""hex-integer"":99}",{}
+01FC,RK-R75 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+01FD,M65,true,KEY,true,75,1,75,true,[],"{""8"":75}","{""decimal-integer"":375,""hex-integer"":225}",{}
+01FD,M65,true,FN1,true,33,2,66,false,"[16,17,18,19,20,21,22,23,24,26,32,35,36,38,39,40,42,44,45,46,47,48,49,50,51,52,54,55,56,60,62,63]","{""3"":33}","{""hex-integer"":99}",{}
+01FD,M65,true,FN2,true,32,2,66,false,"[16,17,18,19,20,21,22,23,24,26,32,35,36,38,39,40,42,44,45,46,47,48,49,50,51,52,54,55,56,59,60,62,63]","{""3"":32}","{""hex-integer"":96}",{}
+01FE,M70,true,KEY,true,82,1,82,true,[],"{""8"":82}","{""decimal-integer"":410,""hex-integer"":246}",{}
+01FE,M70,true,FN1,true,32,1,69,false,"[14,15,17,18,19,20,21,22,23,24,25,27,28,31,32,35,36,38,39,40,42,43,45,46,47,48,49,50,52,53,55,56,57,59,62,64,65]","{""3"":32}","{""hex-integer"":96}",{}
+01FE,M70,true,FN2,true,31,1,69,false,"[14,15,17,18,19,20,21,22,23,24,25,27,28,31,32,35,36,38,39,40,42,43,45,46,47,48,49,50,52,53,55,56,57,59,61,62,64,65]","{""3"":31}","{""hex-integer"":93}",{}
+01FF,RK987RGB 2.4G N Keyboard,true,KEY,true,87,1,87,true,[],"{""8"":87}","{""decimal-integer"":435,""hex-integer"":261}",{}
+01FF,RK987RGB 2.4G N Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+01FF,RK987RGB 2.4G N Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0200,R98Pro Keyboard,true,KEY,true,99,1,99,true,[],"{""8"":99}","{""decimal-integer"":495,""hex-integer"":297}",{}
+0200,R98Pro Keyboard,true,FN1,true,39,2,99,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,37,38,39,40,43,44,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":39}","{""hex-integer"":117}",{}
+0200,R98Pro Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0201,RK L75 ISO Return Keyboard,true,KEY,true,88,1,88,true,[],"{""8"":88}","{""decimal-integer"":440,""hex-integer"":264}",{}
+0201,RK L75 ISO Return Keyboard,true,FN1,true,41,2,82,false,"[14,18,19,20,21,22,23,24,25,26,28,30,34,36,37,38,45,48,49,51,52,53,55,59,60,61,62,63,64,65,66,68,69,70,72,73,75,77,78,79]","{""3"":41}","{""hex-integer"":123}",{}
+0201,RK L75 ISO Return Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0202,RK M65 ISO Return Keyboard,true,KEY,true,76,1,76,true,[],"{""8"":76}","{""decimal-integer"":380,""hex-integer"":228}",{}
+0202,RK M65 ISO Return Keyboard,true,FN1,true,33,1,66,false,"[14,16,17,18,19,20,21,22,23,24,26,29,32,35,36,38,39,40,42,45,46,47,48,49,50,51,52,54,55,56,60,62,63]","{""3"":33}","{""hex-integer"":99}",{}
+0202,RK M65 ISO Return Keyboard,true,FN2,true,32,1,66,false,"[14,16,17,18,19,20,21,22,23,24,26,29,32,35,36,38,39,40,42,45,46,47,48,49,50,51,52,54,55,56,59,60,62,63]","{""3"":32}","{""hex-integer"":96}",{}
+0203,RK M70 ISO Return Keyboard,true,KEY,true,83,1,83,true,[],"{""8"":79,""10"":4}","{""decimal-integer"":423,""hex-integer"":249}",{}
+0203,RK M70 ISO Return Keyboard,true,FN1,true,36,1,73,false,"[14,15,17,18,19,20,21,22,23,24,25,27,32,35,36,38,39,40,42,43,46,47,48,49,50,52,53,55,56,57,59,62,64,65,70,71,72]","{""3"":36}","{""hex-integer"":108}",{}
+0203,RK M70 ISO Return Keyboard,true,FN2,true,35,1,73,false,"[14,15,17,18,19,20,21,22,23,24,25,27,32,35,36,38,39,40,42,43,46,47,48,49,50,52,53,55,56,57,59,61,62,64,65,70,71,72]","{""3"":35}","{""hex-integer"":105}",{}
+0207,X87 Keyboard,true,KEY,true,90,1,90,true,[],"{""8"":90}","{""decimal-integer"":450,""hex-integer"":270}",{}
+0207,X87 Keyboard,true,FN1,true,37,1,82,false,"[14,18,19,20,21,22,23,24,25,26,29,30,34,36,37,38,41,42,44,45,46,49,50,52,53,54,56,57,59,60,61,62,63,64,65,66,67,68,70,71,72,74,76,78,79]","{""3"":37}","{""hex-integer"":111}",{}
+0207,X87 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+020B,RK X87 Keyboard,true,KEY,true,86,1,86,true,[],"{""8"":86}","{""decimal-integer"":430,""hex-integer"":258}",{}
+020B,RK X87 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+020B,RK X87 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+020C,R98Pro Keyboard,true,KEY,true,101,1,101,true,[],"{""8"":101}","{""decimal-integer"":505,""hex-integer"":303}",{}
+020C,R98Pro Keyboard,true,FN1,true,34,2,99,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,33,34,35,36,37,38,39,40,42,43,44,46,47,48,49,50,53,54,56,57,58,60,61,62,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":34}","{""hex-integer"":102}",{}
+020C,R98Pro Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+020F,RK A70 Keyboard,true,KEY,true,71,1,71,true,[],"{""8"":71}","{""decimal-integer"":355,""hex-integer"":213}",{}
+020F,RK A70 Keyboard,true,FN1,true,40,1,71,false,"[2,3,4,18,20,24,26,27,28,35,38,39,40,41,42,43,45,47,49,50,51,52,53,54,55,56,59,60,64,66,67]","{""3"":40}","{""hex-integer"":120}",{}
+020F,RK A70 Keyboard,true,FN2,true,40,1,71,false,"[2,3,4,18,20,24,26,27,28,35,38,39,40,41,42,43,45,47,49,50,51,52,53,54,55,56,59,60,64,66,67]","{""3"":40}","{""hex-integer"":120}",{}
+0210,R98Pro Keyboard,true,KEY,true,101,1,101,true,[],"{""8"":101}","{""decimal-integer"":505,""hex-integer"":303}",{}
+0210,R98Pro Keyboard,true,FN1,true,39,2,99,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,37,38,39,40,43,44,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":39}","{""hex-integer"":117}",{}
+0210,R98Pro Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0211,RK M100 Keyboard,true,KEY,true,98,1,98,true,[],"{""8"":98}","{""decimal-integer"":490,""hex-integer"":294}",{}
+0211,RK M100 Keyboard,true,FN1,true,42,2,91,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,37,43,44,46,47,48,49,50,53,54,60,61,62,63,64,65,66,67,68,69,70,71,76,77,79,80,81,82,84,86,87,88]","{""3"":42}","{""hex-integer"":126}",{}
+0211,RK M100 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0214,RK S108 Keyboard,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+0214,RK S108 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0214,RK S108 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0215,R98Pro DE Keyboard,true,KEY,true,102,1,102,true,[],"{""8"":102}","{""decimal-integer"":510,""hex-integer"":306}",{}
+0215,R98Pro DE Keyboard,true,FN1,true,34,2,100,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94,99]","{""3"":34}","{""hex-integer"":102}",{}
+0215,R98Pro DE Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0218,RK F99,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0218,RK F99,true,FN1,true,39,2,99,false,"[14,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,36,37,38,39,40,43,44,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,92,93,94]","{""3"":39}","{""hex-integer"":117}",{}
+0218,RK F99,true,FN2,false,0,,,true,[],{},{},{}
+0220,RK-S70 Keyboard,true,KEY,true,74,1,74,true,[],"{""8"":74}","{""decimal-integer"":370,""hex-integer"":222}",{}
+0220,RK-S70 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0220,RK-S70 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0222,R98Pro FR Keyboard,true,KEY,true,102,1,102,true,[],"{""8"":102}","{""decimal-integer"":510,""hex-integer"":306}",{}
+0222,R98Pro FR Keyboard,true,FN1,true,34,2,100,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94,99]","{""3"":34}","{""hex-integer"":102}",{}
+0222,R98Pro FR Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0223,RK-S98 TH Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0223,RK-S98 TH Keyboard,true,FN1,true,37,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,46,47,48,49,50,53,54,56,57,58,60,61,62,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+0223,RK-S98 TH Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0224,RK-S98 DE Keyboard,true,KEY,true,101,1,101,true,[],"{""8"":101}","{""decimal-integer"":505,""hex-integer"":303}",{}
+0224,RK-S98 DE Keyboard,true,FN1,true,37,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+0224,RK-S98 DE Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0225,R98Pro Keyboard,true,KEY,true,105,1,105,true,[],"{""8"":105}","{""decimal-integer"":525,""hex-integer"":315}",{}
+0225,R98Pro Keyboard,true,FN1,true,35,2,103,false,"[14,18,19,20,21,22,23,24,25,26,28,29,30,31,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,77,79,80,81,82,84,86,87,88,92,93,94,99,100,101,102]","{""3"":35}","{""hex-integer"":105}",{}
+0225,R98Pro Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0227,RK M70 FR Keyboard,true,KEY,true,83,1,83,true,[],"{""8"":78,""10"":5}","{""decimal-integer"":425,""hex-integer"":249}",{}
+0227,RK M70 FR Keyboard,true,FN1,true,36,1,73,false,"[14,15,17,18,19,20,21,22,23,24,25,27,32,35,36,38,39,40,42,43,46,47,48,49,50,52,53,55,56,57,59,62,64,65,70,71,72]","{""3"":36}","{""hex-integer"":108}",{}
+0227,RK M70 FR Keyboard,true,FN2,true,35,1,73,false,"[14,15,17,18,19,20,21,22,23,24,25,27,32,35,36,38,39,40,42,43,46,47,48,49,50,52,53,55,56,57,59,61,62,64,65,70,71,72]","{""3"":35}","{""hex-integer"":105}",{}
+0228,RK M70 DE Keyboard,true,KEY,true,83,1,83,true,[],"{""8"":78,""10"":5}","{""decimal-integer"":425,""hex-integer"":249}",{}
+0228,RK M70 DE Keyboard,true,FN1,true,36,1,73,false,"[14,15,17,18,19,20,21,22,23,24,25,27,32,35,36,38,39,40,42,43,46,47,48,49,50,52,53,55,56,57,59,62,64,65,70,71,72]","{""3"":36}","{""hex-integer"":108}",{}
+0228,RK M70 DE Keyboard,true,FN2,true,35,1,73,false,"[14,15,17,18,19,20,21,22,23,24,25,27,32,35,36,38,39,40,42,43,46,47,48,49,50,52,53,55,56,57,59,61,62,64,65,70,71,72]","{""3"":35}","{""hex-integer"":105}",{}
+0229,RK-S70 FR Keyboard,true,KEY,true,75,1,75,true,[],"{""8"":75}","{""decimal-integer"":375,""hex-integer"":225}",{}
+0229,RK-S70 FR Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+0229,RK-S70 FR Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+022B,RK-S98 ES Keyboard,true,KEY,true,101,1,101,true,[],"{""8"":101}","{""decimal-integer"":505,""hex-integer"":303}",{}
+022B,RK-S98 ES Keyboard,true,FN1,true,37,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+022B,RK-S98 ES Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+022C,RK M65 FR Keyboard,true,KEY,true,76,1,76,true,[],"{""8"":76}","{""decimal-integer"":380,""hex-integer"":228}",{}
+022C,RK M65 FR Keyboard,true,FN1,true,33,1,66,false,"[14,16,17,18,19,20,21,22,23,24,26,29,32,35,36,38,39,40,42,45,46,47,48,49,50,51,52,54,55,56,60,62,63]","{""3"":33}","{""hex-integer"":99}",{}
+022C,RK M65 FR Keyboard,true,FN2,true,32,1,66,false,"[14,16,17,18,19,20,21,22,23,24,26,29,32,35,36,38,39,40,42,45,46,47,48,49,50,51,52,54,55,56,59,60,62,63]","{""3"":32}","{""hex-integer"":96}",{}
+022D,RK M65 DE Keyboard,true,KEY,true,76,1,76,true,[],"{""8"":76}","{""decimal-integer"":380,""hex-integer"":228}",{}
+022D,RK M65 DE Keyboard,true,FN1,true,33,1,66,false,"[14,16,17,18,19,20,21,22,23,24,26,29,32,35,36,38,39,40,42,45,46,47,48,49,50,51,52,54,55,56,60,62,63]","{""3"":33}","{""hex-integer"":99}",{}
+022D,RK M65 DE Keyboard,true,FN2,true,32,1,66,false,"[14,16,17,18,19,20,21,22,23,24,26,29,32,35,36,38,39,40,42,45,46,47,48,49,50,51,52,54,55,56,59,60,62,63]","{""3"":32}","{""hex-integer"":96}",{}
+022F,RK-S98 Keyboard,true,KEY,true,104,1,104,true,[],"{""8"":104}","{""decimal-integer"":520,""hex-integer"":312}",{}
+022F,RK-S98 Keyboard,true,FN1,true,38,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,45,46,47,48,49,50,53,54,56,57,58,60,61,63,64,65,66,67,68,69,70,71,72,73,75,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":38}","{""hex-integer"":114}",{}
+022F,RK-S98 Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+0230,RK-S98 RU Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+0230,RK-S98 RU Keyboard,true,FN1,true,37,2,98,false,"[14,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32,36,38,39,40,43,46,47,48,49,50,53,54,56,57,58,60,61,62,63,64,65,66,67,68,69,70,71,72,73,75,76,77,79,80,81,82,84,86,87,88,92,93,94]","{""3"":37}","{""hex-integer"":111}",{}
+0230,RK-S98 RU Keyboard,true,FN2,false,0,,,true,[],{},{},{}
+023D,RK G98 Keyboard,true,KEY,true,100,1,100,true,[],"{""8"":100}","{""decimal-integer"":500,""hex-integer"":300}",{}
+023D,RK G98 Keyboard,true,FN1,false,0,,,true,[],{},{},{}
+023D,RK G98 Keyboard,true,FN2,false,0,,,true,[],{},{},{}

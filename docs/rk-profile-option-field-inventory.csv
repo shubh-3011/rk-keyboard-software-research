@@ -1,0 +1,89 @@
+option,profiles_present,total_profiles,individual_static_key_literal_in_DeviceDriver,interpretation_status
+AccessInter,4,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+Channel,14,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+CmdReset,18,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DataUnitSize,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DebounceHW,60,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DebounceName,49,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DebounceUI,60,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DefBri,41,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DefLedIndex,67,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+DrawFrameTime,11,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+FrameViewSp,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+Fw,65,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+GameGroupNum,70,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+GaoshouIndex,189,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+GaoshouKey1,189,189,no,no individual literal; generic/dynamic read remains possible
+GaoshouKey2,183,189,no,no individual literal; generic/dynamic read remains possible
+GifPID,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+KbImgUse,87,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+KbLayout,189,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+KeyNotToSetColor,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+KeyUseLEDImg,5,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LatticeW,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LayerMask,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LayerNum,33,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LayoutKeyNum,188,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LedMask,39,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LedOpt1,189,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt10,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt11,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt12,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt13,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt14,184,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt15,184,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt16,184,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt17,184,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt18,131,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt19,184,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt2,189,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt20,174,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt21,93,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt3,189,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt4,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt5,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt6,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt7,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt8,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LedOpt9,188,189,no,no individual literal; six-value tuple retained; protocol semantics unresolved
+LightHW,26,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+LightUI,37,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+MacroBufferNum,4,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+MaxEftKeyIndex,10,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+MaxKeyNum,3,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+MaxScreenFrame,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+Media,9,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+MusicMask,12,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+MusicRGBIndex,29,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+NoSyncTimeForWireless,6,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+NoUpdate,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+OtherFun,5,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+PID_Wireless,7,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+PackageTime,17,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+Psd,63,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+RGBIndex,96,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+RGBKb,189,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+RGBScreen,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+ScreenCRC,3,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+ScreenViewY,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+SendOnlyDataChanged,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+SendSysParam,21,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+SendTimeOnOpenKB,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+ShowAutoDetect,46,189,no,no individual literal; generic/dynamic read remains possible
+ShowMusic,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+ShowRealTime,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+ShowScreen,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+ShowSleepTime,117,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+SpeedParam,26,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+SysParamMask,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+TapRange,26,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+UnRectKey,41,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+VID_Wireless,7,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+VerNeedToUpdate,1,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+clrGaoshou,189,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+sf1,7,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+sf2,7,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+sf3,7,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+sf4,6,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+sf5,6,189,yes,static key-name reference; value semantics vary or remain partly unresolved
+siScreen,15,189,yes,static key-name reference; value semantics vary or remain partly unresolved

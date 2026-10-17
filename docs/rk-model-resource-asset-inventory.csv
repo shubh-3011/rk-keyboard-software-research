@@ -1,0 +1,190 @@
+﻿profile_code,model_name_from_cfg,listed_in_cfg_ini,kb_ini,keyimg_png,kbled_png,screen_gif,localized_led_xml_locales,et_pattern_files,cartoon_pattern_files,model_update_exe,firmware_upf_files
+002A,RK100 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0048,RK-68Plus,yes,yes,yes,yes,no,none,none,none,no,none
+0049,RK-G68 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+004A,RK61RGB Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+004B,RK100RGB Wireless Keyboard,yes,yes,no,no,no,none,none,none,no,none
+004C,RK87RGB Keyboard,yes,yes,no,no,no,none,none,none,no,none
+004D,RK71RGB Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+004E,RK71 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+004F,G87RGB Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0052,G68 Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0053,RK960 Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0054,RK987 Single Color,yes,yes,no,no,no,none,none,none,no,none
+0055,RK-61 Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0056,RK100RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0057,RK857 Single,yes,yes,no,no,no,none,none,none,no,none
+0058,RK SINK104 Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0059,RK84RGB Keyboard,yes,yes,no,no,no,none,none,none,no,none
+005A,RK71RGB Keyboard,yes,yes,no,no,no,none,none,none,no,none
+005B,RK987RGB,yes,yes,no,no,no,none,none,none,no,none
+005C,RK-G68RGB-UK Keyboard,yes,yes,no,no,no,none,none,none,no,none
+005D,RK857 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+005E,RK68RGB Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+0060,RK61 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0064,RK68RGB Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0065,RK61RGB ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0066,RK61ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0067,RK100PRO Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0068,RK987RGB Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0069,RK71RGB Wireless,yes,yes,yes,yes,no,none,none,none,no,none
+006A,RK71 Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+006b,RK87(882) Keyboard,yes,yes,no,no,no,none,none,none,no,none
+006F,RK68Plus Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0070,RK98 RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0074,RK87(882) Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0075,G68RGB ISO Return Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0078,RK87 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0079,RK68Pro Keyboard,yes,yes,no,no,no,none,none,none,no,none
+007A,RK61 RGB Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+007B,RK896 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+007c,RK87T RGBWired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+007d,G87RGB Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0089,RK96 RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+008b,RK68 Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+008C,RK61RGB ISO ReturnWired,yes,yes,no,no,no,none,none,none,no,none
+008E,RK68 a switch Keyboard,yes,yes,no,no,no,none,none,none,no,none
+008F,RK920RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0093,RK104 RGB three-mode,yes,yes,no,no,no,none,none,none,no,none
+0094,RK104 RGB Wired,yes,yes,yes,yes,no,none,none,none,no,none
+009c,RK89RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+009E,RK92RGB N Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00A1,RK932RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00A2,68RGB Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00A4,RK96 Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00A5,RK71RGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00A6,RK932 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00A9,RK68ISO Return Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00AA,RK750-100RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00b3,RK98Wired-100KRGB Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00B4,RK937RGB Wired Keyboaed,yes,yes,yes,yes,no,none,none,none,no,none
+00B5,RK71RGB N BT Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00b8,RK61 Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+00C0,RK857 Single,yes,yes,yes,yes,no,none,none,none,no,none
+00C1,RK98-100KRGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00C3,K87RGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00C4,RK87RGB N Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00C5,RK-S108RGB,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,stream_unit.txt,no,none
+00c6,RK858  61   Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00C7,RK61RGB N Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00c8,RK84N RGB Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00c9,RK61 N RGB Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+00CD,RK89 Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00D6,RK Round RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00D7,RK SPLIT70 three-mode,yes,yes,no,no,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+00d8,RK98Wired-100K N RGB Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00DA,RK68plus RGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00DE,RK883RGB N Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00E0,RK100RGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00E1,RK61RGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00E7,RKG68RGB N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00EA,RK71RGB N Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00EC,RK61RGB N ISO Return Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00ED,RK61 N RGB Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+00EF,RK-H87RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00F2,RK87RGB ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00F3,RK84Pro N RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00F4,RK84 RGB ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00F6,RK-R87RGB Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00F7,RK-R87 Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00F8,RK61plus RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+00F9,RK987RGB N  Keyboard,yes,yes,no,no,no,none,none,none,no,none
+00FF,RK68RGB N Bluetooth Dual Mode,yes,yes,no,no,no,none,none,none,no,none
+0102,RK-H81RGB,yes,yes,yes,yes,no,none,none,none,no,none
+0103,RK68 N ISO Return Keyboard Bluetooth,yes,yes,yes,yes,no,none,none,none,no,none
+0106,RK-S87 RGB Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+010a,RK68RGB N Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+010d,RK84RGB N Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+010F,RK-S87 RGB Wired Keyboard,yes,yes,no,no,no,none,none,none,no,none
+011C,RK-R104 Single,yes,yes,yes,yes,no,none,none,none,no,none
+011E,RK-R104 RGB,yes,yes,no,no,no,none,none,none,no,none
+0120,R87RGB,yes,yes,no,no,no,none,none,none,no,none
+0129,RK-R87S,yes,yes,no,no,no,none,none,none,no,none
+013A,RKG68 RGB N Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+013E,RK-H81RGB N,yes,yes,no,no,no,none,none,none,no,none
+0143,R98-RGB2.0,yes,yes,no,no,no,none,none,none,no,none
+0147,RK-M75,yes,yes,yes,yes,no,none,none,none,no,none
+014A,RK-R65RGB,yes,yes,no,no,no,none,none,none,no,none
+014C,RK-G98,yes,yes,no,no,no,none,none,none,no,none
+014D,RK868RGB Wired keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+014E,RK-F68,yes,yes,yes,yes,no,en;sc,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+014F,RK932RGB,yes,yes,no,no,no,none,none,none,no,none
+0151,R75RGB,yes,yes,yes,yes,no,none,none,none,no,none
+015B,RK-R75,yes,yes,yes,yes,no,en;sc,none,none,no,none
+015D,R98 Single Color Wired,yes,yes,yes,yes,no,none,none,none,no,none
+015E,R75RGB wired,yes,yes,no,no,no,none,none,none,no,none
+0163,RK-M75RGB New layout,yes,yes,yes,yes,no,none,none,none,no,none
+0166,RK-G98 Single three-mode,yes,yes,no,no,no,none,none,none,no,none
+0167,R98 Single three-mode,yes,yes,yes,yes,no,none,none,none,no,none
+0169,RK-S75RGB,yes,yes,no,no,no,none,none,none,no,none
+0171,RK-H81RGB-N,yes,yes,yes,yes,no,none,none,none,no,none
+0172,RK-R65RGB Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0173,RK98RGB ISO Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt,no,none
+0174,RK S98RGB,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+0175,RK-M75 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0176,Sink87G,yes,yes,yes,yes,no,none,none,none,no,none
+0177,RK-R104,yes,yes,yes,yes,no,none,none,none,no,none
+017E,RK-R75 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+017F,RK-R75RGBSingle mode,yes,yes,no,no,no,none,none,none,no,none
+0183,RK 61,yes,yes,yes,yes,no,none,none,none,no,none
+0184,RK-R65RGBSingle mode,yes,yes,no,no,no,none,none,none,no,none
+0187,RK N80,yes,yes,yes,yes,no,none,none,none,no,none
+0193,RK S85,yes,yes,yes,yes,yes,none,none,none,no,none
+019F,R87PRO,yes,yes,yes,yes,no,none,none,none,no,none
+01A2,RK M87,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01AB,RK61plus ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01AC,RK-M75N ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01AD,R65RGB ISO Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01AF,RK-S98RGB-New,yes,yes,no,no,no,none,none,none,yes,KB_762_1_v258A_p01AF_F90_8818_V90.0f.1.00.upf
+01B8,RK N99,yes,yes,yes,yes,yes,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+01BE,R87PRO,yes,yes,no,no,no,none,none,none,no,none
+01BF,RK-S98RGB ISO Return Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;paoma_unit.txt;stream_h.txt,none,no,none
+01C4,RK96 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01C5,RK-R87 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01C6,RK F75 three-mode,yes,yes,yes,yes,no,none,none,none,no,none
+01C7,,no,yes,no,no,no,en;sc,none,none,no,none
+01CB,R87PRO,yes,yes,no,no,no,none,none,none,no,none
+01D0,RK F75 three-mode,yes,yes,no,no,no,none,none,none,no,none
+01D2,RK F75 Wired,yes,yes,no,no,no,none,none,none,no,none
+01D6,RK M87 ISO Return Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01D9,RK-S70 DE Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+01DC,RK-R87 Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01DE,RK F75 Wired,yes,yes,no,no,no,none,none,none,no,none
+01E3,RK-R87 Wired Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01E5,RK L75 three-mode,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01F4,RK T75,yes,yes,yes,yes,no,none,none,none,no,none
+01F5,RK M87 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01F7,RK-R65 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01FA,RK S85 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+01FB,RK L98 three-mode,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01FC,RK-R75 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01FD,M65,yes,yes,yes,yes,no,none,none,wheel_unit.txt,no,none
+01FE,M70,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+01FF,RK987RGB 2.4G N Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0200,R98Pro Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+0201,RK L75 ISO Return Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,flower.txt;stream_unit.txt;wheel_unit.txt,no,none
+0202,RK M65 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,wheel_unit.txt,no,none
+0203,RK M70 ISO Return Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0207,X87 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+020B,RK X87 Keyboard,yes,yes,yes,yes,no,en;sc,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+020C,R98Pro Keyboard,yes,yes,no,no,no,none,none,none,no,none
+020F,RK A70 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+0210,R98Pro Keyboard,yes,yes,no,no,no,none,none,none,no,none
+0211,RK M100 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;paoma_unit.txt;stream_h.txt,wheel_unit.txt,no,none
+0214,RK S108 Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0215,R98Pro DE Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+0218,RK F99,yes,yes,yes,yes,no,none,none,none,no,none
+0220,RK-S70 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+0222,R98Pro FR Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+0223,RK-S98 TH Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+0224,RK-S98 DE Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;paoma_unit.txt;stream_h.txt,none,no,none
+0225,R98Pro Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;paoma_unit.txt;stream_h.txt,wheel_unit.txt,no,none
+0227,RK M70 FR Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0228,RK M70 DE Keyboard,yes,yes,yes,yes,no,none,none,none,no,none
+0229,RK-S70 FR Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+022B,RK-S98 ES Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;paoma_unit.txt;stream_h.txt,none,no,none
+022c,RK M65 FR Keyboard,yes,yes,yes,yes,no,none,none,wheel_unit.txt,no,none
+022D,RK M65 DE Keyboard,yes,yes,yes,yes,no,none,none,wheel_unit.txt,no,none
+022F,RK-S98 Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;paoma_unit.txt;stream_h.txt,wheel_unit.txt,no,none
+0230,RK-S98 RU Keyboard,yes,yes,yes,yes,no,none,audiobar.txt;flower.txt;happy.txt;stream_h.txt,wheel_unit.txt,no,none
+023D,RK G98 Keyboard,yes,yes,yes,yes,no,en;sc,none,none,no,none
