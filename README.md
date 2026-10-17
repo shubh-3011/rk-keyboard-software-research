@@ -103,6 +103,7 @@ as confirmed.
 - [4.6 driver profile selector and Fw=3 path](docs/rk-v4.6-profile-selector-audit.md)
 - [4.6 row-level selector map](docs/rk-v4.6-profile-selector-map.csv)
 - [4.6 Fw=3 `CDev3632` vtable and transport audit](docs/rk-v4.6-fw3-cdev3632-vtable-audit.md)
+- [4.6 `CDev3632` frame, response queue, and selector audit](docs/rk-v4.6-cdev3632-frame-and-selector-audit.md)
 - [4.6 Side LED profile, UI, and report-builder audit](docs/rk-v4.6-side-led-static-audit.md)
 - [4.6 Side LED message-map and selection-state follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md)
 - [4.6 native binary/API delta](docs/rk-v4.6-native-binary-delta-audit.md)

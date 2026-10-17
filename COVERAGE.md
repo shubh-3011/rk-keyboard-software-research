@@ -64,10 +64,14 @@ model or runtime map.
   `Fw=3` row is M20 `258A:0208`; the selector's physical-device and downstream
   protocol compatibility remain unvalidated. RTTI links that constructor to
   `CDev3632`; the audit maps its vtable and 20-byte read/write transport while
-  leaving selector meanings and hardware compatibility unresolved. See
+  leaving feature names and hardware compatibility unresolved. A follow-up
+  maps frame offsets, additive request checksum construction, response-queue
+  matching, and conservative callsite roles for eight selector values; it does
+  not assign feature names or prove device acceptance. See
   [`docs/rk-v4.6-profile-selector-audit.md`](docs/rk-v4.6-profile-selector-audit.md)
   and its [row-level map](docs/rk-v4.6-profile-selector-map.csv), plus the
-  [`CDev3632` vtable audit](docs/rk-v4.6-fw3-cdev3632-vtable-audit.md).
+  [`CDev3632` vtable audit](docs/rk-v4.6-fw3-cdev3632-vtable-audit.md) and
+  [frame/selector audit](docs/rk-v4.6-cdev3632-frame-and-selector-audit.md).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official
