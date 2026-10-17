@@ -64,6 +64,9 @@ the closing token is `/tc_screen1>` and lacks its opening `<`. An
 in-memory-only normalization recovers the same 247-key set; the installed XML
 was not modified. Locale values are not identical; exact-string comparisons
 and file-by-file findings are in the [resource and localization audit](rk-resource-localization-audit.md).
+Static PE dialog-template controls are inventoried separately in the
+[dialog-resource audit](rk-dialog-resource-audit.md); those templates do not
+expose the full runtime-generated MFC interface.
 The manifest covers all remaining assets, but this static pass has not
 assigned a semantic meaning to every individual image, animation frame, skin,
 or font.
@@ -497,7 +500,7 @@ The UI labels and static call paths support this more specific feature map:
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; separate `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`. | DSP parameter-to-UI mapping and data-format meaning remain incomplete. Neither capture nor HID transmit was run. |
 | Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | Exact frame field map, delay units, and model-to-transport mapping remain unresolved. These command paths write to the keyboard. |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
-| Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer. | MFU section-B/C paths perform bounded readback comparisons after writes; a full-flash dump/save-to-host path was not found. |
+| Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. The UART queue was traced into its state machine, but no queued-data-to-firmware-file path was found in the inspected routines. See the [updater/readback audit](rk-firmware-readback-audit.md). |
 
 ### Lighting payload details
 
@@ -792,9 +795,20 @@ layout recovered from `FUN_0040d7e0` is:
 | 5–18 | up to 14 payload bytes, zero padded |
 | 19 | low byte of sum of bytes 0–18 |
 
-The receiver checks response marker/status/command fields. Logs describe
-`-2` as timeout and `-3` as CRC error, but the exact status and checksum
-semantics remain unresolved. Wrapper/log context labels these 3632 commands:
+The response reader `FUN_0040d370` consumes 20-byte records from a queue. It
+returns success when response byte 1 matches the requested command and bit 7
+of byte 2 is clear; returns `-4` when byte 0 is `0xFF`; returns `-3` when bit
+7 of byte 2 is set; returns `-2` when the queue helper reports no data; and
+returns `-1` after 20 records with a nonmatching command. The queue helper
+`FUN_0043c390` waits up to 4,000 ms when fewer than 20 bytes are queued. The
+writer `FUN_0040e0f0` submits each frame with overlapped `WriteFile`, waits up
+to 500 ms for pending I/O, and can make up to four write attempts.
+`AccessData` retries `-2`/`-3` only when its retry flag is enabled, up to five
+retries after the initial attempt. Although logs label `-3` a CRC error, this
+receiver path only checks status bit 7; it does not recompute or validate a
+response checksum. The meaning of response bytes 0 and 2, any acknowledgment
+checksum, and the queue producer remain unresolved. Wrapper/log context labels
+these 3632 commands:
 SetMatrix `1`, SetGame `2`, SetMacro `3`, SetLED `4`, SetLedRgbTab `9`,
 SendWeb `0x12`, and GetLED `0x44`. These labels do not define all payload
 fields or prove how every profile maps to the family.

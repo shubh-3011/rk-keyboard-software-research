@@ -99,16 +99,31 @@ BLE/version/status handling, and an updater mode/connection helper. The
 therefore this is not evidence of passive capture. No inspected feature-read
 path streams a full firmware image to a host file.
 
-The updater also contains a separate, generic serial transport. The open
-routine at `0x00404E60` calls `CreateFileW` at `0x00404F09` with
+The updater also contains a separate serial transport and event-driven
+dispatcher. `FUN_00404E60` calls `CreateFileW` at `0x00404F09` with
 `GENERIC_READ | GENERIC_WRITE`, `OPEN_EXISTING`, and overlapped I/O, then sets
-the communication mask, DCB, and timeouts. The surrounding serial workers
-perform overlapped `ReadFile`/`WriteFile` operations and queue received bytes
-for an internal callback. A documented static call chain enters this setup
-from an updater state-machine path, but the precise device mode and the
-relationship to the HID `.upf` path remain unresolved. A generic serial read
-can return bytes to RAM; that fact alone does not identify a firmware dump
-command or a save-to-file workflow.
+the communication mask, DCB, and timeouts. It stores the notification window
+and message ID `0x401` in globals `0x005BB4F4`/`0x005BB4F8` and starts four
+worker threads. The configured baud value is held in object state and has not
+been decoded.
+
+Receive worker `FUN_00405430` calls `ReadFile` at `0x00405535` and may finish
+pending reads with `GetOverlappedResult` at `0x00405584`. It queues received
+chunks capped at `0x1FFF` bytes under global queue state around `0x005BB500`,
+then posts message `0x401` at `0x004055E6`. The consumer `FUN_00407E00` calls
+queue helper `FUN_00405920` at `0x00407E36`, reads state `0x005C5F58`, and
+dispatches states 1–15. State 15 reaches serial setup `FUN_004091B0` at
+`0x00408034`, which calls `FUN_00404E60` at `0x004091F9`. The serial
+notification-to-queue-consumer data flow is established by direct code
+references. A candidate MFC message-map row also associates `0x401` with
+`FUN_00407E00`, but the table's exact structure is not fully validated.
+
+This is evidence of a UART protocol state path that receives bytes into RAM;
+it does not identify the physical device/mode or command meanings. No path
+from this queue to a firmware file sink was identified in the inspected
+workers and dispatcher. The separate HID `.upf` path remains host-file-to-
+memory staging. This negative result covers traced paths only, not every
+indirect or undocumented updater path.
 
 The API inventory also records file `ReadFile`/`WriteFile` references in the
 updater. At `0x00405250` and `0x00405535`, `ReadFile` operates on the serial
@@ -137,9 +152,9 @@ workflow. In particular, an updater “read” is not automatically passive: the
 section-verification paths follow explicit stage/write operations, and the
 generic HID read helper has request writes associated with the read.
 
-**Unresolved:** the full UART state machine, every indirect call, undocumented
-bootloader commands, and the exact protocol revision of the currently
-connected S98 are not reconstructed. Therefore static analysis cannot prove
+**Unresolved:** the UART command/response semantics, every indirect call,
+undocumented bootloader commands, and the exact protocol revision of the
+currently connected S98 are not reconstructed. Therefore static analysis cannot prove
 that extracting firmware is technically impossible. It does establish that
 there is currently no demonstrated way in the inspected software to copy the
 running firmware while guaranteeing the keyboard remains unchanged. The
@@ -152,4 +167,5 @@ bootloader.
 - Installed package manifest: [`rk-installed-package-manifest.csv`](rk-installed-package-manifest.csv)
 - Native API addresses: [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv)
 - Native import list and binary hashes: [`rk-native-api-imports.md`](rk-native-api-imports.md)
+- Static dialog/control inventory and selected updater UI-handler links: [`rk-dialog-resource-audit.md`](rk-dialog-resource-audit.md)
 - Broader audit context: [`reverse-engineering.md`](reverse-engineering.md)

@@ -5,12 +5,13 @@ software, profiles, resources, and model-specific native code. The goal is to
 make the evidence and its limits easy to inspect so other researchers can
 identify models, compare software versions, and continue the analysis.
 
-This repository is an open, source-backed starting point for studying RK's
-Windows keyboard software: it combines a reproducible catalog, installed-file
-hashes, localization and resource audits, profile-to-driver maps, native API
-crosswalks, and a downloadable Windows research workbench. It provides a
-detailed static audit of the RK 4.06 package examined here; it is not a
-universal inventory of every RK release or keyboard.
+This repository is an open, source-backed research hub for studying RK's
+Windows keyboard software. It brings together a reproducible model catalog,
+installed-file hashes, localization and dialog-resource audits,
+profile-to-driver maps, native API and updater-path crosswalks, and a
+downloadable Windows research workbench. It is a detailed static audit of the
+RK 4.06 package examined here, not a universal inventory of every RK release
+or keyboard.
 
 **Get the Windows app:** [latest RK Research Workbench release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest)
 · **Browse the source:** [`workbench/`](workbench/) · **Audit scope:** [coverage and open work](COVERAGE.md)
@@ -47,6 +48,7 @@ as confirmed.
 - [Machine-readable 188-profile catalog](models.json)
 - [Installed package manifest](docs/rk-installed-package-manifest.csv)
 - [Resource and localization audit](docs/rk-resource-localization-audit.md)
+- [PE dialog-resource and selected updater control audit](docs/rk-dialog-resource-audit.md)
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
@@ -76,9 +78,10 @@ and callsite candidates are not presented as proof of runtime behavior.
 
 ## Rebuild the profile catalog
 
-The two Python scripts read an installed RK package and write derived profile
-metadata and CSV ledgers. They do not launch RK software or communicate with a
-keyboard. From the repository root on Windows with Python 3.10 or newer:
+The Python scripts read an installed RK package and write derived profile
+metadata, CSV ledgers, and dialog-resource inventories. They do not launch RK
+software or communicate with a keyboard. From the repository root on Windows
+with Python 3.10 or newer:
 
 ```powershell
 python scripts/extract_rk_catalog.py `
@@ -89,6 +92,11 @@ python scripts/extract_rk_catalog.py `
 python scripts/audit_profile_schema.py `
   --rk-root "C:\Program Files (x86)\RK Keyboard Software" `
   --repo .
+
+python -m pip install -r requirements-audit.txt
+python scripts/audit_dialog_resources.py `
+  --rk-root "C:\Program Files (x86)\RK Keyboard Software" `
+  --output docs/rk-dialog-resource-controls.csv
 ```
 
 For reproducibility, compare the package version and file hashes in

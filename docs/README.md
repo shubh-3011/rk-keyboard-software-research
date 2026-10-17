@@ -21,6 +21,7 @@
 - [API and system-call crosswalk](rk-system-api-crosswalk.md)
 - [UI event, persistence, and device worker](rk-ui-event-worker-path-audit.md)
 - [Updater and firmware readback](rk-firmware-readback-audit.md)
+- [Static dialog resources and selected updater control handlers](rk-dialog-resource-audit.md)
 - [Installer/uninstaller scripts](rk-installer-uninstaller-script-audit.md)
 - [Public product names missing from this package snapshot](rk-public-model-coverage-gaps.md)
 - [MFC command-map candidates](rk-mfc-command-map-candidates.csv)
@@ -28,6 +29,7 @@
 
 ## Package resources and localization
 
+- [Dialog-resource control inventory](rk-dialog-resource-controls.csv)
 - [Resource and localization audit](rk-resource-localization-audit.md)
 - [Resource groups](rk-resource-group-inventory.csv)
 - [Per-model resources](rk-model-resource-asset-inventory.csv)

@@ -20,6 +20,15 @@ model or runtime map.
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
   scripts.
+- The static Win32 dialog-template parser inventories all dialog resources in
+  the examined PEs and their declared controls; selected updater controls are
+  cross-referenced to `WM_COMMAND` handlers in
+  `docs/rk-dialog-resource-audit.md`.
+- The updater serial receive worker is traced through its queue, posted
+  message `0x401`, and state-dispatch routine. The 3632 response reader's
+  status tests, queue timeout, and retry behavior are also documented.
+- The main UI's model-specific LED XML path and generic fallback path are
+  statically cross-referenced, while widget/command binding remains open.
 
 ## Not established
 
@@ -32,7 +41,9 @@ model or runtime map.
 - Full call graphs for every native procedure, all indirect/COM/callback
   targets, or the runtime branch taken on a given PC.
 - Every MFC control label and action, every profile tuple's meaning, all
-  packet fields, or the complete UART/update state machine.
+  packet fields, or the full UART command/response state machine. The traced
+  UART queue has no identified firmware-file sink, but untraced and indirect
+  paths have not all been excluded.
 - A read-only command that can safely and completely copy firmware from an
   attached keyboard. The analyzed updater paths are not a demonstrated
   firmware backup method.
