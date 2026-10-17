@@ -78,7 +78,7 @@ The app's resource paths form this local data graph:
 | `Cfg.ini`, `lang.ini` | Global models, defaults, and language selection. |
 | `Dev/%04X/KB.ini` | Per-model capability, layout, layer, display, firmware, LED, and wireless fields. |
 | `Text/<language>/text.xml` | UI labels and messages; Japanese XML has a malformed `tc_screen1` closing token (missing `<`), while an in-memory normalization recovers the same 247-key set. |
-| `Dev/{en,Japanese,Korean,sc,tw}/led.xml`; selected `Dev/<profile>/{en,sc}/led.xml` | Five generic localized LED-name resources have 60 leaf labels each. Ten profile-specific resources exist for `014E`, `015B`, `01C7`, `020B`, and `023D` in English and simplified Chinese; `014E` has three labels per locale and each other profile has 13. These labels correspond to profile LED slot counts, but do not define the meaning of the six values in each `LedOpt*` tuple or its device command. |
+| `Dev/{en,Japanese,Korean,sc,tw}/led.xml`; selected `Dev/<profile>/{en,sc}/led.xml` | Five generic localized LED-name resources have 60 leaf labels each. Ten profile-specific resources exist for `014E`, `015B`, `01C7`, `020B`, and `023D` in English and simplified Chinese; `014E` has three labels per locale and each other profile has 13. These labels correspond to profile LED slot counts, but do not define the meaning of the six values in each `LedOpt*` tuple or its device command. A separate trace confirms dynamic `LedOpt%d` loading and only a partial tuple-to-record/UI bridge; see the [lighting profile-to-record audit](rk-lighting-profile-record-path-audit.md). |
 | `keyimg.png`, `kbled.png` | Model UI/keyboard illustration assets. |
 | `Dev/%04X/screen.gif`, `%04X/screen_img%d.png`, `gif_delay.gcc` | Per-device screen GIF, decoded PNG frame cache (up to 512 stale frames are purged), and a four-byte playback-delay cache. |
 | `Dev/%04X/ET/*`, `Dev/%04X/Cartoon/*`, global `ET/*` / `Cartoon/*` | Effect and animation assets with profile-specific and global fallbacks. |
@@ -205,7 +205,7 @@ are auto-generated names, not original RK symbols:
 | `FUN_00411b90` | Shared G5/3632 settings orchestrator for matrix layers, macros, lighting, RGB tables, and game/color groups. |
 | `FUN_00411260` | Key data mapping across four layers of 132 positions. |
 | `FUN_00411700`, `FUN_00411900` | Two settings packers. Embedded logs label debounce, tap, and sleep fields at different indices (`Cfg[2]/[8]/[9]` in one path; `Cfg[3]/[22]/[24]` in another), so record layouts vary by path/version. |
-| `FUN_004513B0` | Candidate profile initialization path; reads `DebounceUI`, `MacroBufferNum`, `RGBIndex`, `MusicRGBIndex`, `ShowSleepTime`, and LED mask/config options into runtime state. |
+| `FUN_004513B0` | Candidate profile initialization path; reads `DebounceUI`, `MacroBufferNum`, `RGBIndex`, `MusicRGBIndex`, `ShowSleepTime`, LED mask/config options, and dynamically formatted `LedOpt1`–`LedOpt24` keys into runtime state. The `LedOpt` to record/UI path is partial; see the [lighting profile-to-record audit](rk-lighting-profile-record-path-audit.md). |
 
 The main executable's complete PE import table contains 672 imported entries
 across 21 DLLs. The updater contains 618 entries across 19 DLLs. The detailed
@@ -609,6 +609,13 @@ establishes a profile-table-to-serialized-byte path for these inspected
 branches. It does not establish brightness units, a physical luminance
 percentage, or a universal payload for every profile and family.
 
+The [lighting profile-to-record trace](rk-lighting-profile-record-path-audit.md)
+also resolves the dynamic `LedOpt%d` reader: it visits slots 1–24, and tuple
+cell 4 can set runtime-record `+0x08` to 1 or 2. Cells 2–6 feed lighting
+dialog state and visibility updates. The full tuple meaning, exact control
+labels, and the callback that edits the remaining runtime-record fields are
+still unresolved.
+
 There is also a UI-value path: `FUN_00422220` at `0x00422220`, when its
 selector argument is `0x95`, formats the value at `0x00611854 + index` for a
 runtime control. This supports use of `LightUI` as a displayed value list;
@@ -801,12 +808,26 @@ bytes; their units and physical luminance remain unknown. Debounce, tap, and
 sleep fields are also identified, while other LED payload bytes and their UI
 bindings remain partly opaque.
 
+The [reset and system-parameter audit](rk-reset-and-system-parameter-path-audit.md)
+maps the `CmdReset`-gated virtual route, its family slot targets, and a
+periodic profile-configured worker that reads then rewrites lighting state for
+G5/3632 objects. It also resolves command `0x6401` as a worker stop-event path.
+The visible confirmation prompt still has no proven link to a reset handler;
+worker payload meaning and runtime execution remain unresolved.
+
 The [settings serializer audit](rk-setting-serializer-audit.md) maps the
 apply-flag branches, family-specific command paths, and the separate screen
 writer path. The companion [Apply signaling audit](rk-settings-apply-worker-audit.md)
 maps one UI event to the shared worker and the worker's family-specific vtable
 targets, while preserving the unresolved receiver and runtime profile. Both
 reports record the remaining UI, macro-serializer, and payload gaps.
+
+The [UART chunk-path follow-up](rk-uart-firmware-path-semantics-audit.md)
+corrects several little-endian header fields to their transmitted byte order
+and separates two closed updater state cycles from proof of a complete
+firmware read. Conditional response-to-file sinks exist, but direct state
+reachability, stream setup, range/length initialization, and chunk completeness
+remain unresolved.
 
 This is a function-level feature map, not a complete MFC button-handler map.
 The PE contains ten dialog resources, but the app-looking templates are
@@ -1083,8 +1104,11 @@ static key-literal coverage are in
 [`rk-profile-option-field-inventory.csv`](rk-profile-option-field-inventory.csv).
 The main binary has individual key-name references for 64 of the 88 fields;
 no individual literals were found for `GaoshouKey1`, `GaoshouKey2`,
-`ShowAutoDetect`, or `LedOpt1` through `LedOpt21`. A missing literal does not
-prove a field is unused because generic/dynamic INI parsing may handle it.
+`ShowAutoDetect`, or `LedOpt1` through `LedOpt21`. The latter are generated by
+the dynamic `LedOpt%d` reader in `FUN_004513B0`, which iterates slots 1–24;
+see the [lighting profile-to-record audit](rk-lighting-profile-record-path-audit.md).
+For the other missing names, a missing literal does not prove a field is
+unused because generic/dynamic INI parsing may handle it.
 LED slot presence is non-contiguous: 93 profiles have slots 1–21, 53 have
 1–17 plus 19–20, 28 have 1–20, 10 have 1–19, four have 1–13, and one has
 1–3. Keep the stored slot IDs; neither slot count nor localized labels prove

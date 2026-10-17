@@ -95,15 +95,19 @@ The initializer also reads `StartGp`, `SameGp`, `GaoshouAddr`,
 their code defaults therefore matter. The serializer consumers for most of
 these globals were not fully resolved.
 
-**Unresolved crosswalk.** The profile inventory found no individual
-`LedOpt1`–`LedOpt21` string literals in the driver. A dynamic key reader may
-still handle them. The serializers use 0x30-byte runtime lighting records
-from `config+0x214C`; the G5 RGB-table path below reads seven DWORD values at
-record-relative offsets `+4` through `+0x1C`, including a run of six values.
-That six-value run matches `LedOptN` tuple arity, but the static artifacts do
-not prove those values were loaded from the corresponding profile key or
-which tuple columns occupy the record. Do not equate a label suffix, profile
-slot, runtime record index, or payload offset without that missing bridge.
+**Partial static crosswalk.** The driver contains no individual
+`LedOpt1`–`LedOpt21` string literals, but the profile loader formats
+`LedOpt%d` and reads 24 slots dynamically. The new
+[profile-to-record trace](rk-lighting-profile-record-path-audit.md) confirms
+that tuple cell 4 can initialize runtime-record offset `+0x08` for values 1
+or 2; it also maps tuple cells 2–6 into lighting-dialog control state. It
+does not define those values' visible labels or firmware meaning, nor does it
+show the full tuple copied into the record. The serializers use 0x30-byte
+records from `config+0x214C`; the G5 RGB-table path below reads seven DWORD
+values at record-relative offsets `+4` through `+0x1C`, including a run of six
+values. Their relationship to the corresponding tuple columns remains
+unresolved. Do not equate a label suffix, profile slot, runtime record index,
+or payload offset without that remaining bridge.
 
 ## G5 and 3632 lighting-settings command 4
 

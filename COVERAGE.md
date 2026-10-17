@@ -66,10 +66,13 @@ model or runtime map.
   `docs/rk-setting-serializer-audit.md`.
 - A dedicated lighting/RGB report separates command `4` settings, G5/3632
   RGB-table commands `10`/`9`, color-group commands `6`/`2`, and RKKB `02 29`
-  and `03 7E` paths. It documents the remaining label, `LedOpt`, runtime
-  record, channel, and profile-to-color-group gaps; static packer structure is
-  not physical-device validation. See
-  `docs/rk-rgb-lighting-color-payload-audit.md`.
+  and `03 7E` paths. A follow-up confirms dynamic `LedOpt%d` reads, tuple cell
+  4's conditional effect on runtime-record `+0x08`, and tuple cells 2–6's UI
+  state path. Full tuple semantics, label-to-effect mapping, channel meaning,
+  and profile-to-color-group mapping remain unresolved; static packer
+  structure is not physical-device validation. See
+  `docs/rk-rgb-lighting-color-payload-audit.md` and
+  `docs/rk-lighting-profile-record-path-audit.md`.
 - A targeted profile trace maps `[OPT] DefBri`, `LightUI`, and `LightHW` into
   the runtime brightness selector, a UI value-display helper, and
   family-specific serializer bytes. All eight installed S98 profiles use
@@ -86,7 +89,12 @@ model or runtime map.
   behavior are documented; its 20-byte `ReadFile` loop is linked by matching
   object queue offsets to the response consumer as a static producer
   candidate. Same-instance runtime reachability and status-record semantics
-  remain unresolved. See `docs/rk-3632-response-semantics-audit.md`.
+  remain unresolved. A UART follow-up corrects little-endian WORD fields to
+  transmitted byte order and maps two closed chunk-state cycles, their
+  conditional file sinks, and missing range/stream setup. It does not
+  establish reachable or complete firmware readback. See
+  `docs/rk-3632-response-semantics-audit.md` and
+  `docs/rk-uart-firmware-path-semantics-audit.md`.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced. A separate label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language
@@ -97,6 +105,12 @@ model or runtime map.
   per-device `.dct` persistence. Reset/factory prompt strings are present, but
   no prompt-to-reset-handler edge is recovered. See
   `docs/rk-general-settings-ui-persistence-audit.md`.
+- A reset/system-parameter follow-up maps the profile-gated reset virtual call,
+  family `+0x38` targets, periodic timeout worker and its `+0x48` family paths,
+  and the `0x6401` event that stops that worker. The localized reset prompts
+  still have no recovered control-to-handler edge; worker payload semantics
+  and runtime execution remain unresolved. See
+  `docs/rk-reset-and-system-parameter-path-audit.md`.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
   confidence-ranked report separating visual rectangle coordinates from
   candidate action and keycode meanings. The `[KEY]` parser now maps tuple

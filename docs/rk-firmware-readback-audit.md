@@ -239,5 +239,6 @@ opening HID, sending a report, running the updater, or entering a bootloader.
 - Native API addresses: [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv)
 - Native import list and binary hashes: [`rk-native-api-imports.md`](rk-native-api-imports.md)
 - Full 15-state UART receive map: [`rk-updater-uart-state-machine.md`](rk-updater-uart-state-machine.md)
+- UART chunk-path byte-order and reachability follow-up: [`rk-uart-firmware-path-semantics-audit.md`](rk-uart-firmware-path-semantics-audit.md)
 - Static dialog/control inventory and selected updater UI-handler links: [`rk-dialog-resource-audit.md`](rk-dialog-resource-audit.md)
 - Broader audit context: [`reverse-engineering.md`](reverse-engineering.md)
