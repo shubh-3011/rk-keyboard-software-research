@@ -3,6 +3,33 @@
 This file prevents the package snapshot from being mistaken for a universal RK
 model or runtime map.
 
+## Additional official 4.6 Windows Hub Driver snapshot
+
+- A separately downloaded official 4.6 package was extracted statically, not
+  installed or run. Its full 1,249-file path/size/SHA-256 inventory and
+  provenance are in [`docs/rk-v4.6-package-snapshot.md`](docs/rk-v4.6-package-snapshot.md)
+  and [`docs/rk-4.6-package-manifest.csv`](docs/rk-4.6-package-manifest.csv).
+- The extracted package contains 265 named profile files and 140 unique
+  layouts. The generated catalog and comparison report are
+  [`models-4.6.json`](models-4.6.json) and
+  [`docs/rk-profile-catalog-v4.6-delta.md`](docs/rk-profile-catalog-v4.6-delta.md).
+- The 4.6 `DeviceDriver.exe` has a different SHA-256 from 4.06. Its import and
+  binary changes are audited separately in
+  [`docs/rk-v4.6-native-binary-delta-audit.md`](docs/rk-v4.6-native-binary-delta-audit.md).
+  That delta covers static PE/import/resource/string evidence, not a
+  function-level reanalysis. The detailed native control-flow reports below
+  remain specifically tied to the 4.06 binaries.
+- The [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
+  applies the 4.06 `Fw` routing rule to 4.6 profile rows for comparison only;
+  this is not a verified 4.6 driver selector, especially for the newly observed
+  `Fw=3` row.
+- This additional package is one Windows Hub Driver release. It does not
+  cover the separate RK Web Driver, model-selected custom drivers/firmware,
+  every historical utility, or every marketed hardware revision. The official
+  download page itself distinguishes those driver paths; the dated
+  [official distribution audit](docs/rk-official-driver-distribution-audit.md)
+  documents their public support claims and limits.
+
 ## Covered in the installed 4.06 snapshot
 
 - All 810 files in the examined installation are represented by path, byte

@@ -14,6 +14,16 @@ model, full command schemas, and a safe active identification request are not
 proven. Keydeck therefore remains descriptor-only and does not write settings,
 lighting, macros, screen data, or firmware to a keyboard.
 
+This detailed address-level report describes the installed 4.06 package. A
+second official Windows Hub Driver package, version 4.6, was acquired and
+extracted statically. Its package manifest, profile catalog changes, and
+version-specific binary/API differences are kept in the separate
+[4.6 snapshot](rk-v4.6-package-snapshot.md),
+[catalog delta](rk-profile-catalog-v4.6-delta.md), and
+[native binary delta audit](rk-v4.6-native-binary-delta-audit.md). Do not
+carry 4.06 addresses or protocol interpretations across versions without
+rechecking the changed binary.
+
 ## Installed suite inventory
 
 The installed `C:\Program Files (x86)\RK Keyboard Software` directory has

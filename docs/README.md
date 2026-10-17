@@ -3,7 +3,13 @@
 ## Package and model catalog
 
 - [Open-source RK software directory](../SOFTWARE-DIRECTORY.md)
+- [Official public software and model-selected download paths](rk-official-driver-distribution-audit.md)
 - [Main software reverse-engineering report](reverse-engineering.md)
+- [Official Windows 4.6 package snapshot](rk-v4.6-package-snapshot.md)
+- [All extracted 4.6 package file hashes](rk-4.6-package-manifest.csv)
+- [4.6 profile catalog and 4.06 comparison](rk-profile-catalog-v4.6-delta.md)
+- [4.6 profile-to-family map (4.06 rule projection)](rk-profile-driver-family-map-v4.6-projected.csv)
+- [4.6 driver binary/API delta](rk-v4.6-native-binary-delta-audit.md)
 - [Installed file manifest and hashes](rk-installed-package-manifest.csv)
 - [Installed manifest verifier](../scripts/verify_installed_manifest.py)
 - [Model profile and `KB.ini` audit](rk-profile-schema-audit.md)

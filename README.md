@@ -13,10 +13,11 @@ organized and continue the analysis.
 
 The archive includes model profiles, installed-file hashes, localization and
 dialog-resource inventories, profile-to-driver maps, native API and
-updater-path crosswalks, and a downloadable Windows app. It documents the RK
-4.06 package examined here; it is not a universal inventory of every RK
-release or keyboard, and the workbench is not a feature-complete replacement
-for the vendor utility.
+updater-path crosswalks, and a downloadable Windows app. It documents a
+complete installed-file snapshot of RK 4.06 and a separately sourced static
+snapshot of the official Windows 4.6 Hub Driver package. These are bounded
+software snapshots, not a universal inventory of every RK release or keyboard;
+the workbench is not a feature-complete replacement for the vendor utility.
 
 **Get the Windows app:** [latest RK Research Workbench release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest)
 · **Browse the source:** [`workbench/`](workbench/) · **Audit scope:** [coverage and open work](COVERAGE.md)
@@ -33,7 +34,7 @@ reverse-engineered.
 | Project | Best for | Available today |
 | --- | --- | --- |
 | [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio) | A user-facing web app and native Windows profile editor | Local model layouts, profile editing, and JSON import/export. Its hosted web app is at [keydeck-rk-s98.vercel.app](https://keydeck-rk-s98.vercel.app/). |
-| This research archive | Studying the installed RK Windows software and building on its documented evidence | Static audits, source scripts, the 188-profile catalog, and the downloadable source-built research workbench. |
+| This research archive | Studying RK Windows software and building on documented evidence | Static audits, source scripts, versioned 4.06 and 4.6 profile catalogs, package manifests, and a downloadable source-built research workbench. |
 
 Both projects are independent and open source. Neither currently sends
 settings, lighting, macro, screen, or firmware writes to a keyboard. The
@@ -46,14 +47,16 @@ documented scope, see the [open-source RK software directory](SOFTWARE-DIRECTORY
 
 ## Coverage
 
-The baseline is one installed **RK Keyboard Software 4.06** package. Its
-catalog contains **188 named profiles** and **189 `KB.ini` files**, including
-the unregistered profile `01C7`. The package manifest records 810 installed
-files by relative path, size, and SHA-256. The machine-readable
-[`models.json`](models.json) preserves all decoded named-profile options,
-base/Fn mappings, layout metadata, and the unregistered profile. The static
-[`profile-to-driver map`](docs/rk-profile-driver-family-map.csv) covers the
-installed named catalog, not every physical variant sold under each family.
+The installed **RK Keyboard Software 4.06** baseline contains **188 named
+profiles** and **189 `KB.ini` files**, including the unregistered profile
+`01C7`. Its manifest records 810 installed files by relative path, size, and
+SHA-256. [`models.json`](models.json) preserves its decoded profile metadata.
+A static extraction of the official Windows **4.6 Hub Driver** package adds a
+separate 265-profile catalog and full 1,249-file package manifest; see the
+[4.6 package snapshot](docs/rk-v4.6-package-snapshot.md) and its
+[version delta](docs/rk-profile-catalog-v4.6-delta.md). Keep version-specific
+claims tied to their own binary hashes and reports. Neither profile-to-driver
+map proves compatibility with every physical revision sold under a family.
 
 This is complete coverage of the model entries found in that one software
 snapshot, not a claim to cover every keyboard RK has ever released. Regional
@@ -66,6 +69,7 @@ as confirmed.
 ## Start here
 
 - [Main static reverse-engineering report](docs/reverse-engineering.md)
+- [Official RK Web, Hub, model-selected driver, firmware, and QMK/VIA distribution paths](docs/rk-official-driver-distribution-audit.md)
 - [Model profile and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
 - [Static profile-to-family and protocol coverage](docs/rk-profile-family-protocol-coverage.md)
 - [Confidence-ranked profile tuple semantics](docs/rk-profile-tuple-semantics.md)
@@ -78,6 +82,11 @@ as confirmed.
 - [Profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
 - [Machine-readable 188-profile catalog](models.json)
 - [Installed package manifest](docs/rk-installed-package-manifest.csv)
+- [Official Windows 4.6 package snapshot and provenance](docs/rk-v4.6-package-snapshot.md)
+- [Full 4.6 extracted package manifest](docs/rk-4.6-package-manifest.csv)
+- [4.6 profile catalog and comparison](docs/rk-profile-catalog-v4.6-delta.md)
+- [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
+- [4.6 native binary/API delta](docs/rk-v4.6-native-binary-delta-audit.md)
 - [Resource and localization audit](docs/rk-resource-localization-audit.md)
 - [PE dialog-resource and selected updater control audit](docs/rk-dialog-resource-audit.md)
 - [Main UI label, control, handler, and action crosswalk](docs/rk-ui-control-command-crosswalk.md)
