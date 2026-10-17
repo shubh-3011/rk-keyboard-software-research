@@ -2,8 +2,10 @@
 
 ## Package and model catalog
 
+- [Open-source RK software directory](../SOFTWARE-DIRECTORY.md)
 - [Main software reverse-engineering report](reverse-engineering.md)
 - [Installed file manifest and hashes](rk-installed-package-manifest.csv)
+- [Installed manifest verifier](../scripts/verify_installed_manifest.py)
 - [Model profile and `KB.ini` audit](rk-profile-schema-audit.md)
 - [Profile-to-driver-family map](rk-profile-driver-family-map.csv)
 - [Every profile option field and value](rk-profile-schema-fields.csv)
@@ -22,6 +24,8 @@
 - [Raw system-call byte matches](rk-native-syscall-byte-matches.csv)
 - [API and system-call crosswalk](rk-system-api-crosswalk.md)
 - [UI event, persistence, and device worker](rk-ui-event-worker-path-audit.md)
+- [Settings Apply signaling, worker, and family dispatch](rk-settings-apply-worker-audit.md)
+- [All recovered Apply signal callsites and masks](rk-apply-signal-callers.csv)
 - [HID enumeration and device notifications](rk-device-enumeration-notification-audit.md)
 - [Updater UART receive state machine](rk-updater-uart-state-machine.md)
 - [Updater and firmware readback](rk-firmware-readback-audit.md)
@@ -33,6 +37,8 @@
 - [Generated storefront-to-profile name crosswalk](rk-storefront-model-crosswalk.csv)
 - [MFC command-map candidates](rk-mfc-command-map-candidates.csv)
 - [MFC message-map owner evidence](rk-mfc-map-owner-evidence.csv)
+- [Recovered MFC message-map audit](rk-mfc-message-map-audit.md)
+- [All entries from the 26 recovered MFC arrays](rk-mfc-message-map-entries.csv)
 
 ## Package resources and localization
 

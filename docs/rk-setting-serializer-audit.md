@@ -33,6 +33,11 @@ classes.
 The following branches were traced inside `FUN_00411B90`. Addresses in this
 table refer to the hashed x86 PE and are virtual addresses.
 
+The semaphore-backed Apply worker and one UI event that signals it are
+documented separately in the [Apply signaling audit](rk-settings-apply-worker-audit.md).
+The receiver's family and the event's final writer remain unresolved at the
+worker's indirect callsite.
+
 | Apply condition | Data flow and command path | Confidence and unresolved points |
 | --- | --- | --- |
 | Bit `0x01` | Branch at `0x00411CF0`–`0x00411FCE`. Tag-`0x0B` key data is read from configuration `+0x3E21` and sent via `FUN_00410360` as command `0x12`. Key mappings pass through `FUN_00411260`, which maps four 132-position layers, then `FUN_0040F9C0`. Dirty layers select commands G5 `3` or 3632 `1`. Macro-tag records (tag byte `+3 == 5`) associate matrix entries with macro buffer IDs; the concatenated table/blob buffer uses G5 command `5` or the 3632 `FUN_0040DD60` command-`3` path. | High for the static branch, sizes, and command numbers. Translation semantics, UI flag source, macro event encoding, and 3632 macro option/response details remain incomplete. |
@@ -51,8 +56,11 @@ document the recovered offsets and their remaining semantic limits.
 `FUN_00413BF0` is a separate RKKB apply routine; it is not a branch in the
 shared `FUN_00411B90` G5/3632 orchestrator. Its flag argument is tested for
 bits `0x02`, `0x04`, and `0x01` at `0x00413C81`, `0x00413DC4`, and
-`0x00413F50`. These are static call paths; no UI event, profile, or device was
-used to trigger them.
+`0x00413F50`. The method has no direct call instruction in the image; its only
+code-pointer reference is the `CDevRKKB` vtable slot at `0x005CBE48`. One UI
+Apply event is statically traced to the shared worker, but the receiver and
+argument values at the worker's indirect call are unresolved. No executable
+path was triggered.
 
 | Flag and path | Inner payload and evidence | Confidence and remaining gap |
 | --- | --- | --- |
@@ -62,7 +70,25 @@ used to trigger them.
 | Macro-tag handling under `0x01` | Records with byte `+3 == 5` enter a branch that calls `FUN_00413870` at `0x004140A3`. This helper compacts a `WORD`-counted, 8-byte-stride event structure into three-byte rows in a `0x1FF` temporary buffer; it has no HID call of its own. | The helper is a serializer in the RKKB apply pipeline. Event subfield meaning and the exact translated bytes are unresolved. |
 | Key write under `0x01` | `FUN_004143F0` prepends `04 00`, copies `0x780` bytes, then calls the writer with length `0x782` at `0x00414440`. Error text at `0x005CBDB0` says “SendKey Failed”. | Strong for prefix, copy size, and helper path. Four translated layers total `0x840` bytes, so the `0x780` transmitted region is not a transparent copy of all 132 positions; the selection/packing step remains open. |
 | Matrix write under `0x01` | Constructs prefix `01 F8` and sends `0x1F9` bytes at `0x00414268`; error text at `0x005CBDA8` begins “Matrix:”. | Command and length are proven statically; `F8` fields, data schema, and the relation to the key write remain unresolved. |
-| Conditional Fn write under `0x01` | When global `0x006117E4` is nonzero, constructs prefix `10 F8` and sends `0x1F9` bytes at `0x00414326`; error text at `0x005CBDE4` says “Send Fn Failed”. | The write and gate are proven. The gate's source and Fn payload schema remain unknown. |
+| Conditional Fn write under `0x01` | When global `0x006117E4` is nonzero, constructs prefix `10 F8` and sends `0x1F9` bytes at `0x00414326`; error text at `0x005CBDE4` says “Send Fn Failed”. | The write, gate, and configuration source are proven. The model association, UI meaning, and Fn payload schema remain unknown. |
+
+### `Show10FNLayer` configuration gate
+
+The loader at `0x00452BD0` calls `GetPrivateProfileIntW` with section
+`OPT` (`0x005C7FC0`), key `Show10FNLayer` (`0x005D6F74`), default `0`, and
+the configuration filename pointer loaded from `[ESP+0x154]` at the call
+site. It stores the returned value into global `0x006117E4` at
+`0x00452BE5`. The global is zero-initialized in `.data`; this is the only
+direct write site found in the inspected image. Its two recovered reads are
+at `0x00414294` and `0x0041A9A5`.
+
+At `0x00414294`, a nonzero value enables the extra `10 F8` RKKB feature
+report described above; the preceding report uses prefix `04 00`. At
+`0x0041A9A5`, the value selects a two-loop or four-loop UI/component path
+when `0x00611760 == 0`. The exact display meaning, configuration-file path
+construction, and model/profile association were not recovered. The key
+name alone does not establish that this setting applies to every RK model or
+that the feature is specifically an S98 Fn layer.
 
 The writer `FUN_00413220` itself builds 65-byte (`0x41`) feature reports.
 It uses report ID `0x0A`, a packet count rounded up by 62, one-based packet
@@ -129,12 +155,14 @@ from the screen-parameter command `0x0B`.
 
 ## Remaining work
 
-- Recover the UI event and virtual caller paths that set each apply flag,
-  including which labels/actions reach the serializer.
+- Resolve the visible controls and model-family receiver for the 15
+  `FUN_00401080` helper callers and two direct mask-`4` semaphore releases;
+  the callsite map is in [the Apply signal caller table](rk-apply-signal-callers.csv).
 - Resolve every RKKB matrix/key/Fn/LED field and trace the `0x780` key payload
   selection/packing from the four translated 132-position layers.
-- Recover the UI event and virtual caller paths for `FUN_00413BF0`, including
-  model/profile gates and the source of global `0x006117E4`.
+- Recover configuration filename construction and model/profile mapping for
+  `Show10FNLayer` / global `0x006117E4`, the setting's exact UI meaning, and
+  the concrete receiver and argument values at the virtual apply call.
 - Resolve the G5/3632 model-vtable macro serializer and the exact RKKB macro
   event fields.
 - Resolve the meaning of `FUN_0040DD60` option `6` and trailing `0x0F`, then

@@ -10,6 +10,10 @@ for the binaries they analyze.
 
 ## Included derived data
 
+- `SOFTWARE-DIRECTORY.md` is a dated index of independent public RK projects.
+  Its feature and model-support summaries are transcribed from each linked
+  project's own documentation; no third-party project source code is copied
+  into this directory.
 - `models.json` is generated from `Cfg.ini`, `Dev/*/KB.ini`, and localized
   profile label files. It contains model/profile names, option strings,
   numeric mapping tuples, layout dimensions, and derived capability fields.

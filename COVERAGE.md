@@ -6,7 +6,9 @@ model or runtime map.
 ## Covered in the installed 4.06 snapshot
 
 - All 810 files in the examined installation are represented by path, byte
-  size, and SHA-256 in `docs/rk-installed-package-manifest.csv`.
+  size, and SHA-256 in `docs/rk-installed-package-manifest.csv`. On
+  2026-10-18, the installed tree was rechecked: 810/810 paths, sizes, and
+  hashes matched using `scripts/verify_installed_manifest.py`.
 - All 188 named `DevName` profile rows and all 189 installed `KB.ini` files
   are inventoried. The extra `01C7` profile has no `DevName` record and stays
   explicitly unregistered.
@@ -33,9 +35,14 @@ model or runtime map.
 - The shared settings serializer's keymap, macro, lighting, RGB, and color
   group branches are mapped to G5/3632 commands. Separate RKKB writes for
   key/layer, macro-derived, LED, key-color, matrix, Fn, and music paths are
-  also documented. G5 screen/GIF/page serializers and virtual table entries
-  are mapped; UI-to-device bridges and several payload meanings remain
-  unresolved. See
+  also documented. The semaphore-backed Apply worker, one UI event that
+  signals it, and three device-family vtable entries are statically mapped.
+  Profile-row logic selects the RKKB or G5 class for the checked records, but
+  the concrete receiver type and data arguments at the worker call remain
+  unresolved. G5 screen/GIF/page serializers and their virtual entries are
+  also mapped, while the screen worker's concrete target and several payload
+  meanings remain open. See
+  `docs/rk-settings-apply-worker-audit.md` and
   `docs/rk-setting-serializer-audit.md`.
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are

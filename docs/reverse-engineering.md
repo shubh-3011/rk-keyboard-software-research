@@ -766,7 +766,10 @@ opaque.
 
 The [settings serializer audit](rk-setting-serializer-audit.md) maps the
 apply-flag branches, family-specific command paths, and the separate screen
-writer path. It records the remaining UI, macro-serializer, and payload gaps.
+writer path. The companion [Apply signaling audit](rk-settings-apply-worker-audit.md)
+maps one UI event to the shared worker and the worker's family-specific vtable
+targets, while preserving the unresolved receiver and runtime profile. Both
+reports record the remaining UI, macro-serializer, and payload gaps.
 
 This is a function-level feature map, not a complete MFC button-handler map.
 The PE contains ten dialog resources, but the app-looking templates are

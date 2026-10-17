@@ -1,10 +1,15 @@
-# Royal Kludge Keyboard Software Research
+# Open-Source RK Keyboard Software and Research
 
-An independent, open-source starting point for researching Royal Kludge (RK)
-keyboard software. This repository brings together versioned evidence,
-reproducible catalog tools, detailed software audits, and a source-built
-Windows research workbench so contributors can inspect how the examined RK
-package is organized and continue the analysis.
+Looking for open-source Royal Kludge (RK) keyboard software? Start with this
+community directory and research archive. It points to independent web and
+desktop configurators, then provides a reproducible static audit of the RK
+Windows 4.06 package installed on this PC. The goal is to make existing open
+projects and the evidence easier to find, compare, and extend.
+
+This repository brings together versioned evidence, reproducible catalog
+tools, detailed software audits, and a source-built Windows research
+workbench so contributors can inspect how the examined RK package is
+organized and continue the analysis.
 
 The archive includes model profiles, installed-file hashes, localization and
 dialog-resource inventories, profile-to-driver maps, native API and
@@ -20,9 +25,10 @@ This is independent community research, not the official RK software, and it
 is not affiliated with RK. No vendor executable, DLL, installer, firmware
 image, or copied artwork is included. The separate `workbench/` app is an
 original, open-source profile editor and does not implement vendor hardware
-writes.
+writes. This archive does not claim that every RK model or revision has been
+reverse-engineered.
 
-## Two open-source projects
+## Our two open-source projects
 
 | Project | Best for | Available today |
 | --- | --- | --- |
@@ -34,6 +40,9 @@ settings, lighting, macro, screen, or firmware writes to a keyboard. The
 research workbench is a reference and profile editor, not a fully compatible
 hardware clone of the RK utility. See [coverage status](COVERAGE.md) for the
 confirmed findings and open questions.
+
+For a broader, regularly maintained list of community projects and their
+documented scope, see the [open-source RK software directory](SOFTWARE-DIRECTORY.md).
 
 ## Coverage
 
@@ -72,6 +81,8 @@ as confirmed.
 - [Updater UART receive state machine](docs/rk-updater-uart-state-machine.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [Settings serializer and command paths](docs/rk-setting-serializer-audit.md)
+- [Settings Apply signaling, worker, and family dispatch](docs/rk-settings-apply-worker-audit.md)
+- [Recovered Apply signal callsites and masks](docs/rk-apply-signal-callers.csv)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
 - [Dated public model list compared with the 4.06 profile catalog](docs/rk-public-model-coverage-gaps.md)
@@ -127,6 +138,13 @@ For reproducibility, compare the package version and file hashes in
 [`rk-installed-package-manifest.csv`](docs/rk-installed-package-manifest.csv)
 with the source package before interpreting address-level findings. The
 native reports are tied to specific PE hashes and version-specific addresses.
+To verify every installed path, size, and SHA-256 against that manifest, run:
+
+```powershell
+python scripts/verify_installed_manifest.py `
+  --rk-root "C:\Program Files (x86)\RK Keyboard Software" `
+  --manifest docs/rk-installed-package-manifest.csv
+```
 
 ## Research boundary
 
@@ -143,23 +161,13 @@ runs them. They are documented as findings, not recommendations to replay.
 - [RK official web configurator](https://drive.rkgaming.com/)
 - [KludgeKnight open-source RK configurator](https://github.com/vinc3m1/kludgeknight)
 
-## Related community work
+## Open-source RK software directory
 
-Looking for open-source RK keyboard software? This repository is a convenient
-index for the community projects and a detailed evidence archive for the
-installed RK Windows suite. The projects below cover adjacent ground,
-including actual device configuration and protocol implementations. Their
-model support and hardware behavior are independent of the static 4.06
-findings here:
-
-- [Rangoli](https://github.com/rnayabed/rangoli) — cross-platform RK
-  configuration software with protocol work based on packet captures.
-- [Royal Kludge Configurator](https://github.com/Ripwords/royal-kludge-configurator)
-  — a Tauri desktop configurator that builds on protocol work from Rangoli.
-- [KludgeKnight](https://github.com/vinc3m1/kludgeknight) — browser-based
-  configurator with key-configuration references from the official app.
-- [RKCU](https://github.com/oddlyspaced/rkcu) — an RK61-focused USB
-  configuration implementation.
+This repository is intended as a clear starting point for finding open-source
+RK software. The [directory](SOFTWARE-DIRECTORY.md) compares the projects by
+platform, purpose, and author-documented support. It separates projects that
+edit local profiles from projects that communicate with keyboards, and keeps
+their model-support claims attached to their original sources.
 
 For the installed Windows suite's static inventory—profiles, resources,
 imports, callsite candidates, update paths, and evidence gaps—start with this
@@ -171,7 +179,10 @@ The catalog and product names are RK trademarks. Research notes and scripts
 are licensed under MIT; see [LICENSE](LICENSE) and
 [data provenance](DATA-PROVENANCE.md).
 
-The related [Keydeck RK Studio project](https://github.com/shubh-3011/keydeck-rk-studio)
+The [Keydeck RK Studio project](https://github.com/shubh-3011/keydeck-rk-studio)
 is the companion web and Windows profile editor. This repository is the
-standalone research archive and also publishes a research edition of that
-open-source desktop workbench, with its source and build instructions.
+standalone research archive and also publishes a source-built Windows
+research workbench with its source and build instructions. That executable
+is a profile editor, not a complete hardware-compatible replacement for the
+vendor software; see the directory for community projects that document
+hardware configuration support.
