@@ -37,6 +37,19 @@ does not establish that this `.upf` belongs to the connected S98 or its
 receiver. The `.upf` is a host-side updater input, not evidence of firmware
 read from a keyboard.
 
+**Current Windows descriptor snapshot (2026-10-18):** a read-only
+Plug-and-Play enumeration returned three present Bluetooth LE child nodes
+named `RK-S98RGB` and no present USB device node with VID `258A`. No HID
+interface was opened and no report or GATT data was read. These friendly names
+and PnP child records do not identify the keyboard's firmware revision or
+prove a control channel is available. A prior USB descriptor observation
+reported `258A:0150`; in the installed profile crosswalk, `0150` is recorded
+as the wireless PID for an RK A70 profile, while the eight S98 profile rows
+have direct PIDs `0174`, `01AF`, `01BF`, `0223`, `0224`, `022B`, `022F`, and
+`0230` and no installed `PID_Wireless` value. The historical `0150` node
+therefore cannot be confidently assigned to the S98 or its current Bluetooth
+LE nodes.
+
 ## `.upf` parser and host-to-device flow
 
 **Proven from the static code path:** the firmware chooser reaches
@@ -146,6 +159,16 @@ when the gate is set. The sink's activation is therefore unresolved and
 likely dormant or unfinished in this build; indirect initialization or
 untraced paths cannot be ruled out.
 
+A fresh direct-reference scan of the hash-verified updater also found that
+the state-10/11 handlers form a closed direct transition cycle: the only
+direct store to state 10 is inside a helper called from state 11, and the
+only direct store to state 11 is inside the state-10 handler. Serial
+initialization sets the state global to 0, and no direct transition from that
+initialization or states 0–9/12–15 enters 10/11. See the full address map in
+[`rk-updater-uart-state-machine.md`](rk-updater-uart-state-machine.md). An
+indirect store, external call, or other untraced path remains possible, so
+this is not proof that the code can never execute.
+
 This establishes potential chunked UART response-to-file code, not a
 demonstrated way to copy the connected keyboard's firmware while leaving it
 unchanged. The physical device/mode, complete protocol, file creation path,
@@ -179,14 +202,16 @@ host-to-device; its verification reads follow write operations, and the
 generic HID read helper has request writes associated with the read. The
 UART code suggests a possible chunked response export, but the file gate is
 directly initialized to zero, no nonzero direct setter was found, and no
-stream-open/file-name path was recovered. That path is not evidence of a
-working passive firmware backup feature.
+stream-open/file-name path was recovered. In the direct UART state graph,
+the state-10/11 chunk loop also has no incoming transition from the initial
+state 0. That path is not evidence of a reachable, working passive firmware
+backup feature.
 
-**Unresolved:** the UART command/response semantics, the initial transition
-into its state 10/11 read loop, the stream pointer and file-name setup, all
-indirect writes to the file gate, undocumented bootloader commands, and the
-exact protocol revision of the connected S98 are not reconstructed. Static
-analysis cannot prove extraction is impossible, but it also does not
+**Unresolved:** UART command/response semantics, any indirect or external
+transition into its state-10/11 read loop, stream-pointer and file-name setup,
+all indirect writes to the file gate, undocumented bootloader commands, and
+the exact protocol revision of the connected S98 are not reconstructed.
+Static analysis cannot prove extraction is impossible, but it does not
 demonstrate a complete read-only backup workflow. The hardware constraint
 remains in force: do not test this uncertainty by opening HID, sending a
 report, running the updater, or entering a bootloader.

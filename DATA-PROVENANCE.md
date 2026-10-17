@@ -26,6 +26,12 @@ for the binaries they analyze.
   historical inventory. `scripts/compare_storefront_models.py` compares those
   labels with `models.json` profile names and produces a candidate-name
   crosswalk; string matches are not compatibility claims.
+- The 2026-10-18 Windows PnP note in
+  `docs/rk-firmware-readback-audit.md` records only device class, friendly
+  name, and the presence/absence of a USB VID match. Unique Bluetooth child
+  IDs are omitted. The observation used Plug-and-Play metadata only; no HID
+  interface, report, or GATT data was opened or read, and PnP presence alone
+  does not prove an active data path.
 
 ## Excluded material
 

@@ -44,12 +44,49 @@ data without the wrapper's two-byte receive log.
 States 7 and 11 contain conditional response-to-file writes through the
 fwrite-like wrapper `FUN_00535EAC`. The gate `0x005C5F12` has a direct store of
 zero at `0x004071BB`; no nonzero direct store was found in disassembled
-`.text`. The stream pointer `0x005C5F30` is passed to write/close wrappers,
-but no direct initializer, file-open call, or filename flow to that global
-was recovered. The stream and related buffers are in the PE's zero-filled
-`.data` virtual tail. These conditional sinks are real code, but the active
-file feature, its runtime reachability, and a complete firmware export remain
-unproven.
+`.text`. A fresh full disassembly scan of the installed `Update.exe`
+(SHA-256 `27894463B0DFE5BC3F5DC19D4D3351D9DFB692C402BF277BDE3889D37E4A206C`)
+found only a comparison at `0x0040424D` and branch checks in the state-7/11
+handlers in addition to that zero store.
+
+The stream pointer `0x005C5F30` is only passed to the write/close wrappers at
+`0x00408753`, `0x00408786`, `0x004088C0`, `0x0040895C`, `0x004089A1`,
+`0x00409007`, `0x00409019`, `0x0040902F`, and `0x004090F3`. No direct
+initializer, file-open call, or filename flow to that global was recovered.
+The stream and related buffers are in the PE's zero-filled `.data` virtual
+tail.
+
+### State 10/11 entry analysis
+
+The dispatcher reads state global `0x005C5F58` at `0x00407E3B`. Direct stores
+found across the entire disassembly are:
+
+| Store address | Value | Role in the state table |
+| --- | ---: | --- |
+| `0x00407231` | 0 | Initialization/reset path before serial dispatch. |
+| `0x0040809D` | 2 | State 1 transition. |
+| `0x004080E4`, `0x0040811E` | 0 | State 1/2 completion paths. |
+| `0x004083BC` | 4 | State 3 transition. |
+| `0x00408576` | 3 | State 4 loop transition. |
+| `0x00408694` | 7 | State 6 transition. |
+| `0x00408A73` | 6 | State 7 follow-up transition. |
+| `0x00408C43` | 10 | Helper `0x00408BA0`, called from state 11 at `0x004090D1`. |
+| `0x00408F44` | 11 | State 10 handler `0x00408F20`. |
+
+The only direct call to helper `0x00408BA0` is at `0x004090D1` inside the
+state-11 handler. The state-10 handler is dispatched from slot 10 at
+`0x00407F79`; it sets state 11. The state-11 handler is dispatched from slot
+11 at `0x00407F8A`; it may call the helper that sets state 10. Thus the
+observed state-10/11 transitions form a closed cycle with no direct incoming
+transition from the initialization path or states 0–9 and 12–15. In the
+statically recovered direct state graph, this response-to-file loop is
+unreachable from the initialized state 0. An indirect store, externally
+supplied invocation, or other untraced control path cannot be ruled out.
+
+This strengthens the conclusion that these are conditional sink routines,
+not evidence of an enabled or reachable firmware-export feature. The active
+file feature, any indirect state/gate initialization, and a complete firmware
+export remain unproven.
 
 Confidence is high for the table slots, response-byte checks, transitions,
 queue calls, and buffer paths visible in the disassembly. The protocol

@@ -69,7 +69,9 @@ model or runtime map.
   command/response paths. The 15 updater dispatch slots are separately mapped.
   A conditional UART response-to-file sink is present in states 7 and 11, but
   its file gate is directly initialized to zero, no nonzero direct setter or
-  stream-open path was found, and runtime activation is unresolved.
+  stream-open path was found; states 10/11 also form a closed direct cycle
+  with no incoming transition from initialized state 0. Indirect/external
+  activation remains unresolved.
 - A read-only command that can safely and completely copy firmware from an
   attached keyboard. The conditional UART sink is not a demonstrated,
   complete firmware backup method.
