@@ -1,6 +1,6 @@
 # Open-Source RK Keyboard Software and Research
 
-Looking for open-source Royal Kludge (RK) keyboard software? Start with this
+open-source Royal Kludge (RK) keyboard software? Start with this
 community directory and research archive. It points to independent web and
 desktop configurators, then provides a reproducible static audit of the RK
 Windows 4.06 package installed on this PC. The goal is to make existing open
