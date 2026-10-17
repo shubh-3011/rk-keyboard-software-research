@@ -111,7 +111,7 @@ path was triggered.
 | `0x04`, per-key color | Builds prefix `03 7E`; walks 16-byte records in the table at `0x006169D1`, packing three output bytes per selected record. Length is `0x81` or `0x17D` according to global `0x006117C4`; writer call at `0x00413F03`. Log text at `0x005CBC54` says “Set key color[index]”. | Strong evidence for a per-key-color write. The selector, RGB ordering, and global's source remain unknown. |
 | `0x01`, key/layer translation | Four `0x840` input regions are translated by `FUN_00413B20` into four `0x210` internal layers. The translator processes 132 records of 16 bytes, calls `FUN_00413410`, maps through table `0x006169D0`, and rejects indices greater than `0x83`. | Strong for loop bounds and table use. Record fields and their connection to `KB.ini` tuples are not fully established. |
 | Macro-tag handling under `0x01` | Records with byte `+3 == 5` enter a branch that calls `FUN_00413870` at `0x004140A3`. This helper compacts a `WORD`-counted, 8-byte-stride event structure into three-byte rows in a `0x1FF` temporary buffer; it has no HID call of its own. | The helper is a serializer in the RKKB apply pipeline. Event subfield meaning and the exact translated bytes are unresolved. |
-| Key write under `0x01` | `FUN_004143F0` prepends `04 00`, copies `0x780` bytes, then calls the writer with length `0x782` at `0x00414440`. Error text at `0x005CBDB0` says “SendKey Failed”. | Strong for prefix, copy size, and helper path. Four translated layers total `0x840` bytes, so the `0x780` transmitted region is not a transparent copy of all 132 positions; the selection/packing step remains open. |
+| `04 00` fixed-block write under `0x01` | `FUN_004143F0` prepends `04 00`, copies `0x780` bytes, then calls the writer with length `0x782` at `0x00414440`. Error text at `0x005CBDB0` says “SendKey Failed”. Its caller invokes it after the macro-processing loop counts at least one macro association and points it at the macro staging area. | Prefix and fixed length are proven; caller context ties this write to macro staging. It is not established as a transparent copy of the four translated 132-record layers, whose combined internal size is `0x840`. The `0x780` block schema remains unresolved; see the [keymap translation audit](rk-keymap-translation-audit.md). |
 | Matrix write under `0x01` | Constructs prefix `01 F8` and sends `0x1F9` bytes at `0x00414268`; error text at `0x005CBDA8` begins “Matrix:”. | Command and length are proven statically; `F8` fields, data schema, and the relation to the key write remain unresolved. |
 | Conditional Fn write under `0x01` | When global `0x006117E4` is nonzero, constructs prefix `10 F8` and sends `0x1F9` bytes at `0x00414326`; error text at `0x005CBDE4` says “Send Fn Failed”. | The write, gate, and configuration source are proven. The model association, UI meaning, and Fn payload schema remain unknown. |
 
@@ -126,7 +126,9 @@ direct write site found in the inspected image. Its two recovered reads are
 at `0x00414294` and `0x0041A9A5`.
 
 At `0x00414294`, a nonzero value enables the extra `10 F8` RKKB feature
-report described above; the preceding report uses prefix `04 00`. At
+report described above. The `04 00`/`0x780` write is a separate call in the
+macro-staging path; this static context does not identify it as the key-layer
+frame. At
 `0x0041A9A5`, the value selects a two-loop or four-loop UI/component path
 when `0x00611760 == 0`. The exact display meaning, configuration-file path
 construction, and model/profile association were not recovered. The key
@@ -201,8 +203,10 @@ from the screen-parameter command `0x0B`.
 - Resolve the visible controls and model-family receiver for the 15
   `FUN_00401080` helper callers and two direct mask-`4` semaphore releases;
   the callsite map is in [the Apply signal caller table](rk-apply-signal-callers.csv).
-- Resolve every RKKB matrix/key/Fn/LED field and trace the `0x780` key payload
-  selection/packing from the four translated 132-position layers.
+- Resolve every RKKB matrix/key/Fn/LED field, the complete profile-tuple to
+  runtime-record mapping, and the internal schema of the `0x780` macro-staging
+  block. The four translated 132-position layers and fixed `0x780` write are
+  distinct recovered buffers, not an established direct copy path.
 - Recover configuration filename construction and model/profile mapping for
   `Show10FNLayer` / global `0x006117E4`, the setting's exact UI meaning, and
   the concrete receiver and argument values at the virtual apply call.

@@ -75,7 +75,20 @@ model or runtime map.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
   confidence-ranked report separating visual rectangle coordinates from
   candidate action, keycode, and matrix-index meanings; end-to-end profile to
-  device translation remains unresolved.
+  device translation remains unresolved. A new RKKB trace maps four 132-record
+  layers through an action translator and 132-slot lookup table; the complete
+  profile parser path remains open. It also identifies the fixed `04 00` plus
+  `0x780` write as a macro-staging path in its recovered caller context, not a
+  proven full keymap transfer. See `docs/rk-keymap-translation-audit.md`.
+- The macro audit maps the 834-byte `.mck` record, reversible byte rotation,
+  raw concatenated `mac.dct` persistence, import/export branches, and three
+  family-specific serialization paths. Recorder capture and wire-event fields
+  remain unresolved; see `docs/rk-macro-format-and-path-audit.md`.
+- The screen audit maps G5 screen parameters, a five-byte GIF-parameter
+  payload, and the frame/page transfer header, optional additive-complement
+  byte, acknowledgements, retries, and cancellation path. Image conversion,
+  UI reachability, screen-parameter schema, and physical compatibility remain
+  unresolved; see `docs/rk-screen-gif-payload-audit.md`.
 - Main-app HID enumeration and USB/HID interface notification filters are
   traced through register-indirect API calls and an RTTI-attributed
   `COemDrvDlg` `WM_DEVICECHANGE` message-map entry; runtime event delivery and
