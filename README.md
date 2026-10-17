@@ -67,6 +67,7 @@ as confirmed.
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
 - [Indirect API call and callback follow-up](docs/rk-native-api-indirect-call-audit.md)
 - [Dynamic API resolution paths](docs/rk-dynamic-api-resolution-audit.md)
+- [Updater UART receive state machine](docs/rk-updater-uart-state-machine.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
