@@ -208,10 +208,12 @@ from the screen-parameter command `0x0B`.
 - Resolve the visible controls and model-family receiver for the 15
   `FUN_00401080` helper callers and two direct mask-`4` semaphore releases;
   the callsite map is in [the Apply signal caller table](rk-apply-signal-callers.csv).
-- Resolve every RKKB matrix/key/Fn/LED field, the complete profile-tuple to
-  runtime-record mapping, and the internal schema of the `0x780` macro-staging
-  block. The four translated 132-position layers and fixed `0x780` write are
-  distinct recovered buffers, not an established direct copy path.
+- Resolve remaining RKKB action/Fn/LED fields, construction of the four
+  runtime layers from profile and UI state, and the internal schema of the
+  `0x780` macro-staging block. The `[KEY]` parser-to-slot-index bridge is
+  documented in the [keymap UI path audit](rk-keymap-ui-path-audit.md). The
+  four translated 132-position layers and fixed `0x780` write are distinct
+  recovered buffers, not an established direct copy path.
 - Recover configuration filename construction and model/profile mapping for
   `Show10FNLayer` / global `0x006117E4`, the setting's exact UI meaning, and
   the concrete receiver and argument values at the virtual apply call.
