@@ -71,6 +71,11 @@ and 2, the source and validation of any response checksum, and which physical
 firmware-read protocol. No reader, writer, HID handle, or keyboard interface
 was activated.
 
+The [3632 response semantics audit](rk-3632-response-semantics-audit.md)
+expands the request byte layout, status-message route, ordinary queue filters,
+send/response timeout handling, and retry counts. Its queue producer link
+remains a static association rather than a runtime trace.
+
 ## Apply flags and serialized features
 
 The following branches were traced inside `FUN_00411B90`. Addresses in this

@@ -35,6 +35,11 @@ model or runtime map.
   updater, and uninstaller. Some caller-fed module/export values, cached
   pointer consumers, external callers, and runtime execution remain open; see
   `docs/rk-dynamic-api-resolution-audit.md`.
+- A focused follow-up resolves fixed export strings and static cached-pointer
+  consumers for the DeviceDriver UxTheme wrappers and Update common-control,
+  common-dialog, and property-sheet helpers. The `DrawThemeParentBackground`
+  wrapper still has no recovered in-image caller; no runtime branch is
+  established. See `docs/rk-dynamic-api-consumer-gap-audit.md`.
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
@@ -51,6 +56,12 @@ model or runtime map.
   meanings remain open. See
   `docs/rk-settings-apply-worker-audit.md` and
   `docs/rk-setting-serializer-audit.md`.
+- A dedicated lighting/RGB report separates command `4` settings, G5/3632
+  RGB-table commands `10`/`9`, color-group commands `6`/`2`, and RKKB `02 29`
+  and `03 7E` paths. It documents the remaining label, `LedOpt`, runtime
+  record, channel, and profile-to-color-group gaps; static packer structure is
+  not physical-device validation. See
+  `docs/rk-rgb-lighting-color-payload-audit.md`.
 - A targeted profile trace maps `[OPT] DefBri`, `LightUI`, and `LightHW` into
   the runtime brightness selector, a UI value-display helper, and
   family-specific serializer bytes. All eight installed S98 profiles use
@@ -63,10 +74,11 @@ model or runtime map.
   `docs/rk-dialog-resource-audit.md`.
 - The updater serial receive worker is traced through its queue, posted
   message `0x401`, and state-dispatch routine. The 3632 response reader's
-  status tests, queue timeout, and retry behavior are documented; its 20-byte
-  `ReadFile` loop is linked by matching object queue offsets to the response
-  consumer as a static producer candidate. Same-instance runtime reachability
-  and status-record semantics remain unresolved.
+  frame fields, status route, queue filters, timeout handling, and retry
+  behavior are documented; its 20-byte `ReadFile` loop is linked by matching
+  object queue offsets to the response consumer as a static producer
+  candidate. Same-instance runtime reachability and status-record semantics
+  remain unresolved. See `docs/rk-3632-response-semantics-audit.md`.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced. A separate label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language
