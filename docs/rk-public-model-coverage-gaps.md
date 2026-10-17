@@ -25,18 +25,30 @@ its controls use the same protocol. Variants with no exact token match remain
 unmapped to this package. Variants with matches remain candidates for separate
 profile and hardware-identity analysis.
 
-RK's current downloads page separately presents Web Driver and Hub Driver
-sections, lists QMK as a product-download category, and calls out M75 HE,
-X87 HE, and RK68 HE as unsupported by the general web driver. That page does
-not expose a complete machine-readable model-to-driver matrix in its static
-content, so this report does not assign those routes to other product names.
-The vendor's current driver page must be checked for the exact product and
-regional variant before drawing a compatibility conclusion.
+The current official downloads page makes clear that RK's software surface is
+not one universal Windows suite: it has separate Web Driver and Hub Driver
+sections, plus product-specific driver, firmware, and QMK selectors. The page
+advertises the web driver for Chrome, Edge, and Opera on Windows, macOS, and
+Linux, while explicitly excluding M75 HE, X87 HE, and RK68 HE from that
+general web-driver entry. RK's separate [official web app](https://drive.rkgaming.com/)
+describes wired and 2.4 GHz receiver connection modes. These are statements
+about the current vendor pages, not compatibility evidence for the archived
+4.06 Windows binary or for every revision carrying a matching product name.
+
+The public page's static content does not expose a complete machine-readable
+model-to-driver matrix. This report therefore does not assign the Web, Hub,
+legacy client, firmware, or QMK routes to every model. Check the exact product
+version, connection mode, lighting variant, operating system, and driver type
+on the vendor's [official downloads page](https://en.rkgaming.com/download/)
+before drawing a compatibility conclusion.
 
 ## Sources and method
 
-Checked on 2026-10-18 against RK's [official storefront keyboard navigation](https://rkgamingstore.com/collections/all)
-and [official driver downloads page](https://en.rkgaming.com/download/). The
+Checked on 2026-10-18 against RK's [official storefront keyboard navigation](https://rkgamingstore.com/collections/all),
+[official driver downloads page](https://en.rkgaming.com/download/), and
+[official web app](https://drive.rkgaming.com/). The downloads page presents
+distinct Web and Hub driver categories and a product-specific selection flow;
+the web app describes wired and 2.4 GHz receiver modes. The storefront
 navigation includes standard mechanical, Hall Effect, QMK/VIA, display/knob,
 and regional-layout product entries. The crosswalk input preserves the exact
 model token and linked navigation label. The generator uses a

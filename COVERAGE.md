@@ -15,14 +15,21 @@ model or runtime map.
 - Profile options, key/Fn mapping tuples, section shapes, localization labels,
   resource groups, model-associated assets, and the static initial driver
   family selection are recorded in the JSON and linked CSV audits.
+- The profile-family report distinguishes all 188 registered rows routed by
+  the checked binary to RKKB or G5 from configuration-only `01C7`, seven
+  conditional wireless candidates, and 15 screen-configured profiles. It
+  does not promote those static categories into tested model support; see
+  `docs/rk-profile-family-protocol-coverage.md`.
 - All ordinary and delay imports from the five installed PE files, their
   scanned IAT/thunk references, dynamic API loader candidates, and raw
   system-call byte matches are inventoried.
 - A second static pass mapped 51 call/callback routes and one imported-data
   reference among the 62 imports that lacked direct/thunk call references;
   10 import rows still have no recovered invocation path and are classified
-  in the per-API audit. The `PostQuitMessage` wrapper path is tied to seven
-  callers.
+  in the per-API audit. A follow-up traces the two Update.exe ANSI loader
+  imports and eight unins000.exe scrollbar fallback imports but does not
+  establish their invocation; see `docs/rk-remaining-native-api-path-audit.md`.
+  The `PostQuitMessage` wrapper path is tied to seven callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
   inventoried and statically reviewed across the driver, installer helper,
   updater, and uninstaller. Some caller-fed module/export values, cached
@@ -61,7 +68,10 @@ model or runtime map.
   consumer as a static producer candidate. Same-instance runtime reachability
   and status-record semantics remain unresolved.
 - The main UI's model-specific LED XML path and generic fallback path are
-  statically cross-referenced, while widget/command binding remains open.
+  statically cross-referenced. A separate label/control/handler crosswalk
+  resolves selected paths such as the generated Apply control and language
+  selector, while most feature widget/command bindings remain open; see
+  `docs/rk-ui-control-command-crosswalk.md`.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
   confidence-ranked report separating visual rectangle coordinates from
   candidate action, keycode, and matrix-index meanings; end-to-end profile to
