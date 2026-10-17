@@ -16,9 +16,14 @@ model or runtime map.
 - All ordinary and delay imports from the five installed PE files, their
   scanned IAT/thunk references, dynamic API loader candidates, and raw
   system-call byte matches are inventoried.
-- A second static pass mapped indirect call or callback paths for 47 of the
-  62 imports that lacked direct/thunk call references; the remaining 15 are
-  explicitly listed as unresolved.
+- A second static pass mapped 50 indirect call/callback routes and one
+  imported-data reference among the 62 imports that lacked direct/thunk call
+  references; the remaining 11 have no recovered invocation path and are
+  classified in the per-API audit.
+- A targeted resolver follow-up traces seven main-app, four updater, and
+  eleven uninstaller dynamic-loader paths. Caller-fed module/export values,
+  remaining resolver sites, and runtime execution remain open; see
+  `docs/rk-dynamic-api-resolution-audit.md`.
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller

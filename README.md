@@ -143,10 +143,12 @@ runs them. They are documented as findings, not recommendations to replay.
 
 ## Related community work
 
-This repository is intended as a useful index for RK software research and
-reconstruction. The projects below cover adjacent ground, including actual
-device configuration and protocol implementations. Their model support and
-hardware behavior are independent of the static 4.06 findings here:
+Looking for open-source RK keyboard software? This repository is a convenient
+index for the community projects and a detailed evidence archive for the
+installed RK Windows suite. The projects below cover adjacent ground,
+including actual device configuration and protocol implementations. Their
+model support and hardware behavior are independent of the static 4.06
+findings here:
 
 - [Rangoli](https://github.com/rnayabed/rangoli) — cross-platform RK
   configuration software with protocol work based on packet captures.

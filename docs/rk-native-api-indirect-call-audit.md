@@ -20,22 +20,25 @@ No RK executable or updater was run. No keyboard HID interface, serial port, fir
 
 ## Coverage summary
 
-Of the 62 gap rows, 47 are mapped: 46 function-call or callback targets and one imported data reference. Fifteen rows remain unresolved.
+Of the 62 gap rows, 51 are mapped: 50 function-call or callback targets and one imported data reference. Eleven rows remain unresolved. Four additional imported-API paths were recovered as conditional tail-jumps through their IAT entries; they do not change the count of 106 register-indirect call instructions.
 
 | Binary | Gap rows | Mapped call/callback rows | Mapped data rows | Unresolved rows | Register-indirect call sites |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `DeviceDriver.exe` | 32 | 30 | 0 | 2 | 77 |
-| `Update.exe` | 12 | 7 | 0 | 5 | 16 |
+| `DeviceDriver.exe` | 32 | 31 | 0 | 1 | 77 |
+| `Update.exe` | 12 | 10 | 0 | 2 | 16 |
 | `InitSetup.dll` | 2 | 2 | 0 | 0 | 3 |
 | `uninstall.dll` | 3 | 2 | 1 | 0 | 10 |
 | `unins000.exe` | 13 | 5 | 0 | 8 | 0 |
-| **Total** | **62** | **46** | **1** | **15** | **106** |
+| **Total** | **62** | **50** | **1** | **11** | **106** |
 
 The mapped transfers break down as follows:
 
 - **106 register-indirect API calls:** 77 in `DeviceDriver.exe`, 16 in `Update.exe`, 3 in `InitSetup.dll`, and 10 in `uninstall.dll`.
 - **9 exception-helper calls through global function pointers:** six calls to `RaiseException` and three to `RtlUnwind` in `unins000.exe`.
 - **One indirect tail-jump** through the `RaiseException` global function pointer.
+- **Four conditional IAT tail-jumps:** `OleFlushClipboard` in
+  `DeviceDriver.exe`, and `PostQuitMessage`, `GetThemeSysColor`, and
+  `OleFlushClipboard` in `Update.exe`.
 - **One `DefMDIChildProcW` callback route:** its thunk is supplied to `CallWindowProcW` at the listed call site.
 - **Two common-dialog target routes through one shared instruction:** `GetOpenFileNameW` and `GetSaveFileNameW` are passed by separate wrappers to a helper that calls its function-pointer argument at one machine instruction.
 - **One imported data reference:** `_adjust_fdiv` in `uninstall.dll`.
@@ -97,6 +100,22 @@ The device-related paths corroborate the documented SetupAPI and notification ro
 
 For `RegEnumValueW`, the IAT address is loaded into `EBX` at `0x00426D72`; control flow jumps to a shared block at `0x00426E10`, which calls through `EBX` at `0x00426E16`.
 
+Three Update rows and one DeviceDriver row have conditional IAT tail-jump
+paths, rather than register-indirect call instructions:
+
+| Binary/API | Recovered path |
+| --- | --- |
+| `DeviceDriver.exe` — `OleFlushClipboard` | Caller `0x0051EB2E` invokes wrapper `0x0050D86D`. If helper `0x0050D804` returns nonzero, `0x0050D876` tail-jumps through IAT VA `0x0059EA54`; otherwise it returns. |
+| `Update.exe` — `PostQuitMessage` | Wrapper `0x004135E7` optionally calls the object's `+0x3C` method with `(1, 1)`, then tail-jumps through IAT VA `0x0056074C` at `0x00413601`. Six direct callers were found: `0x00413D70`, `0x0041BE31`, `0x0041D36C`, `0x004350A8`, `0x00469F42`, and `0x00497AC7`; caller `0x00413D70` passes exit code 0. |
+| `Update.exe` — `GetThemeSysColor` | Wrapper `0x004E92C5` tail-jumps through IAT VA `0x005608C0` at `0x004E92CF` when the theme handle argument is nonzero. Otherwise it calls `GetSysColor` with its second argument. There are 21 direct callers; `0x004E90F0` passes color `0x1D` and `[ecx+4]` as the theme handle. |
+| `Update.exe` — `OleFlushClipboard` | Caller `0x004141D2` invokes helper `0x00427F18`; helper `0x00427FE1` gates a tail-jump through IAT VA `0x00560968`. |
+
+Update's `LoadLibraryA` and `GetModuleHandleA` thunk addresses appear in
+alternate ANSI descriptor data, but no resolver callsite passing those
+descriptor addresses was recovered. The nine direct loader-helper callers
+pass descriptors for `LoadLibraryW` or `GetModuleHandleW`; see the separate
+[dynamic API resolution audit](rk-dynamic-api-resolution-audit.md).
+
 ### `InitSetup.dll`
 
 | API | Indirect call instruction addresses |
@@ -123,16 +142,32 @@ For `RegEnumValueW`, the IAT address is loaded into `EBX` at `0x00426D72`; contr
 | `GetOpenFileNameW` | Thunk `0x00448848` is passed to helper `0x004BA25C` at `0x004BA3DC`; that helper calls its function-pointer argument at `0x004BA32A`. |
 | `GetSaveFileNameW` | Thunk `0x00448850` is passed to helper `0x004BA25C` at `0x004BA400`; that helper calls its function-pointer argument at the same instruction, `0x004BA32A`. |
 
-The eight remaining `unins000.exe` rows are scrollbar APIs. The resolver block at `0x0044B64D`–`0x0044B739` stores their IAT thunk addresses as fallback function pointers in globals `0x0050209C`–`0x005020B8`. This audit did not recover later reads/calls through those eight pointer globals, so it records setup evidence without claiming invocation.
+The eight remaining `unins000.exe` rows are scrollbar APIs. Resolver
+`0x0044B5E0` loads `comctl32` through helper `0x00409108`, resolves each
+`FlatSB_*` export through `0x00409128`, and stores either the resolved address
+or the matching USER32 thunk fallback in a global. Static scans found only
+the setup stores for these pointer globals; no subsequent read, indirect
+call, or callback passage was recovered.
+
+| Fallback thunk | Pointer global | `GetProcAddress` export | Fallback stores |
+| --- | --- | --- | --- |
+| `0x0040976C` (`EnableScrollBar`) | `0x0050209C` | `FlatSB_EnableScrollBar` at `0x0044B804` | `0x0044B64D`, `0x0044B652` |
+| `0x00409BB4` (`ShowScrollBar`) | `0x005020A0` | `FlatSB_ShowScrollBar` at `0x0044B834` | `0x0044B66E`, `0x0044B673` |
+| `0x004098CC` (`GetScrollRange`) | `0x005020A4` | `FlatSB_GetScrollRange` at `0x0044B860` | `0x0044B68F`, `0x0044B694` |
+| `0x004098BC` (`GetScrollInfo`) | `0x005020A8` | `FlatSB_GetScrollInfo` at `0x0044B88C` | `0x0044B6B0`, `0x0044B6B5` |
+| `0x004098C4` (`GetScrollPos`) | `0x005020AC` | `FlatSB_GetScrollPos` at `0x0044B8B8` | `0x0044B6D1`, `0x0044B6D6` |
+| `0x00409B64` (`SetScrollPos`) | `0x005020B0` | `FlatSB_SetScrollPos` at `0x0044B8E0` | `0x0044B6F2`, `0x0044B6F7` |
+| `0x00409B5C` (`SetScrollInfo`) | `0x005020B4` | `FlatSB_SetScrollInfo` at `0x0044B908` | `0x0044B713`, `0x0044B718` |
+| `0x00409B6C` (`SetScrollRange`) | `0x005020B8` | `FlatSB_SetScrollRange` at `0x0044B934` | `0x0044B734`, `0x0044B739` |
 
 ## Unresolved rows
 
-These 15 rows have no recovered indirect call or callback path in the reviewed disassembly. “Unresolved” does not mean unused.
+These 11 rows have no recovered invocation or callback path in the reviewed disassembly. “Unresolved” does not mean unused.
 
 | Binary | Unresolved API rows |
 | --- | --- |
-| `DeviceDriver.exe` | `PostQuitMessage`, `OleFlushClipboard` |
-| `Update.exe` | `LoadLibraryA`, `GetModuleHandleA`, `PostQuitMessage`, `GetThemeSysColor`, `OleFlushClipboard` |
+| `DeviceDriver.exe` | `PostQuitMessage` |
+| `Update.exe` | `LoadLibraryA`, `GetModuleHandleA` |
 | `InitSetup.dll` | None |
 | `uninstall.dll` | None |
 | `unins000.exe` | `ShowScrollBar`, `SetScrollRange`, `SetScrollPos`, `SetScrollInfo`, `GetScrollRange`, `GetScrollPos`, `GetScrollInfo`, `EnableScrollBar` |

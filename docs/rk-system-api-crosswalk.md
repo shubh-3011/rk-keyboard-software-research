@@ -87,9 +87,11 @@ no-direct-call CSV while their local behavior is documented in the
 [HID enumeration and notification audit](rk-device-enumeration-notification-audit.md).
 
 A broader static follow-up mapped indirect calls, callbacks, and one imported
-data reference for **47 of those 62 rows**; the remaining 15 stay unresolved.
-This does not change the raw scan counts above. The per-API call addresses and
-the exact unresolved list are in the
+data reference for **51 of those 62 rows**; 11 have no recovered invocation
+path. Four additional imported-API routes are conditional tail-jumps, so the
+count of 106 register-indirect call instructions does not change. This does
+not change the raw scan counts above. Per-API addresses and the exact
+unresolved list are in the
 [indirect import-call audit](rk-native-api-indirect-call-audit.md).
 
 For `unins000.exe`, the raw executable-section `E8` scan finds candidates at
@@ -124,10 +126,12 @@ returned pointer is invoked, or that the branch executes. Several API paths
 are traced in the main report, including main-app DPI/menu/GDI compatibility,
 updater activation-context/WinRT setup, installer modal-error handling, and
 uninstaller ACL updates. The remaining resolver/data-flow links remain open.
-The seven main-app sites with no nearby literal candidate now have
-argument/result-flow notes in the
-[dynamic API resolution audit](rk-dynamic-api-resolution-audit.md); four
-updater and eleven uninstaller sites still need the same follow-up.
+The [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) follows
+the seven main-app sites with no nearby literal candidate, plus four selected
+updater and eleven selected uninstaller sites. Those traces map call-boundary
+arguments and results where static dataflow permits, while caller-supplied
+module/export values remain unresolved. This is a targeted follow-up, not a
+complete argument-to-invocation trace of all 128 resolver callsites.
 
 ## Native system-call boundary
 
@@ -171,8 +175,9 @@ call without instruction-boundary and reachability evidence.
   updater UART, installer, and uninstaller paths documented in the main
   report. These are disassembled paths, not observed runs.
 - **Unresolved:** full call graphs for all 13,735 main-app procedures, all
-  indirect/COM-vtable and callback targets, complete dynamic resolver
-  argument-to-returned-pointer data flow, the third uninstaller raw `E8`
+  indirect/COM-vtable and callback targets, remaining caller-fed values and
+  argument-to-returned-pointer links across the 128 dynamic resolver sites,
+  the third uninstaller raw `E8`
   candidate, exact runtime branches, and any native system calls occurring
   inside Windows or device drivers. Runtime tracing must remain separate from
   this offline inventory and must not touch the keyboard or updater.
