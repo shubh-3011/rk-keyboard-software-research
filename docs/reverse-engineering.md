@@ -118,6 +118,10 @@ and HID usage/report-capability criteria before selecting a driver family:
 the 125 `Fw=0` rows route to `CDevRKKB`, and the 63 nonzero-`Fw` rows route to
 the G5 wrapper. This is the static selection rule in this installed build;
 it does not validate which firmware revision a physical model runs.
+The window setup code also registers notifications for the USB-device and HID
+interface classes and has arrival/removal timer paths; the register-indirect
+calls, GUID bytes, and event-handler limits are documented in the
+[HID enumeration and notification audit](rk-device-enumeration-notification-audit.md).
 
 The checked profile-family CSV has 188 rows and marks every named row as a
 direct profile. All omit an explicit profile VID and `DevTy`, so the configured

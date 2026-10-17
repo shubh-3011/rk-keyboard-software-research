@@ -76,6 +76,16 @@ retains any other absolute IAT-reference and thunk addresses found for those
 entries. The gap means this scan did not recover a direct call instruction; it
 does not mean that the API is unused.
 
+Static follow-up resolves several important examples as register-indirect
+calls. The main UI loads `SetupDiGetDeviceInterfaceDetailW` into `EBP` and
+calls it twice during the HID interface path; it loads
+`RegisterDeviceNotificationW` into `EBX` and calls it twice for its USB/HID
+filters; cleanup loads `UnregisterDeviceNotification` into `EDI` and calls it
+for both saved handles. These transfers are not represented as direct
+`call [IAT]` or relative calls to an import thunk, so they remain in the
+no-direct-call CSV while their local behavior is documented in the
+[HID enumeration and notification audit](rk-device-enumeration-notification-audit.md).
+
 For `unins000.exe`, the raw executable-section `E8` scan finds candidates at
 `0x0044B2BC`, `0x004A9CE7`, and `0x004F4D04` whose computed targets are known
 import thunks. The first two byte sequences lie within UTF-16 string data. The

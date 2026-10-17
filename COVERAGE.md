@@ -29,6 +29,9 @@ model or runtime map.
   status tests, queue timeout, and retry behavior are also documented.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced, while widget/command binding remains open.
+- Main-app HID enumeration and USB/HID interface notification filters are
+  traced through register-indirect API calls; runtime event delivery and
+  device-to-profile selection remain unobserved.
 
 ## Not established
 

@@ -49,6 +49,7 @@ as confirmed.
 - [Installed package manifest](docs/rk-installed-package-manifest.csv)
 - [Resource and localization audit](docs/rk-resource-localization-audit.md)
 - [PE dialog-resource and selected updater control audit](docs/rk-dialog-resource-audit.md)
+- [HID enumeration and hot-plug notification audit](docs/rk-device-enumeration-notification-audit.md)
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)

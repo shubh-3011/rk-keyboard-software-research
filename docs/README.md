@@ -20,6 +20,7 @@
 - [Raw system-call byte matches](rk-native-syscall-byte-matches.csv)
 - [API and system-call crosswalk](rk-system-api-crosswalk.md)
 - [UI event, persistence, and device worker](rk-ui-event-worker-path-audit.md)
+- [HID enumeration and device notifications](rk-device-enumeration-notification-audit.md)
 - [Updater and firmware readback](rk-firmware-readback-audit.md)
 - [Static dialog resources and selected updater control handlers](rk-dialog-resource-audit.md)
 - [Installer/uninstaller scripts](rk-installer-uninstaller-script-audit.md)
