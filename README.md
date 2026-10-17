@@ -8,9 +8,9 @@ identify models, compare software versions, and continue the analysis.
 This repository is an open, source-backed starting point for studying RK's
 Windows keyboard software: it combines a reproducible catalog, installed-file
 hashes, localization and resource audits, profile-to-driver maps, native API
-crosswalks, and a downloadable Windows research workbench. It is the most
-complete public audit we have produced from the RK 4.06 package examined here;
-it is not a universal inventory of every RK release or keyboard.
+crosswalks, and a downloadable Windows research workbench. It provides a
+detailed static audit of the RK 4.06 package examined here; it is not a
+universal inventory of every RK release or keyboard.
 
 **Get the Windows app:** [latest RK Research Workbench release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest)
 · **Browse the source:** [`workbench/`](workbench/) · **Audit scope:** [coverage and open work](COVERAGE.md)
@@ -62,7 +62,7 @@ local keymap, lighting, macro and display-profile editing, and JSON
 import/export. User data stays in the local Windows profile. The executable
 runs in its own WebView2 window and serves its bundled files only on loopback.
 
-This is a source-available reconstruction of the safe profile-editing
+This is an open-source implementation of safe profile-editing
 workflows, not a feature-complete clone of RK's hardware utility. It can
 identify an authorized device by USB/HID descriptor when the embedded runtime
 supports WebHID, but it does not open HID reports or write to the keyboard.
