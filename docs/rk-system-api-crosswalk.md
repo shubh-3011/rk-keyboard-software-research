@@ -86,6 +86,12 @@ for both saved handles. These transfers are not represented as direct
 no-direct-call CSV while their local behavior is documented in the
 [HID enumeration and notification audit](rk-device-enumeration-notification-audit.md).
 
+A broader static follow-up mapped indirect calls, callbacks, and one imported
+data reference for **47 of those 62 rows**; the remaining 15 stay unresolved.
+This does not change the raw scan counts above. The per-API call addresses and
+the exact unresolved list are in the
+[indirect import-call audit](rk-native-api-indirect-call-audit.md).
+
 For `unins000.exe`, the raw executable-section `E8` scan finds candidates at
 `0x0044B2BC`, `0x004A9CE7`, and `0x004F4D04` whose computed targets are known
 import thunks. The first two byte sequences lie within UTF-16 string data. The
@@ -118,6 +124,10 @@ returned pointer is invoked, or that the branch executes. Several API paths
 are traced in the main report, including main-app DPI/menu/GDI compatibility,
 updater activation-context/WinRT setup, installer modal-error handling, and
 uninstaller ACL updates. The remaining resolver/data-flow links remain open.
+The seven main-app sites with no nearby literal candidate now have
+argument/result-flow notes in the
+[dynamic API resolution audit](rk-dynamic-api-resolution-audit.md); four
+updater and eleven uninstaller sites still need the same follow-up.
 
 ## Native system-call boundary
 

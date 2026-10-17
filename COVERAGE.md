@@ -16,6 +16,9 @@ model or runtime map.
 - All ordinary and delay imports from the five installed PE files, their
   scanned IAT/thunk references, dynamic API loader candidates, and raw
   system-call byte matches are inventoried.
+- A second static pass mapped indirect call or callback paths for 47 of the
+  62 imports that lacked direct/thunk call references; the remaining 15 are
+  explicitly listed as unresolved.
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
@@ -44,12 +47,13 @@ model or runtime map.
 - Full call graphs for every native procedure, all indirect/COM/callback
   targets, or the runtime branch taken on a given PC.
 - Every MFC control label and action, every profile tuple's meaning, all
-  packet fields, or the full UART command/response state machine. The traced
-  UART queue has no identified firmware-file sink, but untraced and indirect
-  paths have not all been excluded.
+  packet fields, or the full UART command/response state machine. A conditional
+  UART response-to-file sink is present in states 7 and 11, but its file gate
+  is directly initialized to zero, no nonzero direct setter or stream-open
+  path was found, and runtime activation is unresolved.
 - A read-only command that can safely and completely copy firmware from an
-  attached keyboard. The analyzed updater paths are not a demonstrated
-  firmware backup method.
+  attached keyboard. The conditional UART sink is not a demonstrated,
+  complete firmware backup method.
 
 These gaps are intentional status labels, not claims that the missing work is
 impossible. New package snapshots and independently supported findings should

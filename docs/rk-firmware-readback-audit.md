@@ -97,7 +97,8 @@ call instructions in `Update.exe`: `0x004023CF`, `0x0040269B`, `0x0040289C`,
 BLE/version/status handling, and an updater mode/connection helper. The
 `0x0040980D` routine also has a nearby `HidD_SetFeature` at `0x004097A8`;
 therefore this is not evidence of passive capture. No inspected feature-read
-path streams a full firmware image to a host file.
+path streams a full firmware image to a host file. A separate conditional
+UART response-to-file path is present and described below.
 
 The updater also contains a separate serial transport and event-driven
 dispatcher. `FUN_00404E60` calls `CreateFileW` at `0x00404F09` with
@@ -112,18 +113,44 @@ pending reads with `GetOverlappedResult` at `0x00405584`. It queues received
 chunks capped at `0x1FFF` bytes under global queue state around `0x005BB500`,
 then posts message `0x401` at `0x004055E6`. The consumer `FUN_00407E00` calls
 queue helper `FUN_00405920` at `0x00407E36`, reads state `0x005C5F58`, and
-dispatches states 1–15. State 15 reaches serial setup `FUN_004091B0` at
-`0x00408034`, which calls `FUN_00404E60` at `0x004091F9`. The serial
-notification-to-queue-consumer data flow is established by direct code
-references. A candidate MFC message-map row also associates `0x401` with
-`FUN_00407E00`, but the table's exact structure is not fully validated.
+dispatches states 1–15 through the jump table at `0x00408044`. State 15
+reaches serial setup `FUN_004091B0` at `0x00408034`, which calls
+`FUN_00404E60` at `0x004091F9`. The message-map row at `.rdata` address
+`0x005943D0` maps message `0x401` to `FUN_00407E00`; this verifies the row,
+although its owning MFC class is not independently confirmed. The handler
+drains queued bytes into `0x005C5F60`.
 
-This is evidence of a UART protocol state path that receives bytes into RAM;
-it does not identify the physical device/mode or command meanings. No path
-from this queue to a firmware file sink was identified in the inspected
-workers and dispatcher. The separate HID `.upf` path remains host-file-to-
-memory staging. This negative result covers traced paths only, not every
-indirect or undocumented updater path.
+### Conditional UART response-to-file path
+
+The UART dispatcher contains a conditional stream-write sink. This qualifies
+the earlier negative result: a response-to-file path exists in the binary,
+but static evidence does not establish that it can be enabled or that it
+exports a complete firmware image.
+
+| State/path | Static flow | Evidence and limit |
+| --- | --- | --- |
+| State 7 | Handler `FUN_00408710` conditionally calls the fwrite-like wrapper `FUN_00535EAC` with buffer `0x005C5F60`, element size 1, selected chunk count, and stream global `0x005C5F30` (`0x00408761` or `0x00408798`). It also copies a 0x1000-byte block into `0x005C6F80 + blockIndex*0x1000` (`memcpy` at `0x004087C2`) and compares the assembled data with the reference buffer at `0x005C6F8C`. | Conditional response-to-file and response-to-RAM comparison paths are present. The intended image and runtime use remain unresolved. |
+| State 10 → 11 | `FUN_00408F20` recognizes response prefix `C0 3F` at `0x00408F30`/`0x00408F39`, sets state 11, and queues `5A 69 3C 0F 13 EC`. | Command and response meanings are not identified. |
+| State 11 | Handler `FUN_00408FC0` conditionally writes queued bytes from `0x005C5F60` to the same stream through `FUN_00535EAC` at `0x0040903D`. It chooses a partial, 0x1000-byte, or total-length count. | A second response-to-file path is present. State 11 does not copy data into `0x005C6F80`. |
+| Next block | `FUN_00408BA0`, reached from state 11, sets state 10, builds a 13-byte request, and advances offset `0x005C5F2C` by `0x1000` at `0x00408D50`. | This resembles a chunked read loop; command meaning and entry conditions are unresolved. |
+
+The file gate `DAT_005C5F12` has a direct store of zero at `0x004071BB`;
+no nonzero direct store was found in the updater's disassembled `.text`. The
+stream pointer at `0x005C5F30` is used as the `fwrite`/close argument, but no
+direct initializer, open/create call, or file-name flow to it was recovered.
+The PE `.data` section has VA base `0x005B3000`, virtual size `0x15200`, and
+raw size `0xCA00`; the stream and buffer globals used by this path fall in its
+zero-filled virtual tail.
+`FUN_00535F9A` is a close-like wrapper called on selected completion paths
+when the gate is set. The sink's activation is therefore unresolved and
+likely dormant or unfinished in this build; indirect initialization or
+untraced paths cannot be ruled out.
+
+This establishes potential chunked UART response-to-file code, not a
+demonstrated way to copy the connected keyboard's firmware while leaving it
+unchanged. The physical device/mode, complete protocol, file creation path,
+and runtime reachability are not established. The separate HID `.upf` path
+remains host-file-to-memory staging.
 
 The API inventory also records file `ReadFile`/`WriteFile` references in the
 updater. At `0x00405250` and `0x00405535`, `ReadFile` operates on the serial
@@ -132,35 +159,37 @@ worker. The `0x00431E27` read and `0x00431F9C` write are generic file-wrapper
 methods, while the remaining references are in runtime/library code. The
 `.upf` parser's direct path is via C++ stream/runtime helpers and allocates
 section buffers before the HID transfer; the traced HID verifier buffers are
-compared in memory. **No data flow from a firmware response buffer to a host
-file write was found in these traced update/verify routines.** This is a
-negative result over the inspected paths, not proof that no untraced,
-indirect, or undocumented path exists anywhere in the updater or bootloader.
+compared in memory. Separately, the UART state 7/11 handlers conditionally
+pass received chunks to a stream-write wrapper. Its gate, file pointer setup,
+file name, and activation remain unresolved; this supersedes the earlier
+negative finding that no UART queue-to-file sink had been identified.
 
 ## Can the connected S98 firmware be copied without changing it?
 
 **Proven:** Windows has not exposed this keyboard as a mass-storage volume
 from which firmware could simply be copied. The bundled `.upf` is a
 host-side package with a VID/PID that differs from the observed USB unit. The
-traced HID updater writes section data and then reads back bounded chunks to
-verify those writes. Its BLE path reads version/status data. No traced path
-copies a full device firmware image to a host file.
+HID updater writes section data and then reads back bounded chunks to verify
+those writes. The UART state machine also contains a conditional
+response-to-file sink, but its stream setup and enabling condition are not
+recovered.
 
-**Inferred from the analyzed paths:** the installed RK package offers a
-host-to-device update flow, not a demonstrated read-only firmware backup
-workflow. In particular, an updater “read” is not automatically passive: the
-section-verification paths follow explicit stage/write operations, and the
-generic HID read helper has request writes associated with the read.
+**Inferred from the analyzed paths:** the validated HID update flow is
+host-to-device; its verification reads follow write operations, and the
+generic HID read helper has request writes associated with the read. The
+UART code suggests a possible chunked response export, but the file gate is
+directly initialized to zero, no nonzero direct setter was found, and no
+stream-open/file-name path was recovered. That path is not evidence of a
+working passive firmware backup feature.
 
-**Unresolved:** the UART command/response semantics, every indirect call,
-undocumented bootloader commands, and the exact protocol revision of the
-currently connected S98 are not reconstructed. Therefore static analysis cannot prove
-that extracting firmware is technically impossible. It does establish that
-there is currently no demonstrated way in the inspected software to copy the
-running firmware while guaranteeing the keyboard remains unchanged. The
-explicit hardware constraint remains in force: do not test that uncertainty
-by opening HID, sending a report, running the updater, or entering a
-bootloader.
+**Unresolved:** the UART command/response semantics, the initial transition
+into its state 10/11 read loop, the stream pointer and file-name setup, all
+indirect writes to the file gate, undocumented bootloader commands, and the
+exact protocol revision of the connected S98 are not reconstructed. Static
+analysis cannot prove extraction is impossible, but it also does not
+demonstrate a complete read-only backup workflow. The hardware constraint
+remains in force: do not test this uncertainty by opening HID, sending a
+report, running the updater, or entering a bootloader.
 
 ## Evidence files
 

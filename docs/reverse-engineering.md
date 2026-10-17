@@ -130,9 +130,11 @@ use its zero default; `015B` explicitly sets zero. The 63 nonzero rows split
 into 53 `Fw=1` and ten `Fw=2` profiles. The `Fw=2` profile IDs are `01DE`,
 `01D0`, `01CB`, `0215`, `0222`, `020C`, `0210`, `0225`, `01F4`, and `0207`;
 their names and raw fields are in the row-by-row map. Separately, the online
-wireless/companion path can construct `CDev3632` from a nonzero-`Fw` profile
-after descriptor and `Psd` checks. Thus the CSV's `static_handler` is not a
-complete model of the dynamic transport path.
+wireless/companion path contains a conditional path that can construct
+`CDev3632` after descriptor and six-byte checks. The compared bytes' provenance
+is unresolved, so this does not prove a successful model-level `Psd` match.
+Thus the CSV's `static_handler` is not a complete model of the dynamic
+transport path.
 
 `FUN_004155C0` applies different descriptor criteria by profile family. For
 `Fw=0`, the inspected branch accepts a vendor-defined usage-page/report
@@ -154,18 +156,35 @@ wireless IDs, the pairs are `258A:0150` (A70), `258A:01BB` (M100 and R98Pro),
 class 1; the other listed profile pairs are class 2. This is evidence of
 special matching behavior, not proof that every receiver is an RK keyboard.
 
-The wireless/Bluetooth path compares each profile's six-byte `Psd` value,
-VID/PID, and nonzero `Fw` state before it can instantiate the `3632` handler.
-Those bytes are stored in profile rows. Their meaning and provenance, the
-full online transition sequence, and hardware behavior remain unresolved.
-The catalog has 63 profiles with `Psd` values but only 58 unique signatures.
+`FUN_00415900` (VA `0x00415900`) scans 0x12-byte rows beginning at
+`DAT_006102A0`. It requires nonzero VID/PID and nonzero `Fw`, then compares the
+incoming six bytes against row offsets `+0x04..+0x09` (instructions
+`0x00415995`–`0x004159C9`; the row pointer advances by `0x12` at
+`0x00415A4C`) before its conditional `CDev3632` construction path. In the
+analyzed binary, `FUN_00447210` (VA `0x00447210`) first clears `0x102C` bytes
+at `DAT_006102A0` (callsite `0x0044723F`), then loads VID, PID, `ShowScreen`,
+`Fw`, `DevTy`, `VID_Wireless`, and `PID_Wireless` from `KB.ini` at callsites
+`0x004472FC`, `0x0044736A`, `0x004473A7`, `0x004473E5`, `0x00447422`, and
+`0x00447460`, respectively; it does not load a `Psd` key.
+The static xrefs collected for this table show `FUN_00447210` as its initializer
+and direct writer, while `FUN_004156E0`, `FUN_00415900`, and `FUN_00447591`
+read it. This scan does not exclude writes through aliases or other indirect
+paths. Accordingly, the relationship between the compared row bytes and the
+`Psd` strings in `KB.ini` is unresolved; the available static evidence does not
+show those profile signatures being populated into the compared bytes. The
+full online transition sequence and hardware behavior also remain unresolved.
+
+The profile catalog has 63 `Psd` values but only 58 unique normalized
+signatures. These are catalog facts, not proof that the binary loads the
+strings into the comparison table.
 Three signatures are shared across variants: `0A 00 00 00 00 06` (F75 wired
 and three-mode), `03 00 00 00 00 6E` (R65 RGB wired and non-wireless), and
-`0A 00 00 00 00 22` (four R98Pro regional/variant profiles). The matcher
-returns the first exact match in configured PID order, so those bytes alone
-do not uniquely identify every model. The eight S98 `Psd` values in this
-catalog are unique, though that does not validate the classifier against a
-physical keyboard.
+`0A 00 00 00 00 22` (four R98Pro regional/variant profiles). If populated as
+match keys, those values would not uniquely identify every model. The function
+walks rows in configured PID order, but the loader does not establish that
+these catalog signatures are the bytes it compares. The eight S98
+`Psd` values in the catalog are unique, though the table-loading caveat above
+means this does not validate the classifier against a physical keyboard.
 
 The Ghidra listing gives this initial function-level map. The `FUN_` names
 are auto-generated names, not original RK symbols:
@@ -174,11 +193,11 @@ are auto-generated names, not original RK symbols:
 | --- | --- |
 | `FUN_004164b0` → `FUN_00416570` | Enumerate HID interfaces with SetupAPI, open an interface, collect attributes and report capabilities, then record descriptor metadata. |
 | `FUN_00447090` | Clear and repopulate the main device table by invoking HID enumeration. |
-| `FUN_00447210` | Load model VID/PID, screen, firmware/device-type, and wireless IDs from per-model `KB.ini` files. |
+| `FUN_00447210` | Zero `0x102C` bytes at `DAT_006102A0`, then load model VID/PID, `ShowScreen`, `Fw`, `DevTy`, and wireless IDs from per-model `KB.ini` files. It does not load `Psd` into this table. |
 | `FUN_00447591` | Handle device-change paths, match IDs, and schedule follow-up device detection. |
 | `FUN_004155C0` | Match profile VID/PID and HID usage/report capabilities; route `Fw=0` profiles to RKKB and nonzero-`Fw` profiles to G5. |
 | `FUN_004474D0` | Classify known wireless IDs and profile wireless VID/PID pairs before the online/wireless scan. |
-| `FUN_00415900` | Compare wireless profile VID/PID, nonzero-`Fw`, and six-byte `Psd` data before constructing the 3632 handler. |
+| `FUN_00415900` | Compare wireless profile VID/PID, nonzero-`Fw`, and row bytes `+0x04..+0x09` before a possible 3632 construction. Their correlation with `KB.ini` `Psd` is unresolved because the table loader does not populate a `Psd` field; indirect writes are not excluded. |
 | `FUN_0040f700` | G5 feature-report transport, 520-byte reports and 512-byte payload chunks. A read operation first sends a feature report, then calls `HidD_GetFeature`. |
 | `FUN_00412b10` | G5 screen/page transfer path with chunking, acknowledgements, optional alternating-byte checksum/complement, retries, progress, and cancellation. |
 | `FUN_0040d7e0` | Separate 3632 transport with 20-byte packets and 14-byte data chunks plus checksum/retry handling. |
@@ -504,7 +523,7 @@ The UI labels and static call paths support this more specific feature map:
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; separate `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`. | DSP parameter-to-UI mapping and data-format meaning remain incomplete. Neither capture nor HID transmit was run. |
 | Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | Exact frame field map, delay units, and model-to-transport mapping remain unresolved. These command paths write to the keyboard. |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
-| Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. The UART queue was traced into its state machine, but no queued-data-to-firmware-file path was found in the inspected routines. See the [updater/readback audit](rk-firmware-readback-audit.md). |
+| Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. UART states 7/11 contain a conditional response-to-file sink, but the file gate, stream setup, and runtime activation are unresolved. See the [updater/readback audit](rk-firmware-readback-audit.md). |
 
 ### Lighting payload details
 
@@ -947,10 +966,13 @@ executed paths remain untraced.
 The updater's static UI and call traces identify an `.upf` file chooser and
 firmware burn flow, plus version/status/acknowledgment handling. Its section-B
 and section-C update paths read back bounded chunks and compare them in RAM
-with the selected host image after writing. No full-flash dump or save-to-host
-path was found. Its imports of generic file APIs do not establish that
-firmware bytes are copied from the device; no data-flow from a device response
-into a firmware file was identified in the traced update routines.
+with the selected host image after writing. No complete full-flash dump or
+save-to-host workflow was recovered. The separate UART state-7/state-11 path
+has conditional response-to-file writes, but its file gate is initialized to
+zero, and its stream setup and activation are unresolved. The HID
+update/verify routines do not establish a firmware-file export, and generic
+file API imports alone are not evidence that firmware is copied from a
+device.
 
 REA's PE resource inspection of `DeviceDriver.exe` found 61 resources, including
 10 dialog resources and 14 string-table resources. The strings and dialogs
@@ -1110,20 +1132,23 @@ the package has not been validated.
 
 Static updater paths show firmware selection/burning and short version/status
 reads. The section-B and section-C verifiers read bounded update chunks into
-RAM and compare them with the selected host image after a write. This is not a
-demonstrated way to read and save the keyboard's existing firmware, and the
-installed `.upf` declares section C as zero length. No full-flash dump or
-save-to-file path was found. This does not prove that the bootloader has no
-undocumented read command. The generic HID data path inspected for the native
-driver sends a feature report before it calls `HidD_GetFeature`, so an
-attempted “read” is not a passive USB capture. No keyboard feature report was
-sent, no updater was launched, and no bootloader mode was entered. With the
-evidence available, there is no demonstrated way to copy the running firmware
-while leaving the keyboard unchanged.
+RAM and compare them with the selected host image after a write. The installed
+`.upf` declares section C as zero length. A separate UART
+state-7/state-11 path conditionally passes received chunks to a fwrite-like
+wrapper. However, its gate is directly initialized to zero, no nonzero direct
+setter or stream-open/file-name path was found, and key stream/buffer globals
+are in the zero-filled `.data` tail. The code therefore shows a potential
+response-to-file sink, not an activated or complete firmware export workflow.
+The generic HID data path inspected for the native driver sends a feature
+report before it calls `HidD_GetFeature`, so an attempted “read” is not a
+passive USB capture. No keyboard feature report was sent, no updater was
+launched, and no bootloader mode was entered. With the evidence available,
+there is still no demonstrated way to copy the running firmware while
+guaranteeing the keyboard remains unchanged.
 
 The dedicated [updater and firmware readback audit](rk-firmware-readback-audit.md)
-records the parser fields, traced HID verification buffers, UART reads, and
-the limits of this negative result.
+records the parser fields, traced HID verification buffers, conditional UART
+response-to-file sink, and the limits of this finding.
 
 The [profile catalog and schema audit](rk-profile-schema-audit.md) covers all
 189 installed `KB.ini` files, the exact tuple coverage of `models.json`,

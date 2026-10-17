@@ -1,25 +1,39 @@
 # Royal Kludge Keyboard Software Research
 
-An independent, static research archive for Royal Kludge (RK) keyboard
-software, profiles, resources, and model-specific native code. The goal is to
-make the evidence and its limits easy to inspect so other researchers can
-identify models, compare software versions, and continue the analysis.
+An independent, open-source starting point for researching Royal Kludge (RK)
+keyboard software. This repository brings together versioned evidence,
+reproducible catalog tools, detailed software audits, and a source-built
+Windows research workbench so contributors can inspect how the examined RK
+package is organized and continue the analysis.
 
-This repository is an open, source-backed research hub for studying RK's
-Windows keyboard software. It brings together a reproducible model catalog,
-installed-file hashes, localization and dialog-resource audits,
-profile-to-driver maps, native API and updater-path crosswalks, and a
-downloadable Windows research workbench. It is a detailed static audit of the
-RK 4.06 package examined here, not a universal inventory of every RK release
-or keyboard.
+The archive includes model profiles, installed-file hashes, localization and
+dialog-resource inventories, profile-to-driver maps, native API and
+updater-path crosswalks, and a downloadable Windows app. It documents the RK
+4.06 package examined here; it is not a universal inventory of every RK
+release or keyboard, and the workbench is not a feature-complete replacement
+for the vendor utility.
 
 **Get the Windows app:** [latest RK Research Workbench release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest)
 · **Browse the source:** [`workbench/`](workbench/) · **Audit scope:** [coverage and open work](COVERAGE.md)
 
-This is independent research, not the official RK software, and it is not
-affiliated with RK. No vendor executable, DLL, installer, firmware image, or
-copied artwork is included. The separate `workbench/` app is an original,
-open-source profile editor and does not implement vendor hardware writes.
+This is independent community research, not the official RK software, and it
+is not affiliated with RK. No vendor executable, DLL, installer, firmware
+image, or copied artwork is included. The separate `workbench/` app is an
+original, open-source profile editor and does not implement vendor hardware
+writes.
+
+## Two open-source projects
+
+| Project | Best for | Available today |
+| --- | --- | --- |
+| [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio) | A user-facing web app and native Windows profile editor | Local model layouts, profile editing, and JSON import/export. Its hosted web app is at [keydeck-rk-s98.vercel.app](https://keydeck-rk-s98.vercel.app/). |
+| This research archive | Studying the installed RK Windows software and building on its documented evidence | Static audits, source scripts, the 188-profile catalog, and the downloadable source-built research workbench. |
+
+Both projects are independent and open source. Neither currently sends
+settings, lighting, macro, screen, or firmware writes to a keyboard. The
+research workbench is a reference and profile editor, not a fully compatible
+hardware clone of the RK utility. See [coverage status](COVERAGE.md) for the
+confirmed findings and open questions.
 
 ## Coverage
 
@@ -51,6 +65,8 @@ as confirmed.
 - [PE dialog-resource and selected updater control audit](docs/rk-dialog-resource-audit.md)
 - [HID enumeration and hot-plug notification audit](docs/rk-device-enumeration-notification-audit.md)
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
+- [Indirect API call and callback follow-up](docs/rk-native-api-indirect-call-audit.md)
+- [Dynamic API resolution paths](docs/rk-dynamic-api-resolution-audit.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)

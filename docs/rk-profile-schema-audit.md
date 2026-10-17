@@ -148,10 +148,18 @@ analyzed binary. The source does not prove a connected keyboard's firmware
 revision or whether its HID descriptor will satisfy the remaining match
 criteria.
 
-The analysis also recovered a conditional wireless/companion path that can
-construct `CDev3632` after profile, descriptor, and `Psd` checks. Treat that
-as a possible follow-on path for matching nonzero-`Fw` profiles, not as an
-exclusive one-handler-per-model mapping. The meaning and provenance of `Psd`,
-the full transition sequence, and the behavior of each unclassified tuple
-column remain unresolved. No keyboard reports were captured to validate
-these paths.
+The analysis recovered a conditional wireless/companion path that can
+construct `CDev3632` after descriptor and six-byte comparison checks on a
+nonzero-`Fw` row. The compared bytes are not proven to come from the profile's
+`Psd`: `FUN_00447210` clears the `0x102C`-byte table at `DAT_006102A0` (callsite
+`0x0044723F`) and loads VID, PID, `ShowScreen`, `Fw`, `DevTy`, and wireless
+IDs, but no `Psd` field; `FUN_00415900` compares incoming bytes with row
+offsets `+0x04..+0x09` (instructions `0x00415995`–`0x004159C9`).
+The collected static xrefs identify `FUN_00447210` as the table initializer
+and direct writer, but do not exclude writes through aliases or other
+indirect paths. Treat `CDev3632` as a possible follow-on path, not as a proven
+model-level `Psd` match or an exclusive one-handler-per-model mapping. The
+meaning and provenance of `Psd`, the full transition sequence, and the
+behavior of each unclassified tuple column remain unresolved. No keyboard
+reports were captured to validate these paths; see the detailed table-path
+caveat in [the native reverse-engineering report](reverse-engineering.md).
