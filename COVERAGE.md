@@ -16,10 +16,11 @@ model or runtime map.
 - All ordinary and delay imports from the five installed PE files, their
   scanned IAT/thunk references, dynamic API loader candidates, and raw
   system-call byte matches are inventoried.
-- A second static pass mapped 50 indirect call/callback routes and one
-  imported-data reference among the 62 imports that lacked direct/thunk call
-  references; the remaining 11 have no recovered invocation path and are
-  classified in the per-API audit.
+- A second static pass mapped 51 call/callback routes and one imported-data
+  reference among the 62 imports that lacked direct/thunk call references;
+  10 import rows still have no recovered invocation path and are classified
+  in the per-API audit. The `PostQuitMessage` wrapper path is tied to seven
+  callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
   inventoried and statically reviewed across the driver, installer helper,
   updater, and uninstaller. Some caller-fed module/export values, cached
@@ -30,9 +31,11 @@ model or runtime map.
   profile/macro/screen persistence, installer helpers, and uninstaller
   scripts.
 - The shared settings serializer's keymap, macro, lighting, RGB, and color
-  group branches are mapped to G5/3632 commands. G5 screen/GIF/page serializers
-  and virtual table entries are mapped; the UI-to-device bridge and several
-  payload meanings remain unresolved. See
+  group branches are mapped to G5/3632 commands. Separate RKKB writes for
+  key/layer, macro-derived, LED, key-color, matrix, Fn, and music paths are
+  also documented. G5 screen/GIF/page serializers and virtual table entries
+  are mapped; UI-to-device bridges and several payload meanings remain
+  unresolved. See
   `docs/rk-setting-serializer-audit.md`.
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
@@ -48,8 +51,14 @@ model or runtime map.
   candidate action, keycode, and matrix-index meanings; end-to-end profile to
   device translation remains unresolved.
 - Main-app HID enumeration and USB/HID interface notification filters are
-  traced through register-indirect API calls; runtime event delivery and
+  traced through register-indirect API calls and an RTTI-attributed
+  `COemDrvDlg` `WM_DEVICECHANGE` message-map entry; runtime event delivery and
   device-to-profile selection remain unobserved.
+- All 26 recovered MFC message-map arrays are decoded into 291 raw entry rows
+  with message, signature, ID range, handler, and owner evidence. This is the
+  recovered-array inventory, not a claim that every MFC map in the PE or every
+  runtime dispatch path has been found; see
+  `docs/rk-mfc-message-map-audit.md`.
 - A dated snapshot of RK's public storefront navigation records 43 listed
   variants across 33 model tokens and compares them with the installed
   profile names. The resulting candidates are not treated as compatible

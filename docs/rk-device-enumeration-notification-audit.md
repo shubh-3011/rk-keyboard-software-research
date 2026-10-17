@@ -86,8 +86,14 @@ sets a device-state value, invokes a removal helper on removal, starts
 two-second and 500-millisecond timers, and calls `FUN_00446EE0` for follow-up
 processing. These are code paths, not evidence that either notification was
 received on this PC or that a particular keyboard was selected. The exact
-window message-map/virtual route into this function and runtime timer cadence
-remain unresolved.
+message-map route is now identified statically: the RTTI-attributed
+`COemDrvDlg` MFC map contains a `WM_DEVICECHANGE` (`0x0219`) entry at row
+`0x005D4C50`, targeting handler entry `0x00447580`; the main body begins at
+`FUN_00447591`. Its `WM_TIMER` entry is at `0x005D4C98` and targets
+`0x00447710`, which handles the retry-state and `0x845` timer branches. See
+the [full recovered MFC message-map audit](rk-mfc-message-map-audit.md).
+Runtime registration success, event delivery, and timer cadence remain
+unobserved.
 
 ## Updater HID notification
 
@@ -119,15 +125,15 @@ connected or whether any event occurred during this audit.
   `0x12`; interface enumeration; the two-stage indirect detail API calls;
   the two notification GUID byte sequences; two indirect registration calls;
   stored/removed handles; the updater's direct HID notification registration;
-  its `WM_DEVICECHANGE` code path; event-value branches; and timer/setup calls.
+  its `WM_DEVICECHANGE` code path; event-value branches; timer/setup calls;
+  and the main-app `COemDrvDlg` message-map entry to its device-change handler.
 - **Inferred from Windows API definitions:** the symbolic GUID names, the
   device-interface filter interpretation, and that flag `0` means a window
   recipient. These interpretations are linked to Microsoft documentation.
 - **Unresolved:** whether either program's notification registration
-  succeeded at runtime, which exact window message/virtual handler dispatches
-  to the main app's `FUN_00447591`, the observed cadence of follow-up
-  enumeration, and how each discovered USB/HID collection maps to a physical
-  RK keyboard/receiver.
+  succeeded at runtime, the observed cadence of follow-up enumeration, and
+  how each discovered USB/HID collection maps to a physical RK
+  keyboard/receiver.
 
 The main app's registration is class-wide for USB and HID interface
 notifications; the updater registers only the HID interface class. Neither

@@ -430,6 +430,16 @@ cloning one. `FUN_0045A310` overwrites `mac.dct` and concatenates eligible raw
 records without per-record transform or file header; the node must pass
 nonzero-field checks at record offsets `+4` and `+0x6a`.
 
+RTTI ties the 13-entry map at `0x005CD498` to `CMacroDlg`; its vtable is
+`0x005CDE3C` and its complete-object locator is `0x005E3FC0`. The constructor
+starts at `0x00426140`; the destruction path through `0x004263E0` and
+`0x00426400` calls `FUN_0045A310` before teardown at `0x0042643B`. The main
+dialog's command `0x6401` sends `WM_CLOSE` to windows named
+`OemDrvMacroTopWindow` and `OemDrvMsgTopWindow`, but the static image does not
+prove which runtime object owns the named macro window. The destructor-to-file
+save route is proven for `CMacroDlg`; connecting it to a particular close
+event remains unresolved.
+
 The `.mck` save path (`FUN_0042E320`) rotates each byte in the full record
 right by two bits before writing and requires an exact `0x342`-byte write.
 The paired import flow (`FUN_0042D490` → `FUN_0042E480`) opens a selected
@@ -447,9 +457,12 @@ files before saving the new cache. `FUN_0046D900` regenerates PNG frames.
 `FUN_0046ACC0` and `FUN_0046ADC0` read/write `gif_delay.gcc` as four bytes.
 These are local file operations. The debug log path is initialized as
 `%CSIDL_PERSONAL%/Log.txt` by `FUN_0040CAA0` and appended by `FUN_0040C9F0`.
-`FUN_00403170` writes the selected `LangIndex` to `lang.ini`; MFC profile
-wrappers can write to INI or registry storage depending on the active profile
-mode. Audio paths read a text configuration into an in-memory matrix
+`FUN_00403270` compares `WM_COMMAND` `lParam` against the language-combo child
+and passes its selected index to `FUN_00403170`, which reloads the selected
+`Text/<language>/text.xml` and writes `LangIndex` to `lang.ini`; the visible
+label-to-control link is still unresolved. See the [resource and localization audit](rk-resource-localization-audit.md).
+MFC profile wrappers can write to INI or registry storage depending on the
+active profile mode. Audio paths read a text configuration into an in-memory matrix
 (`FUN_0043BEE0`), build an audio-visualization structure (`FUN_00438810`), and
 read/write the `0x24`-byte `audio.dct`. The loopback acquisition/capture
 lifecycle is implemented separately at `FUN_0043C780`, described below; the
@@ -518,10 +531,11 @@ The UI labels and static call paths support this more specific feature map:
 
 | Feature | Native operation path observed | Limits |
 | --- | --- | --- |
-| Keymaps and layers | `FUN_00411260` maps four 132-position layers; dirty layers flow through `FUN_0040F9C0`. G5 uses `FUN_0040F700` command `3`; 3632 uses `FUN_0040D7E0` command `1`. | Key-record translation and macro-buffer ID flow are partly recovered below. Exact command payload argument meaning and some profile slot semantics remain unresolved. |
+| Keymaps and layers | Shared G5/3632 apply uses `FUN_00411260`, then G5 command `3` or 3632 command `1`. A separate RKKB apply routine `FUN_00413BF0` translates four 132-record inputs and reaches `FUN_004143F0` (`04 00` prefix, `0x780` copied bytes). | Translation tables and macro-buffer ID flow are partly recovered below. The RKKB internal layers total `0x840` bytes but the helper transmits `0x780`; packing/selection and profile/UI reachability remain unresolved. |
 | Macros | Apply-setting associates macro-buffer IDs with mapped keys, then sends dirty macro data through G5 command `5` or the 3632 macro path `FUN_0040DD60`. | The `.mck` file and event-row formats are partly recovered below; input capture and event serialization remain incomplete. |
 | Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
-| Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; separate `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`. | DSP parameter-to-UI mapping and data-format meaning remain incomplete. Neither capture nor HID transmit was run. |
+| Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; `FUN_00413340` sends music data through RKKB writer `FUN_00413220`. | DSP parameter-to-UI mapping and music payload meaning remain incomplete. Neither capture nor HID transmit was run. |
+| RKKB lighting, key color, and Fn | `FUN_00413BF0` has static bit-`0x02` LED-data, bit-`0x04` per-key-color, and bit-`0x01` key/layer, matrix, and conditional Fn write branches, all using `FUN_00413220`. | Command framing and several payload prefixes/lengths are recovered; field meanings, `0x780` key selection, global flag provenance, and UI/profile gates remain open. See the [settings serializer audit](rk-setting-serializer-audit.md). |
 | Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | The GIF payload fields and page header/checks are partly recovered below. Screen parameter semantics, delay units, and UI-to-virtual-method routing remain unresolved. These command paths write to the keyboard. |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
 | Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. UART states 7/11 contain a conditional response-to-file sink, but the file gate, stream setup, and runtime activation are unresolved. See the [updater/readback audit](rk-firmware-readback-audit.md). |
@@ -785,8 +799,13 @@ points to base-map function `0x00479866` and the entries, a getter at
 `0x005051BF` returns that descriptor, and the getter is in the RTTI-backed
 vtable whose complete-object locator names the class. Its IDs include
 `0x4079`–`0x407E`, `0x4091`, and `0x4092`. Those handlers are framework
-customization UI and do not identify an RK keyboard feature. Additional
-RTTI-backed app-owned map links are summarized here:
+customization UI and do not identify an RK keyboard feature. A full record
+parser now decodes all 26 unique recovered arrays from this owner evidence:
+291 entries, including 144 `WM_COMMAND` entries with different signatures and
+147 other messages. The earlier 112-row CSV remains the narrower
+signature-`0x39`, equal-ID subset. See the [MFC message-map audit](rk-mfc-message-map-audit.md)
+and its [normalized full-entry CSV](rk-mfc-message-map-entries.csv).
+Additional RTTI-backed app-owned map links are summarized here:
 
 | Owner class | Map entry / command ID | Notification | Handler | Static interpretation and limit |
 | --- | --- | --- | --- | --- |
@@ -794,6 +813,16 @@ RTTI-backed app-owned map links are summarized here:
 | `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | Clamps the numeric value to 65,535 and stores it in dialog state at `this+0x114`; the visible control label is unresolved. |
 | `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | Branch target returns zero through a shared epilogue; exact command purpose is unresolved. |
 | `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | One handler foregrounds or initializes/shows the dialog; the other closes named helper windows, may persist profile data, and signals the `SendSysParam` worker's event. See the [UI event and worker path audit](rk-ui-event-worker-path-audit.md). |
+
+The full maps also establish the main application's system-message dispatch:
+
+| Owner | Map row | Message | Handler | Static path |
+| --- | --- | --- | --- | --- |
+| `COemDrvDlg` | `0x005D4C50` | `WM_DEVICECHANGE` (`0x0219`) | `0x00447580`, body at `0x00447591` | Processes arrival/removal branches, parses device paths, and schedules timers `0x844`/`0x845`; the `WM_TIMER` map row at `0x005D4C98` targets `0x00447710`. Runtime event delivery remains unobserved. |
+| `CScreenDlg` | `0x005DA4E8` | `WM_TIMER` (`0x0113`) | `0x0046D570` | Timer `0x900` kills its timer, sets `this+0x10C`, and calls UI refresh `0x00475257`; the field's meaning is unknown. |
+
+See the [full MFC message-map audit](rk-mfc-message-map-audit.md) for the
+other application-owned non-command entries and all 26 recovered arrays.
 
 Handler-level inspection refined the macro and screen edit behavior. `CMacroDlg`
 handler `0x0042B3B0` reads the integer child at `this+0x2FA0`, accepts values
@@ -814,11 +843,11 @@ event. The event's worker and family-specific timeout operations are traced in
 the [UI event and worker path audit](rk-ui-event-worker-path-audit.md). The
 on-disk object schema and those four bytes' meaning remain unresolved.
 
-The other 26 blocks belong to MFC framework classes including dialogs,
+The other recovered arrays belong to MFC framework classes including dialogs,
 MDI frames, toolbar customization/property pages, preview/task panes, and
-color UI. Their presence in the candidate inventory does not establish an RK
-hardware feature. The evidence CSV distinguishes those framework maps from
-the four app-owned dialog/application maps.
+color UI. Their presence in the inventory does not establish an RK hardware
+feature. The owner evidence distinguishes framework maps from the four
+app-owned dialog/application maps.
 
 A separate `CDev3632::AccessData` helper accepts up to 512 bytes and splits
 them into 20-byte packets with 14-byte payload chunks. It queues each frame,
@@ -860,15 +889,12 @@ The three observed transport families have different framing:
 | --- | --- |
 | G5 `FUN_0040f700` | 520-byte (`0x208`) feature reports: report ID, command, option, zero field, packet count, packet index, little-endian payload length, and up to 512 payload bytes. Its read operation first sends a `HidD_SetFeature` report and then calls `HidD_GetFeature`; retries and command matching are present, with no checksum check in this generic helper. |
 | G5 page transfer `FUN_00412b10` | Command `0x0C`, up to 512 payload bytes per report, page ACK, retry, cancellation checks, and optional byte-sum/complement comparison. This is a screen/page transfer path, not a general read protocol. |
-| 3632 `FUN_0040d7e0` | 20-byte frames shown above, 14-byte payload, additive checksum, response queue, and optional retries. |
+| 3632 `FUN_0040d7e0` | 20-byte frames shown above, 14-byte payload, additive checksum, response queue, and optional retries. Macro helper `FUN_0040DD60` first groups data into at most 512-byte chunks, then calls command `3` through the 14-byte transport and waits 100 ms between successful outer chunks; option `6` and trailing argument `0x0F` semantics remain unresolved. |
 | RKKB `FUN_00413220` | 65-byte reports: ID `10`, packet count, one-based packet index, and up to 62 payload bytes. The inspected helper uses `HidD_SetFeature`, an 8 ms inter-packet delay, and no ACK/checksum. |
 
 G5 wrapper labels include SetMatrix `3`, SetMacro `5`, SetLED `4`, SetGame
 `6`, SetLedRgbTab `10`, SendWeb `0x12`, GetLED `0x84`, GetPower `0x87`, and
-GetRealData `0x88`. `GetPower` returns two bytes in the inspected helper. `GetRealData` uses 520-byte feature reports with up to 512 response bytes per chunk, but its caller, returned-data meaning, and any relationship to firmware memory are unresolved. Each chunk begins with a feature request before the read. RKKB music data uses a leading `0` byte or `[6, 0]`
-depending on the RGB flag; the rest of that payload is not decoded. These are
-three observed code paths, not a guarantee that every catalog profile maps
-one-to-one to one of these classes.
+GetRealData `0x88`. `GetPower` returns two bytes in the inspected helper. `GetRealData` uses 520-byte feature reports with up to 512 response bytes per chunk, but its caller, returned-data meaning, and any relationship to firmware memory are unresolved. Each chunk begins with a feature request before the read. RKKB `FUN_00413220` frames up to 62 payload bytes in 65-byte feature reports. Its direct callers include music (`FUN_00413340`) and the separate apply routine's LED, per-key color, key/layer, macro-derived, matrix, and conditional Fn paths. Prefixes and several lengths are recovered in the [serializer audit](rk-setting-serializer-audit.md), but exact payload schemas and model/UI reachability remain incomplete. These are observed code paths, not a guarantee that every catalog profile maps one-to-one to one of these classes.
 
 The labels come from embedded logs and function context. They are useful
 protocol leads, not a complete command schema: Ghidra generated addresses for

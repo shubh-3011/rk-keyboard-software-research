@@ -87,11 +87,12 @@ no-direct-call CSV while their local behavior is documented in the
 [HID enumeration and notification audit](rk-device-enumeration-notification-audit.md).
 
 A broader static follow-up mapped indirect calls, callbacks, and one imported
-data reference for **51 of those 62 rows**; 11 have no recovered invocation
-path. Four additional imported-API routes are conditional tail-jumps, so the
-count of 106 register-indirect call instructions does not change. This does
-not change the raw scan counts above. Per-API addresses and the exact
-unresolved list are in the
+data reference for **52 of those 62 rows**; 10 have no recovered invocation
+path. This includes a `DeviceDriver.exe` `PostQuitMessage` wrapper with seven
+direct callers and an IAT tail-jump. Four additional imported-API routes are
+conditional tail-jumps, so the count of 106 register-indirect call
+instructions does not change. This does not change the raw scan counts above.
+Per-API addresses and the exact unresolved list are in the
 [indirect import-call audit](rk-native-api-indirect-call-audit.md).
 
 For `unins000.exe`, the raw executable-section `E8` scan finds candidates at

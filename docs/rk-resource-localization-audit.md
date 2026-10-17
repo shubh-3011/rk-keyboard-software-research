@@ -42,13 +42,40 @@ The packaged UI chrome has 96 entries, including `main_nr.png`, `welcome.png`, l
 
 `Cfg.ini` lists seven language choices in this order: Simplified Chinese (`sc`), English (`en`), Traditional Chinese (`tw`), Russian, Turkish, Japanese, and Korean. The visible language setting is named by `tc_adv_str13`. The static driver trace records the selected `LangIndex` in `%LOCALAPPDATA%\RKKB\lang.ini` from `FUN_00403170`; this is code evidence for local language preference persistence, not an observation of a live run. The expected resource organization is `Text/<language>/text.xml` plus `Dev/<language>/led.xml`.
 
+Static UI-handler tracing identifies the language-selection event. `FUN_00403270`
+compares a `WM_COMMAND` `lParam` with the language-combo child window at
+`this+0xAC`, then passes selected `LangIndex` at `this+0x11C` to
+`FUN_00403170`. That routine formats the selected `Text/<language>/text.xml`
+path, reloads the string table, and writes `%LOCALAPPDATA%\RKKB\lang.ini`
+with section `OPT`, key `LangIndex`, using `WritePrivateProfileStringW`.
+The selector's visible label (`tc_adv_str13`) has not been linked to a
+specific control ID, and no live language change was observed.
+
 All seven UI XML files define the same **247 intended keys**, with zero empty values and no duplicate leaf keys after parsing. However, **`Text/Japanese/text.xml` is not well-formed XML as installed**: its `tc_screen1` text ends with `/tc_screen1>` instead of `</tc_screen1>`, missing the opening angle bracket on the closing tag. An in-memory-only repair recovers the same 247 keys; no installed file was changed. This is not a root-tag capitalization issue. The key matrix marks this single source defect explicitly.
+
+The native locale-table builder `FUN_00441F20` registers the literal and
+formatted `tc_*` lookups through `FUN_00441AB0` and stores results in indexed
+global slots. Its lookup templates cover all 247 leaf keys in the English XML.
+The binary also probes keys absent from that XML: `tc_hw1`–`tc_hw5`,
+`tc_led_mode22`–`tc_led_mode25`, `tc_custom10`, `tc_office8`–`tc_office10`,
+and `tc_kbin22`–`tc_kbin30`. These missing keys use the loader's empty-string
+fallback at `0x005C90A0`; whether that leaves controls blank, hidden, or on a
+different fallback is unresolved. This makes native query coverage broader
+than the shipped leaf-key inventory without assuming every lookup appears in
+the UI.
 
 Comparing whole string values against English finds exact textual matches in: Simplified Chinese 4/247, Traditional Chinese 4/247, Russian 5/247, Turkish 51/247, Japanese 7/247, and Korean 6/247. Common units, URLs, and short tokens can intentionally remain unchanged; the larger Turkish count is a translation-review lead, not proof of a translation defect. No linguistic quality review was performed. These counts are exact-string comparisons only.
 
 The five generic LED dictionaries each have the same 60-key schema: 21 `tc_led_mode*` names, 20 `tc_led*` alternate names, and 19 `tc_eft*` effect names. They have no empty/duplicate keys, and the four non-English dictionaries have the same schema as English with no values exactly equal to English. The 10 model-local dictionaries also have matching English/Simplified-Chinese schemas: `014E` has `tc_led1`–`tc_led3`; each of the other four profile folders has `tc_led1`–`tc_led13`. No model-local Chinese label is an exact English string. These XML files establish localized names/order, not the meaning of `LedOpt*` tuples or serialized LED commands.
 
 The model-local LED files occur for four registered profiles and the unregistered `01C7` profile. Static callsite inspection establishes the load order: the code formats `%sDev\\%04X\\%s\\led.xml` at `0x00422B84`, then follows a fallback branch to `%sDev\\%s\\led.xml` at `0x00422BDB`. Nearby code builds the `tc_eft%d`, `tc_led_mode%d`, and `tc_led%d` lookup keys. This supports profile-local-first, generic-locale-fallback behavior. The exact XML loader success semantics, each key's widget binding, and its LED command mapping remain unresolved.
+
+The string `tc_apply` is registered by the locale-table builder and is passed
+through runtime-generated control construction paths at `0x0040A3F8` and
+`0x0041EC38`. No command handler or virtual bridge from those generated
+controls to the settings apply flags has been recovered. Thus the software's
+visible Apply label is evidence of UI text, but not evidence for which
+serializer branch a click invokes.
 
 ## String families and visible workflows
 
@@ -80,4 +107,4 @@ Model-local `ET` and `Cartoon` directories contain 198 corresponding text files 
 
 ## Evidence limits and related findings
 
-The report's [native screen/GIF analysis](reverse-engineering.md#screen-and-gif-data-paths), [macro analysis](reverse-engineering.md#keymap-and-macro-mapping-details), and [profile catalog](rk-profile-driver-family-map.csv) provide code/config links for the workflows above. This pass establishes resource presence, structure, key/value coverage, image metadata, and selected visual examples. It does not reconstruct every MFC control map, prove successful runtime XML loading, reverse every effect algorithm, or decode the updater's `.upf` payload. The [dialog-resource audit](rk-dialog-resource-audit.md) inventories static PE dialog controls and selected updater handlers. No keyboard firmware was copied or modified.
+The report's [native screen/GIF analysis](reverse-engineering.md#screen-and-gif-data-paths), [macro analysis](reverse-engineering.md#keymap-and-macro-mapping-details), and [profile catalog](rk-profile-driver-family-map.csv) provide code/config links for the workflows above. This pass establishes resource presence, structure, key/value coverage, image metadata, and selected visual examples. It does not reconstruct every MFC control map, prove successful runtime XML loading, reverse every effect algorithm, or decode the updater's `.upf` payload. The [MFC message-map audit](rk-mfc-message-map-audit.md) and [dialog-resource audit](rk-dialog-resource-audit.md) inventory recovered MFC routes and static PE dialog controls. No keyboard firmware was copied or modified.

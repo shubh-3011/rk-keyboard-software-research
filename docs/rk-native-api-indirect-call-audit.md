@@ -20,22 +20,29 @@ No RK executable or updater was run. No keyboard HID interface, serial port, fir
 
 ## Coverage summary
 
-Of the 62 gap rows, 51 are mapped: 50 function-call or callback targets and one imported data reference. Eleven rows remain unresolved. Four additional imported-API paths were recovered as conditional tail-jumps through their IAT entries; they do not change the count of 106 register-indirect call instructions.
+Of the 62 gap rows, 52 are mapped: 51 function-call or callback targets and one imported data reference. Ten rows remain unresolved. Four additional imported-API paths were recovered as conditional tail-jumps through their IAT entries; they do not change the count of 106 register-indirect call instructions. A separate `DeviceDriver.exe` `PostQuitMessage` wrapper is now mapped through its callers and unconditional IAT tail-jump.
 
 | Binary | Gap rows | Mapped call/callback rows | Mapped data rows | Unresolved rows | Register-indirect call sites |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `DeviceDriver.exe` | 32 | 31 | 0 | 1 | 77 |
+| `DeviceDriver.exe` | 32 | 32 | 0 | 0 | 77 |
 | `Update.exe` | 12 | 10 | 0 | 2 | 16 |
 | `InitSetup.dll` | 2 | 2 | 0 | 0 | 3 |
 | `uninstall.dll` | 3 | 2 | 1 | 0 | 10 |
 | `unins000.exe` | 13 | 5 | 0 | 8 | 0 |
-| **Total** | **62** | **50** | **1** | **11** | **106** |
+| **Total** | **62** | **51** | **1** | **10** | **106** |
 
 The mapped transfers break down as follows:
 
 - **106 register-indirect API calls:** 77 in `DeviceDriver.exe`, 16 in `Update.exe`, 3 in `InitSetup.dll`, and 10 in `uninstall.dll`.
 - **9 exception-helper calls through global function pointers:** six calls to `RaiseException` and three to `RtlUnwind` in `unins000.exe`.
 - **One indirect tail-jump** through the `RaiseException` global function pointer.
+- **One DeviceDriver import tail-jump wrapper:** `PostQuitMessage` at
+  `0x0047F29C` is reached through wrapper `0x0047F280`, called directly at
+  seven sites (`0x00474EDD`, `0x0047547D`, `0x0047F75F`, `0x00486FBC`,
+  `0x004B542D`, `0x004D8681`, and `0x004DEB91`). The wrapper may call a
+  context object's vtable `+0x3C` with `(1,1)`, then tail-jumps through the
+  `PostQuitMessage` IAT slot `0x0059E58C` with its original stack argument.
+  The exact higher-level teardown/message-loop cases remain unknown.
 - **Four conditional IAT tail-jumps:** `OleFlushClipboard` in
   `DeviceDriver.exe`, and `PostQuitMessage`, `GetThemeSysColor`, and
   `OleFlushClipboard` in `Update.exe`.
@@ -86,6 +93,14 @@ The compact address lists below are instruction addresses in the corresponding x
 
 The device-related paths corroborate the documented SetupAPI and notification routes: `SetupDiGetDeviceInterfaceDetailW` is loaded from its IAT slot at `0x00416580` in the function beginning at `0x00416570`; notification registration loads `RegisterDeviceNotificationW` at `0x00446FE6` in the function beginning at `0x00446FC0`; and cleanup loads `UnregisterDeviceNotification` at `0x00446160` before two calls.
 
+The remaining DeviceDriver gap row, `PostQuitMessage`, is also mapped beyond
+its IAT reference. Wrapper `0x0047F280` invokes a context object's vtable
+`+0x3C` with `(1,1)` when available, then tail-jumps through the import at
+`0x0047F29C`. Seven call instructions target the wrapper:
+`0x00474EDD`, `0x0047547D`, `0x0047F75F`, `0x00486FBC`, `0x004B542D`,
+`0x004D8681`, and `0x004DEB91`. Static inspection does not establish which
+window or thread shutdown cases reach these callers.
+
 ### `Update.exe`
 
 | API | Indirect call instruction addresses |
@@ -111,10 +126,15 @@ paths, rather than register-indirect call instructions:
 | `Update.exe` — `OleFlushClipboard` | Caller `0x004141D2` invokes helper `0x00427F18`; helper `0x00427FE1` gates a tail-jump through IAT VA `0x00560968`. |
 
 Update's `LoadLibraryA` and `GetModuleHandleA` thunk addresses appear in
-alternate ANSI descriptor data, but no resolver callsite passing those
-descriptor addresses was recovered. The nine direct loader-helper callers
-pass descriptors for `LoadLibraryW` or `GetModuleHandleW`; see the separate
-[dynamic API resolution audit](rk-dynamic-api-resolution-audit.md).
+alternate ANSI descriptor records, but no invocation path for those rows was
+recovered. Helper `0x00416570` dispatches through a descriptor's loader
+pointer and then calls `GetProcAddress`; all nine direct callers pass W
+descriptors. Six pass the Kernel32 W record at `0x00561DCC`; the other three
+pass W records at `0x00562218`, `0x005645A4`, and `0x00584508`. Adjacent A
+records at `0x00561DD4`, `0x00562220`, `0x005645AC`, and `0x00584510` have no
+code-immediate or raw-pointer references in the analyzed image. That leaves
+the two ANSI imports unresolved; it does not prove they are unused. See the
+separate [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md).
 
 ### `InitSetup.dll`
 
@@ -145,9 +165,12 @@ pass descriptors for `LoadLibraryW` or `GetModuleHandleW`; see the separate
 The eight remaining `unins000.exe` rows are scrollbar APIs. Resolver
 `0x0044B5E0` loads `comctl32` through helper `0x00409108`, resolves each
 `FlatSB_*` export through `0x00409128`, and stores either the resolved address
-or the matching USER32 thunk fallback in a global. Static scans found only
-the setup stores for these pointer globals; no subsequent read, indirect
-call, or callback passage was recovered.
+or the matching USER32 thunk fallback in a global. Its direct caller is
+`0x004F8645`. Static disassembly and a whole-file little-endian address scan
+found only the resolver's initialization stores to globals `0x0050209C`–
+`0x005020B8`; no later direct read, indirect invocation, or callback passage
+was recovered. These pointers remain unresolved because computed references,
+external callers, and other binary versions are outside the scan.
 
 | Fallback thunk | Pointer global | `GetProcAddress` export | Fallback stores |
 | --- | --- | --- | --- |
@@ -162,11 +185,11 @@ call, or callback passage was recovered.
 
 ## Unresolved rows
 
-These 11 rows have no recovered invocation or callback path in the reviewed disassembly. “Unresolved” does not mean unused.
+These 10 rows have no recovered invocation or callback path in the reviewed disassembly. “Unresolved” does not mean unused.
 
 | Binary | Unresolved API rows |
 | --- | --- |
-| `DeviceDriver.exe` | `PostQuitMessage` |
+| `DeviceDriver.exe` | None |
 | `Update.exe` | `LoadLibraryA`, `GetModuleHandleA` |
 | `InitSetup.dll` | None |
 | `uninstall.dll` | None |
