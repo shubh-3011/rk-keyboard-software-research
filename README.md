@@ -5,9 +5,20 @@ software, profiles, resources, and model-specific native code. The goal is to
 make the evidence and its limits easy to inspect so other researchers can
 identify models, compare software versions, and continue the analysis.
 
-This is not RK software, is not affiliated with RK, and is not a keyboard
-configuration utility. It contains no RK executable, DLL, installer,
-firmware image, or copied artwork.
+This repository is an open, source-backed starting point for studying RK's
+Windows keyboard software: it combines a reproducible catalog, installed-file
+hashes, localization and resource audits, profile-to-driver maps, native API
+crosswalks, and a downloadable Windows research workbench. It is the most
+complete public audit we have produced from the RK 4.06 package examined here;
+it is not a universal inventory of every RK release or keyboard.
+
+**Get the Windows app:** [latest RK Research Workbench release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest)
+· **Browse the source:** [`workbench/`](workbench/) · **Audit scope:** [coverage and open work](COVERAGE.md)
+
+This is independent research, not the official RK software, and it is not
+affiliated with RK. No vendor executable, DLL, installer, firmware image, or
+copied artwork is included. The separate `workbench/` app is an original,
+open-source profile editor and does not implement vendor hardware writes.
 
 ## Coverage
 
@@ -42,6 +53,22 @@ as confirmed.
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
 - [Public product names not found in the 4.06 profile catalog](docs/rk-public-model-coverage-gaps.md)
 - [All audit documents and evidence tables](docs/)
+
+## Open-source Windows workbench
+
+The [`workbench/` source](workbench/) packages the profile studio as a
+standalone Windows desktop app. It includes the same 188-profile catalog,
+local keymap, lighting, macro and display-profile editing, and JSON
+import/export. User data stays in the local Windows profile. The executable
+runs in its own WebView2 window and serves its bundled files only on loopback.
+
+This is a source-available reconstruction of the safe profile-editing
+workflows, not a feature-complete clone of RK's hardware utility. It can
+identify an authorized device by USB/HID descriptor when the embedded runtime
+supports WebHID, but it does not open HID reports or write to the keyboard.
+Lighting, macros, screen transfers, firmware tools, and hardware writes are
+not implemented. The keyboard remains untouched. The app's limits and build
+steps are in [`workbench/README.md`](workbench/README.md).
 
 The reports distinguish statically proven observations, inferences, and
 unresolved questions. Import presence, strings, byte patterns, profile labels,
@@ -84,10 +111,33 @@ runs them. They are documented as findings, not recommendations to replay.
 - [RK official web configurator](https://drive.rkgaming.com/)
 - [KludgeKnight open-source RK configurator](https://github.com/vinc3m1/kludgeknight)
 
+## Related community work
+
+This repository is intended as a useful index for RK software research and
+reconstruction. The projects below cover adjacent ground, including actual
+device configuration and protocol implementations. Their model support and
+hardware behavior are independent of the static 4.06 findings here:
+
+- [Rangoli](https://github.com/rnayabed/rangoli) — cross-platform RK
+  configuration software with protocol work based on packet captures.
+- [Royal Kludge Configurator](https://github.com/Ripwords/royal-kludge-configurator)
+  — a Tauri desktop configurator that builds on protocol work from Rangoli.
+- [KludgeKnight](https://github.com/vinc3m1/kludgeknight) — browser-based
+  configurator with key-configuration references from the official app.
+- [RKCU](https://github.com/oddlyspaced/rkcu) — an RK61-focused USB
+  configuration implementation.
+
+For the installed Windows suite's static inventory—profiles, resources,
+imports, callsite candidates, update paths, and evidence gaps—start with this
+repository's [coverage ledger](COVERAGE.md) and
+[main report](docs/reverse-engineering.md). No single package snapshot here
+establishes compatibility with every RK model or revision.
+
 The catalog and product names are RK trademarks. Research notes and scripts
 are licensed under MIT; see [LICENSE](LICENSE) and
 [data provenance](DATA-PROVENANCE.md).
 
 The related [Keydeck RK Studio project](https://github.com/shubh-3011/keydeck-rk-studio)
-is a separate local/web profile editor. This repository is the standalone
-research archive.
+is the companion web and Windows profile editor. This repository is the
+standalone research archive and also publishes a research edition of that
+open-source desktop workbench, with its source and build instructions.

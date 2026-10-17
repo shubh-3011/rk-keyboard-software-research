@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f5f2" />
+    <meta
+      name="description"
+      content="An open-source, offline profile and research workbench for Royal Kludge keyboards."
+    />
+    <title>RK Research Workbench | Keyboard Software</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#device" aria-label="RK Research Workbench home">
+          <span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i
+          ></span>
+            <span><strong>RK WORKBENCH</strong><small>keyboard research edition</small></span>
+        </a>
+
+        <div class="sidebar-caption">CONFIGURE</div>
+        <nav class="nav-list" aria-label="Configure">
+          <button class="nav-item active" data-page="device">
+            <span class="nav-glyph">01</span>Device
+          </button>
+          <button class="nav-item" data-page="keys">
+            <span class="nav-glyph">02</span>Key map
+          </button>
+          <button class="nav-item" id="lightingNavButton" data-page="lighting">
+            <span class="nav-glyph">03</span>Lighting
+          </button>
+          <button class="nav-item" id="screenNavButton" data-page="screen">
+            <span class="nav-glyph">04</span>Smart display
+          </button>
+          <button class="nav-item" data-page="knob">
+            <span class="nav-glyph">05</span>Controls & modes
+          </button>
+        </nav>
+
+        <div class="sidebar-caption library-caption">LIBRARY</div>
+        <nav class="nav-list" aria-label="Library">
+          <button class="nav-item" data-page="macros">
+            <span class="nav-glyph">06</span>Macros
+          </button>
+          <button class="nav-item" data-page="profiles">
+            <span class="nav-glyph">07</span>Profiles
+          </button>
+          <button class="nav-item" data-page="diagnostics">
+            <span class="nav-glyph">08</span>Device info
+          </button>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <section class="sidebar-device">
+          <div class="device-mini-top">
+            <span class="connection-lamp" id="sidebarLamp"></span
+            ><span id="sidebarDeviceState">No keyboard detected</span>
+          </div>
+          <strong id="sidebarDeviceName">Choose a model</strong>
+          <small id="sidebarDeviceId">USB device access is off</small>
+          <button class="button button-dark button-wide" data-identify>
+            Identify keyboard
+          </button>
+        </section>
+        <div class="sidebar-footer">
+          <span>OPEN-SOURCE RESEARCH EDITION</span><span>LOCAL PROFILE STUDIO 0.1.0</span>
+        </div>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <div class="breadcrumb">
+            <span>RK WORKBENCH</span><b>/</b><strong id="crumbTitle">Device</strong>
+          </div>
+          <div class="topbar-tools">
+            <label class="profile-control"
+              ><span>PROFILE</span
+              ><select id="profileSelect" aria-label="Active profile"></select
+            ></label>
+            <span class="top-divider"></span>
+            <button class="button button-light" id="exportActive">
+              Export
+            </button>
+            <button class="button button-primary" id="saveProfileButton">
+              Save profile
+            </button>
+            <button
+              class="button button-blocked"
+              id="writeChanges"
+              disabled
+              title="Device writing is disabled in this release."
+            >
+              Write changes
+            </button>
+          </div>
+        </header>
+
+        <main class="main-content">
+          <section class="page active" id="page-device">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">
+                  KEYBOARD PROFILE <span class="eyebrow-dot"></span> LOCAL
+                  SETTINGS
+                </p>
+                  <h1 id="deviceModelHeadline">Royal Kludge keyboard</h1>
+                <p class="page-subtitle">
+                  Choose a profile to see its layout and capabilities. Device
+                  identification uses USB descriptor information only.
+                </p>
+              </div>
+              <button class="button button-outline identify-main" data-identify>
+                Identify keyboard
+              </button>
+            </div>
+
+            <div class="device-grid">
+              <section class="panel hardware-panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">LAYOUT</p>
+                    <h2 id="keyboardLayoutTitle">Keyboard layout</h2>
+                    <p class="muted" id="overviewLayoutCaption">
+                      Choose a model profile to load its layout.
+                    </p>
+                  </div>
+                  <div class="model-picker">
+                    <label for="modelFilter">MODEL PROFILE</label>
+                    <input id="modelFilter" type="search" placeholder="Filter models" autocomplete="off" />
+                    <small id="modelFilterCount">Loading model catalog</small>
+                    <select id="modelSelect" aria-label="Choose model profile"></select>
+                  </div>
+                </div>
+                <div class="keyboard-frame">
+                  <div class="keyboard-host" id="deviceKeyboard"></div>
+                </div>
+                <div class="hardware-footer">
+                  <span
+                    ><i class="legend-dot key-mapped-dot"></i>Profile
+                    remap</span
+                  ><span>Changes saved to this profile</span
+                  ><button class="text-button" data-go="keys">
+                    Open key map
+                  </button>
+                </div>
+                <div class="model-feature-summary" id="modelFeatureSummary" aria-live="polite"></div>
+              </section>
+
+              <aside class="device-side-column">
+                <section class="panel status-panel">
+                  <div class="panel-heading compact-panel-heading">
+                    <div>
+                      <p class="section-kicker">CONNECTION</p>
+                      <h2 id="devicePillText">Not identified</h2>
+                    </div>
+                    <span class="connection-lamp" id="deviceLamp"></span>
+                  </div>
+                  <p class="muted" id="deviceIdentity">
+                    Choose Identify keyboard to inspect its USB identity. The
+                    app will not open or write HID reports.
+                  </p>
+                  <div class="device-id-row">
+                    <span>USB ID</span><strong id="deviceIdValue">—</strong>
+                  </div>
+                  <div class="device-id-row model-match-row">
+                    <span>MODEL</span><strong id="deviceModelState">No keyboard selected</strong>
+                  </div>
+                  <label class="device-select-wrap" id="deviceSelectWrap" hidden>
+                    <span>AUTHORIZED KEYBOARDS</span>
+                    <select id="deviceSelect" aria-label="Choose authorized keyboard"></select>
+                  </label>
+                  <button class="button button-dark button-wide" data-identify>
+                    Identify keyboard
+                  </button>
+                </section>
+
+                <section class="panel display-status-panel" id="screenFeatureCard">
+                  <div class="panel-heading compact-panel-heading">
+                    <div>
+                      <p class="section-kicker">SMART DISPLAY</p>
+                      <h2 id="screenOverviewSize">Model display</h2>
+                    </div>
+                    <span class="screen-frame-mark"></span>
+                  </div>
+                  <div class="screen-state">
+                    <div class="screen-grid">
+                      <span></span><span></span><span></span><span></span
+                      ><span></span><span></span><span></span><span></span
+                      ><span></span>
+                    </div>
+                    <div>
+                      <strong id="screenAssetState"
+                        >No display asset selected</strong
+                      ><small
+                        >Asset selection is stored in the active profile</small
+                      >
+                    </div>
+                  </div>
+                  <button class="text-button" data-go="screen">
+                    Configure display
+                  </button>
+                </section>
+
+                <section class="panel quick-controls-panel">
+                  <div class="section-kicker">QUICK CONTROLS</div>
+                  <div class="quick-control" id="quickLightingControl">
+                    <div>
+                      <strong>Backlight</strong
+                      ><small id="overviewBrightness">72%</small>
+                    </div>
+                    <input
+                      class="range-control"
+                      id="quickBrightness"
+                      type="range"
+                      min="0"
+                      max="100"
+                      value="72"
+                      aria-label="Profile brightness"
+                    />
+                  </div>
+                  <div class="quick-control" id="quickEffectControl">
+                    <div>
+                      <strong>Effect</strong
+                      ><small id="overviewEffect">Static</small>
+                    </div>
+                    <button class="text-button" data-go="lighting">RGB</button>
+                  </div>
+                  <p class="micro-note">
+                  These are local profile values. This workbench does not send HID
+                  reports or apply them to a keyboard.
+                  </p>
+                </section>
+              </aside>
+            </div>
+
+            <section class="feature-strip">
+              <article id="triModeCard">
+                <span class="feature-index">A</span>
+                <div>
+                  <strong>Connection options</strong
+                  ><small id="connectionFeatureSummary">Profile preferences</small>
+                </div>
+                <button class="text-button" data-go="knob">Set mode</button>
+              </article>
+              <article id="smartDisplayFeature">
+                <span class="feature-index">B</span>
+                <div>
+                  <strong>Smart display</strong
+                  ><small>Local asset and brightness settings</small>
+                </div>
+                <button class="text-button" data-go="screen">Configure</button>
+              </article>
+              <article id="rotaryFeature">
+                <span class="feature-index">C</span>
+                <div>
+                  <strong>Rotary dial</strong
+                  ><small>Volume, lighting and media actions</small>
+                </div>
+                <button class="text-button" data-go="knob">Configure</button>
+              </article>
+            </section>
+          </section>
+
+          <section class="page" id="page-keys">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">INPUT CONFIGURATION</p>
+                <h1>Key map</h1>
+                <p class="page-subtitle">
+                  Edit a profile layer and review each assignment before using a
+                  supported hardware protocol.
+                </p>
+              </div>
+              <div class="layer-picker">
+                <label class="region-control" for="layerSelect"><span>LAYER</span><select id="layerSelect"></select></label>
+                <small id="layerSelectCaption" class="field-help">Model layers</small>
+              </div>
+            </div>
+            <div class="keymap-layout">
+              <section class="panel keyboard-panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">MODEL LAYOUT</p>
+                    <h2 id="keymapLayoutTitle">Select a key</h2>
+                  </div>
+                  <span class="mapping-legend"
+                    ><i class="legend-dot key-mapped-dot"></i>Remapped in this
+                    profile</span
+                  >
+                </div>
+                <div class="keyboard-frame keymap-frame">
+                  <div class="keyboard-host" id="keymapKeyboard"></div>
+                </div>
+                <div class="panel-footer">
+                  <span id="mappingCount">No profile remaps</span
+                  ><span>Click a key to inspect it</span>
+                </div>
+              </section>
+              <section class="panel editor-panel">
+                <div class="section-kicker">ASSIGNMENT</div>
+                <div class="selected-key-card">
+                  <span class="selected-keycap" id="selectedKeycap">W</span>
+                  <div>
+                    <strong id="selectedKeyName">W</strong
+                    ><small
+                      >Current layer:
+                      <span id="selectedLayerName">Base</span></small
+                    >
+                  </div>
+                </div>
+                <label class="field-label" for="actionSelect">ACTION</label
+                ><select class="field-select" id="actionSelect">
+                  <option value="Default">Default key</option>
+                  <option value="Custom">Remap to key</option>
+                  <option value="Macro">Macro</option>
+                  <option value="Media">Media action</option>
+                  <option value="Disabled">Disable key</option>
+                </select>
+                <div id="actionValueWrap">
+                  <label class="field-label" for="actionValue"
+                    >ASSIGNMENT VALUE</label
+                  ><input
+                    class="field-input"
+                    id="actionValue"
+                    value="W"
+                    placeholder="Enter a key or action"
+                  />
+                </div>
+                <div class="editor-actions">
+                  <button class="button button-light" id="clearKeyMapping">
+                    Reset key</button
+                  ><button class="button button-primary" id="saveKeyMapping">
+                    Save assignment
+                  </button>
+                </div>
+                <div class="callout">
+                  <strong>Hardware output is locked</strong>
+                  <p>
+                    The editor stores local profile data only. Keymap reports
+                    can replace the complete onboard map, so this app never
+                    opens the HID device or sends reports.
+                  </p>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="page" id="page-lighting">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">LIGHTING</p>
+                <h1>RGB settings</h1>
+                <p class="page-subtitle">
+                  Store model-specific lighting preferences. Values are not
+                  sent to the keyboard.
+                </p>
+              </div>
+              <div class="status-chip">
+                <span class="connection-lamp"></span>PROFILE SETTINGS
+              </div>
+            </div>
+            <div class="settings-columns">
+              <section class="panel settings-panel">
+                <div class="section-kicker">EFFECT</div>
+                <label class="field-label" for="effectSelect">RGB MODE</label
+                ><select class="field-select" id="effectSelect">
+                  <option>Static</option>
+                  <option>Breathing</option>
+                  <option>Wave</option>
+                  <option>Reactive</option>
+                  <option>Ripple</option>
+                  <option>Spectrum</option>
+                  <option>Off</option>
+                </select>
+                <small class="field-help" id="lightingModeInfo">Mode slots from the installed profile</small>
+                <div class="field-separator"></div>
+                <div class="control-heading">
+                  <label class="field-label" for="colorPicker"
+                    >PRIMARY COLOR</label
+                  ><span id="colorHex">#75D6C1</span>
+                </div>
+                <div class="color-picker-row">
+                  <input
+                    type="color"
+                    id="colorPicker"
+                    value="#75d6c1"
+                    aria-label="Primary color"
+                  />
+                  <div class="swatches" id="colorSwatches">
+                    <button
+                      class="swatch"
+                      data-color="#75D6C1"
+                      style="--swatch: #75d6c1"
+                      aria-label="Sea glass"
+                    ></button
+                    ><button
+                      class="swatch"
+                      data-color="#80A7FF"
+                      style="--swatch: #80a7ff"
+                      aria-label="Blue"
+                    ></button
+                    ><button
+                      class="swatch"
+                      data-color="#E6A36B"
+                      style="--swatch: #e6a36b"
+                      aria-label="Amber"
+                    ></button
+                    ><button
+                      class="swatch"
+                      data-color="#CF92D9"
+                      style="--swatch: #cf92d9"
+                      aria-label="Lilac"
+                    ></button
+                    ><button
+                      class="swatch"
+                      data-color="#F0EEE7"
+                      style="--swatch: #f0eee7"
+                      aria-label="Warm white"
+                    ></button>
+                  </div>
+                </div>
+                <div class="field-separator"></div>
+                <div class="control-block">
+                  <div class="control-heading">
+                    <label class="field-label" for="brightnessRange"
+                      >BRIGHTNESS</label
+                    ><span id="brightnessValue">72%</span>
+                  </div>
+                  <input
+                    class="range-control"
+                    id="brightnessRange"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="72"
+                  />
+                </div>
+                <div class="control-block">
+                  <div class="control-heading">
+                    <label class="field-label" for="speedRange"
+                      >ANIMATION SPEED</label
+                    ><span id="speedValue">55%</span>
+                  </div>
+                  <input
+                    class="range-control"
+                    id="speedRange"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="55"
+                  />
+                </div>
+                <button class="button button-primary" id="saveLighting">
+                  Save lighting profile
+                </button>
+              </section>
+              <aside class="panel notes-panel">
+                <div class="section-kicker">DEVICE SUPPORT</div>
+                <h2>Save now, apply when matched</h2>
+                <p>
+                  The installed profile lists device capability slots, but
+                  their report names are not decoded. Changes stay local; no
+                  report is sent.
+                </p>
+                <div class="support-row">
+                  <span>Selected model</span
+                  ><strong id="selectedModelName">RK keyboard</strong>
+                </div>
+                <div class="support-row">
+                  <span>Device identity</span
+                  ><strong id="lightingDeviceState">Not identified</strong>
+                </div>
+                <div class="support-row"><span>Lighting data</span><strong id="lightingFeatureState">No profile loaded</strong></div>
+                <button class="text-button" data-go="diagnostics">
+                  Open device info
+                </button>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" id="page-screen">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">MODEL DISPLAY</p>
+                <h1 id="screenPageTitle">Display settings</h1>
+                <p class="page-subtitle" id="screenPageDescription">
+                  Display profile settings stay local.
+                </p>
+              </div>
+              <div class="status-chip" id="screenSpecBadge">DISPLAY PROFILE</div>
+            </div>
+            <div class="settings-columns screen-columns">
+              <section class="panel settings-panel">
+                <div class="section-kicker">ASSET</div>
+                <label class="field-label" for="screenFile"
+                  >IMAGE OR ANIMATION</label
+                ><label class="file-select" for="screenFile"
+                  ><strong id="screenAssetName">Choose PNG, JPG or GIF</strong
+                  ><small id="screenAssetDimensions"
+                    >Files are inspected locally in your browser.</small
+                  ><input
+                    id="screenFile"
+                    type="file"
+                    accept="image/png,image/jpeg,image/gif"
+                /></label>
+                <div class="control-block">
+                  <div class="control-heading">
+                    <label class="field-label" for="screenBrightness"
+                      >DISPLAY BRIGHTNESS</label
+                    ><span id="screenBrightnessValue">70%</span>
+                  </div>
+                  <input
+                    class="range-control"
+                    id="screenBrightness"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="70"
+                  />
+                </div>
+                <label class="checkbox-row"
+                  ><input id="screenClock" type="checkbox" checked /><span
+                    ><strong>Show time in profile notes</strong
+                    ><small
+                      >Stored as a preference. No device command is sent.</small
+                    ></span
+                  ></label
+                ><button class="button button-primary" id="saveScreen">
+                  Save display settings
+                </button>
+              </section>
+              <aside class="panel notes-panel">
+                <div class="section-kicker">TRANSFER STATUS</div>
+                <h2 id="screenTransferTitle">No display asset selected</h2>
+                <p id="screenTransferText">
+                  Asset metadata stays local. The image is not uploaded and is
+                  not sent to the keyboard.
+                </p>
+                <div class="screen-specs">
+                  <div><span>Resolution</span><strong id="screenResolution">Not listed</strong></div>
+                  <div>
+                    <span>Frame limit</span><strong id="screenFrameLimit">Not listed</strong>
+                  </div>
+                  <div>
+                    <span>Transport</span
+                    ><strong id="screenTransport">Not connected</strong>
+                  </div>
+                </div>
+                <div class="callout">
+                  <strong>No firmware operation</strong>
+                  <p>
+                    Image upload and screen data transfers are not implemented.
+                    This page stores profile metadata only.
+                  </p>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" id="page-knob">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">HARDWARE CONTROLS</p>
+                <h1>Controls & connection modes</h1>
+                <p class="page-subtitle">
+                  Store local preferences for controls listed in this model
+                  profile. No setting is applied to hardware.
+                </p>
+              </div>
+            </div>
+            <div class="settings-columns">
+              <section class="panel settings-panel" id="knobControls">
+                <div class="section-kicker" id="knobHardwareLabel">Rotary dial preferences</div>
+                <label class="field-label" for="knobRotate">ROTATE</label
+                ><select class="field-select" id="knobRotate">
+                  <option>Volume</option>
+                  <option>Lighting brightness</option>
+                  <option>Screen brightness</option>
+                  <option>Scroll</option></select
+                ><label class="field-label" for="knobPress">PRESS</label
+                ><select class="field-select" id="knobPress">
+                  <option>Play / pause</option>
+                  <option>Mute</option>
+                  <option>Switch lighting effect</option>
+                  <option>Screen control</option></select
+                ><label class="field-label" for="knobLongPress"
+                  >LONG PRESS</label
+                ><select class="field-select" id="knobLongPress">
+                  <option>None</option>
+                  <option>Mute</option>
+                  <option>Switch connection mode</option>
+                  <option>Play / pause</option>
+                </select>
+                <div class="field-separator"></div>
+                <button class="button button-primary" id="saveKnob">
+                  Save knob profile
+                </button>
+              </section>
+              <section class="panel settings-panel">
+                <div class="section-kicker">CONNECTION PREFERENCE</div>
+                <label class="field-label" for="connectionMode"
+                  >PREFERRED MODE</label
+                ><select class="field-select" id="connectionMode">
+                  <option value="USB-C">USB-C wired</option>
+                  <option value="2.4 GHz">2.4 GHz wireless</option>
+                  <option value="Bluetooth 1">Bluetooth 1</option>
+                  <option value="Bluetooth 2">Bluetooth 2</option>
+                  <option value="Bluetooth 3">Bluetooth 3</option>
+                </select>
+                <div class="connection-modes" id="connectionModeCards"></div>
+                <small class="field-help" id="connectionModeState"></small>
+                <p class="micro-note">
+                  The profile catalog can identify some wireless receiver IDs.
+                  This selector stores a preference only; it does not switch
+                  the keyboard or read battery status.
+                </p>
+              </section>
+            </div>
+          </section>
+
+          <section class="page" id="page-macros">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">INPUT AUTOMATION</p>
+                <h1>Macros</h1>
+                <p class="page-subtitle">
+                  Keep reusable sequences with a profile. Playback is not
+                  implemented, so nothing sends keystrokes.
+                </p>
+                <small class="field-help" id="macroCapability">Macro capacity depends on the selected model profile.</small>
+              </div>
+              <button class="button button-primary" id="newMacro">
+                New macro
+              </button>
+            </div>
+            <div class="keymap-layout">
+              <section class="panel settings-panel">
+                <div class="section-kicker">MACRO LIBRARY</div>
+                <div class="macro-list" id="macroList"></div>
+              </section>
+              <section class="panel settings-panel">
+                <div class="section-kicker">SEQUENCE EDITOR</div>
+                <label class="field-label" for="macroName">NAME</label
+                ><input
+                  class="field-input"
+                  id="macroName"
+                  placeholder="e.g. Quick reply"
+                /><label class="field-label" for="macroSequence">STEPS</label
+                ><textarea
+                  class="field-textarea"
+                  id="macroSequence"
+                  rows="10"
+                  placeholder="TAP H\nWAIT 60 ms\nTAP I\nTAP ENTER"
+                ></textarea>
+                <p class="micro-note">
+                  One action per line. Sequence is saved as profile data only.
+                </p>
+                <div class="editor-actions">
+                  <button class="button button-light" id="deleteMacro">
+                    Delete macro</button
+                  ><button class="button button-primary" id="saveMacro">
+                    Save macro
+                  </button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="page" id="page-profiles">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">PROFILE LIBRARY</p>
+                <h1>Profiles</h1>
+                <p class="page-subtitle">
+                  Keep key maps, lighting, display and dial preferences
+                  together.
+                </p>
+              </div>
+              <div class="heading-actions">
+                <button class="button button-light" id="importProfileButton">
+                  Import JSON</button
+                ><input
+                  type="file"
+                  id="profileFile"
+                  accept="application/json,.json"
+                  hidden
+                /><button class="button button-primary" id="newProfile">
+                  New profile
+                </button>
+              </div>
+            </div>
+            <div class="profile-toolbar">
+              <span class="profile-count" id="profileCount">1 profile</span
+              ><button class="button button-light" id="duplicateProfile">
+                Duplicate active
+              </button>
+            </div>
+            <div class="profile-grid" id="profileGrid"></div>
+          </section>
+
+          <section class="page" id="page-diagnostics">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">DEVICE INFORMATION</p>
+                <h1>Identify & diagnose</h1>
+                <p class="page-subtitle">
+                  WebHID reads the selected device identity and descriptor
+                  metadata only.
+                </p>
+              </div>
+              <button class="button button-dark" data-identify>
+                Identify keyboard
+              </button>
+            </div>
+            <div class="settings-columns diagnostics-columns">
+              <section class="panel settings-panel">
+                <div class="section-kicker">HID IDENTITY</div>
+                <div class="diagnostic-row">
+                  <span>Product name</span
+                  ><strong id="diagName">Not identified</strong>
+                </div>
+                <div class="diagnostic-row">
+                  <span>Vendor ID</span><strong id="diagVendor">—</strong>
+                </div>
+                <div class="diagnostic-row">
+                  <span>Product ID</span><strong id="diagProduct">—</strong>
+                </div>
+                <div class="diagnostic-row">
+                  <span>Model profile match</span
+                  ><strong id="diagProfile">None</strong>
+                </div>
+                <div class="diagnostic-row">
+                  <span>HID collections</span
+                  ><strong id="diagCollections">—</strong>
+                </div>
+                <div class="diagnostic-row">
+                  <span>Collection types</span
+                  ><strong id="diagCollectionTypes">—</strong>
+                </div>
+                <div class="callout" id="supportCallout">
+                  <strong>No device access granted</strong>
+                  <p>
+                    Identify a keyboard to compare its USB ID with the 188
+                    model profiles in this project.
+                  </p>
+                </div>
+              </section>
+              <section class="panel settings-panel">
+                <div class="section-kicker">OFFLINE TRACE</div>
+                <p class="muted">
+                  Inspect a CSV or JSON capture on this PC. Records are never
+                  replayed.
+                </p>
+                <label class="file-select" for="traceFile"
+                  ><strong>Choose a trace file</strong
+                  ><small>CSV or JSON · parsed in this browser</small
+                  ><input
+                    type="file"
+                    id="traceFile"
+                    accept=".csv,.json,application/json,text/csv"
+                /></label>
+                <div class="trace-summary" id="traceSummary">
+                  No trace loaded
+                </div>
+                <div class="trace-table-wrap">
+                  <table class="trace-table">
+                    <thead>
+                      <tr>
+                        <th>TIME</th>
+                        <th>DIRECTION</th>
+                        <th>REPORT</th>
+                        <th>DATA</th>
+                      </tr>
+                    </thead>
+                    <tbody id="traceRows">
+                      <tr>
+                        <td colspan="4" class="table-empty">
+                          Imported records will appear here.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+    <script src="app.js" defer></script>
+  </body>
+</html>

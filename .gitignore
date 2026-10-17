@@ -7,4 +7,8 @@ venv/
 *.upf
 *.bin
 *.firmware
+workbench/build/
+workbench/dist/
+workbench/__pycache__/
+workbench/*.spec
 *.dat
