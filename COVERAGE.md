@@ -83,9 +83,11 @@ model or runtime map.
 - A second static pass mapped 51 call/callback routes and one imported-data
   reference among the 62 imports that lacked direct/thunk call references;
   10 import rows still have no recovered invocation path and are classified
-  in the per-API audit. A follow-up traces the two Update.exe ANSI loader
-  imports and eight unins000.exe scrollbar fallback imports but does not
-  establish their invocation; see `docs/rk-remaining-native-api-path-audit.md`.
+  in the per-API audit. A full-image pointer-reference scan adds evidence for
+  the two Update.exe ANSI loader imports and eight unins000.exe scrollbar
+  fallback imports, but establishes no invocation and classifies none as
+  unused; see `docs/rk-remaining-native-api-gap-deep-scan.md` and
+  `docs/rk-remaining-api-reference-scan.csv`.
   The `PostQuitMessage` wrapper path is tied to seven callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
   inventoried and statically reviewed across the driver, installer helper,
@@ -230,13 +232,23 @@ model or runtime map.
 - Every MFC control label and action, every profile tuple's meaning, all
   packet fields, or the protocol meaning and runtime reachability of the UART
   command/response paths. The 15 updater dispatch slots are separately mapped.
+  A focused trace now maps command `0x0419` through `.upf` parsing, mode
+  selection, HID discovery, and update-worker dispatch; its downstream HID
+  feature-write paths are statically visible. Timer origins, progress-message
+  consumers, runtime selection, and indirect coupling to the UART state machine
+  remain unresolved. See
+  [`docs/rk-updater-command-0419-static-path-audit.md`](docs/rk-updater-command-0419-static-path-audit.md).
   A conditional UART response-to-file sink is present in states 7 and 11, but
   its file gate is directly initialized to zero, no nonzero direct setter or
   stream-open path was found; the state-3/4/6/7 and state-10/11 subgraphs have
   no direct incoming transition from initialized state 0. Indirect/external
-  activation remains unresolved. The updater also has two six-byte feature
-  reads in a post-transfer helper; they do not constitute a complete firmware
-  read.
+  activation remains unresolved. A full `.text` direct-reference pass also
+  found no direct stream-pointer initializer or nonzero setter; both globals
+  lie in the zero-filled `.data` tail. Computed aliases and external activation
+  remain outside that proof. See
+  [`docs/rk-uart-file-sink-reachability-audit.md`](docs/rk-uart-file-sink-reachability-audit.md).
+  The updater also has two six-byte feature reads in a post-transfer helper;
+  they do not constitute a complete firmware read.
 - A read-only command that can safely and completely copy firmware from an
   attached keyboard. The conditional UART sink is not a demonstrated,
   complete firmware backup method.
