@@ -68,14 +68,24 @@ Comparing whole string values against English finds exact textual matches in: Si
 
 The five generic LED dictionaries each have the same 60-key schema: 21 `tc_led_mode*` names, 20 `tc_led*` alternate names, and 19 `tc_eft*` effect names. They have no empty/duplicate keys, and the four non-English dictionaries have the same schema as English with no values exactly equal to English. The 10 model-local dictionaries also have matching English/Simplified-Chinese schemas: `014E` has `tc_led1`–`tc_led3`; each of the other four profile folders has `tc_led1`–`tc_led13`. No model-local Chinese label is an exact English string. These XML files establish localized names/order, not the meaning of `LedOpt*` tuples or serialized LED commands.
 
-The model-local LED files occur for four registered profiles and the unregistered `01C7` profile. Static callsite inspection establishes the load order: the code formats `%sDev\\%04X\\%s\\led.xml` at `0x00422B84`, then follows a fallback branch to `%sDev\\%s\\led.xml` at `0x00422BDB`. Nearby code builds the `tc_eft%d`, `tc_led_mode%d`, and `tc_led%d` lookup keys. This supports profile-local-first, generic-locale-fallback behavior. The exact XML loader success semantics, each key's widget binding, and its LED command mapping remain unresolved.
+The model-local LED files occur for four registered profiles and the unregistered `01C7` profile. Static callsite inspection establishes the load order: the code formats `%sDev\\%04X\\%s\\led.xml` at `0x00422B84`, then follows a fallback branch to `%sDev\\%s\\led.xml` at `0x00422BDB`. Nearby code builds the `tc_eft%d`, `tc_led_mode%d`, and `tc_led%d` lookup keys. Runtime list builder `FUN_00422AF0` selects among these templates using globals `0x00611760` and `0x006117C4`, builds a 24-entry list, and `FUN_00422DA0` creates the associated controls subject to mask `0x00611798`. The profile-local-first, generic-locale-fallback path is supported, but suffix-to-visible-widget reachability and LED command mapping remain unresolved.
 
-The string `tc_apply` is registered by the locale-table builder and is passed
-through runtime-generated control construction paths at `0x0040A3F8` and
-`0x0041EC38`. No command handler or virtual bridge from those generated
-controls to the settings apply flags has been recovered. Thus the software's
-visible Apply label is evidence of UI text, but not evidence for which
-serializer branch a click invokes.
+The localized `tc_apply` slot (`0x0062B4B0`) appears in two runtime-generated
+controls. In `CKeyFunPickDlg`, RTTI identifies the vtable at `0x005CCE4C`; the
+control is stored at `this+0x204` and constructed at `0x0041EC32`–
+`0x0041EC3F`. Vtable slot `+0xF0` targets handler `0x0041F810`, which checks
+whether the clicked HWND matches that child and updates local selection/dirty
+fields. No direct call from this handler to the shared serializer or RKKB
+writer was recovered.
+
+A second `tc_apply` control is stored at `this+0x1DD8` and constructed at
+`0x0040A3F8`–`0x0040A404`. Its handler checks the child HWND and reaches
+`0x0040AE1D`; that path calls `0x0040B3B0` to update an in-memory record under
+`0x0062B384+0x458+index*0x10`, then, when global `0x00611794` is set, calls
+`0x00401080` to update global state and signal an event. This proves a
+UI-to-working-state/app-signal edge, not a persisted profile write or a
+keyboard serializer call. The downstream connection from either Apply
+control to the settings flags and device writer remains unresolved.
 
 ## String families and visible workflows
 
