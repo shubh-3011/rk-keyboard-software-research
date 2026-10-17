@@ -126,12 +126,13 @@ returned pointer is invoked, or that the branch executes. Several API paths
 are traced in the main report, including main-app DPI/menu/GDI compatibility,
 updater activation-context/WinRT setup, installer modal-error handling, and
 uninstaller ACL updates. The remaining resolver/data-flow links remain open.
-The [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) follows
-the seven main-app sites with no nearby literal candidate, plus four selected
-updater and eleven selected uninstaller sites. Those traces map call-boundary
-arguments and results where static dataflow permits, while caller-supplied
-module/export values remain unresolved. This is a targeted follow-up, not a
-complete argument-to-invocation trace of all 128 resolver callsites.
+The [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) reviews
+all 128 loader callsites: 47 in `DeviceDriver.exe`, four in `InitSetup.dll`,
+54 in `Update.exe`, and 23 in `unins000.exe`. It maps argument and returned-
+pointer paths where static dataflow permits, while some caller-supplied
+module/export values, indirect consumers, external callers, and runtime
+reachability remain unresolved. The row inventory is complete for these
+installed PE snapshots; full runtime behavior is not.
 
 ## Native system-call boundary
 

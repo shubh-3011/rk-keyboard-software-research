@@ -20,9 +20,10 @@ model or runtime map.
   imported-data reference among the 62 imports that lacked direct/thunk call
   references; the remaining 11 have no recovered invocation path and are
   classified in the per-API audit.
-- A targeted resolver follow-up traces seven main-app, four updater, and
-  eleven uninstaller dynamic-loader paths. Caller-fed module/export values,
-  remaining resolver sites, and runtime execution remain open; see
+- All 128 dynamic-loader callsites in the five installed PE snapshots are
+  inventoried and statically reviewed across the driver, installer helper,
+  updater, and uninstaller. Some caller-fed module/export values, cached
+  pointer consumers, external callers, and runtime execution remain open; see
   `docs/rk-dynamic-api-resolution-audit.md`.
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
