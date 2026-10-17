@@ -30,9 +30,15 @@ model or runtime map.
 - The 4.6 `DeviceDriver.exe` has a different SHA-256 from 4.06. Its import and
   binary changes are audited separately in
   [`docs/rk-v4.6-native-binary-delta-audit.md`](docs/rk-v4.6-native-binary-delta-audit.md).
-  That delta covers static PE/import/resource/string evidence, not a
-  function-level reanalysis. The detailed native control-flow reports below
-  remain specifically tied to the 4.06 binaries.
+  Separate static follow-ups now map the 4.6 profile selector and the Side LED
+  configuration/UI/report-builder path, but this is still not a full
+  function-level reanalysis. Side LED is enabled in profiles `02B4` and
+  `0258`; only the first has side-light artwork/localization in this package.
+  The report builder reaches a generic HID feature writer, but exact event
+  handlers, packet meaning, model compatibility, and runtime behavior remain
+  unresolved. See
+  [`docs/rk-v4.6-side-led-static-audit.md`](docs/rk-v4.6-side-led-static-audit.md).
+  Other detailed native control-flow reports remain tied to the 4.06 binaries.
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
   local macro-file references. Its linear-sweep results are not CFG
@@ -49,10 +55,14 @@ model or runtime map.
   strings and side-light resources, eight changed values, two malformed
   Japanese source files, and remaining runtime/UI reachability questions; see
   [`docs/rk-localization-delta-v4.06-v4.6.md`](docs/rk-localization-delta-v4.06-v4.6.md).
-- The [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
-  applies the 4.06 `Fw` routing rule to 4.6 profile rows for comparison only;
-  this is not a verified 4.6 driver selector, especially for the newly observed
-  `Fw=3` row.
+- An initial [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
+  applied the 4.06 `Fw` rule as a comparison only. A later static trace of the
+  hash-pinned 4.6 driver recovered its own zero, general nonzero, and dedicated
+  `Fw=3` selector/constructor branches for all 265 profile rows. The single
+  `Fw=3` row is M20 `258A:0208`; the selector's physical-device and downstream
+  protocol compatibility remain unvalidated. See
+  [`docs/rk-v4.6-profile-selector-audit.md`](docs/rk-v4.6-profile-selector-audit.md)
+  and its [row-level map](docs/rk-v4.6-profile-selector-map.csv).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official
