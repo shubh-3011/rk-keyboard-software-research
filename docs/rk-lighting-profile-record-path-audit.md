@@ -27,7 +27,7 @@ this part of the function. The supporting existing reports are the
 [settings serializer audit](rk-setting-serializer-audit.md),
 [profile schema audit](rk-profile-schema-audit.md). The local Ghidra text
 export used as corroboration is in
-`C:\Users\shubh\Downloads\sshorcale\_rk_analysis\reports\lighting-control-trace.txt`;
+`<local-workspace>\_rk_analysis\reports\lighting-control-trace.txt`;
 that workspace artifact is not included in the research repository.
 
 Evidence labels:

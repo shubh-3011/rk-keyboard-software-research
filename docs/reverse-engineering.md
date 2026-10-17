@@ -24,6 +24,12 @@ version-specific binary/API differences are kept in the separate
 carry 4.06 addresses or protocol interpretations across versions without
 rechecking the changed binary.
 
+The 4.6-labeled package's bundled `Dev/01AF/Update.exe` and `.upf` have exact
+SHA-256 matches with the 4.06 updater and update package. Accordingly, the
+updater-specific addresses and reports below apply unchanged to those exact
+files. The changed `DeviceDriver.exe` remains a separate, incompletely traced
+binary.
+
 ## Installed suite inventory
 
 The installed `C:\Program Files (x86)\RK Keyboard Software` directory has

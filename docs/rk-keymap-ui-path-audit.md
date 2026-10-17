@@ -10,7 +10,7 @@ other device interface was opened, and no report or command was sent.
 
 | Artifact | Scope |
 | --- | --- |
-| `C:\Users\shubh\Downloads\sshorcale\_rk_analysis\inputs\DeviceDriver.exe` | SHA-256 `C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`; PE32 x86; image base `0x00400000`. Addresses below are VAs in this exact image. |
+| `<local-workspace>\_rk_analysis\inputs\DeviceDriver.exe` | SHA-256 `C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`; PE32 x86; image base `0x00400000`. Addresses below are VAs in this exact image. |
 | Installed `Dev\022F\KB.ini` | RK-S98 profile used for tuple examples; corpus-wide counts come from the 189 installed profiles. |
 | Static exports | `_rk_analysis/reports/brightness-global-xrefs.txt`, `device-targeted-functions.txt`; dialog, localization, profile-schema, UI-control, and serializer audits linked below. |
 

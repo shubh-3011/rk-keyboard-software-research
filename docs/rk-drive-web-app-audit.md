@@ -1,0 +1,112 @@
+# RK Drive Web App: public bundle and keyboard registry audit
+
+## Scope and collection
+
+This is a dated, static examination of the public [RK Drive Web App](https://drive.rkgaming.com/)
+as served on 2026-10-18. The page advertises its self-developed browser driver,
+wired and 2.4 GHz receiver connections, and Chrome, Edge, and Opera support.
+The page was fetched over HTTPS; its JavaScript was downloaded in memory for
+string and metadata analysis. No vendor bundle or image was copied into this
+repository. The auditable files are metadata extracts and SHA-256 values only.
+
+The main bundle references six communication modules. The reproducible
+[bundle manifest](rk-drive-js-manifest.csv) records all seven discovered JS
+files, byte sizes, URLs, and hashes. On this snapshot the entry bundle was
+20,417,509 bytes with SHA-256
+`ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee`.
+The other chunks are named `communication`, `dongleCommunication`,
+`mouseCommunication`, `qiwangCommunication`, `qiwangCommunicationAdaptive`,
+and `rongyuanCommunication` in their bundle filenames.
+
+The scanner extracts the registered-device object metadata from the entry
+bundle. It does not copy the bundle, reverse every minified function, or treat
+strings as proof of a reachable feature. Recreate the metadata snapshot from
+the repository root with:
+
+```powershell
+python scripts/extract_rk_drive_catalog.py
+```
+
+This refreshes the source manifest, the [177-row keyboard descriptor catalog](rk-drive-keyboard-catalog.csv),
+the [91-row image reference index](rk-drive-image-references.csv), and
+[`rk-drive-catalog.json`](../rk-drive-catalog.json). The script records the
+bundle hash and retrieval time. It keeps the JavaScript in memory and writes
+only derived model fields and references.
+
+## Registered keyboard descriptors
+
+The current entry bundle contains **177 keyboard connection descriptors**,
+with **96 distinct displayed labels**, **91 distinct image references**, and
+**104 distinct VID/PID pairs**. Of the descriptor rows, 98 identify a USB
+connection and 79 identify a 2.4 GHz receiver connection. The source declares
+171 entries with protocol family `BeiYing` and six with `QiWang`. These are
+official web-app registry entries, not a complete census of every RK product
+or every hardware revision.
+
+Each row exposes a displayed model/region name, image basename, VID, PID,
+HID usage page and usage, connection type, device type, and protocol family.
+Neighboring object fields also refer to key text, layer/table definitions,
+key layouts, light-effect lists, and protocol factories. Their presence
+supports that the web bundle has model-specific UI and communication
+definitions. It does not prove that every route is reachable or works with a
+physical device.
+
+For **RK-S98**, the bundle has ten displayed label variants and twenty
+connection rows. The base-label USB entry is VID `0x258A`, PID `0x01AF`; its
+2.4 GHz receiver entry is VID `0x258A`, PID `0x0150`. The receiver PID is shared
+by many registered labels, so it cannot uniquely identify an S98. Regional
+name, HID collection, and application profile evidence must stay separate;
+the catalog does not silently select a model from a shared receiver ID.
+
+The image field `keyboard_rk-s98.png` resolves through the site's own asset
+path, for example
+[`RK-S98 photo hosted by RK Drive`](https://drive.rkgaming.com/src/assets/images/keyboard_rk-s98.png).
+The CSV lists the same official-hosted URL for every referenced image. These
+links are not mirror copies, and the image files are not covered by this
+repository's source license.
+
+## Feature families visible in the public bundle
+
+Static bundle evidence includes menu assets and model fields for key mapping,
+lighting, macros, a TFT/screen page, settings, advanced and behavior pages,
+and high-performance options whose asset labels include DKS, snap, SOCD,
+toggle, mod-tap, and macro. The bundle also contains separate mouse UI assets
+and a mouse communication chunk. The 177-row catalog produced here is
+keyboard-only; a separate mouse registry has not been reconstructed.
+
+The browser app includes WebHID chooser and device-change paths in its bundle.
+The entry code also contains report send/receive functions, firmware/boot-mode
+paths, and device protocol implementations. Static presence alone does not
+establish a safe read-only protocol. In particular, the boot-mode and firmware
+routes are not part of Keydeck's local profile editor and must not be called
+from this project without a separate, complete safety analysis. No chooser was
+opened, no HID interface was opened, and no report, boot-mode command, firmware
+operation, or keyboard write was sent during this audit.
+
+## Use in the independent projects
+
+Keydeck can use the derived catalog for model search, connection-ID candidates,
+and links to RK-hosted product images. Its existing local keymap, lighting,
+macro, and display editors remain local profile data. An official registry row
+or a photo link does not supply a verified keyboard layout or make a protocol
+implementation safe. Keydeck must preserve ambiguous IDs and must not imply
+that all official-app controls are hardware-functional until each control's
+data path, model gating, and command format has its own evidence and safe
+validation.
+
+| Web Driver feature family in static bundle | Keydeck status | Remaining gap |
+| --- | --- | --- |
+| Device chooser and USB/2.4 GHz descriptors | Registry metadata and descriptor-only candidate matching | No report access, exact physical revision recognition, or hardware writes |
+| Key map and layers | Local profile editor | No compatible command serializer or device apply path |
+| Lighting and model-specific effect lists | Local lighting preferences | Effect labels and preference values are not device payloads |
+| Macro UI and macro-related assets | Local sequence/profile data | No playback, persistence format parity, or transfer to device |
+| TFT/screen page and media references | Local screen profile and image metadata | No image conversion or transfer to device |
+| Settings, advanced, behavior, DKS, snap, SOCD, toggle, mod-tap | Not implemented as model-gated editing | No verified profile schema or control-to-packet mapping for the web registry |
+| Mouse pages and communication module | Not catalogued in this keyboard pass | Mouse model registry and feature map remain open |
+| Firmware and boot-mode paths | Not exposed in Keydeck | Requires a separate updater and firmware safety analysis |
+| Native tray, login startup, and Windows UI | Not part of the hosted web app | The research EXE is a Python/WebView2 prototype; the native reconstruction is not built |
+
+The research Workbench remains a separate Python/WebView profile-editor
+prototype, not a native rebuild. It is documented in
+[`REBUILD-ROADMAP.md`](../REBUILD-ROADMAP.md). This site audit does not turn
+that prototype into a feature-complete or native clone.

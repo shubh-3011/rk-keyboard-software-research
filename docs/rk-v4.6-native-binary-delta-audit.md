@@ -19,7 +19,7 @@ UI path, or feature runs on a connected keyboard remains **unresolved**.
 
 | Label used here | Input | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| “4.6-folder binary” | `C:\Users\shubh\Downloads\sshorcale\.research\rk4_6_official_extract_20261015\app\DeviceDriver.exe` | 2,418,176 | `8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9` |
+| “4.6-folder binary” | `<local-workspace>\.research\rk4_6_official_extract_20261015\app\DeviceDriver.exe` | 2,418,176 | `8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9` |
 | Installed 4.06 baseline | `C:\Program Files (x86)\RK Keyboard Software\DeviceDriver.exe` | 2,326,528 | `c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6` |
 
 Python `pefile` 2024.8.26 read each PE header, ordinary and delay import

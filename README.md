@@ -42,6 +42,12 @@ research workbench is a reference and profile editor, not a fully compatible
 hardware clone of the RK utility. See [coverage status](COVERAGE.md) for the
 confirmed findings and open questions.
 
+**Product distinction:** the currently released research EXE is a Python
+PyInstaller + WebView2 profile-editor prototype. It is not the native
+reverse-built RK application and has no tray, autostart, or hardware-write
+implementation. The intended clean-room native reconstruction is a separate,
+unfinished deliverable tracked in [`REBUILD-ROADMAP.md`](REBUILD-ROADMAP.md).
+
 For a broader, regularly maintained list of community projects and their
 documented scope, see the [open-source RK software directory](SOFTWARE-DIRECTORY.md).
 
@@ -79,14 +85,24 @@ as confirmed.
 - [Macro editor and physical-input capture gap audit](docs/rk-macro-capture-path-audit.md)
 - [Audio-reactive capture and output-path audit](docs/rk-audio-reactive-path-audit.md)
 - [Lighting profile options to runtime records and UI](docs/rk-lighting-profile-record-path-audit.md)
+- [Keyboard LED brightness UI and unresolved apply path](docs/rk-lighting-brightness-ui-handler-audit.md)
 - [Profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
 - [Machine-readable 188-profile catalog](models.json)
 - [Installed package manifest](docs/rk-installed-package-manifest.csv)
 - [Official Windows 4.6 package snapshot and provenance](docs/rk-v4.6-package-snapshot.md)
+- [RK Drive Web App bundle, model registry, and feature audit](docs/rk-drive-web-app-audit.md)
+- [RK Drive keyboard descriptor catalog](docs/rk-drive-keyboard-catalog.csv)
+- [RK Drive image URL references](docs/rk-drive-image-references.csv)
 - [Full 4.6 extracted package manifest](docs/rk-4.6-package-manifest.csv)
+- [4.06-to-4.6 application file delta](docs/rk-package-file-delta-v4.06-v4.6.md)
+- [4.06-to-4.6 path/hash comparison CSV](docs/rk-file-manifest-delta-v4.06-v4.6.csv)
+- [4.06-to-4.6 localization delta](docs/rk-localization-delta-v4.06-v4.6.md)
+- [4.06-to-4.6 localization key/resource CSV](docs/rk-localization-delta-v4.06-v4.6.csv)
 - [4.6 profile catalog and comparison](docs/rk-profile-catalog-v4.6-delta.md)
 - [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
 - [4.6 native binary/API delta](docs/rk-v4.6-native-binary-delta-audit.md)
+- [4.6 imported API callsite audit and limits](docs/rk-v4.6-native-api-call-path-audit.md)
+- [4.6 import callsite ledger](docs/rk-v4.6-native-api-call-sites.csv)
 - [Resource and localization audit](docs/rk-resource-localization-audit.md)
 - [PE dialog-resource and selected updater control audit](docs/rk-dialog-resource-audit.md)
 - [Main UI label, control, handler, and action crosswalk](docs/rk-ui-control-command-crosswalk.md)
@@ -117,6 +133,9 @@ as confirmed.
 - [All audit documents and evidence tables](docs/)
 
 ## Open-source Windows workbench
+
+This is the current research prototype, not the native reconstruction target
+([status and parity gates](REBUILD-ROADMAP.md)).
 
 The [`workbench/` source](workbench/) packages the profile studio as a
 standalone Windows desktop app. It includes the same 188-profile catalog,

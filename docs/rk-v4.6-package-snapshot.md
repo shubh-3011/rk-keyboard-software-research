@@ -50,9 +50,22 @@ The 4.6 `DeviceDriver.exe` SHA-256 is
 `8D8538DE3ADA5FCF80E00C13B364B17ACEFA708480E102EC1E6A0B1309639AE9`.
 The 4.06 baseline driver hash is
 `C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`.
-`InitSetup.dll` and `uninstall.dll` match the hashes recorded for the 4.06
-snapshot. The 4.6 driver is a distinct binary and its API/address evidence is
-tracked separately in the [native-binary delta audit](rk-v4.6-native-binary-delta-audit.md).
+By contrast, `Dev/01AF/Update.exe` is 2,109,952 bytes and has the exact
+4.06 updater SHA-256 `27894463B0DFE5BC3F5DC19D4D3351D9DFB692C402BF277BDE3889D37E4A206C`.
+Its bundled `.upf` is also byte-identical to the 4.06 package:
+193,652 bytes, SHA-256
+`E21C11E023247AFC7FDBBE27548570240EFA5B646147741D5354EECB3041B628`.
+`InitSetup.dll` and `uninstall.dll` likewise match the hashes recorded for
+4.06. Thus the 4.06 updater, UART, firmware-readback, installer-helper, and
+uninstaller-component findings apply to those identical files in this
+package. This hash identity does not validate the `.upf` as a firmware image
+or demonstrate a safe firmware-copy operation; see the
+[firmware readback audit](rk-firmware-readback-audit.md).
+
+The 4.6-labeled `DeviceDriver.exe` is the changed main binary, and its
+version-specific API/address evidence is tracked separately in the
+[native-binary delta audit](rk-v4.6-native-binary-delta-audit.md). That delta
+does not yet reconstruct the new driver's call graph.
 
 ## Scope and limits
 

@@ -7,7 +7,7 @@ static analysis of the installed profile files and the hash-identified
 report was sent.
 
 The binary analyzed is
-`C:\Users\shubh\Downloads\sshorcale\_rk_analysis\inputs\DeviceDriver.exe`,
+`<local-workspace>\_rk_analysis\inputs\DeviceDriver.exe`,
 SHA-256
 `C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`, loaded
 at image base `0x00400000`. Addresses below are virtual addresses in that

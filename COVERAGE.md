@@ -3,12 +3,26 @@
 This file prevents the package snapshot from being mistaken for a universal RK
 model or runtime map.
 
+## Public RK Drive Web App snapshot
+
+- A dated static snapshot of the public RK Drive Web App enumerates seven JS
+  bundles, 177 keyboard connection descriptors, 96 display labels, and 91
+  official-hosted image references. This is the browser app's observed
+  registry, not every RK product. Mouse registry and complete runtime feature
+  reachability remain open; see
+  [`docs/rk-drive-web-app-audit.md`](docs/rk-drive-web-app-audit.md).
+
 ## Additional official 4.6 Windows Hub Driver snapshot
 
 - A separately downloaded official 4.6 package was extracted statically, not
   installed or run. Its full 1,249-file path/size/SHA-256 inventory and
   provenance are in [`docs/rk-v4.6-package-snapshot.md`](docs/rk-v4.6-package-snapshot.md)
   and [`docs/rk-4.6-package-manifest.csv`](docs/rk-4.6-package-manifest.csv).
+- A normalized path/hash comparison with the installed 4.06 tree records
+  743 identical, 50 changed, 455 added, and 17 absent application paths; see
+  [`docs/rk-package-file-delta-v4.06-v4.6.md`](docs/rk-package-file-delta-v4.06-v4.6.md)
+  and its row-level CSV. The absent classification is package-payload
+  comparison, not an installer-deletion claim.
 - The extracted package contains 265 named profile files and 140 unique
   layouts. The generated catalog and comparison report are
   [`models-4.6.json`](models-4.6.json) and
@@ -19,6 +33,22 @@ model or runtime map.
   That delta covers static PE/import/resource/string evidence, not a
   function-level reanalysis. The detailed native control-flow reports below
   remain specifically tied to the 4.06 binaries.
+- A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
+  relative, and straight-line register-indirect transfers, including HID and
+  local macro-file references. Its linear-sweep results are not CFG
+  reachability or runtime proof; 16 imports lack a recognized transfer, and
+  one branch-spanning SetupAPI route is documented outside the conservative
+  CSV heuristic. See
+  [`docs/rk-v4.6-native-api-call-path-audit.md`](docs/rk-v4.6-native-api-call-path-audit.md).
+- In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
+  identical to the installed 4.06 updater and update package. The existing
+  updater and firmware-readback findings therefore apply byte-for-byte to
+  these two files; the `.upf` remains unvalidated and is not a device dump.
+- A per-key XML comparison covers seven UI locales, generic and profile LED
+  dictionaries, and profile side-light labels. It records added knob/screen
+  strings and side-light resources, eight changed values, two malformed
+  Japanese source files, and remaining runtime/UI reachability questions; see
+  [`docs/rk-localization-delta-v4.06-v4.6.md`](docs/rk-localization-delta-v4.06-v4.6.md).
 - The [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
   applies the 4.06 `Fw` routing rule to 4.6 profile rows for comparison only;
   this is not a verified 4.6 driver selector, especially for the newly observed
@@ -105,7 +135,8 @@ model or runtime map.
   family-specific serializer bytes. All eight installed S98 profiles use
   `DefBri=5` and six-value UI/hardware lists; physical brightness units and
   the visible control's command handler remain unresolved. See the
-  [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path).
+  [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
+  and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md).
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
   cross-referenced to a statically recovered complete updater message map in
