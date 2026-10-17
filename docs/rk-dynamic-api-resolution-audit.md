@@ -50,7 +50,7 @@ in the generated CSV remains unchanged as a scan result.
 | Callsite | API | Static argument and result flow | Status |
 | --- | --- | --- | --- |
 | `0x00416769` | `LoadLibraryW` | Loads the fixed UTF-16 name `Comctl32.dll` at `0x00561D74`, behind the activation-context check at `0x00416764`; the returned module handle is discarded. | **Mapped:** module name and guard. **Unresolved:** runtime reachability. |
-| `0x0041F0FA` | `LoadLibraryW` | Generic wrapper passes `[EBP+8]` as the module name, returns the resulting handle. Caller `0x0041A502` builds a `%SystemDirectory%\\<caller DLL>` fallback path; caller `0x00423A43` passes `comctl32.dll`, then resolves and calls `DllGetVersion`. | **Mapped:** wrapper and two callers. **Unresolved:** values at other callers and runtime reachability. |
+| `0x0041F0FA` | `LoadLibraryW` | Generic wrapper passes `[EBP+8]` as the module name, returns the resulting handle. Caller `0x0041A502` builds a `%SystemDirectory%\<caller DLL>` fallback path; caller `0x00423A43` passes `comctl32.dll`, then resolves and calls `DllGetVersion`. | **Mapped:** wrapper and two callers. **Unresolved:** values at other callers and runtime reachability. |
 | `0x0041A492` | `LoadLibraryExW` | Passes `[EBP+8]` as `lpLibFileName`, NULL as `hFile`, and `0x800` as flags. The path is gated by the encoded `SetDefaultDllDirectories` pointer resolved at `0x0041A467`; that pointer is checked for availability but not invoked. The fallback constructs a system-directory path and calls the loader wrapper. | **Mapped:** argument sources, gate, and fallback shape. **Unresolved:** general caller-supplied module name and execution. |
 | `0x00416592` | `GetProcAddress` | Helper `0x00416570` lazily obtains Kernel32, Comctl32, or Comdlg32 handles and returns/caches export pointers. Fixed Kernel32 exports at callers are `ActivateActCtx`, `CreateActCtxW`, `DeactivateActCtx`, `FindActCtxSectionStringW`, `QueryActCtxW`, and `GetModuleHandleExW`. Other callers use runtime export names against Comctl32 (`0x004171CE`, `0x00519C90`) or Comdlg32 (`0x00421793`). | **Mapped:** module families, fixed names, and pointer flow. **Unresolved:** caller-fed export names and runtime reachability. |
 
@@ -66,7 +66,7 @@ an invocation of it.
 `LoadLibraryExW` callsites `0x00408082`, `0x004080C2`, and `0x00408101` are
 branches of a Borland locale-aware loader. A UTF-16 buffer at `[EBP-0x22A]`
 is built from the caller record plus values under
-`Software\\Borland\\Locale`; the code tries up to three path/extension
+`Software\Borland\Locale`; the code tries up to three path/extension
 variants with `hFile = NULL` and flags `2`. Caller `0x00407C17` caches the
 result in record field `+0x10`. The exact module remains dependent on runtime
 record and registry values.
@@ -86,8 +86,8 @@ record and registry values.
   `KbdLayerDescriptor` (`0x00451EEC`); `sfc.dll` and
   `SfcIsFileProtected` (`0x004AE103`); `Fusion.dll` and
   `CreateAssemblyCache` (`0x004B2EF1`); `shfolder.dll` and
-  `SHGetFolderPathW` (`0x004D8B10`); `_isetup\\_isdecmp.dll`
-  (`0x004DB4EA`); `_isetup\\_iscrypt.dll` (`0x004DB702`); a
+  `SHGetFolderPathW` (`0x004D8B10`); `_isetup\_isdecmp.dll`
+  (`0x004DB4EA`); `_isetup\_iscrypt.dll` (`0x004DB702`); a
   script/record-supplied library (`0x004F0282`); and `shell32.dll` with
   `SHPathPrepareForWriteW` (`0x004F8BB0`). Additional shell32 preload sites
   have no recovered consumer.
