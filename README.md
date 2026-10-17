@@ -58,6 +58,7 @@ as confirmed.
 
 - [Main static reverse-engineering report](docs/reverse-engineering.md)
 - [Model profile and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
+- [Confidence-ranked profile tuple semantics](docs/rk-profile-tuple-semantics.md)
 - [Profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
 - [Machine-readable 188-profile catalog](models.json)
 - [Installed package manifest](docs/rk-installed-package-manifest.csv)

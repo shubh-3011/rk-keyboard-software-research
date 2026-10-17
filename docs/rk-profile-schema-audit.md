@@ -88,6 +88,12 @@ not all represented in the visual-layout projection. The complete
 profile/key/comment association is in
 [the key-record ledger](rk-profile-key-records.csv).
 
+The [profile tuple semantics report](rk-profile-tuple-semantics.md) separates
+confirmed layout-coordinate extraction from candidate interpretations of
+remaining `[KEY]`, `[FN1]`, `[FN2]`, and `LedOpt*` cells. Raw values remain
+preserved because the translation from profile cells to device-specific
+runtime records is not fully recovered.
+
 `models.json` was compared against all 189 installed files: all `OPT` strings
 matched exactly after the source parser's trimming and inline-comment rule;
 all decoded base and Fn assignment maps matched with zero mismatches. The

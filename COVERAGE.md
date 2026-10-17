@@ -30,18 +30,23 @@ model or runtime map.
   profile/macro/screen persistence, installer helpers, and uninstaller
   scripts.
 - The shared settings serializer's keymap, macro, lighting, RGB, and color
-  group branches are mapped to G5/3632 commands; screen writer callers and
-  several payload meanings remain unresolved. See
+  group branches are mapped to G5/3632 commands. G5 screen/GIF/page serializers
+  and virtual table entries are mapped; the UI-to-device bridge and several
+  payload meanings remain unresolved. See
   `docs/rk-setting-serializer-audit.md`.
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
-  cross-referenced to `WM_COMMAND` handlers in
+  cross-referenced to a statically recovered complete updater message map in
   `docs/rk-dialog-resource-audit.md`.
 - The updater serial receive worker is traced through its queue, posted
   message `0x401`, and state-dispatch routine. The 3632 response reader's
   status tests, queue timeout, and retry behavior are also documented.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced, while widget/command binding remains open.
+- The installed mapping tuple corpus is exhaustively cataloged, with a
+  confidence-ranked report separating visual rectangle coordinates from
+  candidate action, keycode, and matrix-index meanings; end-to-end profile to
+  device translation remains unresolved.
 - Main-app HID enumeration and USB/HID interface notification filters are
   traced through register-indirect API calls; runtime event delivery and
   device-to-profile selection remain unobserved.

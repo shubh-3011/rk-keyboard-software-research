@@ -199,7 +199,7 @@ are auto-generated names, not original RK symbols:
 | `FUN_004474D0` | Classify known wireless IDs and profile wireless VID/PID pairs before the online/wireless scan. |
 | `FUN_00415900` | Compare wireless profile VID/PID, nonzero-`Fw`, and row bytes `+0x04..+0x09` before a possible 3632 construction. Their correlation with `KB.ini` `Psd` is unresolved because the table loader does not populate a `Psd` field; indirect writes are not excluded. |
 | `FUN_0040f700` | G5 feature-report transport, 520-byte reports and 512-byte payload chunks. A read operation first sends a feature report, then calls `HidD_GetFeature`. |
-| `FUN_00412b10` | G5 screen/page transfer path with chunking, acknowledgements, optional alternating-byte checksum/complement, retries, progress, and cancellation. |
+| `FUN_00412b10` | G5 screen/page transfer path with chunking, acknowledgements, an optional one-byte additive complement, retries, progress, and cancellation. |
 | `FUN_0040d7e0` | Separate 3632 transport with 20-byte packets and 14-byte data chunks plus checksum/retry handling. |
 | `FUN_00413220` | RKKB 65-byte feature-report writer with up to 62 payload bytes. |
 | `FUN_00411b90` | Shared G5/3632 settings orchestrator for matrix layers, macros, lighting, RGB tables, and game/color groups. |
@@ -483,7 +483,8 @@ Additional named paths in the decompilation include `GetLED` (command `0x84`),
 (`0x88`). A screen-descriptor check also sends report ID `9` with command
 `0x82`, then reads and compares six descriptor bytes. A page-transfer helper
 named `AccessData_Page` sends command `0x0c` through 520-byte reports, checks
-acknowledgments, can compare CRC values, and retries pages. A separate
+acknowledgments, compares an optional one-byte additive complement, and retries
+pages. A separate
 `CDevRKKB::WriteDevice` path builds 65-byte (`0x41`) feature reports with
 report ID `10`, packet count/index, and up to 62 bytes of payload.
 
@@ -521,7 +522,7 @@ The UI labels and static call paths support this more specific feature map:
 | Macros | Apply-setting associates macro-buffer IDs with mapped keys, then sends dirty macro data through G5 command `5` or the 3632 macro path `FUN_0040DD60`. | The `.mck` file and event-row formats are partly recovered below; input capture and event serialization remain incomplete. |
 | Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; separate `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`. | DSP parameter-to-UI mapping and data-format meaning remain incomplete. Neither capture nor HID transmit was run. |
-| Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | Exact frame field map, delay units, and model-to-transport mapping remain unresolved. These command paths write to the keyboard. |
+| Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | The GIF payload fields and page header/checks are partly recovered below. Screen parameter semantics, delay units, and UI-to-virtual-method routing remain unresolved. These command paths write to the keyboard. |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
 | Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. UART states 7/11 contain a conditional response-to-file sink, but the file gate, stream setup, and runtime activation are unresolved. See the [updater/readback audit](rk-firmware-readback-audit.md). |
 
@@ -685,16 +686,28 @@ device expects.
 
 The native driver sends screen parameters with G5 command `0x0B`, GIF
 parameters with command `0x0D`, then transfers pages/frames through
-`FUN_00412B10` command `0x0C`. The page helper carries up to 512 data bytes per
-520-byte feature report. Its report ID normally comes from device-object
-offset `+0x2D0`, with an alternate report-ID-9 branch. When the global
-checksum flag at `0x611844` is set, it computes two alternating-byte sums,
-complements them, and places them in the header. A feature-write failure is
-retried four times with 100 ms delays; separate response/acknowledgment,
-checksum, cancellation, progress, and outer-retry handling follow. A worker
-around `0x466450` appears to manage progress and retry flow. The exact meaning
-of all page header fields and response statuses remains unresolved. These are
-screen-write paths and were not executed.
+`FUN_00412B10` command `0x0C`. The screen helper passes its caller-supplied
+parameter buffer unchanged. The GIF helper builds five bytes: a flags/index
+byte (flags in bits 6–7 and GIF index in the low six bits), 16-bit
+little-endian frame count, and 16-bit little-endian delay. Delay units and
+flag meaning are unresolved.
+
+The page helper carries up to 512 data bytes per 520-byte feature report. Its
+header is report ID, command `0x0C`, zero, caller frame value, packet counter,
+one-byte checksum, and 16-bit little-endian payload length, followed by
+payload. The report ID normally comes from device-object offset `+0x2D0`, with
+an alternate report-ID-9 branch. When global `0x611844` is set, checksum byte
+5 is `0xFF - (sum(payload) mod 256)`; even/odd accumulators are used to compute
+that one value, not two checksum fields or a polynomial CRC. Feature-write
+failures retry at most four times with 100 ms delays. The response checks
+internal bytes 3 and 4 against a nonzero status and sent packet counter, and
+compares byte 5 in checksum mode. Cancellation, progress, and outer page
+retry paths are also present; the invalid-page-ACK loop has no visible retry
+bound. A call at `0x00466820` starts worker `0x00466450`, which converts frame
+images through `0x004661A0`, calls object virtual slots `+0x4C`/`+0x50`, and
+supplies progress callback `0x004663C0`. The concrete bridge from those slots
+to the driver methods is not recovered. These are screen-write paths and were
+not executed.
 
 RGB-table updates use a buffer sized `(profile-count + 1) * 0x15` bytes and
 the G5 command `10` or 3632 command `9`. `FUN_0040cd70` is only an optional

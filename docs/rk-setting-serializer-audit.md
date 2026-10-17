@@ -48,18 +48,45 @@ document the recovered offsets and their remaining semantic limits.
 
 ## Screen and reset paths are separate
 
-The screen writers are present in the binary, but the inspected
-`FUN_00411B90` body does not call the screen-parameter, GIF-parameter, or
-page/frame writer. Their external UI or virtual-dispatch caller chain remains
-unresolved.
+The screen writers are separate from the shared settings orchestrator
+`FUN_00411B90`, but they are exposed in the G5 class dispatch table. The
+static method-pointer block near `0x005CBA50` contains screen-parameter,
+page-transfer-wrapper, and GIF-parameter methods at successive slots
+(`0x005CBA74`, `0x005CBA78`, and `0x005CBA7C`, respectively). The page
+transfer wrapper at `FUN_00412F20` has a direct call to `FUN_00412B10` at
+`0x00412F4A`; a direct caller for the wrapper and UI-to-virtual-slot bridge
+were not recovered. The existence of virtual entries does not establish which
+UI action invokes them at runtime.
 
-- `FUN_00410230` writes screen parameters: G5 command `0x0B`; when a nested
-  object is present, it invokes vtable offset `+0x48` instead.
-- `FUN_00412890` writes GIF parameters with command `0x0D`, option `5`, and a
-  five-byte payload containing GIF index, frame count, and delay fields.
-- `FUN_00412B10` transfers page/frame data with command `0x0C`, up to 512
-  payload bytes per 520-byte G5 report, and optional checksum, ACK, retry,
-  cancellation, and progress handling.
+- `FUN_00410230` takes a data pointer and length. Its G5 path sends command
+  `0x0B` through the 520-byte transport, using report ID from object offset
+  `+0x2D0`; if no primary handle exists, it invokes nested-object vtable `+0x48`.
+  The payload is passed through unchanged, so its screen-parameter schema is
+  not known.
+- `FUN_00412890` writes command `0x0D` with option 0 and a five-byte payload.
+  Byte 0 combines caller flags in bits 6–7 with the low six bits of GIF index;
+  bytes 1–2 hold frame count little-endian; bytes 3–4 hold delay little-endian.
+  A secondary handle repeats the command using report ID 9. The response path
+  tests an internal response byte for nonzero. Delay units, allowed values,
+  flag meanings, and response semantics remain unknown.
+- `FUN_00412F20` selects a secondary screen handle at `this+8` when present,
+  otherwise the primary handle at `this+4`, then delegates frame data and
+  callbacks to `FUN_00412B10`. `FUN_00412B10` transfers up to 512 bytes per
+  520-byte report using command `0x0C`. Its frame has report ID at byte 0,
+  command at byte 1, zero at byte 2, caller frame value at byte 3, rolling
+  packet counter at byte 4, one-byte checksum at byte 5, little-endian payload
+  length at bytes 6–7, and payload at bytes 8–519.
+- The optional checksum is enabled by global flag `0x611844`. It is a single
+  byte equal to `0xFF - (sum(payload) mod 256)`, computed through alternating
+  even/odd accumulators; it is not a polynomial CRC and does not emit two
+  checksum bytes. A response is accepted only when internal byte 3 is
+  nonzero, byte 4 matches the packet counter, and, in checksum mode, byte 5
+  matches the outgoing checksum. Feature-write attempts are bounded to four
+  per packet with 100 ms delays; invalid page ACKs rewind the data offset and
+  counter, while the outer invalid-ACK retry has no visible retry bound.
+  Cancellation uses device vtable `+0x5C`; progress reports frame, total
+  length, and bytes sent. These are transfer mechanics, not a safe backup
+  protocol.
 - `FUN_004102D0` is the reset helper. Its G5 path uses command `0x11`, option
   `1`, and a one-byte payload; the nested-object path calls vtable `+0x38`.
 
@@ -75,7 +102,13 @@ from the screen-parameter command `0x0B`.
 - Recover `FUN_0040DD60` framing, response checks, and retries independently.
 - Map all 128 LED bytes and RGB/group color semantics to profile fields and UI
   controls.
-- Map screen helpers to their callers and supported device families.
+- Recover the runtime caller of the G5 screen vtable slots and the UI-to-device
+  bridge; the static worker near `0x00466450` converts frames and invokes
+  virtual slots `+0x4C`/`+0x50`, but the concrete target relationship remains
+  unresolved.
+- Determine whether other software versions implement screen/GIF/page paths
+  for RKKB or 3632; the inspected 4.06 model map has 15 screen profiles, all
+  statically routed to G5, which is not universal product evidence.
 - Compare these paths against separately hashed RK package versions and
   model-specific device IDs. This report does not claim universal model
   coverage or complete runtime behavior.

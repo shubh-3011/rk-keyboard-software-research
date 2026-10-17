@@ -59,8 +59,35 @@ four controls, including the 1.22 tool version and Sinowealth copyright text.
 Language ID 1028 is recorded as stored; captions are retained literally in
 the CSV.
 
-Selected control-to-handler links were separately established from the
-updater's MFC `WM_COMMAND` map and static disassembly:
+Static parsing recovered the updater's complete MFC message-map entry table
+from descriptor `0x00594338` (getter `0x00406FD0`); entries begin at
+`0x00594340` and end at the sentinel near `0x00594490`. RTTI includes
+`CUartUpdateToolDlg`, and nearby initialization at `0x00406F70` binds the
+main controls. This makes `CUartUpdateToolDlg` the probable map owner, though
+the getter-to-vtable-to-RTTI complete-object chain has not been proven. The
+table below records all recovered entries; labels in the last column are
+static interpretations, not runtime observations.
+
+| Message or control ID | Handler | Static interpretation and limit |
+| --- | --- | --- |
+| `WM_SYSCOMMAND` (`0x0112`) | `0x00407BD0` | Intercepts `SC_CLOSE` through cleanup; other system commands follow the shared default path. |
+| `WM_PAINT` (`0x000F`) | `0x00407C80` | Draws/centers the dialog icon. |
+| `WM_QUERYDRAGICON` (`0x0037`) | `0x00407D60` | Returns the dialog icon field at `this+0xC8`. |
+| Legacy `WM_CTLCOLOR` (`0x0019`) | `0x00407D70` | Selects text color from dialog state and calls a virtual method; concrete target remains unresolved. |
+| `WM_TIMER` (`0x0113`) | `0x00409950` | Handles timer IDs 2, 3, and 4. ID 3 calls status helper `0x00409A50`; on success it updates controls, kills timer 3, sleeps 1 second, and creates worker thread `0x00406BD0`. IDs 2 and 4 call other helpers. Timer creation/trigger semantics remain unresolved. |
+| `WM_COMMAND` ID `0x0002` | `0x00407DE0` | Calls a virtual dispatch at vtable `+0x180`, default/cancel-like by position, but its exact concrete target is unresolved. |
+| Message `0x0401` | `0x00407E00` | Consumes the serial receive queue; see the [UART state-machine report](rk-updater-uart-state-machine.md). |
+| `WM_COMMAND` ID `0x0419` | `0x00409DC0` | One-click firmware upgrade handler; complete state sequence remains under audit. |
+| `WM_COMMAND` ID `0x03E9` | `0x0040B0A0` | File chooser handler. |
+| `WM_COMMAND` ID `0x041D` | `0x0040C2C0` | BLE-version read; sets `this+0x8E6C=1` and enters shared BLE/version workflow `0x0040A0F0`. |
+| `WM_COMMAND` ID `0x0422` | `0x0040C2D0` | Reads checkbox state and stores it in global `0x005C5F09`; later transfer effect remains unresolved. |
+| `WM_COMMAND` ID `0x0423` | `0x0040C6D0` | Toggles VID/PID edit fields `0x0424`/`0x0425` according to checkbox state. |
+| Internal command ID `0x8004` | `0x0040C740` | No matching resource control; full trigger and workflow semantics are unresolved. |
+| Internal command ID `0x8006` | `0x0040CF70` | No matching resource control; toggles global state and calls `GetSubMenu`/`CheckMenuItem`, consistent with a menu toggle rather than a hardware operation. |
+
+Resource controls `0x0413`, `0x041B`, `0x0422`, and `0x0423` are bound by the
+dialog initialization routine. Selected control-to-handler links were
+separately cross-checked against resource 102, language 1028:
 
 | Resource 102 control ID | Stored caption | Handler | Static interpretation and limit |
 | --- | --- | --- | --- |
@@ -71,10 +98,11 @@ updater's MFC `WM_COMMAND` map and static disassembly:
 | `0x0423` | 指定 (specify) | `0x0040C6D0` | Toggles VID/PID edit fields `0x0424`/`0x0425` according to checkbox state. |
 
 Controls `0x0428` (“firmware information”) and `0x042A` (“device information”)
-do not have a matching handler in the scanned `WM_COMMAND` entries. They may
-be handled through another message/virtual path or have no active action; this
-is unresolved. This selected crosswalk is not a complete map of updater
-message types or runtime behavior. The updater audit is in
+have class `BUTTON`, but their style low bits are `7` (`BS_GROUPBOX`): these
+are group-frame captions, not clickable buttons, so the absence of command
+handlers is expected. The message-map inventory above is structurally
+complete for the recovered descriptor, but does not resolve every indirect
+target or runtime branch. The updater audit is in
 [`rk-firmware-readback-audit.md`](rk-firmware-readback-audit.md).
 
 ## Limits
@@ -82,6 +110,7 @@ message types or runtime behavior. The updater audit is in
 This inventory is specific to the installed RK package version 4.06 and its
 single bundled updater. It does not cover every RK software release or every
 keyboard model. It does not infer control behavior from captions, execute
-firmware operations, or establish what appears on screen at runtime. The full
-MFC/action map, dynamic UI contents, and all updater message/callback targets
-remain open work.
+firmware operations, or establish what appears on screen at runtime. The
+generic device UI's full MFC/action map and dynamic contents remain open.
+For the updater, map entries are inventoried while indirect dispatch targets,
+timer origins, and some transfer-state effects remain unresolved.
