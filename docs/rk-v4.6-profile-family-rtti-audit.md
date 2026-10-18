@@ -86,7 +86,10 @@ The model-to-family map still does not establish:
 - which model revision or wireless receiver corresponds to reused USB IDs;
 - whether all controls and serializers are reachable for every profile in its
   family, or accepted by firmware;
-- the complete V4.6 `CDevRKKB` feature path or complete G5 settings path;
+- complete V4.6 `CDevRKKB` feature semantics or complete G5 settings path. A
+  partial 26-slot `CDevRKKB` vtable and `ApplySetting` route is now documented
+  in the [RKKB settings audit](rk-v4.6-cdevrkbb-settings-and-vtable-audit.md)
+  and [row-level method map](rk-v4.6-cdevrkbb-vtable-map.csv);
 - exact meanings for the `CDev3632` selectors or its possible companion path;
 - support for keyboards absent from this package snapshot.
 

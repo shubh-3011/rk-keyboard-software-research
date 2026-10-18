@@ -6,11 +6,13 @@ model or runtime map.
 ## Public RK Drive Web App snapshot
 
 - A dated static snapshot of the public RK Drive Web App enumerates seven JS
-  bundles, 177 keyboard connection descriptors, 96 display labels, and 91
-  official-hosted image references. Its extracted model declarations also
-  record key layers, OS tables, layout-group counts, and lighting-effect
-  fields. A follow-up adds the 20-row legacy mouse registry, 20 chooser aliases,
-  CB75-Mouse profile, RK68 HE model/feature gates, and static feature families.
+  bundles, 177 keyboard connection descriptors across 96 labels, and two
+  separate RK68 HE Bytech model profiles. It records 93 keyboard product
+  photos, two HE layout backgrounds, and one mouse photo by public URL. The
+  extracted declarations include key layers, OS tables, layout-group counts,
+  lighting-effect fields, HE product IDs/UUIDs, and profile feature flags.
+  The companion audit also covers the 20-row legacy mouse registry, 20 chooser
+  aliases, CB75-Mouse profile, and static feature families.
   These are snapshots of the browser app's observed registry, not every RK
   product; complete control-to-handler and hardware reachability remain open.
   See the [base audit](docs/rk-drive-web-app-audit.md),
@@ -99,15 +101,20 @@ model or runtime map.
   paths are outside this direct-profile matrix. A separate 29-slot G5 audit
   maps the verified vtable, the worker's `+0x44` ApplySetting dispatch, and
   command routes for key/layer, macro, LED, RGB-index, color-group, reset, and
-  screen/GIF operations. UI triggers, payload meanings, full model support, and
-  hardware acceptance remain open; the 4.6 RKKB all-feature path and complete
-  G5 protocol map are still incomplete. See the
+  screen/GIF operations. A separate 26-slot RKKB audit now verifies its
+  worker `+0x44` dispatch, `ApplySetting` mask branches, and shared 65-byte
+  feature-report writer. Both class audits leave UI triggers, payload meanings,
+  full model support, and hardware acceptance open; the complete G5 protocol
+  map remains incomplete. See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
   [reproducer](scripts/audit_rk46_profile_family_rtti.py), plus the
   [G5 vtable/settings audit](docs/rk-v4.6-cdevg5-settings-and-vtable-audit.md),
   [29-slot map](docs/rk-v4.6-cdevg5-vtable-map.csv), and
-  [G5 verifier](scripts/audit_rk46_cdevg5_vtable.py).
+  [G5 verifier](scripts/audit_rk46_cdevg5_vtable.py), plus the
+  [RKKB vtable/settings audit](docs/rk-v4.6-cdevrkbb-settings-and-vtable-audit.md),
+  [26-slot map](docs/rk-v4.6-cdevrkbb-vtable-map.csv), and
+  [RKKB verifier](scripts/audit_rk46_cdevrkbb_vtable.py).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official

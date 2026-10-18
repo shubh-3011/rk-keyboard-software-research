@@ -29,12 +29,13 @@ python scripts/extract_rk_drive_catalog.py
 ```
 
 This refreshes the source manifest, the [177-row keyboard descriptor catalog](rk-drive-keyboard-catalog.csv),
+the [specialized RK68 HE profile inventory](rk-drive-specialized-keyboard-profiles.csv),
 the [20-row legacy mouse registry plus two CB75 connection rows](rk-drive-mouse-registry.csv),
-the keyboard and CB75 photo URL index, and [`rk-drive-catalog.json`](../rk-drive-catalog.json).
-The JSON includes the same mouse metadata under `mouseModels`. The script
-records bundle hashes and retrieval time. It keeps JavaScript in memory and
-writes only derived model fields and public URL references; no vendor code or
-images are copied.
+the photo/layout image URL index, and [`rk-drive-catalog.json`](../rk-drive-catalog.json).
+The JSON includes mouse metadata under `mouseModels` and the two distinct
+profiles under `specializedKeyboardProfiles`. The script records bundle hashes
+and retrieval time. It keeps JavaScript in memory and writes only derived model
+fields and public URL references; no vendor code or images are copied.
 
 ## Registered keyboard descriptors
 
@@ -75,6 +76,28 @@ path, for example
 The CSV lists the same official-hosted URL for every referenced image. These
 links are not mirror copies, and the image files are not covered by this
 repository's source license.
+
+## Separate RK68 HE profiles
+
+The general descriptor array does not contain the two Bytech magnetic-switch
+keyboard profiles. The bundle constructs them separately, so they are recorded
+in their own CSV and JSON array rather than counted among the 177 descriptors.
+Both declare USB-only connection, vendor `0x372E`, HID usage `0xFF60:0x0061`,
+protocol `Bytech`, minimum-firmware field `0`, `hasSideLight: false`, and one
+hidden keycode (`218169344`). The two variants differ in product ID, UUID,
+regional key text, and artwork:
+
+| Profile | Product ID | UUID | Product image | Layout background |
+| --- | --- | --- | --- | --- |
+| RK68 HE | `0x10BF` | `18691697672194` | [RK-hosted product image](https://drive.rkgaming.com/assets/RK68HE_us-DdalugDh.png) | [RK-hosted layout image](https://drive.rkgaming.com/assets/RK68HE_us_background-BDwhIjPO.png) |
+| RK68 HE ES | `0x10C0` | `18691697672252` | [RK-hosted product image](https://drive.rkgaming.com/assets/RK68HE_es-CeZBnEjA.png) | [RK-hosted layout image](https://drive.rkgaming.com/assets/RK68HE_es_background-D_cuWvBv.png) |
+
+These profiles use a UUID check in RK's Web Driver before initialization.
+Keydeck compares only the visible VID/PID and HID usage collection and labels
+the result a descriptor candidate. It does not read the UUID, open the HID
+interface, or infer firmware compatibility. The layout background is an image
+reference, not parsed physical key geometry. Product images and backgrounds
+are hotlinked and are not redistributed.
 
 ## Feature families visible in the public bundle
 
@@ -119,7 +142,7 @@ validation.
 
 | Web Driver feature family in static bundle | Keydeck status | Remaining gap |
 | --- | --- | --- |
-| Device chooser and USB/2.4 GHz descriptors | Registry metadata and descriptor-only candidate matching | No report access, exact physical revision recognition, or hardware writes |
+| Device chooser and USB/2.4 GHz descriptors | Registry metadata, including descriptor-level RK68 HE profile candidates | No report access, RK68 HE UUID confirmation, exact physical revision recognition, or hardware writes |
 | Key map, layers, Windows/macOS tables, and layout groups | Local keymap editor plus model-specific registry facts | The Web Driver layout is not the same as the installed 4.06 profile schema; no compatible command serializer or device apply path |
 | Lighting and model-specific effect definitions | Local lighting preferences; the RK catalog page now shows declared mode names and controls | Effect labels and preference values are not device payloads |
 | Macro UI and macro-related assets | Local macro sequence/profile data | No recording/playback, persistence format parity, or transfer to device |

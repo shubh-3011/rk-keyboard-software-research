@@ -28,7 +28,12 @@ The 4.6-labeled package's bundled `Dev/01AF/Update.exe` and `.upf` have exact
 SHA-256 matches with the 4.06 updater and update package. Accordingly, the
 updater-specific addresses and reports below apply unchanged to those exact
 files. The changed `DeviceDriver.exe` remains a separate, incompletely traced
-binary.
+binary. Static V4.6 follow-ups now verify the 265 profile-to-class routes and
+map the `CDevG5KB`, `CDev3632`, and 26-slot `CDevRKKB` tables. The RKKB audit
+traces its worker dispatch, selected `ApplySetting` branches, and 65-byte
+feature-report writer; UI triggers, payload schemas, device acceptance, and
+the full G5 protocol remain open. See the [4.6 RKKB audit](rk-v4.6-cdevrkbb-settings-and-vtable-audit.md)
+and [coverage ledger](../COVERAGE.md).
 
 ## Installed suite inventory
 

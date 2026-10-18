@@ -342,6 +342,111 @@ def parse_tlw_mouse_profile(script: str) -> list[dict[str, object]]:
     return rows
 
 
+def parse_rk68_he_profiles(script: str) -> list[dict[str, object]]:
+    """Extract the separate Bytech RK68 HE profiles, which are not descriptors."""
+    common_profile = ""
+    for start, end in objects_with_marker(script, "minFirmwareVersion:"):
+        candidate = script[start + 1:end - 1]
+        if re.search(r"protocolType\s*:\s*bs\.Bytech", candidate):
+            common_profile = candidate
+            break
+    if not common_profile:
+        return []
+
+    usage_page_expr = js_scalar(common_profile, "usagePage") or ""
+    usage_expr = js_scalar(common_profile, "usage") or ""
+    def resolve_profile_number(expression: str) -> int:
+        match = re.fullmatch(r"([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)", expression)
+        if not match:
+            return int(expression)
+        owner, prop = match.groups()
+        declaration = re.search(
+            rf"\b(?:const|let|var)\s+{re.escape(owner)}\s*=\s*\{{([^{{}}]*)\}}",
+            script,
+        )
+        if not declaration:
+            raise ValueError(f"Could not resolve profile constant {expression}")
+        value = js_scalar("{" + declaration.group(1) + "}", prop)
+        if value is None:
+            raise ValueError(f"Could not resolve profile constant {expression}")
+        return int(value)
+
+    try:
+        usage_page = resolve_profile_number(usage_page_expr)
+        usage = resolve_profile_number(usage_expr)
+        vendor_id = int(js_scalar(common_profile, "vendorId") or "0")
+        min_firmware = int(js_scalar(common_profile, "minFirmwareVersion") or "0")
+    except ValueError:
+        return []
+
+    side_light = js_scalar(common_profile, "hasSideLight") == "!0"
+    hidden_match = re.search(r"hiddenKeycodes\s*:\s*\[([^\]]*)\]", common_profile)
+    hidden_body = hidden_match.group(1).split(",") if hidden_match else []
+    hidden_keycodes = []
+    for item in hidden_body:
+        try:
+            hidden_keycodes.append(int(item.strip()))
+        except ValueError:
+            continue
+
+    profiles: list[dict[str, object]] = []
+    for match in re.finditer(r'name:"(RK68 HE(?: ES)?)"', script):
+        start = script.rfind("{", 0, match.start())
+        end = matching_delimiter(script, start)
+        if start < 0 or end <= match.end():
+            continue
+        body = script[start + 1:end]
+        profile_id = js_scalar(body, "id")
+        if profile_id not in {"us", "es"}:
+            continue
+        image_symbol = js_scalar(body, "image") or ""
+        background_symbol = js_scalar(body, "backgroundImage") or ""
+
+        def resolve_asset(symbol: str) -> tuple[str, str]:
+            if not symbol:
+                return "", ""
+            asset = re.search(
+                rf"(?<![\w$]){re.escape(symbol)}\s*=\s*\"(/assets/[^\"]+)\"",
+                script,
+            )
+            path = asset.group(1) if asset else ""
+            return path.rsplit("/", 1)[-1], urljoin(BASE_URL, path) if path else ""
+
+        image_asset, image_url = resolve_asset(image_symbol)
+        background_asset, background_url = resolve_asset(background_symbol)
+        product_id = int(js_scalar(body, "productId") or "0")
+        uuid = js_scalar(body, "uuid") or ""
+        if not product_id or not uuid or not image_url:
+            continue
+        profiles.append({
+            "record_type": "specialized_keyboard_model_profile",
+            "profile_id": profile_id,
+            "name": js_scalar(body, "name") or match.group(1),
+            "vendor_id": vendor_id,
+            "vendor_id_hex": f"0x{vendor_id:04X}",
+            "product_id": product_id,
+            "product_id_hex": f"0x{product_id:04X}",
+            "usage_page": usage_page,
+            "usage_page_hex": f"0x{usage_page:04X}",
+            "usage": usage,
+            "usage_hex": f"0x{usage:04X}",
+            "connection": "USB",
+            "device_type": "Keyboard",
+            "protocol_type": "Bytech",
+            "uuid": uuid,
+            "min_firmware_version": min_firmware,
+            "has_side_light": side_light,
+            "hidden_keycodes": hidden_keycodes,
+            "image_asset": image_asset,
+            "image_url": image_url,
+            "background_image_asset": background_asset,
+            "background_image_url": background_url,
+            "profile_layout_symbol": js_scalar(body, "layout") or "",
+            "key_text_symbol": js_scalar(body, "keyText") or "",
+        })
+    return profiles
+
+
 def js_enum_items(value: str, prefix: str, labels: dict[str, str]) -> list[str]:
     """Map a short enum-reference list to readable labels, preserving unknowns."""
     result: list[str] = []
@@ -481,6 +586,7 @@ def main() -> int:
         raise RuntimeError("No public model descriptors matched the known bundle schema")
     mouse_records = parse_mouse_descriptors(entry_script)
     tlw_mouse_records = parse_tlw_mouse_profile(entry_script)
+    specialized_keyboard_profiles = parse_rk68_he_profiles(entry_script)
     if len(mouse_records) < 20:
         raise RuntimeError(
             f"Only {len(mouse_records)} legacy mouse descriptors matched; "
@@ -488,6 +594,11 @@ def main() -> int:
         )
     if not tlw_mouse_records:
         raise RuntimeError("The CB75-Mouse profile did not produce any connection rows")
+    if len(specialized_keyboard_profiles) != 2:
+        raise RuntimeError(
+            f"Expected the two RK68 HE model profiles, found {len(specialized_keyboard_profiles)}; "
+            "review the specialized profile parser before publishing"
+        )
 
     bundle_hash = sha256(scripts[entry_url])
     for record in records:
@@ -496,6 +607,10 @@ def main() -> int:
         record["retrieved_at_utc"] = retrieved_at
     mouse_rows = mouse_records + tlw_mouse_records
     for record in mouse_rows:
+        record["source_bundle_url"] = entry_url
+        record["source_bundle_sha256"] = bundle_hash
+        record["retrieved_at_utc"] = retrieved_at
+    for record in specialized_keyboard_profiles:
         record["source_bundle_url"] = entry_url
         record["source_bundle_sha256"] = bundle_hash
         record["retrieved_at_utc"] = retrieved_at
@@ -551,6 +666,24 @@ def main() -> int:
     ]
     csv_writer(args.out_dir / "rk-drive-mouse-registry.csv", mouse_fields, mouse_rows)
 
+    specialized_profile_fields = [
+        "record_type", "profile_id", "name", "vendor_id", "vendor_id_hex",
+        "product_id", "product_id_hex", "usage_page", "usage_page_hex", "usage",
+        "usage_hex", "connection", "device_type", "protocol_type", "uuid",
+        "min_firmware_version", "has_side_light", "hidden_keycodes", "image_asset",
+        "image_url", "background_image_asset", "background_image_url",
+        "profile_layout_symbol", "key_text_symbol", "source_bundle_url",
+        "source_bundle_sha256", "retrieved_at_utc",
+    ]
+    csv_writer(
+        args.out_dir / "rk-drive-specialized-keyboard-profiles.csv",
+        specialized_profile_fields,
+        [
+            {**row, "hidden_keycodes": " | ".join(map(str, row["hidden_keycodes"]))}
+            for row in specialized_keyboard_profiles
+        ],
+    )
+
     image_models: dict[str, set[str]] = {}
     for record in records:
         image_models.setdefault(str(record["image_asset"]), set()).add(str(record["name"]))
@@ -559,6 +692,7 @@ def main() -> int:
             "image_asset": image,
             "image_url": urljoin(BASE_URL, f"src/assets/images/{image}"),
             "model_labels": " | ".join(sorted(names)),
+            "asset_type": "keyboard_product",
             "source_bundle_sha256": bundle_hash,
             "retrieved_at_utc": retrieved_at,
         }
@@ -574,16 +708,40 @@ def main() -> int:
             "image_asset": image_url.rsplit("/", 1)[-1],
             "image_url": image_url,
             "model_labels": " | ".join(sorted(names)),
+            "asset_type": "mouse_product",
             "source_bundle_sha256": bundle_hash,
             "retrieved_at_utc": retrieved_at,
         }
         for image_url, names in sorted(mouse_images.items())
     )
+    for profile in specialized_keyboard_profiles:
+        for asset_key, url_key, asset_type in (
+            ("image_asset", "image_url", "keyboard_product"),
+            ("background_image_asset", "background_image_url", "keyboard_layout_background"),
+        ):
+            asset_url = str(profile[url_key])
+            if not asset_url:
+                continue
+            photo_rows.append({
+                "image_asset": profile[asset_key],
+                "image_url": asset_url,
+                "model_labels": str(profile["name"]),
+                "asset_type": asset_type,
+                "source_bundle_sha256": bundle_hash,
+                "retrieved_at_utc": retrieved_at,
+            })
     csv_writer(
         args.out_dir / "rk-drive-image-references.csv",
-        ["image_asset", "image_url", "model_labels", "source_bundle_sha256", "retrieved_at_utc"],
+        ["image_asset", "image_url", "model_labels", "asset_type", "source_bundle_sha256", "retrieved_at_utc"],
         photo_rows,
     )
+
+    keyboard_product_image_count = len(image_models) + len({
+        str(row["image_asset"]) for row in specialized_keyboard_profiles if row["image_asset"]
+    })
+    background_image_count = len({
+        str(row["background_image_asset"]) for row in specialized_keyboard_profiles if row["background_image_asset"]
+    })
 
     output = {
         "source": BASE_URL,
@@ -592,8 +750,17 @@ def main() -> int:
         "descriptorCount": len(records),
         "modelLabelCount": len({str(row["name"]) for row in records}),
         "keyboardImageReferenceCount": len(image_models),
+        "specializedKeyboardProfileCount": len(specialized_keyboard_profiles),
+        "specializedKeyboardProductImageCount": len({
+            str(row["image_asset"]) for row in specialized_keyboard_profiles if row["image_asset"]
+        }),
+        "keyboardBackgroundImageReferenceCount": background_image_count,
+        "totalKeyboardModelLabelCount": len({str(row["name"]) for row in records})
+        + len(specialized_keyboard_profiles),
+        "keyboardProductImageReferenceCount": keyboard_product_image_count,
         "imageReferenceCount": len(photo_rows),
         "models": records,
+        "specializedKeyboardProfiles": specialized_keyboard_profiles,
         "mouseDescriptorCount": len(mouse_records),
         "mouseConnectionProfileCount": len(mouse_rows),
         "mouseModels": mouse_rows,
@@ -602,8 +769,10 @@ def main() -> int:
     args.json.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(f"Fetched {len(scripts)} JavaScript files; retained no vendor JS bytes.")
-    print(f"Wrote {len(records)} keyboard descriptors, {output['modelLabelCount']} labels, "
-          f"{len(image_models)} keyboard images, and {len(mouse_images)} mouse images.")
+    print(f"Wrote {len(records)} keyboard descriptors and {output['modelLabelCount']} descriptor labels; "
+          f"added {len(specialized_keyboard_profiles)} specialized keyboard profiles, "
+          f"{keyboard_product_image_count} keyboard product images, "
+          f"{background_image_count} layout backgrounds, and {len(mouse_images)} mouse images.")
     print(f"Wrote {len(mouse_records)} legacy mouse descriptors and "
           f"{len(tlw_mouse_records)} CB75-Mouse connection rows.")
     print(f"Entry bundle SHA-256: {bundle_hash}")

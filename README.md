@@ -97,6 +97,7 @@ as confirmed.
 - [RK Drive Web App bundle, model registry, and feature audit](docs/rk-drive-web-app-audit.md)
 - [RK Drive feature gates, mouse registry, and RK68 HE checks](docs/rk-drive-feature-gate-and-mouse-audit-2026-10-18.md)
 - [RK Drive keyboard descriptor catalog](docs/rk-drive-keyboard-catalog.csv)
+- [RK Drive specialized keyboard profiles](docs/rk-drive-specialized-keyboard-profiles.csv)
 - [RK Drive mouse registry](docs/rk-drive-mouse-registry.csv)
 - [RK Drive image URL references](docs/rk-drive-image-references.csv)
 - [Full 4.6 extracted package manifest](docs/rk-4.6-package-manifest.csv)
