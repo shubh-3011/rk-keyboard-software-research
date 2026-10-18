@@ -51,6 +51,13 @@ bounded ring buffer, updates its indices/count, signals its event handle at
 `+0x18` when present, and invokes its callback at `+0x14`. These are static
 instructions; queue execution was not observed at runtime.
 
+The paired routine `0x0043E780` removes the next DWORD from the same queue,
+advances/wraps its read index, decrements the queued count, and returns 1 when
+an entry was available or 0 otherwise. Worker `0x00401290` waits on two
+handles, drains entries through `0x0043E780`, and checks each value. A value
+with bit `0x8000` takes the worker-control branch; ordinary values proceed
+through active-device/state checks before the `+0x44` virtual dispatch.
+
 The hash-pinned [caller ledger](rk-v4.6-apply-signal-callers.csv) contains
 exactly 24 direct `call 0x00401100` instructions in GNU objdump's x86
 linear-sweep listing. Arguments at those sites are `1`, `2`, `4`, `6`,
@@ -62,10 +69,12 @@ by [`audit_rk46_apply_signal_callers.py`](../scripts/audit_rk46_apply_signal_cal
 
 Global `0x0062A234`, which many callers test before signaling, is assigned at
 `0x004566C9` from the return value of the preceding indirect call at
-`0x004566B3`, which also receives nearby resource/string addresses. Its type
-and precise meaning are unresolved; this null/equality gate is not evidence
-that a keyboard is connected. The active device pointer used by the worker is
-the separate global `0x00647320`.
+`0x004566B3`. That call receives pointers to UTF-16 strings `OPT` and
+`ApplyNow`; adjacent calls use keys `UIDebug`, `Title`, and `FontName`.
+**Inferred:** this global is associated with a configuration/UI-object path.
+Its concrete type and meaning remain unresolved, so its null/equality gate is
+not evidence that a keyboard is connected. The active device pointer used by
+the worker is the separate global `0x00647320`.
 
 There is also an inline producer: code at `0x0045DF36` pushes the constant 2
 through `0x0043E6C0`, and `0x0045DF45` releases the same `0x006356C4`
