@@ -17,7 +17,12 @@ model or runtime map.
   product; complete control-to-handler and hardware reachability remain open.
   See the [base audit](docs/rk-drive-web-app-audit.md),
   [feature-gate/mouse audit](docs/rk-drive-feature-gate-and-mouse-audit-2026-10-18.md),
+  [RK68 HE lighting UI/protocol crosswalk](docs/rk-drive-rk68-he-lighting-ui-protocol-crosswalk-2026-10-18.md),
   and [mouse registry](docs/rk-drive-mouse-registry.csv).
+  The lighting crosswalk maps feature gates, UI service calls, effect
+  read/apply/readback/rollback, custom-main records, and grouped per-key RGB
+  serialization in the hash-pinned entry bundle. It does not establish
+  hardware acceptance or model-wide support.
 
 ## Additional official 4.6 Windows Hub Driver snapshot
 
@@ -325,6 +330,13 @@ model or runtime map.
   consumers, runtime selection, and indirect coupling to the UART state machine
   remain unresolved. See
   [`docs/rk-updater-command-0419-static-path-audit.md`](docs/rk-updater-command-0419-static-path-audit.md).
+  A focused audit of the updater's `0x0422` “retain dongle pairing” checkbox
+  verifies its `BM_GETCHECK` read and normalized store to a zero-initialized
+  global, then finds no second direct reference to that flag in the exact PE.
+  Its advertised transfer effect is therefore not demonstrated; computed
+  aliases and runtime behavior remain unresolved. See
+  [`docs/rk-updater-dongle-pairing-option-audit.md`](docs/rk-updater-dongle-pairing-option-audit.md)
+  and its [hash-pinned verifier](scripts/audit_rk0422_dongle_pairing_flag.py).
   A conditional UART response-to-file sink is present in states 7 and 11, but
   its file gate is directly initialized to zero, no nonzero direct setter or
   stream-open path was found; the state-3/4/6/7 and state-10/11 subgraphs have

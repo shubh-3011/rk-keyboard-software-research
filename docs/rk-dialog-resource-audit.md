@@ -80,7 +80,7 @@ static interpretations, not runtime observations.
 | `WM_COMMAND` ID `0x0419` | `0x00409DC0` | One-click firmware upgrade handler; complete state sequence remains under audit. |
 | `WM_COMMAND` ID `0x03E9` | `0x0040B0A0` | File chooser handler. |
 | `WM_COMMAND` ID `0x041D` | `0x0040C2C0` | BLE-version read; sets `this+0x8E6C=1` and enters shared BLE/version workflow `0x0040A0F0`. |
-| `WM_COMMAND` ID `0x0422` | `0x0040C2D0` | Reads checkbox state and stores it in global `0x005C5F09`; later transfer effect remains unresolved. |
+| `WM_COMMAND` ID `0x0422` | `0x0040C2D0` | Reads checkbox state and stores a normalized byte in global `0x005C5F09`. A whole-image reference scan found no second direct reference to that flag; its advertised transfer effect is not demonstrated. See the [focused flag audit](rk-updater-dongle-pairing-option-audit.md). |
 | `WM_COMMAND` ID `0x0423` | `0x0040C6D0` | Toggles VID/PID edit fields `0x0424`/`0x0425` according to checkbox state. |
 | Internal command ID `0x8004` | `0x0040C740` | No matching resource control; full trigger and workflow semantics are unresolved. |
 | Internal command ID `0x8006` | `0x0040CF70` | No matching resource control; toggles global state and calls `GetSubMenu`/`CheckMenuItem`, consistent with a menu toggle rather than a hardware operation. |
@@ -94,7 +94,7 @@ separately cross-checked against resource 102, language 1028:
 | `0x0419` | 一键升级 (one-click upgrade) | `0x00409DC0` | Upgrade-click handler. Its exact complete state sequence remains under audit. |
 | `0x03E9` | 选择... (browse/select) | `0x0040B0A0` | File-selection handler. |
 | `0x041D` | 读BLE版本 (read BLE version) | `0x0040C2C0` | Sets dialog flag `this+0x8E6C=1` and enters a shared BLE/version workflow at `0x0040A0F0`. |
-| `0x0422` | Dongle保留对码信息 | `0x0040C2D0` | Reads a checkbox with `BM_GETCHECK` and stores it in global `0x005C5F09`; its exact effect on later transfer bytes is not yet recovered. |
+| `0x0422` | Dongle保留对码信息 | `0x0040C2D0` | Reads a checkbox with `BM_GETCHECK` and stores a normalized byte in global `0x005C5F09`. No second direct reference to the flag was found; an advertised transfer effect is not demonstrated. See the [focused flag audit](rk-updater-dongle-pairing-option-audit.md). |
 | `0x0423` | 指定 (specify) | `0x0040C6D0` | Toggles VID/PID edit fields `0x0424`/`0x0425` according to checkbox state. |
 
 Controls `0x0428` (“firmware information”) and `0x042A` (“device information”)

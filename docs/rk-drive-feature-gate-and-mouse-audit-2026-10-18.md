@@ -112,6 +112,17 @@ side-light configuration also requires the model profile's `hasSideLight` flag.
 This is a genuine per-model/firmware capability path, though it is not a
 complete map of the page.
 
+**Additional static trace — RK68 HE lighting path.** A follow-up now decodes
+the shared `ILightingLegacyService` registration and traces a subset of the
+lighting UI to its service serializers. It covers effect read/apply/readback
+and rollback, custom-main lighting, and capability-gated per-key RGB. The
+per-key records are grouped as `[r, g, b, idCount, ...keyIDs]`; selectors 2
+and 3 are separate full-key and LED-bead methods. See the
+[hash-pinned crosswalk](rk-drive-rk68-he-lighting-ui-protocol-crosswalk-2026-10-18.md)
+and [reproducible verifier](../scripts/audit_rk_drive_rk68_he_lighting.py).
+This narrows one lighting gap but does not complete the feature-to-handler
+map for every model or prove any command is accepted by hardware.
+
 ## Proven, inferred, and unresolved
 
 - **Proven:** Seven public bundles are referenced by the current page and the
@@ -125,7 +136,8 @@ complete map of the page.
   surface. Shared mouse IDs make model name resolution ambiguous if only the
   listed identity fields are available.
 - **Unresolved:** Full crosswalk from every menu control to a capability bit,
-  event handler, and packet for every model; physical revision identification;
+  event handler, and packet for every model (including non-lighting families);
+  physical revision identification;
   whether mouse aliases are selected or deduplicated at runtime; completeness of
   the public model/photo registry; and actual device behavior. The public
   registry is an app snapshot, not a census of every RK product.

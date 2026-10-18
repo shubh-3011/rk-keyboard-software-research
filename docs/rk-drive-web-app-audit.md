@@ -18,6 +18,16 @@ The other chunks are named `communication`, `dongleCommunication`,
 `mouseCommunication`, `qiwangCommunication`, `qiwangCommunicationAdaptive`,
 and `rongyuanCommunication` in their bundle filenames.
 
+A follow-up rechecked the live HTML's entry reference and recursively reachable
+JavaScript URLs on 2026-10-18. The reachable set was exactly the seven manifest
+rows; all seven byte sizes and SHA-256 values matched. Re-parsing the live
+entry produced 177 keyboard descriptors with the same identity rows as the
+saved catalog. This validates that the dated metadata snapshot still matched
+the public deployment at that check; it does not expand the registry's product
+or hardware-revision coverage. The 96 indexed image URLs were checked with
+HTTP `HEAD` and each returned status 200 with `image/png`; image bodies were
+not downloaded.
+
 The scanner extracts registered-device metadata and the declarative model
 configuration fields from the entry bundle. It does not copy or execute the
 bundle, reverse every minified function, or treat strings as proof of a
@@ -40,8 +50,11 @@ fields and public URL references; no vendor code or images are copied.
 ## Registered keyboard descriptors
 
 The current entry bundle contains **177 keyboard connection descriptors**,
-with **96 distinct displayed labels**, **91 distinct image references**, and
-**104 distinct VID/PID pairs**. Of the descriptor rows, 98 identify a USB
+with **96 distinct displayed labels**, and **91 unique image references among
+the general descriptor array**. Across the separate HE profiles and image
+index, there are **93 keyboard product-photo references**, two HE layout
+backgrounds, and one mouse image, for 96 image URLs total. The descriptor
+array also has **104 distinct VID/PID pairs**. Of the descriptor rows, 98 identify a USB
 connection and 79 identify a 2.4 GHz receiver connection. The source declares
 171 entries with protocol family `BeiYing` and six with `QiWang`. These are
 official web-app registry entries, not a complete census of every RK product
