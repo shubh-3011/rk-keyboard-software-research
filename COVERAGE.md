@@ -96,11 +96,18 @@ model or runtime map.
   `CDev3632` (M20). This corrects the earlier 4.06-rule projection, which put
   Fw-three M20 in G5. The row-level route is verified for the exact 4.6 PE,
   but no physical-model compatibility is validated; possible companion-device
-  paths are outside this direct-profile matrix. The 4.6 RKKB all-feature path
-  and complete G5 path remain incomplete. See the
+  paths are outside this direct-profile matrix. A separate 29-slot G5 audit
+  maps the verified vtable, the worker's `+0x44` ApplySetting dispatch, and
+  command routes for key/layer, macro, LED, RGB-index, color-group, reset, and
+  screen/GIF operations. UI triggers, payload meanings, full model support, and
+  hardware acceptance remain open; the 4.6 RKKB all-feature path and complete
+  G5 protocol map are still incomplete. See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
-  [reproducer](scripts/audit_rk46_profile_family_rtti.py).
+  [reproducer](scripts/audit_rk46_profile_family_rtti.py), plus the
+  [G5 vtable/settings audit](docs/rk-v4.6-cdevg5-settings-and-vtable-audit.md),
+  [29-slot map](docs/rk-v4.6-cdevg5-vtable-map.csv), and
+  [G5 verifier](scripts/audit_rk46_cdevg5_vtable.py).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official

@@ -24,6 +24,8 @@
 - [4.6 row-level selector map](rk-v4.6-profile-selector-map.csv)
 - [4.6 profile-to-class routes verified through vtables and RTTI](rk-v4.6-profile-family-rtti-audit.md)
 - [4.6 row-level RTTI-verified family map](rk-v4.6-profile-family-rtti-map.csv)
+- [4.6 `CDevG5KB` vtable, ApplySetting, and settings paths](rk-v4.6-cdevg5-settings-and-vtable-audit.md)
+- [4.6 G5 29-slot method evidence map](rk-v4.6-cdevg5-vtable-map.csv)
 - [4.6 Fw=3 `CDev3632` vtable and transport audit](rk-v4.6-fw3-cdev3632-vtable-audit.md)
 - [4.6 `CDev3632` frame, response queue, and selector audit](rk-v4.6-cdev3632-frame-and-selector-audit.md)
 - [4.6 Side LED profile, UI, and report-builder audit](rk-v4.6-side-led-static-audit.md)
