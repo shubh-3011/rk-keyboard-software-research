@@ -103,6 +103,13 @@ model or runtime map.
   branch-spanning SetupAPI route is documented outside the conservative CSV
   heuristic. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md)
   and [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md).
+- A new 4.6 API follow-up traces `SendInput` to a gated 50-record UTF-16 text
+  lookup and Unicode key-event batches, the added GDI+ property calls to an
+  animated-image timer/frame path, and `GetPrivateProfileStringA` to `OPT` /
+  `TouchWeb` with an RK Drive URL fallback. Text-macro identity, the final
+  URL consumer action, asset ownership, and runtime reachability remain open;
+  the `SendInput` path is host input synthesis, not keyboard HID output. See
+  [`docs/rk-v4.6-native-api-feature-follow-up.md`](docs/rk-v4.6-native-api-feature-follow-up.md).
 - A separate 4.6 hook pass maps four thread-scoped `SetWindowsHookExW`
   registrations (`WH_CBT`, `WH_MSGFILTER`, and two `WH_MOUSE` hooks), their
   forwarding sites, callback branches, and direct unhook calls. The direct
@@ -120,8 +127,9 @@ model or runtime map.
 - A focused UI trace confirms the 4.6 driver constructs the added
   `tc_adv_str44`, `tc_screen22/23`, and `tc_knob1–4` items through three
   indexed localization loops. It also maps the eight knob profile rows into
-  shared application state and a gated settings signal, while leaving exact
-  MFC control ownership, event origin, and keyboard acceptance open. See
+  shared application state, the `CKeyDlg` message `0x477` handler, two posting
+  functions, and a gated settings signal. The visible control-to-sender link
+  and keyboard acceptance remain open. See
   [`docs/rk-v4.6-ui-knob-localization-path-audit.md`](docs/rk-v4.6-ui-knob-localization-path-audit.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
@@ -167,9 +175,17 @@ model or runtime map.
   worker `+0x44` dispatch, `ApplySetting` mask branches, and shared 65-byte
   feature-report writer. Both class audits leave UI triggers, payload meanings,
   full model support, and hardware acceptance open; the complete G5 protocol
-  map remains incomplete. A targeted trace corrects the `+0x34` password
-  query to command `0x82` and maps its chunk copies to caller memory; the
-  separate `+0x70` command-`0x88` return meaning and caller remain unresolved.
+  map remains incomplete. A focused follow-up reclassifies G5 vtable `+0x20`
+  as an inferred stored-path/handle availability probe: it delegates to a
+  child object's matching slot or checks an object string with `CreateFileW`
+  and an object handle with `HidD_GetAttributes`. The stored path meaning and
+  runtime reachability remain unresolved; the method was not invoked. A
+  targeted trace maps `+0x34` command `0x82` and `+0x70` command `0x88` to
+  conditional response-copy code, but both `HidD_GetFeature` calls pass a
+  one-byte field at `+0x2DC` instead of the `+0x04` handle used by
+  `HidD_SetFeature`. The resulting readback is not established. No caller is
+  attributable to G5 `+0x70`, and its firmware meaning/range remains
+  unresolved.
   See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
@@ -442,7 +458,9 @@ model or runtime map.
   installed 4.06 package and the separately extracted 4.6-labeled package.
   Their `Dev/01AF/Update.exe` and `.upf` files are byte-identical; the changed
   4.6 `DeviceDriver.exe` has separately traced G5 request/read paths that
-  return bounded data to caller memory without establishing a firmware file
+  contain conditional copy code, but their `HidD_GetFeature` calls pass a
+  byte field instead of the handle used by `HidD_SetFeature`, so successful
+  readback is not established. Neither path establishes a firmware file
   export. Whether an undiscovered indirect or model-specific path exists is
   unresolved; see `docs/rk-firmware-readback-audit.md`.
 

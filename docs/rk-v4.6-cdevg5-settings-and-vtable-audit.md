@@ -41,6 +41,28 @@ with value `1`; see the [UI-to-worker trace](rk-v4.6-ui-setting-signal-audit.md)
 The runtime active class, request reachability, and arguments supplied by a
 connected model remain unvalidated.
 
+## Stored-path / handle availability slot
+
+The G5 vtable's `+0x20` entry targets `0x0040FED0`. This method first checks
+the primary handle at object `+0x04`; when it is null and a child object is
+present at `+0x254`, it delegates to that child's vtable `+0x20`. Otherwise,
+it checks whether the UTF-16 field beginning at `+0x22` is empty. For a
+nonempty field, it passes that field address to `CreateFileW` with access mask
+`0x12019F`, share mode `3`, `OPEN_EXISTING`, and `FILE_FLAG_OVERLAPPED`, then
+closes a successful temporary handle and returns success/failure. For an empty
+field, it calls `HidD_GetAttributes` with the handle stored at object `+0x04`
+and returns a Boolean result. The matching RKKB `+0x20` method
+(`0x0040DEB0`) has the same stored-field open/close and HID-attribute
+fallback shape, without the G5 child-object delegation.
+
+This supports an inferred description as a stored-path/handle availability
+probe and corrects the earlier “synchronization / child-worker status” label.
+It does not identify the string at `+0x22`, prove that it is a keyboard
+device path, recover a visible caller, or establish runtime execution. The
+analysis did not call `CreateFileW` or `HidD_GetAttributes`, open a device, or
+send a report. The slot evidence remains in the
+[vtable map](rk-v4.6-cdevg5-vtable-map.csv).
+
 ## Apply flags and settings routes
 
 The `nFlag` argument controls these paths inside `0x004127B0`:
@@ -62,13 +84,31 @@ parameters (`+0x50`), the command-`0x0C` page/GIF transfer wrapper (`+0x54`),
 and five-byte command-`0x0D` GIF parameters (`+0x58`). Their frame conversion,
 page transfer, UI path and protocol limits are documented in the
 [V4.6 screen/GIF trace](rk-v4.6-screen-gif-ui-transport-audit.md). The G5
-table additionally contains power, password and real-data reads; the
+table additionally contains power, password and real-data query methods; the
 command-`0x11` reset write; command-`0x08` writer; input/macro conversion
 helpers; and cancel-event state. Their exact slot, target and evidence are
 listed in the CSV. A follow-up traces the `+0x34` password-query method as a
-command-`0x82` feature-report request/response that copies chunks to caller
-memory; its caller and returned-data meaning remain unresolved. See the
+command-`0x82` feature write followed by conditional read/copy code, but the
+`HidD_GetFeature` first argument is the one-byte `+0x2DC` field rather than
+the `+0x04` handle used by `HidD_SetFeature`. Successful readback, caller and
+returned-data meaning remain unresolved. See the
 [password-query read-path audit](rk-v4.6-cdevg5-password-query-audit.md).
+
+The `+0x70` method at `0x00411030` is a busy-guarded wrapper around
+`0x00410890`. The helper builds command-`0x88` feature reports of `0x208`
+bytes and, when its conditional path succeeds, copies response bytes beginning
+at offset 8 into the caller buffer in chunks capped at `0x200`, bounded by
+the caller's requested length. However, the `HidD_SetFeature` call at
+`0x00410992` receives handle `[this+0x04]`, while the following
+`HidD_GetFeature` call at `0x004109F1` receives a zero-extended byte from
+`[this+0x2DC]`. Discovery stores that byte separately from the opened handle.
+This is therefore an attempted conditional read/copy route; successful device
+readback is not established and the handle argument may be a defect. A scan
+of 77 decoded `call *+0x70` sites found no caller attributable to this G5
+slot. The command's meaning, caller-supplied length, firmware address/range,
+full-image behavior and persistence remain unresolved; the method has no file
+sink. Details and the incompatible callback candidate are in the
+[V4.6 firmware readback audit](rk-firmware-readback-audit.md).
 
 ## Limits and remaining work
 

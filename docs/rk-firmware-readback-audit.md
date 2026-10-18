@@ -173,16 +173,36 @@ described below.
 
 ### V4.6 main-driver G5 reads
 
-The separate, hash-pinned V4.6 `DeviceDriver.exe` also contains a G5
-`+0x70` `GetRealData` route: its wrapper calls helper `0x00410890`, which
-sends a command-`0x88` feature request, reads matching response chunks capped
-at `0x200` bytes, and copies them into caller memory. The caller and meaning
-of those bytes are unresolved; the helper contains no file sink. The nearby
-G5 `+0x34` password-query method uses command `0x82` and likewise copies
-response data into caller memory. Neither method establishes that its data is
-firmware or that a full image is exported. Their requests include a feature
-write, so they are not passive reads. See the
-[V4.6 G5 password-query audit](rk-v4.6-cdevg5-password-query-audit.md) and
+The separate, hash-pinned V4.6 `DeviceDriver.exe` has G5 vtable `+0x70`
+wrapper `0x00411030`, which calls helper `0x00410890` unless object busy flag
+`+0x238` is set. The helper builds `0x208`-byte feature reports with command
+`0x88` at byte 1, uses chunks capped at `0x200`, and contains a conditional
+copy from response offset 8 to caller memory until the caller-supplied length
+is covered. It contains no file sink. This is an **attempted** read/copy
+route, not proof of successful readback: `HidD_SetFeature` at `0x00410992`
+receives handle `[this+0x04]`, but `HidD_GetFeature` at `0x004109F1` receives
+the zero-extended byte at `[this+0x2DC]`. The opened handle is stored
+separately at `+0x04`; constructor code initializes the byte field and
+discovery later stores a byte there. The conditional copy is reached only if
+the read call reports success and the response command matches.
+
+A scan of 77 decoded indirect `call *+0x70` sites did not identify a caller
+attributable to this G5 method. A superficially plausible two-argument call
+at `0x004899D9` is inside a Windows hook-callback path that also calls
+`CallNextHookEx`; its first argument is validated as `nCode`, which is
+incompatible with the G5 method's writable output-buffer argument. The actual
+caller, requested length, data meaning, firmware address/range, full-image
+behavior, and downstream persistence remain unresolved.
+
+The nearby G5 `+0x34` password-query method follows the same broad pattern for
+command `0x82` and also passes the zero-extended `+0x2DC` byte as the first
+argument to `HidD_GetFeature` at `0x00410E7E`, rather than the handle used by
+its `HidD_SetFeature` call. It likewise contains only a conditional copy and
+does not demonstrate successful device readback. Neither method establishes
+that returned data is firmware or that a full image is exported. Their
+requests include feature writes, so they are not passive reads. See the
+[V4.6 G5 password-query audit](rk-v4.6-cdevg5-password-query-audit.md),
+[vtable/settings audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md), and
 [vtable evidence map](rk-v4.6-cdevg5-vtable-map.csv). This V4.6 driver is a
 different binary from the installed 4.06 updater and its findings do not
 resolve the updater's UART file-sink path.
@@ -266,9 +286,11 @@ negative finding that no UART queue-to-file sink had been identified.
 **Conclusion across the examined snapshots:** no complete, read-only S98
 firmware export is demonstrated. The 4.06 updater findings also apply to the
 identical updater shipped in the 4.6-labeled package. The changed 4.6 main
-driver has separate command-`0x88` and command-`0x82` G5 paths that request
-data through a feature write and return bounded response bytes to caller
-memory; those paths do not establish a firmware image or file export.
+driver has separate command-`0x88` and command-`0x82` G5 paths that issue
+feature writes and contain conditional response-copy code. Their
+`HidD_GetFeature` calls pass the byte at object `+0x2DC` rather than the
+`+0x04` handle used by the preceding feature write, so successful readback is
+not established. No caller or full-image/file export is identified.
 
 **Proven:** Windows has not exposed this keyboard as a mass-storage volume
 from which firmware could simply be copied. The bundled `.upf` is a

@@ -107,8 +107,10 @@ event/control association is not recovered.
   timing, and user interaction that cause load/save are unknown.
 - Exact record key bit meanings, payload text encoding beyond 16-bit WCHAR
   copies, null/partial-file recovery, and any version migration.
-- The relation between this local buffer and the macro editing/playback UI,
-  host `SendInput`, device reports, or firmware storage. These file paths alone
-  do not demonstrate keyboard reads or writes, and do not provide a firmware
-  backup method.
+- The exact relation between this local buffer and the visible macro
+  editing/playback controls. A gated caller at `0x0044B1BF` looks up a record
+  through `0x0041F480` in the same `0x0060D3C4` table and passes its UTF-16
+  text to the host `SendInput` helper; the numeric gate meanings and visible
+  trigger remain unresolved. This does not establish a device-report path or
+  firmware storage, and does not provide a firmware backup method.
 

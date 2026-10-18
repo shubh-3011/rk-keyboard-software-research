@@ -71,10 +71,13 @@ instruction paths are now statically mapped:
 
 | API | IAT VA | Decoded callsite evidence | What it supports |
 | --- | ---: | --- | --- |
-| `KERNEL32!GetPrivateProfileStringA` | `0x005A63C8` | Direct call `0x00456748` | One statically decoded profile-string call. The specific persisted setting and runtime path are unresolved. |
-| `USER32!SendInput` | `0x005A66DC` | Direct call `0x0045877A` | The caller passes `cbSize=0x1C`; preceding code processes records and supplies a count and input-buffer pointer. Host input synthesis is the API's role; its product feature and reachability remain inferred/unresolved. |
-| `gdiplus!GdipGetPropertyItemSize` | `0x005A696C` | Thunk `0x00590914` jumps to the IAT; relative caller `0x0046F34C` | One decoded GDI+ property-size call path. Specific property meaning is unresolved. |
-| `gdiplus!GdipGetPropertyItem` | `0x005A6968` | Thunk `0x0059091A` jumps to the IAT; relative caller `0x0046F376` | One decoded GDI+ property-read call path. Specific property meaning is unresolved. |
+| `KERNEL32!GetPrivateProfileStringA` | `0x005A63C8` | Direct call `0x00456748` | Reads local section `OPT`, key `TouchWeb`, into a 50-byte buffer; empty value takes an RK Drive URL fallback. Final consumer action remains unresolved. |
+| `USER32!SendInput` | `0x005A66DC` | Direct call `0x0045877A` | Helper emits 28-byte Unicode keyboard down/up record pairs in batches of at most 64 code units. A caller at `0x0044B1BF` is gated by numeric fields and selects text from a fixed table; its visible feature name/reachability remain inferred or unresolved. |
+| `gdiplus!GdipGetPropertyItemSize` | `0x005A696C` | Thunk `0x00590914` jumps to the IAT; relative caller `0x0046F34C` | Reads property identifier `0x5100` in a multi-frame image timing path; frame selection and timer are mapped, while the asset/feature tie remains unresolved. |
+| `gdiplus!GdipGetPropertyItem` | `0x005A6968` | Thunk `0x0059091A` jumps to the IAT; relative caller `0x0046F376` | Reads the item used by the same image-frame timing path. See the dedicated follow-up for the interval and fallback evidence. |
+
+The argument, caller and local-UI traces for these additions are collected in
+the [native API feature follow-up](rk-v4.6-native-api-feature-follow-up.md).
 
 The two GDI+ callers pass property identifier `0x5100` in the shown code. This
 is static argument evidence only; this report does not assign a semantic name
@@ -199,10 +202,13 @@ This is strong static evidence for host-side local macro-file persistence.
 The file format and exact UI-to-serialization call graph are unresolved. These
 file operations do not identify firmware storage or a keyboard readback path.
 
-The `SendInput` call at `0x0045877A` is consistent with host input injection
-and may be part of macro playback (**inferred**). The connection between this
-call and the `textmacro.dct` routines is not proven by the call graph in this
-pass.
+The `SendInput` call at `0x0045877A` is host input injection. A gated caller
+at `0x0044B1BF` looks up a text record in the same `0x0060D3C4` table and
+passes the UTF-16 record text to the helper; the table is also the buffer
+read/written by the `textmacro.dct` helpers. This supports an inferred
+text-macro playback route. The numeric gate meanings, visible trigger, and
+full UI-to-playback path remain unresolved; see the
+[native API feature follow-up](rk-v4.6-native-api-feature-follow-up.md).
 
 ## Conclusions and remaining limits
 
@@ -214,7 +220,8 @@ feature-report callsites, local profile keys and Side LED assets, and local
 
 **Inferred:** the setup path is intended to enumerate HID interfaces and
 inspect report capabilities; Side LED keys/assets support a Side LED UI or
-preview; the `SendInput` path may implement macro playback.
+preview; the `SendInput` path likely implements text-macro playback; and the
+GDI+ property path likely controls animation timing.
 
 **Unresolved:** full CFG reachability, dynamic API/COM targets, all register
 and callback data-flow, complete UI control-to-handler links, all feature

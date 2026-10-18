@@ -55,11 +55,34 @@ the active device's virtual `ApplySetting` route; see the
 [UI-to-worker signal audit](rk-v4.6-ui-setting-signal-audit.md) and
 [G5 settings audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md).
 
+## MFC message route into the knob handler
+
+The 4.6 `CKeyDlg` MFC message-map descriptor at `0x005D4CA0` includes private
+message `0x477`, signature byte `0x0E`, and handler `0x0041CF20`; the class
+identity is `.?AVCKeyDlg@@` at `0x0061A158`. The handler takes the route only
+when its second message argument equals `2` and the first argument has a
+nonzero `0xFF00` mask. On that branch it copies the `KnobDef` byte to
+`this+0x5EBF`, selects the 16-byte record indexed by `KnobIndex`, conditionally
+queues signal `2` through `0x00401100`, then calls profile mutator
+`0x0041EC50`.
+
+Two functions post message `0x477` through `PostMessageW`:
+
+| Post site | Window / `wParam` / `lParam` source | Limit |
+| --- | --- | --- |
+| `0x00435A23` in `0x00435A00` | `hwnd=this+0x74`; `wParam` comes from a `0x58`-byte row at `this+0x88`; `lParam=this+0x14D8` | The object and row are not tied to a generated knob control; the posted `lParam` is not proven to equal `2`. |
+| `0x00436686` in `0x00436660` | `hwnd=this+0x1E8`; `wParam` comes from a `0x58`-byte row at `this+0x1F8`; `lParam=this+0x1328` | The object and row are not tied to a generated knob control; the posted `lParam` is not proven to equal `2`. |
+
+This closes the `0x477` message-map-to-handler and post-site evidence, but not
+the visible knob-control origin. The generated localized labels do not prove
+that either sender represents a knob selection, nor which model accepts the
+queued settings operation.
+
 ## What remains open
 
 The generated item loops do not prove which MFC control owns a knob label, the
-exact event handler that reaches signal `2`, or that a particular profile's
-branch runs. The package values and worker route do not establish an accepted
+exact visible control-to-sender route, or that a particular profile's branch
+runs. The package values and worker route do not establish an accepted
 keyboard command or a physical knob effect. The locale delta remains the
 source for file-level string and package comparisons:
 [4.06-to-4.6 localization audit](rk-localization-delta-v4.06-v4.6.md).
