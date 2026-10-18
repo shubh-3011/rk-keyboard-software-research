@@ -146,6 +146,19 @@ The imports `CreateFileW` (IAT `0x005A6474`), `ReadFile` (`0x005A6470`),
 not all traced back to a device open in this audit; those file APIs must not be
 treated wholesale as HID or firmware traffic.
 
+## Deferred settings worker signal
+
+The native API ledger lists `CreateSemaphoreW`, `ReleaseSemaphore`, and
+`WaitForMultipleObjects` callsites, but its IAT inventory alone does not group
+them into a device-settings route. The hash-pinned
+[`CDevRKKB` and signal-path audit](rk-v4.6-cdevrkbb-settings-and-vtable-audit.md)
+links the worker semaphore at `0x006356C4` to its queue, active-device
+dispatch, and `ApplySetting` vtable slot. A separate
+[24-caller ledger](rk-v4.6-apply-signal-callers.csv) identifies all decoded
+direct callers of `0x00401100`; it keeps the caller class and UI-control
+mapping unresolved. Other `ReleaseSemaphore` sites use a different global
+handle and are not assumed to wake this worker. No worker was run.
+
 ## Side LED and text-macro references
 
 ### Proven static references

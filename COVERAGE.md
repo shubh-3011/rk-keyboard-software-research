@@ -114,7 +114,12 @@ model or runtime map.
   [G5 verifier](scripts/audit_rk46_cdevg5_vtable.py), plus the
   [RKKB vtable/settings audit](docs/rk-v4.6-cdevrkbb-settings-and-vtable-audit.md),
   [26-slot map](docs/rk-v4.6-cdevrkbb-vtable-map.csv), and
-  [RKKB verifier](scripts/audit_rk46_cdevrkbb_vtable.py).
+  [RKKB verifier](scripts/audit_rk46_cdevrkbb_vtable.py). A follow-up verifies
+  all 24 decoded callers of the deferred-settings signal helper, its argument
+  pushes, a separate inline queue producer, and the semaphore handle split;
+  those edges still do not resolve to unique UI controls or receiver classes.
+  See the [caller ledger](docs/rk-v4.6-apply-signal-callers.csv) and
+  [signal verifier](scripts/audit_rk46_apply_signal_callers.py).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official

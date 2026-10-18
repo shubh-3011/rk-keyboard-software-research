@@ -39,6 +39,48 @@ virtual dispatch route for an active object using this table. Which UI action
 sets the worker event, how its arguments are assembled for each model, and
 whether the route executes for a connected keyboard remain unresolved.
 
+### Deferred-settings signal path and callsites
+
+The helper at `0x00401100` clears bit `0x8000` from its 32-bit argument, passes
+the resulting DWORD to the queue object at global `0x006356D8` through
+`0x0043E6C0`, then calls the `ReleaseSemaphore` IAT at `0x005A64A4` with
+semaphore handle global `0x006356C4`, release count 1, and a null previous
+count pointer. `0x0043E6C0` checks the queue buffer and input pointer, enters a
+critical section associated with queue offset `+0x1C`, appends a DWORD to the
+bounded ring buffer, updates its indices/count, signals its event handle at
+`+0x18` when present, and invokes its callback at `+0x14`. These are static
+instructions; queue execution was not observed at runtime.
+
+The hash-pinned [caller ledger](rk-v4.6-apply-signal-callers.csv) contains
+exactly 24 direct `call 0x00401100` instructions in GNU objdump's x86
+linear-sweep listing. Arguments at those sites are `1`, `2`, `4`, `6`,
+`0x22`, or caller-derived `EBX`, `EBP`, and `ESI`. The ledger records their
+nearest observed state writes and branch gates without assigning unsupported
+feature names. In particular, the callsites do not prove that their receiver
+object is a `CDevRKKB` instance. The 24-site set and helper bytes are checked
+by [`audit_rk46_apply_signal_callers.py`](../scripts/audit_rk46_apply_signal_callers.py).
+
+Global `0x0062A234`, which many callers test before signaling, is assigned at
+`0x004566C9` from the return value of the preceding indirect call at
+`0x004566B3`, which also receives nearby resource/string addresses. Its type
+and precise meaning are unresolved; this null/equality gate is not evidence
+that a keyboard is connected. The active device pointer used by the worker is
+the separate global `0x00647320`.
+
+There is also an inline producer: code at `0x0045DF36` pushes the constant 2
+through `0x0043E6C0`, and `0x0045DF45` releases the same `0x006356C4`
+semaphore. It then follows a route through the separate active-device global
+`0x00647320`. This producer does not call `0x00401100` and is not counted
+among its 24 callers. The other direct `ReleaseSemaphore` sites at
+`0x0040893F`, `0x0040C31A`, and `0x0040C6D6` load a handle from global
+`0x0063BE0C`; they are a different semaphore path and are not attributed to
+this settings worker.
+
+Because the helper strips `0x8000` before enqueueing, the worker's
+`0x8000`-bit branch is not set by these helper calls. The producer of that
+worker-control value remains unresolved. No callsite has been associated with
+a particular visible UI control or confirmed physical keyboard revision.
+
 ## `CDevRKKB` virtual table
 
 The 26 executable entries begin at `0x005D410C`; the next data at
@@ -131,7 +173,8 @@ writer” remains a plausible name, not a recovered semantic identity.
 ## Remaining gaps and readback boundary
 
 - No complete `CDevRKKB` UI-control-to-mask map or per-model feature-gate map
-  has been recovered.
+  has been recovered. The signal caller ledger narrows the static producer
+  set but does not bridge any caller to a unique UI control.
 - Matrix, key/layer, macro, LED and short-frame payload fields remain partly
   opaque. The static writer does not supply firmware interpretation.
 - The full `+0x48` call graph and the role of the zero/one-return inherited

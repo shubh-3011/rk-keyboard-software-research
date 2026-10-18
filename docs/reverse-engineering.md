@@ -30,10 +30,13 @@ updater-specific addresses and reports below apply unchanged to those exact
 files. The changed `DeviceDriver.exe` remains a separate, incompletely traced
 binary. Static V4.6 follow-ups now verify the 265 profile-to-class routes and
 map the `CDevG5KB`, `CDev3632`, and 26-slot `CDevRKKB` tables. The RKKB audit
-traces its worker dispatch, selected `ApplySetting` branches, and 65-byte
-feature-report writer; UI triggers, payload schemas, device acceptance, and
-the full G5 protocol remain open. See the [4.6 RKKB audit](rk-v4.6-cdevrkbb-settings-and-vtable-audit.md)
-and [coverage ledger](../COVERAGE.md).
+traces its worker dispatch, 24 direct deferred-settings signal callers,
+selected `ApplySetting` branches, and 65-byte feature-report writer. The
+signal callers still do not identify unique UI controls or prove their
+receiver class. Payload schemas, device acceptance, and the full G5 protocol
+remain open. See the [4.6 RKKB audit](rk-v4.6-cdevrkbb-settings-and-vtable-audit.md),
+[signal caller ledger](rk-v4.6-apply-signal-callers.csv), and
+[coverage ledger](../COVERAGE.md).
 
 ## Installed suite inventory
 
