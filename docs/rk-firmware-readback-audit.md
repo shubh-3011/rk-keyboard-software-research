@@ -87,6 +87,28 @@ The function-level trace does not establish a successful parse or explain
 this mismatch. The package must not be treated as a validated firmware image
 or as a recoverable backup. No attempt was made to run the parser against it.
 
+### Independent REA/Ghidra parser cross-check
+
+A read-only REA overview and function dossier were generated from an offline
+copy with the same SHA-256. The dossier independently identifies
+`FUN_0040A940` as a path-based binary reader, shows the `5A A5 BLESINO`
+signature check, and traces the selected file into host-side parsing. REA's
+decompiler output is supporting evidence, not source: six indirect calls were
+unresolved and some high-p-code output was truncated. A focused query for
+verifier `FUN_00402FC0` ran for about six minutes without producing a dossier
+and was cancelled; the verifier conclusions below rely on the existing
+instruction/callsite analysis, not that incomplete query.
+
+| Artifact | Identity | Use and limitation |
+| --- | --- | --- |
+| REA updater overview | Evidence ID `ev_f0da86b00564426d140556cc3cc4e5d425052a7b9656c90302e46b12829c1ec3`; SHA-256 `27894463b0dfe5bc3f5dc19d4d3351d9dfb692c402bf277bde3889d37e4a206c` | Static inventory for the exact updater image documented above. |
+| REA parser dossier for `FUN_0040A940` | Evidence ID `ev_bc583b23d58a728a1441cd7ea30948cfeda53a6c41f65861c4980c47a9c3e4bf` | Function-level corroboration of local `.upf` parsing; not proof that this malformed sample parses successfully or that the parser reaches a keyboard. |
+
+The REA artifacts are retained in the local analysis workspace rather than
+the public source tree. The evidence IDs are recorded here to tie the
+cross-check to the exact package hash without publishing an unreviewed
+decompiler snapshot as source.
+
 The static transfer data flow is:
 
 | Stage | Code and evidence | Direction and limit |
