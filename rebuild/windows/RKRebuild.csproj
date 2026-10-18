@@ -9,10 +9,10 @@
     <Nullable>disable</Nullable>
     <AssemblyName>RK-Rebuild</AssemblyName>
     <RootNamespace>RkRebuild</RootNamespace>
-    <Version>0.2.2</Version>
-    <AssemblyVersion>0.2.2.0</AssemblyVersion>
-    <FileVersion>0.2.2.0</FileVersion>
-    <InformationalVersion>0.2.2-native-preview</InformationalVersion>
+    <Version>0.2.3</Version>
+    <AssemblyVersion>0.2.3.0</AssemblyVersion>
+    <FileVersion>0.2.3.0</FileVersion>
+    <InformationalVersion>0.2.3-native-preview</InformationalVersion>
     <Company>Independent community project</Company>
     <Product>RK Rebuild</Product>
     <ApplicationManifest>app.manifest</ApplicationManifest>

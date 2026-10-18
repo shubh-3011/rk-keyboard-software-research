@@ -78,6 +78,8 @@ namespace RkRebuild
         public int Speed { get; set; }
         public string Color { get; set; }
         public bool MixColor { get; set; }
+        public int LayoutGroup { get; set; }
+        public Dictionary<string, string> KeyMappings { get; set; }
 
         public DriveDraft()
         {
@@ -88,6 +90,8 @@ namespace RkRebuild
             Speed = 50;
             Color = "#FFFFFF";
             MixColor = false;
+            LayoutGroup = 0;
+            KeyMappings = new Dictionary<string, string>();
         }
     }
 
@@ -108,7 +112,7 @@ namespace RkRebuild
 
         public DriveDraftPackage()
         {
-            SchemaVersion = 1;
+            SchemaVersion = 2;
             SourceBundleSha256 = "";
             Model = "";
             Connection = "";
@@ -143,6 +147,8 @@ namespace RkRebuild
                         if (saved.KeyLabelDrafts == null) saved.KeyLabelDrafts = new Dictionary<string, string>();
                         if (saved.MacroDrafts == null) saved.MacroDrafts = new Dictionary<string, List<string>>();
                         if (saved.DriveDrafts == null) saved.DriveDrafts = new Dictionary<string, DriveDraft>();
+                        foreach (DriveDraft draft in saved.DriveDrafts.Values)
+                            if (draft != null && draft.KeyMappings == null) draft.KeyMappings = new Dictionary<string, string>();
                         return saved;
                     }
                 }
@@ -194,6 +200,47 @@ namespace RkRebuild
         public int SleepValue;
     }
 
+    internal sealed class DriveKeySlot
+    {
+        public int SlotIndex;
+        public string KeySymbol;
+        public string EnumSymbol;
+        public int? KeyCode;
+        public string Label;
+    }
+
+    internal sealed class DriveLayerLayout
+    {
+        public int LayerIndex;
+        public string LayerName;
+        public string SourceSymbol;
+        public string LayoutId;
+        public List<DriveKeySlot> KeySlots = new List<DriveKeySlot>();
+    }
+
+    internal sealed class DriveLayoutGroup
+    {
+        public int GroupIndex;
+        public List<DriveLayerLayout> Layers = new List<DriveLayerLayout>();
+
+        public override string ToString()
+        {
+            int slots = Layers.Count == 0 ? 0 : Layers[0].KeySlots.Count;
+            return "Layout group " + (GroupIndex + 1) + "  ·  " + slots + " ordered slots";
+        }
+    }
+
+    internal sealed class DriveKeyChoice
+    {
+        public int? KeyCode;
+        public string Label;
+        public string Symbol;
+        public string Display;
+        public bool IsNoOverride;
+
+        public override string ToString() { return Display; }
+    }
+
     internal sealed class DriveConnection
     {
         public string Connection;
@@ -208,7 +255,9 @@ namespace RkRebuild
         public bool? HasSideLight;
         public bool HasDeclaredConfiguratorData;
         public int LayoutGroupCount;
+        public List<DriveLayoutGroup> LayoutGroups = new List<DriveLayoutGroup>();
         public List<string> Layers = new List<string>();
+        public List<int> LayerIds = new List<int>();
         public List<string> Tables = new List<string>();
         public List<DriveEffect> Effects = new List<DriveEffect>();
 
@@ -233,6 +282,7 @@ namespace RkRebuild
         public string BundleUrl;
         public string BundleHash;
         public List<DriveModel> Models = new List<DriveModel>();
+        public Dictionary<string, List<DriveKeySlot>> KeyLayoutArrays = new Dictionary<string, List<DriveKeySlot>>(StringComparer.OrdinalIgnoreCase);
 
         public static DriveDirectory Load()
         {
@@ -251,6 +301,24 @@ namespace RkRebuild
                 JsonElement sourceBundle = ModelCatalog.GetValue(root, "sourceBundle");
                 directory.BundleUrl = ModelCatalog.GetString(sourceBundle, "url");
                 directory.BundleHash = ModelCatalog.GetString(sourceBundle, "sha256");
+
+                foreach (JsonElement array in ModelCatalog.AsArray(ModelCatalog.GetValue(root, "keyLayoutArrays")))
+                {
+                    string id = ModelCatalog.GetString(array, "id");
+                    if (String.IsNullOrWhiteSpace(id)) continue;
+                    List<DriveKeySlot> slots = new List<DriveKeySlot>();
+                    foreach (JsonElement slot in ModelCatalog.AsArray(ModelCatalog.GetValue(array, "key_slots")))
+                    {
+                        slots.Add(new DriveKeySlot {
+                            SlotIndex = ModelCatalog.GetInt(slot, "slot_index"),
+                            KeySymbol = ModelCatalog.GetString(slot, "key_symbol"),
+                            EnumSymbol = ModelCatalog.GetString(slot, "enum_symbol"),
+                            KeyCode = GetNullableInt(slot, "key_code"),
+                            Label = ModelCatalog.GetString(slot, "label")
+                        });
+                    }
+                    directory.KeyLayoutArrays[id] = slots;
+                }
 
                 foreach (JsonElement item in ModelCatalog.AsArray(ModelCatalog.GetValue(root, "models")))
                 {
@@ -271,7 +339,26 @@ namespace RkRebuild
                         connection.HasDeclaredConfiguratorData = true;
                         connection.LayoutGroupCount = ModelCatalog.GetInt(web, "layout_group_count");
                         connection.Layers = ReadStrings(ModelCatalog.GetValue(web, "key_layers"));
+                        connection.LayerIds = ReadInts(ModelCatalog.GetValue(web, "key_layer_ids"));
                         connection.Tables = ReadStrings(ModelCatalog.GetValue(web, "key_tables"));
+                        foreach (JsonElement groupElement in ModelCatalog.AsArray(ModelCatalog.GetValue(web, "key_layout_groups")))
+                        {
+                            DriveLayoutGroup group = new DriveLayoutGroup { GroupIndex = ModelCatalog.GetInt(groupElement, "group_index") };
+                            foreach (JsonElement layerElement in ModelCatalog.AsArray(ModelCatalog.GetValue(groupElement, "layers")))
+                            {
+                                string layoutId = ModelCatalog.GetString(layerElement, "layout_id");
+                                List<DriveKeySlot> slots;
+                                if (!directory.KeyLayoutArrays.TryGetValue(layoutId, out slots)) slots = new List<DriveKeySlot>();
+                                group.Layers.Add(new DriveLayerLayout {
+                                    LayerIndex = ModelCatalog.GetInt(layerElement, "layer_index"),
+                                    LayerName = ModelCatalog.GetString(layerElement, "layer_name"),
+                                    SourceSymbol = ModelCatalog.GetString(layerElement, "source_symbol"),
+                                    LayoutId = layoutId,
+                                    KeySlots = slots
+                                });
+                            }
+                            connection.LayoutGroups.Add(group);
+                        }
                         foreach (JsonElement effect in ModelCatalog.AsArray(ModelCatalog.GetValue(web, "lighting_effects")))
                         {
                             connection.Effects.Add(new DriveEffect {
@@ -322,6 +409,18 @@ namespace RkRebuild
         private static List<string> ReadStrings(JsonElement value)
         {
             return ModelCatalog.AsArray(value).Where(v => v.ValueKind == JsonValueKind.String).Select(v => v.GetString()).ToList();
+        }
+
+        private static List<int> ReadInts(JsonElement value)
+        {
+            return ModelCatalog.AsArray(value).Where(v => v.ValueKind == JsonValueKind.Number && v.TryGetInt32(out _))
+                .Select(v => v.GetInt32()).ToList();
+        }
+
+        private static int? GetNullableInt(JsonElement element, string name)
+        {
+            JsonElement value = ModelCatalog.GetValue(element, name);
+            return value.ValueKind == JsonValueKind.Number ? (int?)value.GetInt32() : null;
         }
     }
 
@@ -497,10 +596,11 @@ namespace RkRebuild
         {
             Button button = new Button { Content = label, Tag = page, Height = 42, Margin = new Thickness(0, 2, 0, 2), Padding = new Thickness(13, 0, 10, 0), HorizontalContentAlignment = HorizontalAlignment.Left, BorderThickness = new Thickness(0), FontSize = 12, Cursor = Cursors.Hand, Background = page == "Device" ? Brush(49, 94, 181) : Brush(29, 35, 45), Foreground = page == "Device" ? Brushes.White : Brush(206, 212, 222) };
             button.Click += delegate { SetPage(page); };
-            button.Style = new Style(typeof(Button));
-            button.Style.Setters.Add(new Setter(Control.BackgroundProperty, Brush(29, 35, 45)));
-            button.Style.Setters.Add(new Setter(Control.ForegroundProperty, Brush(206, 212, 222)));
-            button.Style.Setters.Add(new Setter(Control.TemplateProperty, FlatButtonTemplate()));
+            Style navStyle = new Style(typeof(Button));
+            navStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brush(29, 35, 45)));
+            navStyle.Setters.Add(new Setter(Control.ForegroundProperty, Brush(206, 212, 222)));
+            navStyle.Setters.Add(new Setter(Control.TemplateProperty, FlatButtonTemplate()));
+            button.Style = navStyle;
             button.MouseEnter += delegate { if (_page != page) button.Background = Brush(43, 51, 64); };
             button.MouseLeave += delegate { if (_page != page) button.Background = Brush(29, 35, 45); };
             nav.Children.Add(button);
@@ -952,7 +1052,11 @@ namespace RkRebuild
                 if (!_settings.DriveDrafts.TryGetValue(draftKey, out saved) || saved == null) saved = new DriveDraft();
                 DriveDraft working = new DriveDraft {
                     Layer = saved.Layer, Table = saved.Table, Effect = saved.Effect,
-                    Brightness = saved.Brightness, Speed = saved.Speed, Color = saved.Color, MixColor = saved.MixColor
+                    Brightness = saved.Brightness, Speed = saved.Speed, Color = saved.Color, MixColor = saved.MixColor,
+                    LayoutGroup = saved.LayoutGroup,
+                    KeyMappings = saved.KeyMappings == null
+                        ? new Dictionary<string, string>()
+                        : new Dictionary<string, string>(saved.KeyMappings, StringComparer.Ordinal)
                 };
 
                 Border identity = Card();
@@ -981,23 +1085,136 @@ namespace RkRebuild
                     StackPanel keyBody = new StackPanel { Margin = new Thickness(17) };
                     keyCard.Child = keyBody;
                     keyBody.Children.Add(Kicker("KEYMAP DECLARATIONS"));
-                    keyBody.Children.Add(Paragraph(connection.LayoutGroupCount + " layout group(s) declared", 11));
+                    keyBody.Children.Add(Paragraph(connection.LayoutGroupCount + " layout group(s) declared with ordered key slots", 11));
+                    ComboBox layoutGroupSelector = new ComboBox {
+                        Width = 290, Height = 30, Padding = new Thickness(7, 3, 7, 3),
+                        Background = Brushes.White, BorderBrush = Brush(218, 223, 230),
+                        IsEnabled = connection.LayoutGroups.Count > 0
+                    };
+                    foreach (DriveLayoutGroup group in connection.LayoutGroups) layoutGroupSelector.Items.Add(group);
+                    DriveLayoutGroup savedGroup = connection.LayoutGroups.FirstOrDefault(group => group.GroupIndex == working.LayoutGroup);
+                    if (savedGroup != null) layoutGroupSelector.SelectedItem = savedGroup;
+                    else if (layoutGroupSelector.Items.Count > 0) layoutGroupSelector.SelectedIndex = 0;
                     ComboBox layerSelector = DraftCombo("Key layer", connection.Layers, working.Layer);
                     ComboBox tableSelector = DraftCombo("OS table", connection.Tables, working.Table);
+                    AddLabeledControl(keyBody, "Layout", layoutGroupSelector);
                     AddLabeledControl(keyBody, "Layer", layerSelector);
                     AddLabeledControl(keyBody, "OS table", tableSelector);
+                    if (connection.Tables.Count == 0)
+                    {
+                        keyBody.Children.Add(new TextBlock {
+                            Text = "No OS table is declared for this connection. Key drafts use an explicit no-table context.",
+                            Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(130, 5, 0, 0)
+                        });
+                    }
                     keyBody.Children.Add(new TextBlock {
-                        Text = "The public registry declares these choices, but this project has not recovered the matching web-layout data or a safe device apply path for this descriptor.",
+                        Text = "Slot order and symbolic labels come from the public RK Drive bundle. Physical x/y geometry is not declared here. These are local remap drafts only; no device apply path is implemented.",
                         Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0)
                     });
+                    TextBlock keymapCount = new TextBlock {
+                        Foreground = Brush(111, 120, 133), FontSize = 9, Margin = new Thickness(0, 9, 0, 2)
+                    };
+                    keyBody.Children.Add(keymapCount);
+                    StackPanel slotRows = new StackPanel();
+                    ScrollViewer slotScroller = new ScrollViewer {
+                        Content = slotRows, MaxHeight = 310, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                        BorderBrush = Brush(230, 233, 238), BorderThickness = new Thickness(1), Padding = new Thickness(5)
+                    };
+                    keyBody.Children.Add(slotScroller);
+                    List<KeyValuePair<string, ComboBox>> slotSelectors = new List<KeyValuePair<string, ComboBox>>();
+                    Func<DriveLayerLayout> selectedLayerLayout = delegate
+                    {
+                        DriveLayoutGroup selectedGroup = layoutGroupSelector.SelectedItem as DriveLayoutGroup;
+                        string selectedLayerName = layerSelector.SelectedItem as string;
+                        if (selectedGroup == null) return null;
+                        int layerPosition = connection.Layers.IndexOf(selectedLayerName ?? "");
+                        int layerIndex = layerPosition >= 0 && layerPosition < connection.LayerIds.Count
+                            ? connection.LayerIds[layerPosition]
+                            : layerPosition;
+                        return selectedGroup.Layers.FirstOrDefault(layer => layer.LayerIndex == layerIndex)
+                            ?? selectedGroup.Layers.FirstOrDefault(layer => String.Equals(layer.LayerName, selectedLayerName, StringComparison.OrdinalIgnoreCase));
+                    };
+                    Action renderSlotRows = delegate
+                    {
+                        slotRows.Children.Clear();
+                        slotSelectors.Clear();
+                        DriveLayoutGroup selectedGroup = layoutGroupSelector.SelectedItem as DriveLayoutGroup;
+                        DriveLayerLayout selectedLayout = selectedLayerLayout();
+                        if (selectedGroup == null || selectedLayout == null || selectedLayout.KeySlots.Count == 0)
+                        {
+                            keymapCount.Text = "No ordered slot data is declared for this group and layer.";
+                            return;
+                        }
+                        int tableIndex = connection.Tables.IndexOf(tableSelector.SelectedItem as string);
+                        string tableToken = connection.Tables.Count == 0 ? "tNone" : "t" + Math.Max(0, tableIndex);
+                        string contextPrefix = "g" + selectedGroup.GroupIndex + "|l" + selectedLayout.LayerIndex + "|" + tableToken + "|s";
+                        List<DriveKeyChoice> choices = new List<DriveKeyChoice> {
+                            new DriveKeyChoice { IsNoOverride = true, Display = "No override" }
+                        };
+                        foreach (DriveKeySlot candidate in selectedGroup.Layers.SelectMany(layer => layer.KeySlots))
+                        {
+                            if (!candidate.KeyCode.HasValue || choices.Any(choice => choice.KeyCode == candidate.KeyCode)) continue;
+                            string candidateLabel = String.IsNullOrWhiteSpace(candidate.Label) ? candidate.KeySymbol : candidate.Label;
+                            choices.Add(new DriveKeyChoice {
+                                KeyCode = candidate.KeyCode,
+                                Label = candidateLabel,
+                                Symbol = candidate.EnumSymbol + "." + candidate.KeySymbol,
+                                Display = candidateLabel + "  ·  0x" + candidate.KeyCode.Value.ToString("X2")
+                            });
+                        }
+                        foreach (DriveKeySlot slot in selectedLayout.KeySlots)
+                        {
+                            Grid row = new Grid { Margin = new Thickness(0, 1, 0, 1), MinHeight = 29 };
+                            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(190) });
+                            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                            string slotLabelText = String.IsNullOrWhiteSpace(slot.Label) ? slot.KeySymbol : slot.Label;
+                            TextBlock slotLabel = new TextBlock {
+                                Text = "Slot " + slot.SlotIndex.ToString("D2") + "  ·  " + slotLabelText,
+                                Foreground = Brush(70, 78, 90), FontSize = 9, VerticalAlignment = VerticalAlignment.Center,
+                                TextTrimming = TextTrimming.CharacterEllipsis,
+                                ToolTip = slot.EnumSymbol + "." + slot.KeySymbol + (slot.KeyCode.HasValue ? "  ·  code " + slot.KeyCode.Value : "  ·  no numeric code resolved")
+                            };
+                            ComboBox choiceSelector = new ComboBox {
+                                Height = 26, Padding = new Thickness(5, 2, 5, 2),
+                                Background = Brushes.White, BorderBrush = Brush(218, 223, 230), ItemsSource = choices
+                            };
+                            string mappingKey = contextPrefix + slot.SlotIndex;
+                            string savedCode;
+                            if (working.KeyMappings.TryGetValue(mappingKey, out savedCode))
+                                choiceSelector.SelectedItem = choices.FirstOrDefault(choice => choice.KeyCode.HasValue
+                                    && String.Equals(choice.KeyCode.Value.ToString(System.Globalization.CultureInfo.InvariantCulture), savedCode, StringComparison.Ordinal));
+                            if (choiceSelector.SelectedItem == null) choiceSelector.SelectedIndex = 0;
+                            Grid.SetColumn(choiceSelector, 1);
+                            row.Children.Add(slotLabel);
+                            row.Children.Add(choiceSelector);
+                            slotRows.Children.Add(row);
+                            slotSelectors.Add(new KeyValuePair<string, ComboBox>(mappingKey, choiceSelector));
+                        }
+                        keymapCount.Text = selectedLayout.KeySlots.Count + " ordered slots · " + choices.Count + " choices (including no override) · layout " + selectedLayout.LayoutId.Substring(0, Math.Min(8, selectedLayout.LayoutId.Length));
+                    };
+                    layoutGroupSelector.SelectionChanged += delegate { renderSlotRows(); };
+                    layerSelector.SelectionChanged += delegate { renderSlotRows(); };
+                    tableSelector.SelectionChanged += delegate { renderSlotRows(); };
+                    renderSlotRows();
                     Button saveKeymap = ActionButton("Save keymap draft", true);
                     saveKeymap.Margin = new Thickness(0, 9, 0, 0);
                     TextBlock keymapStatus = new TextBlock { Foreground = Brush(64, 120, 82), FontSize = 9, Margin = new Thickness(9, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
                     StackPanel keymapSaveRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 7, 0, 0) };
                     saveKeymap.Click += delegate
                     {
+                        DriveLayoutGroup selectedGroup = layoutGroupSelector.SelectedItem as DriveLayoutGroup;
+                        working.LayoutGroup = selectedGroup == null ? 0 : selectedGroup.GroupIndex;
                         working.Layer = layerSelector.SelectedItem as string ?? "";
                         working.Table = tableSelector.SelectedItem as string ?? "";
+                        foreach (KeyValuePair<string, ComboBox> slotSelector in slotSelectors)
+                        {
+                            DriveKeyChoice selectedChoice = slotSelector.Value.SelectedItem as DriveKeyChoice;
+                            if (selectedChoice == null || selectedChoice.IsNoOverride || !selectedChoice.KeyCode.HasValue)
+                                working.KeyMappings.Remove(slotSelector.Key);
+                            else
+                                working.KeyMappings[slotSelector.Key] = selectedChoice.KeyCode.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        }
                         _settings.DriveDrafts[draftKey] = working;
                         SettingsStore.Save(_settings);
                         keymapStatus.Text = "Saved to this PC only.";
@@ -1150,11 +1367,13 @@ namespace RkRebuild
                     using (JsonDocument document = JsonDocument.Parse(json))
                     {
                         JsonElement schemaVersion;
+                        int version;
                         if (document.RootElement.ValueKind != JsonValueKind.Object
                             || !document.RootElement.TryGetProperty("SchemaVersion", out schemaVersion)
                             || schemaVersion.ValueKind != JsonValueKind.Number
-                            || schemaVersion.GetInt32() != 1)
-                            throw new InvalidDataException("The file must declare supported schema version 1.");
+                            || !schemaVersion.TryGetInt32(out version)
+                            || (version != 1 && version != 2))
+                            throw new InvalidDataException("The file must declare supported schema version 1 or 2.");
                     }
                     DriveDraftPackage package = JsonSerializer.Deserialize<DriveDraftPackage>(json);
                     if (package == null || !System.Text.RegularExpressions.Regex.IsMatch(package.SourceBundleSha256 ?? "", "^[0-9A-Fa-f]{64}$"))
@@ -1207,6 +1426,7 @@ namespace RkRebuild
         private DriveDraftPackage CreateDriveDraftPackage(DriveModel model, DriveConnection connection, DriveDraft draft)
         {
             return new DriveDraftPackage {
+                SchemaVersion = 2,
                 SourceBundleSha256 = _driveDirectory.BundleHash ?? "",
                 Model = model.Name ?? "",
                 Connection = connection.Connection ?? "",
@@ -1236,14 +1456,18 @@ namespace RkRebuild
                 Brightness = source.Brightness,
                 Speed = source.Speed,
                 Color = source.Color ?? "",
-                MixColor = source.MixColor
+                MixColor = source.MixColor,
+                LayoutGroup = source.LayoutGroup,
+                KeyMappings = source.KeyMappings == null
+                    ? new Dictionary<string, string>()
+                    : new Dictionary<string, string>(source.KeyMappings, StringComparer.Ordinal)
             };
         }
 
         private static bool MatchesDriveDescriptor(DriveDraftPackage package, DriveModel model, DriveConnection connection, out string error)
         {
             error = "The model label, connection, VID/PID, usage, protocol, specialized-profile flag, and UUID must match.";
-            return package != null && package.SchemaVersion == 1 && package.Draft != null
+            return package != null && (package.SchemaVersion == 1 || package.SchemaVersion == 2) && package.Draft != null
                 && String.Equals(package.Model ?? "", model.Name ?? "", StringComparison.OrdinalIgnoreCase)
                 && String.Equals(package.Connection ?? "", connection.Connection ?? "", StringComparison.OrdinalIgnoreCase)
                 && String.Equals(package.VendorId ?? "", connection.VendorId ?? "", StringComparison.OrdinalIgnoreCase)
@@ -1265,10 +1489,58 @@ namespace RkRebuild
             if (!System.Text.RegularExpressions.Regex.IsMatch(color, "^#[0-9A-Fa-f]{6}$")) { error = "color must use #RRGGBB format."; return false; }
             if (!String.IsNullOrEmpty(draft.Layer) && !connection.Layers.Contains(draft.Layer)) { error = "the layer is not declared in this descriptor."; return false; }
             if (!String.IsNullOrEmpty(draft.Table) && !connection.Tables.Contains(draft.Table)) { error = "the OS table is not declared in this descriptor."; return false; }
+            if (draft.KeyMappings == null) { error = "the key mapping dictionary is missing."; return false; }
+            if (draft.KeyMappings.Count > 2048) { error = "the draft contains too many key mapping entries."; return false; }
+            if (draft.KeyMappings.Count > 0 && connection.LayoutGroups.All(group => group.GroupIndex != draft.LayoutGroup))
+            {
+                error = "the selected layout group is not declared in this descriptor.";
+                return false;
+            }
+            foreach (KeyValuePair<string, string> mapping in draft.KeyMappings)
+            {
+                string[] parts = (mapping.Key ?? "").Split('|');
+                int groupIndex, layerIndex, tableIndex = -1, slotIndex, keyCode;
+                bool tableContextValid = connection.Tables.Count == 0
+                    ? String.Equals(parts.Length > 2 ? parts[2] : "", "tNone", StringComparison.Ordinal)
+                    : parts.Length > 2 && TryIndexedPart(parts[2], "t", out tableIndex)
+                        && tableIndex < connection.Tables.Count;
+                if (parts.Length != 4
+                    || !TryIndexedPart(parts[0], "g", out groupIndex)
+                    || !TryIndexedPart(parts[1], "l", out layerIndex)
+                    || !TryIndexedPart(parts[3], "s", out slotIndex)
+                    || !Int32.TryParse(mapping.Value, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out keyCode)
+                    || !String.Equals(mapping.Value, keyCode.ToString(System.Globalization.CultureInfo.InvariantCulture), StringComparison.Ordinal)
+                    || !tableContextValid)
+                {
+                    error = "a key mapping has an invalid group/layer/table/slot identifier or key code.";
+                    return false;
+                }
+                DriveLayoutGroup group = connection.LayoutGroups.FirstOrDefault(item => item.GroupIndex == groupIndex);
+                DriveLayerLayout layer = group == null ? null : group.Layers.FirstOrDefault(item => item.LayerIndex == layerIndex);
+                if (group == null || layer == null || slotIndex < 0 || slotIndex >= layer.KeySlots.Count
+                    || !group.Layers.SelectMany(item => item.KeySlots).Any(slot => slot.KeyCode == keyCode))
+                {
+                    error = "a key mapping refers to a slot, table, or key code not declared for this descriptor.";
+                    return false;
+                }
+            }
             DriveEffect effect = String.IsNullOrEmpty(draft.Effect) ? null : connection.Effects.FirstOrDefault(item => String.Equals(item.Name, draft.Effect, StringComparison.OrdinalIgnoreCase));
             if (!String.IsNullOrEmpty(draft.Effect) && effect == null) { error = "the lighting effect is not declared in this descriptor."; return false; }
             if (draft.MixColor && (effect == null || !effect.MixColor)) { error = "color mixing is not declared for the selected effect."; return false; }
             return true;
+        }
+
+        private static bool TryIndexedPart(string value, string prefix, out int index)
+        {
+            index = -1;
+            if (value == null || !value.StartsWith(prefix, StringComparison.Ordinal)
+                || !Int32.TryParse(value.Substring(prefix.Length), System.Globalization.NumberStyles.None,
+                    System.Globalization.CultureInfo.InvariantCulture, out index) || index < 0)
+            {
+                index = -1;
+                return false;
+            }
+            return String.Equals(value, prefix + index.ToString(System.Globalization.CultureInfo.InvariantCulture), StringComparison.Ordinal);
         }
 
         private static string SafeFileSegment(string value)

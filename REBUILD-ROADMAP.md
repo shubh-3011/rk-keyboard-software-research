@@ -10,13 +10,13 @@ the companion web/profile editor.
 The source in [`rebuild/windows/`](rebuild/windows/) is a new C# WPF Windows
 application with its own process and no Python, browser, WebView, or local web
 server. It contains the first native shell, local profile/layout browser,
-local key-label and macro-note drafts, an RK Drive layer/table/effect draft
-composer with descriptor-checked local JSON import/export, tray restore/exit, opt-in
-start-with-Windows, and a separate directory for the public RK Drive keyboard
-registry. The directory shows connection IDs and declared layers/tables/light
-effects, and fetches official-hosted product photos on demand without bundling
-them. Its self-contained `.exe` is produced by the documented build script; it
-is not the old downloadable prototype.
+local key-label and macro-note drafts, an RK Drive ordered-slot keymap and
+layer/table/effect draft editor with descriptor-checked local JSON import/export,
+tray restore/exit, opt-in start-with-Windows, and a separate directory for the
+public RK Drive keyboard registry. The directory shows connection IDs and
+declared layers/tables/light effects, and fetches official-hosted product
+photos on demand without bundling them. Its self-contained `.exe` is produced
+by the documented build script; it is not the old downloadable prototype.
 
 The downloadable `RK-Research-Workbench.exe` release is an earlier
 **profile-editor prototype**. It is a PyInstaller bundle containing Python, a
@@ -26,7 +26,8 @@ and [`workbench/README.md`](workbench/). It is not the native reconstruction.
 
 The new native app is still an early reconstruction milestone, not a same-
 function or pixel-matched RK replacement. Its RK Drive editor uses publicly
-declared layers, OS tables, and per-effect controls only to save local drafts.
+declared ordered symbolic slots, layers, OS tables, and per-effect controls
+only to save local drafts; the bundle does not provide physical key geometry.
 Hardware communication, RK-native settings serialization, TFT/media and
 performance workflows, updates, firmware, and full workflow parity remain
 unimplemented or unresolved. The research archive and rebuild are distinct

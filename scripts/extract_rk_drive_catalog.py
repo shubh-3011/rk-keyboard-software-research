@@ -34,10 +34,25 @@ MOUSE_MARKER = "deviceType:ws.Mouse"
 
 def array_assignment_body(script: str, symbol: str) -> str:
     """Read one minified array declaration without evaluating the vendor bundle."""
-    match = re.search(rf"(?<![\w$]){re.escape(symbol)}=\[", script)
-    if not match:
-        return ""
-    start = match.end()
+    body, _after = array_assignment_details(script, symbol)
+    return body
+
+
+def array_assignment_details(script: str, symbol: str) -> tuple[str, int]:
+    """Return an array literal body and the source offset immediately after it."""
+    needle = symbol + "=["
+    cursor = 0
+    start = -1
+    while True:
+        candidate = script.find(needle, cursor)
+        if candidate < 0:
+            break
+        if candidate == 0 or not (script[candidate - 1].isalnum() or script[candidate - 1] in "_$"):
+            start = candidate + len(symbol) + 2
+            break
+        cursor = candidate + 1
+    if start < 0:
+        return "", -1
     depth = 1
     in_string = ""
     escaped = False
@@ -58,7 +73,205 @@ def array_assignment_body(script: str, symbol: str) -> str:
         elif char == "]":
             depth -= 1
         index += 1
-    return script[start:index - 1] if depth == 0 else ""
+    return (script[start:index - 1], index) if depth == 0 else ("", -1)
+
+
+def object_assignment_body(script: str, symbol: str) -> str:
+    """Read one minified object assignment without evaluating the bundle."""
+    needle = symbol + "={"
+    cursor = 0
+    match_start = -1
+    while True:
+        candidate = script.find(needle, cursor)
+        if candidate < 0:
+            break
+        if candidate == 0 or not (script[candidate - 1].isalnum() or script[candidate - 1] in "_$"):
+            match_start = candidate
+            break
+        cursor = candidate + 1
+    if match_start < 0:
+        return ""
+    start = match_start + len(symbol) + 1
+    end = matching_delimiter(script, start)
+    return script[start + 1:end] if end > start else ""
+
+
+def parse_numeric_enum(script: str, symbol: str) -> dict[str, int]:
+    """Read a TypeScript-style numeric enum object used by the layout arrays."""
+    assignment = re.compile(rf"(?<![\w$]){re.escape(symbol)}=\(")
+    pairs = re.compile(r"\w+\[\w+\.([A-Za-z_$][\w$]*)=(-?\d+)\]=")
+    for match in assignment.finditer(script):
+        end = script.find(";", match.start())
+        if end < 0:
+            continue
+        values = {
+            name: int(value)
+            for name, value in pairs.findall(script[match.start():end])
+        }
+        if values:
+            return values
+    return {}
+
+
+def parse_js_string_literals(body: str) -> list[str]:
+    """Decode simple quoted strings from a source object; do not evaluate JS."""
+    values: list[str] = []
+    literal = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|`(?:\\.|[^`\\])*`')
+    for match in literal.finditer(body):
+        raw = match.group(0)
+        if raw.startswith('"'):
+            try:
+                values.append(str(json.loads(raw)))
+            except json.JSONDecodeError:
+                values.append(raw[1:-1])
+        else:
+            values.append(raw[1:-1].replace("\\'", "'").replace("\\\\", "\\"))
+    return values
+
+
+def parse_key_text_map(script: str, symbol: str) -> dict[int, list[str]]:
+    """Read numeric key-code to label-list entries from a keyText object."""
+    body = object_assignment_body(script, symbol)
+    labels: dict[int, list[str]] = {}
+    cursor = 0
+    entry = re.compile(r"(?<![\w$])(\d+)\s*:\s*\[")
+    while match := entry.search(body, cursor):
+        start = body.find("[", match.start())
+        end = matching_delimiter(body, start)
+        if end < 0:
+            break
+        try:
+            labels[int(match.group(1))] = parse_js_string_literals(body[start + 1:end])
+        except ValueError:
+            pass
+        cursor = end + 1
+    return labels
+
+
+def parse_array_index(expression: str) -> int | None:
+    """Evaluate only the small integer index forms found in static layout data."""
+    match = re.fullmatch(r"\s*(\d+)(?:\s*\+\s*(\d+)\s*\*\s*(\d+))?\s*", expression)
+    if not match:
+        return None
+    base, multiplier, factor = match.groups()
+    return int(base) + (int(multiplier) * int(factor) if multiplier else 0)
+
+
+def parse_key_layout_array(
+    script: str,
+    symbol: str,
+    enum_cache: dict[str, dict[str, int]],
+    array_cache: dict[str, list[tuple[str, str, int | None]]],
+    active: set[str] | None = None,
+) -> list[tuple[str, str, int | None]]:
+    """Resolve a static key-code array and its immediately following indexed overrides."""
+    if symbol in array_cache:
+        return array_cache[symbol]
+    active = set() if active is None else active
+    if symbol in active:
+        return []
+    active.add(symbol)
+    body, after = array_assignment_details(script, symbol)
+    if after < 0:
+        active.remove(symbol)
+        array_cache[symbol] = []
+        return []
+
+    spread = re.fullmatch(r"\.\.\.([A-Za-z_$][\w$]*)", body.strip())
+    if spread:
+        slots = list(parse_key_layout_array(script, spread.group(1), enum_cache, array_cache, active))
+    else:
+        slots: list[tuple[str, str, int | None]] = []
+        valid = bool(body)
+        for raw_token in body.split(",") if body else []:
+            token = raw_token.strip()
+            enum_item = re.fullmatch(r"([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)", token)
+            literal_item = re.fullmatch(r"\d+", token)
+            if enum_item:
+                enum_symbol, key_symbol = enum_item.groups()
+                if enum_symbol not in enum_cache:
+                    enum_cache[enum_symbol] = parse_numeric_enum(script, enum_symbol)
+                slots.append((enum_symbol, key_symbol, enum_cache[enum_symbol].get(key_symbol)))
+            elif literal_item:
+                slots.append(("", token, int(token)))
+            else:
+                valid = False
+                break
+        if not valid:
+            slots = []
+
+    cursor = after
+    override = re.compile(
+        rf"{re.escape(symbol)}\s*\[([^\]]+)\]\s*=\s*([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*);"
+    )
+    while True:
+        while cursor < len(script) and (script[cursor].isspace() or script[cursor] == ";"):
+            cursor += 1
+        match = override.match(script, cursor)
+        if not match:
+            break
+        slot_index = parse_array_index(match.group(1))
+        enum_symbol, key_symbol = match.group(2), match.group(3)
+        if enum_symbol not in enum_cache:
+            enum_cache[enum_symbol] = parse_numeric_enum(script, enum_symbol)
+        code = enum_cache[enum_symbol].get(key_symbol)
+        if slot_index is None or slot_index < 0 or slot_index >= len(slots):
+            slots = []
+            break
+        slots[slot_index] = (enum_symbol, key_symbol, code)
+        cursor = match.end()
+
+    active.remove(symbol)
+    array_cache[symbol] = slots
+    return slots
+
+
+def parse_key_layout_groups(
+    script: str,
+    layout_body: str,
+    layer_names_by_id: dict[int, str],
+    key_text_symbol: str,
+    enum_cache: dict[str, dict[str, int]],
+    array_cache: dict[str, list[tuple[str, str, int | None]]],
+    text_cache: dict[str, dict[int, list[str]]],
+) -> list[dict[str, object]]:
+    """Resolve ordered layout slots to symbolic key codes and public labels."""
+    if key_text_symbol not in text_cache:
+        text_cache[key_text_symbol] = parse_key_text_map(script, key_text_symbol)
+    key_text = text_cache[key_text_symbol]
+    groups: list[dict[str, object]] = []
+    group_pattern = re.compile(r"(?:^|,)\s*(\d+)\s*:\s*\{([^{}]*)\}")
+    layer_pattern = re.compile(r"(?:^|,)\s*(\d+)\s*:\s*([A-Za-z_$][\w$]*)")
+    for group_match in group_pattern.finditer(layout_body):
+        group_index = int(group_match.group(1))
+        layers: list[dict[str, object]] = []
+        for layer_match in layer_pattern.finditer(group_match.group(2)):
+            layer_index = int(layer_match.group(1))
+            array_symbol = layer_match.group(2)
+            if array_symbol not in array_cache:
+                parse_key_layout_array(script, array_symbol, enum_cache, array_cache)
+            key_symbols = array_cache[array_symbol]
+            slots: list[dict[str, object]] = []
+            for slot_index, (enum_symbol, key_symbol, code) in enumerate(key_symbols):
+                names = key_text.get(code, []) if code is not None else []
+                label = names[0] if names and names[0] else (
+                    "" if key_symbol == "NONE" else key_symbol.removeprefix("KEY_").replace("_", " ")
+                )
+                slots.append({
+                    "slot_index": slot_index,
+                    "key_symbol": key_symbol,
+                    "enum_symbol": enum_symbol,
+                    "key_code": code,
+                    "label": label,
+                })
+            layers.append({
+                "layer_index": layer_index,
+                "layer_name": layer_names_by_id.get(layer_index, f"Layer {layer_index}"),
+                "source_symbol": array_symbol,
+                "key_slots": slots,
+            })
+        groups.append({"group_index": group_index, "layers": layers})
+    return groups
 
 
 def matching_delimiter(text: str, open_index: int) -> int:
@@ -459,6 +672,23 @@ def js_enum_items(value: str, prefix: str, labels: dict[str, str]) -> list[str]:
     return result
 
 
+def js_enum_integer_ids(
+    script: str,
+    value: str,
+    prefix: str,
+    enum_cache: dict[str, dict[str, int]],
+) -> list[int | None]:
+    """Resolve each referenced numeric enum ID without executing the bundle."""
+    if prefix not in enum_cache:
+        enum_cache[prefix] = parse_numeric_enum(script, prefix)
+    values: list[int | None] = []
+    for token in value.split(","):
+        match = re.fullmatch(rf"\s*{re.escape(prefix)}\.([A-Za-z_$][\w$]*)\s*", token)
+        if match:
+            values.append(enum_cache[prefix].get(match.group(1)))
+    return values
+
+
 def extract_lighting_effects(array_body: str) -> list[dict[str, object]]:
     effects: list[dict[str, object]] = []
     for match in EFFECT_PATTERN.finditer(array_body):
@@ -512,11 +742,22 @@ def parse_device_records(script: str) -> list[dict[str, object]]:
         symbol: extract_lighting_effects(array_assignment_body(script, symbol))
         for symbol in lighting_symbols
     }
+    key_code_values: dict[str, dict[str, int]] = {}
+    key_layout_array_cache: dict[str, list[tuple[str, str, int | None]]] = {}
+    key_text_cache: dict[str, dict[int, list[str]]] = {}
     for match in DEVICE_PATTERN.finditer(script):
         (
             name, image, vid, pid, usage_page, usage, connect, kind, protocol,
-            _key_text, layer_refs, table_refs, layout_body, lighting_symbol,
+            key_text_symbol, layer_refs, table_refs, layout_body, lighting_symbol,
         ) = match.groups()
+        layer_enum_symbol = "It" if js_enum_items(layer_refs, "It", layer_labels) else "Hn"
+        key_layers = js_enum_items(layer_refs, layer_enum_symbol, layer_labels)
+        key_layer_ids = js_enum_integer_ids(script, layer_refs, layer_enum_symbol, key_code_values)
+        layer_names_by_id = {
+            layer_id: key_layers[index]
+            for index, layer_id in enumerate(key_layer_ids)
+            if layer_id is not None and index < len(key_layers)
+        }
         row: dict[str, object] = {
             "name": name,
             "image_asset": image,
@@ -534,11 +775,16 @@ def parse_device_records(script: str) -> list[dict[str, object]]:
             ),
             "device_type": kind.removeprefix("ws."),
             "protocol_type": protocol.removeprefix("bs."),
+            "key_text_symbol": key_text_symbol,
             "web_configurator": {
-                "key_layers": js_enum_items(layer_refs, "It", layer_labels)
-                or js_enum_items(layer_refs, "Hn", layer_labels),
+                "key_layers": key_layers,
+                "key_layer_ids": key_layer_ids,
                 "key_tables": js_enum_items(table_refs, "g", table_labels),
                 "layout_group_count": len(re.findall(r"(?:^|,)\d+:\{", layout_body)),
+                "key_layout_groups": parse_key_layout_groups(
+                    script, layout_body, layer_names_by_id, key_text_symbol,
+                    key_code_values, key_layout_array_cache, key_text_cache,
+                ),
                 "lighting_effects": lighting_profiles.get(lighting_symbol, []),
             },
         }
@@ -584,6 +830,56 @@ def main() -> int:
     records = parse_device_records(entry_script)
     if not records:
         raise RuntimeError("No public model descriptors matched the known bundle schema")
+    incomplete_layouts = [
+        row for row in records
+        if len(row["web_configurator"]["key_layout_groups"]) != row["web_configurator"]["layout_group_count"]
+        or not row["web_configurator"]["key_layers"]
+        or len(row["web_configurator"]["key_layer_ids"]) != len(row["web_configurator"]["key_layers"])
+        or any(layer_id is None for layer_id in row["web_configurator"]["key_layer_ids"])
+        or len(set(row["web_configurator"]["key_layer_ids"])) != len(row["web_configurator"]["key_layer_ids"])
+        or len({group["group_index"] for group in row["web_configurator"]["key_layout_groups"]})
+        != row["web_configurator"]["layout_group_count"]
+        or any(
+            not layer["key_slots"]
+            for group in row["web_configurator"]["key_layout_groups"]
+            for layer in group["layers"]
+        )
+        or any(
+            not group["layers"]
+            or len({layer["layer_index"] for layer in group["layers"]}) != len(group["layers"])
+            or not {layer["layer_index"] for layer in group["layers"]}
+            <= set(row["web_configurator"]["key_layer_ids"])
+            for group in row["web_configurator"]["key_layout_groups"]
+        )
+        or (row["web_configurator"]["key_layout_groups"] and len({
+            tuple(sorted(layer["layer_index"] for layer in group["layers"]))
+            for group in row["web_configurator"]["key_layout_groups"]
+        }) != 1)
+    ]
+    if incomplete_layouts:
+        raise RuntimeError(
+            "Could not resolve every declared ordered key layout and layer ID for: "
+            + ", ".join(str(row["name"]) for row in incomplete_layouts[:10])
+        )
+
+    key_layout_arrays: dict[str, dict[str, object]] = {}
+    for row in records:
+        for group in row["web_configurator"]["key_layout_groups"]:
+            for layer in group["layers"]:
+                slots = layer.pop("key_slots")
+                canonical = json.dumps(slots, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                layout_id = sha256(canonical.encode("utf-8"))
+                layout_array = key_layout_arrays.setdefault(layout_id, {
+                    "id": layout_id,
+                    "source_symbols": [],
+                    "key_slots": slots,
+                })
+                if layer["source_symbol"] not in layout_array["source_symbols"]:
+                    layout_array["source_symbols"].append(layer["source_symbol"])
+                layer["layout_id"] = layout_id
+                layer["key_slot_count"] = len(slots)
+    for layout_array in key_layout_arrays.values():
+        layout_array["source_symbols"].sort()
     mouse_records = parse_mouse_descriptors(entry_script)
     tlw_mouse_records = parse_tlw_mouse_profile(entry_script)
     specialized_keyboard_profiles = parse_rk68_he_profiles(entry_script)
@@ -635,7 +931,7 @@ def main() -> int:
         "name", "image_asset", "image_url", "vendor_id", "vendor_id_hex",
         "product_id", "product_id_hex", "usage_page", "usage_page_hex", "usage",
         "usage_hex", "connection", "device_type", "protocol_type",
-        "key_layers", "key_tables", "layout_group_count", "lighting_effect_count",
+        "key_layers", "key_layer_ids", "key_tables", "layout_group_count", "lighting_effect_count",
         "lighting_effects_json",
         "source_bundle_url", "source_bundle_sha256", "retrieved_at_utc",
     ]
@@ -643,6 +939,7 @@ def main() -> int:
         {
             **row,
             "key_layers": " | ".join(row["web_configurator"]["key_layers"]),
+            "key_layer_ids": " | ".join(str(item) for item in row["web_configurator"]["key_layer_ids"]),
             "key_tables": " | ".join(row["web_configurator"]["key_tables"]),
             "layout_group_count": row["web_configurator"]["layout_group_count"],
             "lighting_effect_count": len(row["web_configurator"]["lighting_effects"]),
@@ -760,6 +1057,8 @@ def main() -> int:
         "keyboardProductImageReferenceCount": keyboard_product_image_count,
         "imageReferenceCount": len(photo_rows),
         "models": records,
+        "keyLayoutArrayCount": len(key_layout_arrays),
+        "keyLayoutArrays": sorted(key_layout_arrays.values(), key=lambda item: str(item["id"])),
         "specializedKeyboardProfiles": specialized_keyboard_profiles,
         "mouseDescriptorCount": len(mouse_records),
         "mouseConnectionProfileCount": len(mouse_rows),
@@ -773,6 +1072,7 @@ def main() -> int:
           f"added {len(specialized_keyboard_profiles)} specialized keyboard profiles, "
           f"{keyboard_product_image_count} keyboard product images, "
           f"{background_image_count} layout backgrounds, and {len(mouse_images)} mouse images.")
+    print(f"Resolved {sum(array['key_slot_count'] for record in records for group in record['web_configurator']['key_layout_groups'] for array in group['layers'])} ordered key slots into {len(key_layout_arrays)} deduplicated key-layout arrays.")
     print(f"Wrote {len(mouse_records)} legacy mouse descriptors and "
           f"{len(tlw_mouse_records)} CB75-Mouse connection rows.")
     print(f"Entry bundle SHA-256: {bundle_hash}")

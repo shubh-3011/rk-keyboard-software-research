@@ -11,8 +11,9 @@ WebView2.
 - A local profile catalog built from the 265 entries in the separately
   documented RK 4.6-labeled package snapshot.
 - A second, distinct RK Drive directory built from the public web app's
-  source-free registry snapshot: 177 connection descriptors across 96 standard
-  labels, plus the two separately declared RK68 HE profiles. Search includes
+  derived registry snapshot (without vendor code): 177 connection descriptors
+  across 96 standard labels plus the two separately declared RK68 HE profiles.
+  Search includes
   connection type, protocol, VID/PID, and HID usage identifiers. Each record
   shows its declared key layers, OS tables, layout count, and lighting modes.
 - On-demand display of product photos directly from `drive.rkgaming.com`.
@@ -24,12 +25,16 @@ WebView2.
   `%LOCALAPPDATA%\RK-Rebuild\settings.json`.
 - An **RK Drive editor** that stages the selected descriptor's declared key
   layer, OS table, lighting effect, and supported effect controls as local
-  drafts. Drafts are keyed by model and connection row and saved only under
+  drafts. For standard descriptors, the editor also shows the bundle's ordered
+  symbolic key slots and lets you choose per-slot numeric key codes. The
+  extracted data does not include physical key coordinates. Drafts are keyed
+  by model and connection row and saved only under
   the current Windows user's local settings. Drafts can be exported to or
   imported from a JSON package that records the catalog bundle hash and full
-  selected descriptor identity. Imports reject mismatched descriptors and
-  values outside the local catalog declarations; a catalog-version mismatch
-  requires an explicit confirmation.
+  selected descriptor identity. Schema 2 adds per-slot drafts and schema 1
+  remains importable. Imports reject mismatched descriptors and values outside
+  the local catalog declarations; a catalog-version mismatch requires an
+  explicit confirmation.
 - An optional local package folder setting for viewing profile artwork already
   present on this PC. Vendor assets are read from that folder at runtime and
   are not included in this repository or executable.
@@ -44,7 +49,9 @@ This build does not detect or communicate with a keyboard. It does not read or
 write HID reports, apply key mappings or lighting, capture or transfer macros,
 control displays, run updates, or read/write firmware. Its key labels, macro
 notes, key layer/table choices, and lighting values are local drafts, not
-RK-native serialized settings. The `.rkdrive.json` files are this app's own
+RK-native serialized settings. Ordered slot mappings are a community draft
+format, not recovered RK key-layout geometry or a native mapping payload. The
+`.rkdrive.json` files are this app's own
 portable draft format, not files accepted by RK Drive or keyboard firmware.
 The web bundle also exposes TFT/media,
 performance, advanced-key, function-setting, and firmware pages; those
