@@ -23,17 +23,19 @@ keyboard.
 
 ## What the device ID cannot tell us
 
-The public catalogs do not map S98 case finishes or keycap colorways to distinct
-USB product IDs. PnP metadata also does not report the currently active RGB
-effect or color. The overview therefore cannot automatically distinguish those
-physical finishes or mirror live lighting. It names the image source and exposes
-available catalog photos rather than tinting a product photo and presenting that
-as observed hardware state.
+The public model catalogs do not map S98 case finishes or keycap colorways to
+distinct USB product IDs. The native app now offers six official S98 appearance
+photos from RK's public product pages and remembers a user-selected photo for
+the connected device/profile. This is a manual appearance choice, not a finish
+detected from the USB identity. PnP metadata also does not report the currently
+active RGB effect or color, so the app does not present a product photo as a
+live view of keyboard lighting.
 
-Product photos load from the public RK Drive host over HTTPS. They are not
+Product photos load from RK Drive or RK's public store over HTTPS. They are not
 bundled in the executable or repository, and an internet connection is needed
-to fetch an image not already displayed in the current session. The product
-photo catalog is not a complete inventory of all RK finishes or later models.
+to fetch an image. The S98 appearance list is documented in
+[`s98-appearance.json`](../s98-appearance.json); it is not a complete inventory
+of all RK finishes or later models.
 
 ## Scope and safety
 

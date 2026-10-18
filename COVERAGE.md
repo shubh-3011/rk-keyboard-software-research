@@ -9,7 +9,8 @@ model or runtime map.
   [`rebuild/windows/`](rebuild/windows/), separate from the Keydeck web app
   and the earlier Python/WebView2 workbench. It browses the 265-profile
   4.6-labeled catalog and a second 177-row RK Drive keyboard directory with
-  on-demand photos linked to RK's host, read-only Windows PnP matching for
+  on-demand photos linked to RK's hosts and a manual S98 appearance selector,
+  read-only Windows PnP matching for
   catalogued VID/PID pairs, local-only key-label drafts, macro notes,
   notification-area restore/exit, and opt-in per-user startup.
   Its standalone EXE is built by the project script; it does not need Python,

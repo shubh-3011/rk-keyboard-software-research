@@ -35,9 +35,10 @@ namespace RkRebuild
                 AppSettings settings = SettingsStore.Load();
                 ModelCatalog catalog = ModelCatalog.Load();
                 DriveDirectory driveDirectory = DriveDirectory.Load();
+                List<AppearancePhoto> appearancePhotos = AppearancePhoto.Load();
                 Application app = new Application();
                 app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                MainWindow window = new MainWindow(catalog, driveDirectory, settings);
+                MainWindow window = new MainWindow(catalog, driveDirectory, appearancePhotos, settings);
                 if (args.Any(a => String.Equals(a, "--background", StringComparison.OrdinalIgnoreCase)))
                     app.Run();
                 else
@@ -60,6 +61,7 @@ namespace RkRebuild
         public Dictionary<string, List<string>> MacroDrafts { get; set; }
         public Dictionary<string, DriveDraft> DriveDrafts { get; set; }
         public Dictionary<string, string> PhotoVariantOverrides { get; set; }
+        public Dictionary<string, string> AppearanceVariantOverrides { get; set; }
 
         public AppSettings()
         {
@@ -70,6 +72,7 @@ namespace RkRebuild
             MacroDrafts = new Dictionary<string, List<string>>();
             DriveDrafts = new Dictionary<string, DriveDraft>();
             PhotoVariantOverrides = new Dictionary<string, string>();
+            AppearanceVariantOverrides = new Dictionary<string, string>();
         }
     }
 
@@ -152,6 +155,7 @@ namespace RkRebuild
                         if (saved.MacroDrafts == null) saved.MacroDrafts = new Dictionary<string, List<string>>();
                         if (saved.DriveDrafts == null) saved.DriveDrafts = new Dictionary<string, DriveDraft>();
                         if (saved.PhotoVariantOverrides == null) saved.PhotoVariantOverrides = new Dictionary<string, string>();
+                        if (saved.AppearanceVariantOverrides == null) saved.AppearanceVariantOverrides = new Dictionary<string, string>();
                         foreach (DriveDraft draft in saved.DriveDrafts.Values)
                             if (draft != null && draft.KeyMappings == null) draft.KeyMappings = new Dictionary<string, string>();
                         return saved;
@@ -592,6 +596,36 @@ namespace RkRebuild
         private static double GetDouble(JsonElement d, string key) { double n; return Double.TryParse(GetString(d, key), out n) ? n : 0; }
     }
 
+    internal sealed class AppearancePhoto
+    {
+        public string Id;
+        public string Name;
+        public string ImageUrl;
+        public string SourceUrl;
+
+        public static List<AppearancePhoto> Load()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Stream stream = assembly.GetManifestResourceStream("RkRebuild.S98Appearance.json");
+            if (stream == null) return new List<AppearancePhoto>();
+            using (stream)
+            using (JsonDocument document = JsonDocument.Parse(stream))
+            {
+                return ModelCatalog.AsArray(ModelCatalog.GetValue(document.RootElement, "variants"))
+                    .Select(item => new AppearancePhoto {
+                        Id = ModelCatalog.GetString(item, "id"),
+                        Name = ModelCatalog.GetString(item, "name"),
+                        ImageUrl = ModelCatalog.GetString(item, "imageUrl"),
+                        SourceUrl = ModelCatalog.GetString(item, "sourceUrl")
+                    })
+                    .Where(item => !String.IsNullOrWhiteSpace(item.Id) && !String.IsNullOrWhiteSpace(item.Name) && !String.IsNullOrWhiteSpace(item.ImageUrl))
+                    .ToList();
+            }
+        }
+
+        public override string ToString() { return Name; }
+    }
+
     internal sealed class MainWindow : Window
     {
         private static readonly MediaColor Ink = MediaColor.FromRgb(35, 42, 53);
@@ -600,6 +634,7 @@ namespace RkRebuild
         private static readonly MediaColor Surface = MediaColor.FromRgb(255, 255, 255);
         private readonly ModelCatalog _catalog;
         private readonly DriveDirectory _driveDirectory;
+        private readonly List<AppearancePhoto> _appearancePhotos;
         private readonly AppSettings _settings;
         private StackPanel _pageBody;
         private TextBlock _pageName;
@@ -616,10 +651,11 @@ namespace RkRebuild
         private string _page = "Device";
         private bool _allowClose;
 
-        public MainWindow(ModelCatalog catalog, DriveDirectory driveDirectory, AppSettings settings)
+        public MainWindow(ModelCatalog catalog, DriveDirectory driveDirectory, List<AppearancePhoto> appearancePhotos, AppSettings settings)
         {
             _catalog = catalog;
             _driveDirectory = driveDirectory;
+            _appearancePhotos = appearancePhotos ?? new List<AppearancePhoto>();
             _settings = settings;
             foreach (ModelProfile profile in _catalog.Models.Where(item => item.DirectPid))
                 _knownDeviceIds.Add("258A:" + NormalizeDeviceId(profile.Code));
@@ -952,6 +988,19 @@ namespace RkRebuild
             string photoPreferenceKey = PhotoPreferenceKey(connected, photoProfile ?? overviewProfile);
             List<DriveModel> photoVariants = GetPhotoVariants(connected, photoProfile);
             DriveModel photoModel = GetPreferredPhotoModel(photoPreferenceKey, photoVariants, connected, photoProfile);
+            List<AppearancePhoto> appearanceVariants = photoProfile != null
+                && String.Equals(photoProfile.Family, "S98", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(photoProfile.Region, "ANSI", StringComparison.OrdinalIgnoreCase)
+                ? _appearancePhotos
+                : new List<AppearancePhoto>();
+            string appearancePreferenceKey = "appearance:" + photoPreferenceKey;
+            string savedAppearanceId;
+            AppearancePhoto appearance = _settings.AppearanceVariantOverrides.TryGetValue(appearancePreferenceKey, out savedAppearanceId)
+                ? appearanceVariants.FirstOrDefault(item => String.Equals(item.Id, savedAppearanceId, StringComparison.OrdinalIgnoreCase))
+                : null;
+            if (appearance == null)
+                appearance = appearanceVariants.FirstOrDefault(item => String.Equals(item.Id, "lavender-purple", StringComparison.OrdinalIgnoreCase))
+                    ?? appearanceVariants.FirstOrDefault();
             summary.Children.Add(Kicker(connected == null ? "SELECTED SOFTWARE PROFILE" : "CONNECTED KEYBOARD"));
             summary.Children.Add(Headline(connected == null ? _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
             summary.Children.Add(Paragraph(connected == null
@@ -978,10 +1027,11 @@ namespace RkRebuild
             StackPanel artStack = new StackPanel { Margin = new Thickness(19) };
             artCard.Child = artStack;
             artStack.Children.Add(Kicker(connected == null ? "MODEL PHOTO" : "CONNECTED MODEL PHOTO"));
-            artStack.Children.Add(new TextBlock { Text = photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
+            artStack.Children.Add(new TextBlock { Text = appearance != null ? "Select the S98 product photo that matches your keyboard's finish." : photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
             Image image = new Image { Stretch = Stretch.Uniform };
             TextBlock photoStatus = new TextBlock { Text = "Loading official model photo…", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
-            if (photoModel != null) LoadDriveImage(image, photoModel.ImageUrl, photoStatus);
+            string photoUrl = appearance != null ? appearance.ImageUrl : photoModel == null ? "" : photoModel.ImageUrl;
+            if (!String.IsNullOrWhiteSpace(photoUrl)) LoadDriveImage(image, photoUrl, photoStatus);
             else image = LoadProfileImage();
             if (image != null)
             {
@@ -995,7 +1045,29 @@ namespace RkRebuild
                 artStack.Children.Add(placeholder);
             }
             artStack.Children.Add(photoStatus);
-            if (photoVariants.Count > 1)
+            if (appearanceVariants.Count > 1)
+            {
+                ComboBox appearanceSelector = new ComboBox {
+                    Height = 31,
+                    Margin = new Thickness(0, 9, 0, 0),
+                    Padding = new Thickness(7, 4, 7, 4),
+                    ItemsSource = appearanceVariants,
+                    DisplayMemberPath = "Name",
+                    SelectedItem = appearance,
+                    ToolTip = "Choose the official S98 appearance photo that matches the physical keyboard."
+                };
+                appearanceSelector.SelectionChanged += delegate {
+                    AppearancePhoto selectedAppearance = appearanceSelector.SelectedItem as AppearancePhoto;
+                    if (selectedAppearance == null) return;
+                    appearance = selectedAppearance;
+                    _settings.AppearanceVariantOverrides[appearancePreferenceKey] = selectedAppearance.Id;
+                    SettingsStore.Save(_settings);
+                    LoadDriveImage(image, selectedAppearance.ImageUrl, photoStatus);
+                };
+                artStack.Children.Add(appearanceSelector);
+                artStack.Children.Add(new TextBlock { Text = "Photo selection is manual; USB identity does not report the case or keycap finish. The RGB swatch remains a profile value, not a live reading.", Foreground = Brush(150, 150, 150), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+            }
+            else if (photoVariants.Count > 1)
             {
                 ComboBox photoSelector = new ComboBox {
                     Height = 31,
@@ -1004,7 +1076,7 @@ namespace RkRebuild
                     ItemsSource = photoVariants,
                     DisplayMemberPath = "Name",
                     SelectedItem = photoModel,
-                    ToolTip = "Select the RK product image that matches this keyboard's printed layout or physical finish."
+                    ToolTip = "Select the RK product image that matches this keyboard's printed layout."
                 };
                 photoSelector.SelectionChanged += delegate {
                     DriveModel selectedPhoto = photoSelector.SelectedItem as DriveModel;
@@ -1014,13 +1086,13 @@ namespace RkRebuild
                     LoadDriveImage(image, selectedPhoto.ImageUrl, photoStatus);
                 };
                 artStack.Children.Add(photoSelector);
-                artStack.Children.Add(new TextBlock { Text = "Photo variant. The device ID does not report case finish or live RGB color.", Foreground = Brush(150, 150, 150), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+                artStack.Children.Add(new TextBlock { Text = "The device ID does not report case finish or live RGB color.", Foreground = Brush(150, 150, 150), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
             }
-            if (photoModel != null)
+            if (appearance != null || photoModel != null)
             {
-                Button openOfficial = ActionButton("Open official product photo", false);
+                Button openOfficial = ActionButton(appearance != null ? "Open official S98 product page" : "Open official product photo", false);
                 openOfficial.Margin = new Thickness(0, 10, 0, 0);
-                openOfficial.Click += delegate { OpenOfficialUrl(photoModel.ImageUrl); };
+                openOfficial.Click += delegate { OpenOfficialUrl(appearance != null ? appearance.SourceUrl : photoModel.ImageUrl); };
                 artStack.Children.Add(openOfficial);
             }
             _pageBody.Children.Add(grid);
@@ -2102,7 +2174,9 @@ namespace RkRebuild
         {
             target.Source = null;
             Uri uri;
-            if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps || !String.Equals(uri.Host, "drive.rkgaming.com", StringComparison.OrdinalIgnoreCase))
+            if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps
+                || !(String.Equals(uri.Host, "drive.rkgaming.com", StringComparison.OrdinalIgnoreCase)
+                    || String.Equals(uri.Host, "rkgamingstore.com", StringComparison.OrdinalIgnoreCase)))
             {
                 status.Text = "No valid RK-hosted product image reference is recorded.";
                 return;
@@ -2135,7 +2209,9 @@ namespace RkRebuild
         private static void OpenOfficialUrl(string url)
         {
             Uri uri;
-            if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps || !String.Equals(uri.Host, "drive.rkgaming.com", StringComparison.OrdinalIgnoreCase)) return;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps
+                || !(String.Equals(uri.Host, "drive.rkgaming.com", StringComparison.OrdinalIgnoreCase)
+                    || String.Equals(uri.Host, "rkgamingstore.com", StringComparison.OrdinalIgnoreCase))) return;
             try { Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true }); }
             catch { }
         }

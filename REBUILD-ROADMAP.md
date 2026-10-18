@@ -16,8 +16,10 @@ tray restore/exit, opt-in start-with-Windows, and a separate directory for the
 public RK Drive keyboard registry. It checks present Windows PnP records,
 matches catalogued product IDs, resolves model photos using profile and region
 before shared image aliases, and offers a remembered photo selection when the
-catalog remains ambiguous. Product photos are fetched from RK's host on demand
-without bundling them. Its self-contained `.exe` is produced
+catalog remains ambiguous. ANSI S98 profiles also offer a manual photo selector
+for six RK-hosted finishes/editions. Product photos are fetched from RK's hosts
+on demand without bundling them. USB metadata cannot identify physical finish
+or live RGB state. Its self-contained `.exe` is produced
 by the documented build script; it is not the old downloadable prototype.
 
 The downloadable `RK-Research-Workbench.exe` release is an earlier
@@ -68,7 +70,7 @@ separate product.
 | --- | --- | --- |
 | Windows app shell | Native WPF shell in `rebuild/windows/`; older Python/WebView prototype retained separately | Feature-complete workflows, packaging/release, and evidence-linked parity coverage |
 | Tray and autostart | Configuration/Exit tray menu and opt-in per-user startup in the native milestone | Verify behavior on supported Windows configurations and document any remaining differences |
-| Model recognition | Present-device PnP metadata matching, profile-prioritized photo matching, and selectable photos for ambiguous IDs; no HID communication or firmware-revision detection | Evidence-backed device identification with physical revision and ambiguous IDs shown as unknown |
+| Model recognition | Present-device PnP metadata matching, profile-prioritized photo matching, selectable photos for ambiguous IDs, and manual S98 appearance photos; no HID communication or firmware-revision detection | Evidence-backed device identification with physical revision and ambiguous IDs shown as unknown |
 | Keymap, macro, lighting, screen, audio | Layout viewer, local key-label and macro-note drafts, plus RK Drive layer/table/effect drafts with descriptor-checked JSON import/export; no device controls | Reconstructed control paths, data models, and model-specific availability |
 | Hardware configuration | Disabled | Protocol and write paths must be independently mapped; no claim from profile labels alone |
 | Firmware updater/readback | Not implemented | Complete static updater analysis and safe documented boundaries; current evidence does not show a reachable complete read-only S98 firmware export |

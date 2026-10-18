@@ -1,0 +1,55 @@
+{
+  "source": "https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard",
+  "pinkEditionSource": "https://rkgamingstore.com/products/s98-pink-edition",
+  "winterEditionSource": "https://rkgamingstore.com/products/s98-winter-limited-edition",
+  "variants": [
+    {
+      "id": "lavender-purple",
+      "name": "Lavender Purple",
+      "series": "Standard",
+      "imageUrl": "https://rkgamingstore.com/cdn/shop/files/RKROYALKLUDGES98WirelessHot-SwappableRGBKeyboard_7.png?v=1776224152&width=1946",
+      "sourceAlt": "Close-up view of the RK S98 in Lavender Purple",
+      "sourceUrl": "https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard"
+    },
+    {
+      "id": "deep-black",
+      "name": "Deep Black",
+      "series": "Standard appearance",
+      "imageUrl": "https://rkgamingstore.com/cdn/shop/files/RKS9896_WirelessMechanicalKeyboard_2.png?v=1776224152&width=1946",
+      "sourceAlt": "RK S98 Black Wireless Mechanical Keyboard with Smart Display and Knob - Deep Black Edition",
+      "sourceUrl": "https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard"
+    },
+    {
+      "id": "sky-blue",
+      "name": "Sky Blue",
+      "series": "Standard appearance",
+      "imageUrl": "https://rkgamingstore.com/cdn/shop/files/RKROYALKLUDGES98WirelessHot-SwappableRGBKeyboard_1_bf90a501-6801-4a9c-8250-bd023e795ede.png?v=1776224152&width=1946",
+      "sourceAlt": "Close-up view of the RK S98 in Sky Blue",
+      "sourceUrl": "https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard"
+    },
+    {
+      "id": "clay-green",
+      "name": "Clay Green",
+      "series": "Standard appearance",
+      "imageUrl": "https://rkgamingstore.com/cdn/shop/files/RKROYALKLUDGES98WirelessHot-SwappableRGBKeyboard_4_b71b82b0-065d-4cd5-a703-439bdc4dd463.png?v=1776224152&width=1946",
+      "sourceAlt": "Close-up view of the RK S98 in Clay Green",
+      "sourceUrl": "https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard"
+    },
+    {
+      "id": "pink-edition",
+      "name": "Pink Edition",
+      "series": "Special edition",
+      "imageUrl": "https://rkgamingstore.com/cdn/shop/files/S98Pink96_WirelessMechanicalKeyboard_2.png?v=1787800645&width=1946",
+      "sourceAlt": "RK S98 Pink Edition mechanical keyboard with pink gradient side-printed PBT keycaps",
+      "sourceUrl": "https://rkgamingstore.com/products/s98-pink-edition"
+    },
+    {
+      "id": "winter-edition",
+      "name": "Winter Limited Edition",
+      "series": "Special edition",
+      "imageUrl": "https://rkgamingstore.com/cdn/shop/files/S9896_WirelessMechanicalKeyboard_ChristmasLimitedEdition_4.png?v=1761968589&width=1946",
+      "sourceAlt": "S98 96% Wireless Mechanical Keyboard - 2025 Christmas Limited Edition",
+      "sourceUrl": "https://rkgamingstore.com/products/s98-winter-limited-edition"
+    }
+  ]
+}

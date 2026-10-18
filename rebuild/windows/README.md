@@ -16,11 +16,15 @@ WebView2.
   Search includes
   connection type, protocol, VID/PID, and HID usage identifiers. Each record
   shows its declared key layers, OS tables, layout count, and lighting modes.
-- On-demand display of product photos directly from `drive.rkgaming.com`.
+- On-demand display of product photos directly from RK's public image hosts.
   Connected-device photos prefer the exact software profile and layout region
   over a shared VID/PID image alias. Where the catalog exposes several possible
   images, the overview lets you select one and remembers that choice. Photos
   are not bundled, so loading them needs internet access.
+- For the ANSI S98 profile, an appearance selector offers six official product
+  photos (Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition, and
+  Winter Limited Edition). The selection is manual because USB identity does
+  not report physical finish or keycap colors; the photo is fetched at runtime.
 - Read-only Windows USB/HID Plug and Play registry discovery. Catalogued VID/PID
   pairs can be matched to model profiles. It does not open a HID interface or
   send a device report.

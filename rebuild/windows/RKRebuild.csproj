@@ -9,10 +9,10 @@
     <Nullable>disable</Nullable>
     <AssemblyName>RK-Rebuild</AssemblyName>
     <RootNamespace>RkRebuild</RootNamespace>
-    <Version>0.2.5</Version>
-    <AssemblyVersion>0.2.5.0</AssemblyVersion>
-    <FileVersion>0.2.5.0</FileVersion>
-    <InformationalVersion>0.2.5-native-device-photo-match</InformationalVersion>
+    <Version>0.2.6</Version>
+    <AssemblyVersion>0.2.6.0</AssemblyVersion>
+    <FileVersion>0.2.6.0</FileVersion>
+    <InformationalVersion>0.2.6-native-s98-appearance</InformationalVersion>
     <Company>Independent community project</Company>
     <Product>RK Rebuild</Product>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -20,5 +20,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\..\models-4.6.json" LogicalName="RkRebuild.Profiles.json" />
     <EmbeddedResource Include="..\..\rk-drive-catalog.json" LogicalName="RkRebuild.DriveCatalog.json" />
+    <EmbeddedResource Include="..\..\s98-appearance.json" LogicalName="RkRebuild.S98Appearance.json" />
   </ItemGroup>
 </Project>
