@@ -27,7 +27,7 @@
 - [4.06-to-4.6 localization changes and limits](rk-localization-delta-v4.06-v4.6.md)
 - [Row-level localization keys and resource comparison](rk-localization-delta-v4.06-v4.6.csv)
 - [4.6 profile catalog and 4.06 comparison](rk-profile-catalog-v4.6-delta.md)
-- [4.6 profile-to-family map (4.06 rule projection)](rk-profile-driver-family-map-v4.6-projected.csv)
+- [Historical 4.06-rule projection for 4.6 profiles (superseded by the RTTI map)](rk-profile-driver-family-map-v4.6-projected.csv)
 - [4.6 driver profile selector and Fw=3 path](rk-v4.6-profile-selector-audit.md)
 - [4.6 row-level selector map](rk-v4.6-profile-selector-map.csv)
 - [4.6 profile-to-class routes verified through vtables and RTTI](rk-v4.6-profile-family-rtti-audit.md)

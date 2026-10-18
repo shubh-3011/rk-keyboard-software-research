@@ -16,10 +16,13 @@ WebView2.
   Search includes
   connection type, protocol, VID/PID, and HID usage identifiers. Each record
   shows its declared key layers, OS tables, layout count, and lighting modes.
-- On-demand display of product photos directly from `drive.rkgaming.com`.
-  The executable does not contain or mirror those images or the vendor's
-  JavaScript; the directory and metadata work offline, while a photo needs
+- On-demand display of product photos directly from `drive.rkgaming.com`,
+  including model-photo selection on the device overview. The executable does
+  not contain or mirror those images or the vendor's JavaScript; a photo needs
   internet access.
+- Read-only Windows USB/HID Plug and Play registry discovery. Catalogued VID/PID
+  pairs can be matched to model profiles. It does not open a HID interface or
+  send a device report.
 - Profile selection and visual layouts from the catalog.
 - Local-only key-label drafts and macro notes stored under
   `%LOCALAPPDATA%\RK-Rebuild\settings.json`.
@@ -36,8 +39,13 @@ WebView2.
   the local catalog declarations; a catalog-version mismatch requires an
   explicit confirmation.
 - An optional local package folder setting for viewing profile artwork already
-  present on this PC. Vendor assets are read from that folder at runtime and
-  are not included in this repository or executable.
+  present on this PC. The Windows app also finds the standard RK installation
+  automatically when it is present.
+- RK-skinned native UI using the installed package's `main_nr.png`, RK logo,
+  control-state images, Open Sans font files, and tray icon. Model pages use
+  the matching local `Dev/<profile>` keyboard artwork when available; profiles
+  with the same family can use a compatible art profile from the installed
+  package when a code differs between software versions.
 - A notification-area icon with **Configuration**, **Start with Windows**,
   and **Exit**. Minimizing or closing the window hides it to the tray. Start
   with Windows is an opt-in per-user setting and can be changed in Preferences
@@ -45,8 +53,11 @@ WebView2.
 
 ## Not a full RK replacement yet
 
-This build does not detect or communicate with a keyboard. It does not read or
-write HID reports, apply key mappings or lighting, capture or transfer macros,
+PnP discovery uses Windows SetupAPI's present-device list and reads device
+metadata only. It does not confirm firmware revision or read the keyboard's
+live lighting mode/color.
+This build does not communicate with the keyboard. It does not read or write
+HID reports, apply key mappings or lighting, capture or transfer macros,
 control displays, run updates, or read/write firmware. Its key labels, macro
 notes, key layer/table choices, and lighting values are local drafts, not
 RK-native serialized settings. Ordered slot mappings are a community draft
@@ -79,14 +90,20 @@ catalog and does not require a separate .NET installation on its target PC.
 The build script writes a SHA-256 sidecar. Settings are local to the current
 Windows user.
 
-## Assets and licensing
+## Local RK skin and asset handling
 
-The UI artwork is original. No RK application binary, source, font, installer,
-firmware image, or copied product image is distributed here. The bundled RK
-Drive catalog contains extracted model/connection fields and official image
-URLs, not vendor code or image bytes. Product photos are fetched from the RK
-host only when a model is selected. If you select a local RK app folder, the
-application may read `Dev/<profile code>/keyimg.png`, `kbled.png`, or
-`sideled.png` for display on this PC. The selected directory is not modified.
-Those files and remote images remain subject to their original rights and are
-not part of this project's MIT-licensed source.
+When RK Keyboard Software is installed in its standard Windows folder, RK
+Rebuild loads the existing `skins/`, `font/`, `appico.ico`, and selected
+`Dev/<profile code>/` files directly from that installation. You can also
+choose another local package folder in Preferences. The selected directory is
+read only. The app does not copy, edit, or delete those files.
+
+The public repository and executable do not contain RK's artwork, fonts,
+installer, firmware, or application binary. Each user who wants the original
+skin needs a local RK software installation. The desktop shell now uses RK's
+own background, logo, icon sprites, button states, font family, and available
+model artwork; the exact runtime position of every original feature control
+has not been recovered from static resources. See
+[`../../docs/rk-ui-reconstruction.md`](../../docs/rk-ui-reconstruction.md) for
+the asset map and evidence limits. The bundled RK Drive catalog contains
+derived model/connection fields and official image URLs, not image bytes.

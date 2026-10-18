@@ -36,7 +36,7 @@ does not claim that every RK model or revision has been reverse-engineered.
 | Project | Best for | Available today |
 | --- | --- | --- |
 | [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio) | A user-facing web app plus a Python/PyInstaller desktop wrapper using WebView2 | Local model layouts, profile editing, and JSON import/export. Its hosted web app is at [keydeck-rk-s98.vercel.app](https://keydeck-rk-s98.vercel.app/). |
-| This research archive and native rebuild | Studying RK Windows software and reconstructing documented workflows in a separate Windows app | Static audits, source scripts, versioned catalogs/manifests, and an early C# WPF rebuild with two model catalogs, on-demand official photo references, local profile drafts, tray behavior, and opt-in startup. |
+| This research archive and native rebuild | Studying RK Windows software and reconstructing documented workflows in a separate Windows app | Static audits, source scripts, versioned catalogs/manifests, and a native C# WPF rebuild with the RK skin loaded from the local installation, profile art, local drafts, tray behavior, and opt-in startup. |
 
 Both projects are independent and open source. Neither currently sends
 settings, lighting, macro, screen, or firmware writes to a keyboard. Keydeck's
@@ -50,11 +50,14 @@ The old downloadable `RK-Research-Workbench.exe` is a limited Python
 profile-editor prototype packaged with PyInstaller and shown in WebView2. The
 new native reconstruction is separate source in [`rebuild/windows/`](rebuild/windows/)
 and builds as a self-contained C# WPF app. It provides local profile browsing,
-a separate RK Drive keyboard directory, photo links loaded from RK's host on
-demand, key-label drafts, macro notes, tray restore/exit, and opt-in startup.
-It does not yet implement hardware communication or full RK workflows. Both
-projects use original UI art; this repo does not redistribute RK binaries,
-JavaScript, or product images. Exact feature parity is not established. See the
+a separate RK Drive keyboard directory, official model-photo links, read-only
+Windows Plug and Play identification, key-label drafts, macro notes, tray
+restore/exit, and opt-in startup. It does not yet implement HID communication
+or full RK workflows. The
+Windows rebuild reads RK's skin, fonts, and installed profile artwork locally;
+those assets are not included in the repo or executable. Feature-control
+placement is reconstructed because complete runtime coordinates are not
+present in the static resources. Exact feature parity is not established. See the
 [`REBUILD-ROADMAP.md`](REBUILD-ROADMAP.md) and
 [`rebuild/windows/README.md`](rebuild/windows/README.md).
 
@@ -114,7 +117,7 @@ as confirmed.
 - [4.06-to-4.6 localization delta](docs/rk-localization-delta-v4.06-v4.6.md)
 - [4.06-to-4.6 localization key/resource CSV](docs/rk-localization-delta-v4.06-v4.6.csv)
 - [4.6 profile catalog and comparison](docs/rk-profile-catalog-v4.6-delta.md)
-- [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
+- [Historical 4.06-rule projection for 4.6 profiles (superseded by the RTTI map)](docs/rk-profile-driver-family-map-v4.6-projected.csv)
 - [4.6 driver profile selector and Fw=3 path](docs/rk-v4.6-profile-selector-audit.md)
 - [4.6 row-level selector map](docs/rk-v4.6-profile-selector-map.csv)
 - [4.6 profile-to-class routes verified through RTTI](docs/rk-v4.6-profile-family-rtti-audit.md)
@@ -173,10 +176,12 @@ as confirmed.
 ## Native Windows rebuild
 
 The [`rebuild/windows/` source](rebuild/windows/) is the native C# WPF
-reconstruction milestone. It builds as a self-contained Windows executable,
-uses the local 265-profile catalog, saves local-only key-label/macro drafts,
-supports tray restore/exit, and offers opt-in start-with-Windows. It has no
-device detection or hardware transport yet. Its feature boundaries and build
+reconstruction. It builds as a self-contained Windows executable, uses the
+265-profile catalog, reads Windows USB/HID Plug and Play records to identify
+catalogued VID/PID pairs from Windows' present-device list, shows corresponding
+official model photos from RK's host, saves local-only key-label/macro drafts,
+supports tray restore/exit, and offers opt-in start-with-Windows. PnP discovery
+does not open a keyboard interface or read live lighting state. Its feature boundaries and build
 steps are in [`rebuild/windows/README.md`](rebuild/windows/README.md).
 
 The older [`workbench/`](workbench/) prototype remains for reference. Its

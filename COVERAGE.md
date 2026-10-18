@@ -9,14 +9,17 @@ model or runtime map.
   [`rebuild/windows/`](rebuild/windows/), separate from the Keydeck web app
   and the earlier Python/WebView2 workbench. It browses the 265-profile
   4.6-labeled catalog and a second 177-row RK Drive keyboard directory with
-  on-demand photos linked to RK's host, plus local-only key-label drafts,
-  macro notes, notification-area restore/exit, and opt-in per-user startup.
+  on-demand photos linked to RK's host, read-only Windows PnP matching for
+  catalogued VID/PID pairs, local-only key-label drafts, macro notes,
+  notification-area restore/exit, and opt-in per-user startup.
   Its standalone EXE is built by the project script; it does not need Python,
   a browser, or WebView2.
-- The new app has no device detection or HID access. Key and macro edits are
-  local drafts, and lighting, hardware settings, screen transfer, updates,
-  reset, and firmware operations remain unavailable. This is an early native
-  shell, not a full or exact-function RK clone. See the
+- The app uses Windows SetupAPI's present-device list and reads USB/HID PnP
+  properties to match known VID/PID pairs to catalog entries. It does not open a keyboard interface,
+  read HID reports, or learn current RGB color/mode. Key and macro edits are
+  local drafts, and lighting writes, hardware settings, screen transfer,
+  updates, reset, and firmware operations remain unavailable. The native
+  reconstruction is incomplete and is not a full RK clone. See the
   [rebuild README](rebuild/windows/README.md) and
   [parity roadmap](REBUILD-ROADMAP.md).
 
@@ -115,8 +118,9 @@ model or runtime map.
   strings and side-light resources, eight changed values, two malformed
   Japanese source files, and remaining runtime/UI reachability questions; see
   [`docs/rk-localization-delta-v4.06-v4.6.md`](docs/rk-localization-delta-v4.06-v4.6.md).
-- An initial [4.6 projected profile-to-family map](docs/rk-profile-driver-family-map-v4.6-projected.csv)
-  applied the 4.06 `Fw` rule as a comparison only. A later static trace of the
+- A historical [4.06-rule projection of 4.6 profiles](docs/rk-profile-driver-family-map-v4.6-projected.csv)
+  is retained for comparison only and is superseded for direct-profile routes
+  by the verified RTTI map below. A static trace of the
   hash-pinned 4.6 driver recovered its own zero, general nonzero, and dedicated
   `Fw=3` selector/constructor branches for all 265 profile rows. The single
   `Fw=3` row is M20 `258A:0208`; the selector's physical-device and downstream

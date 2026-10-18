@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Data;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using Forms = System.Windows.Forms;
 using SystemIcons = System.Drawing.SystemIcons;
@@ -171,6 +173,7 @@ namespace RkRebuild
         public string Family;
         public string Region;
         public string LayoutId;
+        public bool DirectPid;
         public int KeyCount;
         public bool Rgb;
         public int MacroBuffers;
@@ -178,6 +181,107 @@ namespace RkRebuild
         public List<int> LightingSlots = new List<int>();
         public List<string> Layers = new List<string>();
         public List<LayoutKey> Keys = new List<LayoutKey>();
+    }
+
+    internal sealed class PnpKeyboard
+    {
+        public string VendorId;
+        public string ProductId;
+        public string InstanceId;
+        public string Name;
+
+        public string Identity { get { return VendorId + ":" + ProductId; } }
+    }
+
+    internal static class WindowsPnpDiscovery
+    {
+        private static readonly Regex VendorPattern = new Regex(@"VID_([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex ProductPattern = new Regex(@"PID_([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private const uint DigcfPresent = 0x00000002;
+        private const uint DigcfAllClasses = 0x00000004;
+        private const uint SpdrpDeviceDesc = 0x00000000;
+        private const uint SpdrpHardwareId = 0x00000001;
+        private const uint SpdrpFriendlyName = 0x0000000C;
+        private const int ErrorInsufficientBuffer = 122;
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct SpDevInfoData
+        {
+            public uint Size;
+            public Guid ClassGuid;
+            public uint DevInst;
+            public IntPtr Reserved;
+        }
+
+        [System.Runtime.InteropServices.DllImport("setupapi.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr SetupDiGetClassDevs(IntPtr classGuid, string enumerator, IntPtr parentWindow, uint flags);
+
+        [System.Runtime.InteropServices.DllImport("setupapi.dll", SetLastError = true)]
+        private static extern bool SetupDiEnumDeviceInfo(IntPtr deviceInfoSet, uint memberIndex, ref SpDevInfoData deviceInfoData);
+
+        [System.Runtime.InteropServices.DllImport("setupapi.dll", EntryPoint = "SetupDiGetDeviceRegistryPropertyW", SetLastError = true)]
+        private static extern bool SetupDiGetDeviceRegistryProperty(IntPtr deviceInfoSet, ref SpDevInfoData deviceInfoData,
+            uint property, out uint propertyType, IntPtr propertyBuffer, uint propertyBufferSize, out uint requiredSize);
+
+        [System.Runtime.InteropServices.DllImport("setupapi.dll", SetLastError = true)]
+        private static extern bool SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);
+
+        // SetupAPI lists present devices and reads their PnP properties. It never opens a device handle.
+        public static List<PnpKeyboard> Enumerate()
+        {
+            List<PnpKeyboard> devices = new List<PnpKeyboard>();
+            IntPtr deviceInfoSet = IntPtr.Zero;
+            try
+            {
+                deviceInfoSet = SetupDiGetClassDevs(IntPtr.Zero, null, IntPtr.Zero, DigcfPresent | DigcfAllClasses);
+                if (deviceInfoSet == new IntPtr(-1)) return devices;
+                for (uint index = 0; ; index++)
+                {
+                    SpDevInfoData info = new SpDevInfoData { Size = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(SpDevInfoData)) };
+                    if (!SetupDiEnumDeviceInfo(deviceInfoSet, index, ref info)) break;
+
+                    string hardwareId = ReadProperty(deviceInfoSet, ref info, SpdrpHardwareId);
+                    Match vendor = VendorPattern.Match(hardwareId);
+                    Match product = ProductPattern.Match(hardwareId);
+                    if (!vendor.Success || !product.Success) continue;
+
+                    string name = ReadProperty(deviceInfoSet, ref info, SpdrpFriendlyName);
+                    if (String.IsNullOrWhiteSpace(name)) name = ReadProperty(deviceInfoSet, ref info, SpdrpDeviceDesc);
+                    devices.Add(new PnpKeyboard {
+                        VendorId = vendor.Groups[1].Value.ToUpperInvariant(),
+                        ProductId = product.Groups[1].Value.ToUpperInvariant(),
+                        InstanceId = hardwareId,
+                        Name = String.IsNullOrWhiteSpace(name) ? "USB/HID device" : name
+                    });
+                }
+            }
+            catch { }
+            finally
+            {
+                if (deviceInfoSet != IntPtr.Zero && deviceInfoSet != new IntPtr(-1))
+                    SetupDiDestroyDeviceInfoList(deviceInfoSet);
+            }
+
+            return devices.GroupBy(device => device.Identity, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.OrderByDescending(device => !String.Equals(device.Name, "USB/HID device", StringComparison.OrdinalIgnoreCase)).First())
+                .ToList();
+        }
+
+        private static string ReadProperty(IntPtr deviceInfoSet, ref SpDevInfoData info, uint property)
+        {
+            uint type;
+            uint required;
+            SetupDiGetDeviceRegistryProperty(deviceInfoSet, ref info, property, out type, IntPtr.Zero, 0, out required);
+            if (required == 0 || System.Runtime.InteropServices.Marshal.GetLastWin32Error() != ErrorInsufficientBuffer) return "";
+
+            IntPtr buffer = System.Runtime.InteropServices.Marshal.AllocHGlobal((int)required);
+            try
+            {
+                if (!SetupDiGetDeviceRegistryProperty(deviceInfoSet, ref info, property, out type, buffer, required, out required)) return "";
+                return System.Runtime.InteropServices.Marshal.PtrToStringUni(buffer) ?? "";
+            }
+            finally { System.Runtime.InteropServices.Marshal.FreeHGlobal(buffer); }
+        }
     }
 
     internal sealed class LayoutKey
@@ -446,6 +550,7 @@ namespace RkRebuild
                 profile.Family = GetString(item, "family");
                 profile.Region = GetString(item, "region");
                 profile.LayoutId = GetString(item, "layoutId");
+                profile.DirectPid = GetBool(item, "isDirectPid");
                 profile.KeyCount = GetInt(item, "keyCount");
                 JsonElement features = GetValue(item, "features");
                 if (features.ValueKind == JsonValueKind.Object)
@@ -497,8 +602,14 @@ namespace RkRebuild
         private TextBlock _pageName;
         private TextBlock _profileHeader;
         private readonly Forms.NotifyIcon _tray;
+        private Image _shellBackdrop;
         private ModelProfile _selected;
         private DriveModel _selectedDriveModel;
+        private readonly HashSet<string> _knownDeviceIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private List<PnpKeyboard> _pnpDevices = new List<PnpKeyboard>();
+        private DispatcherTimer _pnpTimer;
+        private string _pnpSnapshot = "";
+        private bool _pnpScanRunning;
         private string _page = "Device";
         private bool _allowClose;
 
@@ -507,86 +618,166 @@ namespace RkRebuild
             _catalog = catalog;
             _driveDirectory = driveDirectory;
             _settings = settings;
+            foreach (ModelProfile profile in _catalog.Models.Where(item => item.DirectPid))
+                _knownDeviceIds.Add("258A:" + NormalizeDeviceId(profile.Code));
+            foreach (DriveConnection connection in _driveDirectory.Models.SelectMany(model => model.Connections))
+                _knownDeviceIds.Add(NormalizeDeviceId(connection.VendorId) + ":" + NormalizeDeviceId(connection.ProductId));
+            if (String.IsNullOrWhiteSpace(_settings.ResourceRoot))
+                _settings.ResourceRoot = FindInstalledResourceRoot();
+            else
+                _settings.ResourceRoot = NormalizeResourceRoot(_settings.ResourceRoot);
             _selected = _catalog.Models.FirstOrDefault(m => m.Code == settings.SelectedCode) ?? _catalog.Models.First();
-            Title = "RK Rebuild — Community Edition";
-            Width = 1440;
+            Title = "RK Keyboard";
+            Width = 1500;
             Height = 900;
             MinWidth = 1120;
             MinHeight = 720;
+            WindowStyle = WindowStyle.None;
+            ResizeMode = ResizeMode.CanResizeWithGrip;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            Background = Brush(246, 247, 249);
-            FontFamily = new FontFamily("Segoe UI");
+            Background = Brush(20, 20, 20);
+            FontFamily = LoadRkFont();
             BuildShell();
             _tray = BuildTray();
             Closing += OnClosing;
             StateChanged += OnStateChanged;
             SelectProfile(_selected, false);
+            RefreshPnpDevices(false);
+            _pnpTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
+            _pnpTimer.Tick += delegate { RefreshPnpDevices(true); };
+            _pnpTimer.Start();
             SetStartup(_settings.StartWithWindows);
         }
 
         private void BuildShell()
         {
+            Grid window = new Grid();
+            Content = window;
+            _shellBackdrop = new Image { Stretch = Stretch.Fill, Source = LoadSkinBitmap("main_nr.png") };
+            window.Children.Add(_shellBackdrop);
+
             Grid root = new Grid();
-            root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(238) });
+            root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(72) });
+            root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(220) });
             root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            Content = root;
+            window.Children.Add(root);
 
-            Border sidebar = new Border { Background = Brush(29, 35, 45) };
-            Grid.SetColumn(sidebar, 0);
-            root.Children.Add(sidebar);
-            StackPanel nav = new StackPanel { Margin = new Thickness(16, 20, 16, 14) };
-            sidebar.Child = nav;
-            StackPanel brand = new StackPanel { Margin = new Thickness(12, 2, 8, 24) };
-            brand.Children.Add(new TextBlock { Text = "RK REBUILD", Foreground = Brushes.White, FontSize = 18, FontWeight = FontWeights.Bold });
-            brand.Children.Add(new TextBlock { Text = "COMMUNITY WINDOWS EDITION", Foreground = Brush(165, 174, 189), FontSize = 9, Margin = new Thickness(0, 4, 0, 0) });
-            nav.Children.Add(brand);
-            nav.Children.Add(NavCaption("WORKSPACE"));
-            AddNav(nav, "Device", "Device overview");
-            AddNav(nav, "Key mapping", "Key mapping");
-            AddNav(nav, "Lighting", "Lighting");
-            AddNav(nav, "Macros", "Macros");
-            AddNav(nav, "RK Drive editor", "RK Drive editor");
-            nav.Children.Add(NavCaption("LIBRARY"));
-            AddNav(nav, "Models", "Model profiles");
-            AddNav(nav, "RK Drive directory", "RK Drive directory");
-            nav.Children.Add(NavCaption("APPLICATION"));
-            AddNav(nav, "Preferences", "Preferences");
-            Border spacer = new Border { Height = 1, Background = Brush(63, 71, 84), Margin = new Thickness(7, 20, 7, 15) };
-            nav.Children.Add(spacer);
-            nav.Children.Add(new TextBlock { Text = "OFFLINE PROFILE WORKSPACE", Foreground = Brush(165, 174, 189), FontSize = 9, Margin = new Thickness(8, 0, 0, 8) });
-            nav.Children.Add(new TextBlock { Text = "Hardware transport is unavailable", Foreground = Brush(199, 205, 214), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(8, 0, 8, 0) });
+            Style commonButtonStyle = new Style(typeof(Button));
+            commonButtonStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brush(20, 20, 20)));
+            commonButtonStyle.Setters.Add(new Setter(Control.ForegroundProperty, Brush(220, 220, 220)));
+            commonButtonStyle.Setters.Add(new Setter(Control.BorderBrushProperty, Brush(80, 80, 80)));
+            commonButtonStyle.Setters.Add(new Setter(Control.BorderThicknessProperty, new Thickness(1)));
+            commonButtonStyle.Setters.Add(new Setter(Control.TemplateProperty, SkinnedButtonTemplate()));
+            Resources[typeof(Button)] = commonButtonStyle;
 
-            Grid main = new Grid();
-            main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(72) });
-            main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            Grid.SetColumn(main, 1);
-            root.Children.Add(main);
-            Border top = new Border { Background = Brushes.White, BorderBrush = Brush(231, 234, 238), BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(28, 0, 28, 0) };
-            Grid.SetRow(top, 0);
-            main.Children.Add(top);
-            Grid head = new Grid();
-            head.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            top.Child = head;
-            StackPanel heading = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-            _pageName = new TextBlock { Text = "Device overview", Foreground = Brush(35, 42, 53), FontSize = 19, FontWeight = FontWeights.SemiBold };
-            _profileHeader = new TextBlock { Text = "", Foreground = Brush(111, 120, 133), FontSize = 11, Margin = new Thickness(0, 3, 0, 0) };
-            heading.Children.Add(_pageName);
-            heading.Children.Add(_profileHeader);
-            head.Children.Add(heading);
+            Style textBoxStyle = new Style(typeof(TextBox));
+            textBoxStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brush(20, 20, 20)));
+            textBoxStyle.Setters.Add(new Setter(Control.ForegroundProperty, Brush(220, 220, 220)));
+            textBoxStyle.Setters.Add(new Setter(Control.BorderBrushProperty, Brush(80, 80, 80)));
+            textBoxStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(7, 4, 7, 4)));
+            Resources[typeof(TextBox)] = textBoxStyle;
+
+            Style comboBoxStyle = new Style(typeof(ComboBox));
+            comboBoxStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brush(20, 20, 20)));
+            comboBoxStyle.Setters.Add(new Setter(Control.ForegroundProperty, Brush(220, 220, 220)));
+            comboBoxStyle.Setters.Add(new Setter(Control.BorderBrushProperty, Brush(80, 80, 80)));
+            comboBoxStyle.Setters.Add(new Setter(ComboBox.IsEditableProperty, true));
+            comboBoxStyle.Setters.Add(new Setter(ComboBox.IsReadOnlyProperty, true));
+            comboBoxStyle.Setters.Add(new Setter(ComboBox.IsTextSearchEnabledProperty, false));
+            Resources[typeof(ComboBox)] = comboBoxStyle;
+
+            Grid titleBar = new Grid { Margin = new Thickness(18, 0, 14, 0) };
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(300) });
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            Grid.SetColumnSpan(titleBar, 2);
+            root.Children.Add(titleBar);
+            StackPanel brand = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+            Image logo = SkinImage("logo.png", 104, 42);
+            if (logo != null) brand.Children.Add(logo);
+            TextBlock productName = new TextBlock { Text = "RK Keyboard", Foreground = Brush(220, 220, 220), FontSize = 12, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 0, 0) };
+            brand.Children.Add(productName);
+            titleBar.Children.Add(brand);
+            titleBar.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+            {
+                DependencyObject source = e.OriginalSource as DependencyObject;
+                while (source != null && source != titleBar)
+                {
+                    if (source is Button || source is ComboBox) return;
+                    source = LogicalTreeHelper.GetParent(source);
+                }
+                if (e.ButtonState == MouseButtonState.Pressed)
+                {
+                    if (e.ClickCount == 2) WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                    else DragMove();
+                }
+            };
+
             StackPanel topTools = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
             Grid.SetColumn(topTools, 1);
-            head.Children.Add(topTools);
-            topTools.Children.Add(StatusPill("LOCAL PROFILE", Brush(232, 240, 252), Brush(49, 94, 181)));
-            ComboBox selector = new ComboBox { Width = 255, Height = 34, Margin = new Thickness(14, 0, 0, 0), Padding = new Thickness(8, 4, 8, 4), Background = Brushes.White, BorderBrush = Brush(218, 223, 230), Foreground = Brush(44, 51, 62), ItemsSource = _catalog.Models.OrderBy(m => m.Name).ThenBy(m => m.Code).ToList(), DisplayMemberPath = "Name" };
+            titleBar.Children.Add(topTools);
+            TextBlock modelLabel = new TextBlock { Text = "DEVICE", Foreground = Brush(175, 175, 175), FontSize = 9, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 9, 0) };
+            topTools.Children.Add(modelLabel);
+            ComboBox selector = new ComboBox { Width = 276, Height = 32, Padding = new Thickness(8, 4, 8, 4), Background = Brush(20, 20, 20), BorderBrush = Brush(91, 91, 91), Foreground = Brush(220, 220, 220), ItemsSource = _catalog.Models.OrderBy(m => m.Name).ThenBy(m => m.Code).ToList(), DisplayMemberPath = "Name", Text = _selected.Name };
             selector.SelectionChanged += delegate { if (selector.SelectedItem is ModelProfile) SelectProfile((ModelProfile)selector.SelectedItem, true); };
             topTools.Children.Add(selector);
             _profileSelector = selector;
 
-            ScrollViewer scroller = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+            StackPanel windowActions = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(15, 0, 0, 0) };
+            Grid.SetColumn(windowActions, 2);
+            titleBar.Children.Add(windowActions);
+            Button minimize = SkinWindowButton("bigmin_nr.png", "bigmin_ov.png", delegate { WindowState = WindowState.Minimized; });
+            Button exit = SkinWindowButton("bigexit_nr.png", "bigexit_ov.png", delegate { ExitApplication(); });
+            windowActions.Children.Add(minimize);
+            windowActions.Children.Add(exit);
+
+            Border sidebar = new Border { Background = new SolidColorBrush(MediaColor.FromArgb(220, 15, 15, 15)), Padding = new Thickness(13, 15, 13, 15) };
+            Grid.SetRow(sidebar, 1);
+            root.Children.Add(sidebar);
+            StackPanel nav = new StackPanel();
+            sidebar.Child = nav;
+            nav.Children.Add(NavCaption("KEYBOARD"));
+            AddNav(nav, "Device", "Device overview");
+            AddNav(nav, "Key mapping", "Key mapping");
+            AddNav(nav, "Lighting", "Lighting");
+            AddNav(nav, "Macros", "Macro manager");
+            AddNav(nav, "RK Drive editor", "RK Drive editor");
+            nav.Children.Add(NavCaption("PROFILES"));
+            AddNav(nav, "Models", "Model profiles");
+            AddNav(nav, "RK Drive directory", "RK Drive directory");
+            nav.Children.Add(NavCaption("SOFTWARE"));
+            AddNav(nav, "Preferences", "Preferences");
+            Border spacer = new Border { Height = 1, Background = Brush(70, 70, 70), Margin = new Thickness(4, 20, 4, 13) };
+            nav.Children.Add(spacer);
+            nav.Children.Add(new TextBlock { Text = "Local profile drafts", Foreground = Brush(220, 220, 220), FontSize = 11, Margin = new Thickness(5, 0, 5, 5) });
+            nav.Children.Add(new TextBlock { Text = "No keyboard commands are sent by this build.", Foreground = Brush(160, 160, 160), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(5, 0, 5, 0) });
+
+            Grid main = new Grid { Margin = new Thickness(12, 0, 20, 14) };
+            main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(60) });
+            main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            Grid.SetColumn(main, 1);
+            Grid.SetRow(main, 1);
+            root.Children.Add(main);
+            Grid pageHeader = new Grid { Margin = new Thickness(10, 0, 10, 0) };
+            pageHeader.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            pageHeader.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            Grid.SetRow(pageHeader, 0);
+            main.Children.Add(pageHeader);
+            StackPanel heading = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+            _pageName = new TextBlock { Text = "Device overview", Foreground = Brush(235, 235, 235), FontSize = 17, FontWeight = FontWeights.SemiBold };
+            _profileHeader = new TextBlock { Text = "", Foreground = Brush(175, 175, 175), FontSize = 10, Margin = new Thickness(0, 2, 0, 0) };
+            heading.Children.Add(_pageName);
+            heading.Children.Add(_profileHeader);
+            pageHeader.Children.Add(heading);
+            TextBlock status = new TextBlock { Text = "LOCAL MODE", Foreground = Brush(255, 128, 0), FontSize = 9, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 6, 0) };
+            Grid.SetColumn(status, 1);
+            pageHeader.Children.Add(status);
+
+            ScrollViewer scroller = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Background = Brushes.Transparent };
             Grid.SetRow(scroller, 1);
             main.Children.Add(scroller);
-            _pageBody = new StackPanel { Margin = new Thickness(28, 26, 28, 30) };
+            _pageBody = new StackPanel { Margin = new Thickness(10, 8, 10, 16) };
             scroller.Content = _pageBody;
         }
 
@@ -594,16 +785,49 @@ namespace RkRebuild
 
         private void AddNav(StackPanel nav, string page, string label)
         {
-            Button button = new Button { Content = label, Tag = page, Height = 42, Margin = new Thickness(0, 2, 0, 2), Padding = new Thickness(13, 0, 10, 0), HorizontalContentAlignment = HorizontalAlignment.Left, BorderThickness = new Thickness(0), FontSize = 12, Cursor = Cursors.Hand, Background = page == "Device" ? Brush(49, 94, 181) : Brush(29, 35, 45), Foreground = page == "Device" ? Brushes.White : Brush(206, 212, 222) };
+            string icon = NavIcon(page, page == _page);
+            Grid content = new Grid();
+            content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(36) });
+            content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            Image navIcon = SkinImage(icon, 30, 30);
+            if (navIcon != null) { navIcon.HorizontalAlignment = HorizontalAlignment.Left; content.Children.Add(navIcon); }
+            TextBlock navText = new TextBlock { Text = label, Foreground = page == _page ? Brush(255, 255, 255) : Brush(210, 210, 210), FontSize = 11, VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetColumn(navText, 1);
+            content.Children.Add(navText);
+            Button button = new Button { Content = content, Tag = page, Height = 42, Margin = new Thickness(0, 2, 0, 2), Padding = new Thickness(7, 0, 5, 0), HorizontalContentAlignment = HorizontalAlignment.Stretch, BorderThickness = new Thickness(0), FontSize = 11, Cursor = Cursors.Hand, Background = page == _page ? Brush(60, 31, 15) : Brushes.Transparent, Foreground = Brush(220, 220, 220) };
             button.Click += delegate { SetPage(page); };
             Style navStyle = new Style(typeof(Button));
-            navStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brush(29, 35, 45)));
-            navStyle.Setters.Add(new Setter(Control.ForegroundProperty, Brush(206, 212, 222)));
+            navStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brushes.Transparent));
+            navStyle.Setters.Add(new Setter(Control.ForegroundProperty, Brush(220, 220, 220)));
             navStyle.Setters.Add(new Setter(Control.TemplateProperty, FlatButtonTemplate()));
             button.Style = navStyle;
-            button.MouseEnter += delegate { if (_page != page) button.Background = Brush(43, 51, 64); };
-            button.MouseLeave += delegate { if (_page != page) button.Background = Brush(29, 35, 45); };
+            button.MouseEnter += delegate
+            {
+                if (_page != page) button.Background = Brush(45, 35, 28);
+                if (navIcon != null) navIcon.Source = LoadSkinBitmap(NavIcon(page, true));
+            };
+            button.MouseLeave += delegate
+            {
+                if (_page != page) button.Background = Brushes.Transparent;
+                if (navIcon != null) navIcon.Source = LoadSkinBitmap(NavIcon(page, _page == page));
+            };
             nav.Children.Add(button);
+        }
+
+        private static string NavIcon(string page, bool selected)
+        {
+            string name = page == "Device" || page == "Models" ? "home" : page == "Key mapping" ? "key" : page == "Lighting" ? "light" : page == "Macros" ? "macro" : page == "RK Drive editor" ? "custom" : "cfg";
+            return name + (selected ? "_ov.png" : "_nr.png");
+        }
+
+        private Button SkinWindowButton(string normalName, string hoverName, Action action)
+        {
+            Image icon = SkinImage(normalName, 30, 30);
+            Button button = new Button { Width = 34, Height = 34, Margin = new Thickness(2, 0, 2, 0), Padding = new Thickness(0), Background = Brushes.Transparent, BorderThickness = new Thickness(0), Content = icon, Cursor = Cursors.Hand, ToolTip = normalName.StartsWith("bigmin", StringComparison.OrdinalIgnoreCase) ? "Minimize" : "Close" };
+            button.Click += delegate { action(); };
+            button.MouseEnter += delegate { BitmapSource hover = LoadSkinBitmap(hoverName); if (hover != null && icon != null) icon.Source = hover; };
+            button.MouseLeave += delegate { BitmapSource normal = LoadSkinBitmap(normalName); if (normal != null && icon != null) icon.Source = normal; };
+            return button;
         }
 
         private ControlTemplate FlatButtonTemplate()
@@ -615,6 +839,20 @@ namespace RkRebuild
             content.SetValue(ContentPresenter.MarginProperty, new Thickness(0));
             content.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
             content.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Left);
+            border.AppendChild(content);
+            return new ControlTemplate(typeof(Button)) { VisualTree = border };
+        }
+
+        private ControlTemplate SkinnedButtonTemplate()
+        {
+            FrameworkElementFactory border = new FrameworkElementFactory(typeof(Border));
+            border.SetBinding(Border.BackgroundProperty, new Binding("Background") { RelativeSource = RelativeSource.TemplatedParent });
+            border.SetBinding(Border.BorderBrushProperty, new Binding("BorderBrush") { RelativeSource = RelativeSource.TemplatedParent });
+            border.SetBinding(Border.BorderThicknessProperty, new Binding("BorderThickness") { RelativeSource = RelativeSource.TemplatedParent });
+            FrameworkElementFactory content = new FrameworkElementFactory(typeof(ContentPresenter));
+            content.SetValue(ContentPresenter.MarginProperty, new Thickness(0));
+            content.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
+            content.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
             border.AppendChild(content);
             return new ControlTemplate(typeof(Button)) { VisualTree = border };
         }
@@ -634,8 +872,17 @@ namespace RkRebuild
                 if (button.Tag is string && new[] { "Device", "Key mapping", "Lighting", "Macros", "RK Drive editor", "Models", "RK Drive directory", "Preferences" }.Contains((string)button.Tag))
                 {
                     bool active = (string)button.Tag == page;
-                    button.Background = active ? Brush(49, 94, 181) : Brush(29, 35, 45);
-                    button.Foreground = active ? Brushes.White : Brush(206, 212, 222);
+                    button.Background = active ? Brush(60, 31, 15) : Brushes.Transparent;
+                    button.Foreground = active ? Brushes.White : Brush(210, 210, 210);
+                    Grid content = button.Content as Grid;
+                    if (content != null)
+                        foreach (UIElement child in content.Children)
+                        {
+                            TextBlock text = child as TextBlock;
+                            if (text != null) text.Foreground = active ? Brushes.White : Brush(210, 210, 210);
+                            Image icon = child as Image;
+                            if (icon != null) icon.Source = LoadSkinBitmap(NavIcon((string)button.Tag, active));
+                        }
                 }
             }
             RenderPage();
@@ -658,7 +905,11 @@ namespace RkRebuild
         {
             _selected = profile;
             _settings.SelectedCode = profile.Code;
-            if (_profileSelector != null && _profileSelector.SelectedItem != profile) _profileSelector.SelectedItem = profile;
+            if (_profileSelector != null)
+            {
+                if (_profileSelector.SelectedItem != profile) _profileSelector.SelectedItem = profile;
+                _profileSelector.Text = profile.Name;
+            }
             _profileHeader.Text = profile.Name + "  ·  profile " + profile.Code;
             if (save) SettingsStore.Save(_settings);
             RenderPage();
@@ -680,7 +931,7 @@ namespace RkRebuild
 
         private void RenderDevice()
         {
-            AddIntro("Selected software profile", "The selected profile is a local catalog entry. This build does not scan USB, open a HID collection, or identify a connected keyboard.");
+            AddIntro("Keyboard overview", "Windows Plug and Play device records are checked for a supported RK model. Device reports are not opened by this identification pass.");
             Grid grid = new Grid { Margin = new Thickness(0, 10, 0, 0) };
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.25, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(16) });
@@ -690,37 +941,61 @@ namespace RkRebuild
             grid.Children.Add(profileCard);
             StackPanel summary = new StackPanel { Margin = new Thickness(22) };
             profileCard.Child = summary;
-            summary.Children.Add(Kicker("PROFILE DETAILS"));
-            summary.Children.Add(Headline(_selected.Name, 23));
-            summary.Children.Add(Paragraph("Catalog code " + _selected.Code + "  ·  Family " + Blank(_selected.Family) + "  ·  " + Blank(_selected.Region), 13));
+            List<PnpKeyboard> rkDevices = FindKnownRkDevices();
+            PnpKeyboard connected = rkDevices.Count == 1 ? rkDevices[0] : null;
+            ModelProfile detectedProfile = connected == null ? null : FindProfileForDevice(connected);
+            ModelProfile overviewProfile = detectedProfile ?? _selected;
+            DriveModel photoModel = connected == null ? FindPhotoModelForProfile(_selected) : FindPhotoModelForDevice(connected, detectedProfile);
+            summary.Children.Add(Kicker(connected == null ? "SELECTED SOFTWARE PROFILE" : "CONNECTED KEYBOARD"));
+            summary.Children.Add(Headline(connected == null ? _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
+            summary.Children.Add(Paragraph(connected == null
+                ? "Catalog code " + _selected.Code + "  ·  Family " + Blank(_selected.Family) + "  ·  " + Blank(_selected.Region)
+                : "Windows reports VID " + connected.VendorId + "  ·  PID " + connected.ProductId + "  ·  " + connected.Name, 13));
             summary.Children.Add(new Border { Height = 1, Background = Brush(231, 234, 238), Margin = new Thickness(0, 12, 0, 14) });
-            summary.Children.Add(MetricGrid(new string[,] { { "KEYS", _selected.KeyCount.ToString() }, { "LAYOUT", _selected.LayoutId }, { "LAYERS", _selected.Layers.Count.ToString() }, { "LIGHTING SLOTS", _selected.LightingSlots.Count.ToString() } }));
-            summary.Children.Add(new TextBlock { Text = "Connection status: unavailable in this build", Foreground = Brush(133, 90, 28), FontSize = 12, Margin = new Thickness(0, 18, 0, 0) });
-            summary.Children.Add(new TextBlock { Text = "The profile catalog cannot confirm your physical keyboard revision. Device support and report behavior remain under research.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+            summary.Children.Add(MetricGrid(new string[,] { { "KEYS", overviewProfile.KeyCount.ToString() }, { "LAYOUT", overviewProfile.LayoutId }, { "LAYERS", overviewProfile.Layers.Count.ToString() }, { "LIGHTING SLOTS", overviewProfile.LightingSlots.Count.ToString() } }));
+            summary.Children.Add(new TextBlock {
+                Text = rkDevices.Count == 0 ? "Connection status: no supported RK VID/PID found in Windows PnP records" :
+                    rkDevices.Count == 1 ? "Connection status: device present  ·  model match " + (detectedProfile == null ? "not confirmed by the software profile catalog" : "matches catalog profile " + detectedProfile.Code) :
+                    "Connection status: " + rkDevices.Count + " RK device records found  ·  choose a single device to confirm the model",
+                Foreground = Brush(rkDevices.Count == 1 ? (byte)35 : (byte)166, rkDevices.Count == 1 ? (byte)118 : (byte)95, rkDevices.Count == 1 ? (byte)75 : (byte)24),
+                FontSize = 12, Margin = new Thickness(0, 18, 0, 0), TextWrapping = TextWrapping.Wrap
+            });
+            summary.Children.Add(new TextBlock {
+                Text = connected == null ? "The selected profile is catalog data; it does not prove the model or revision currently connected." :
+                    (detectedProfile != null && detectedProfile.Rgb ? "RGB capability is declared for this catalog profile. Live lighting mode and color are not read by PnP identification." : "The matched model and revision remain subject to the catalog's profile coverage."),
+                Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0)
+            });
 
             Border artCard = Card();
             Grid.SetColumn(artCard, 2);
             grid.Children.Add(artCard);
             StackPanel artStack = new StackPanel { Margin = new Thickness(19) };
             artCard.Child = artStack;
-            artStack.Children.Add(Kicker("LOCAL PROFILE ART"));
-            artStack.Children.Add(new TextBlock { Text = "Artwork is loaded only from an RK package folder you choose on this PC.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
-            Image image = LoadProfileImage();
+            artStack.Children.Add(Kicker(connected == null ? "MODEL PHOTO" : "CONNECTED MODEL PHOTO"));
+            artStack.Children.Add(new TextBlock { Text = photoModel == null ? "No official product image is mapped for this profile." : "Official model photo loaded on demand from the RK Drive image catalog.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
+            Image image = new Image { Stretch = Stretch.Uniform };
+            TextBlock photoStatus = new TextBlock { Text = "Loading official model photo…", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
+            if (photoModel != null) LoadDriveImage(image, photoModel.ImageUrl, photoStatus);
+            else image = LoadProfileImage();
             if (image != null)
             {
-                image.Height = 210;
+                image.Height = 250;
                 image.Stretch = Stretch.Uniform;
                 artStack.Children.Add(image);
             }
             else
             {
-                Border placeholder = new Border { Height = 210, Background = Brush(246, 247, 249), CornerRadius = new CornerRadius(8), Child = new TextBlock { Text = "No local image found", Foreground = Brush(145, 153, 164), FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } };
+                Border placeholder = new Border { Height = 210, Background = Brush(20, 20, 20), BorderBrush = Brush(70, 70, 70), BorderThickness = new Thickness(1), Child = new TextBlock { Text = "Model image unavailable", Foreground = Brush(175, 175, 175), FontSize = 11, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } };
                 artStack.Children.Add(placeholder);
             }
-            Button browse = ActionButton(String.IsNullOrEmpty(_settings.ResourceRoot) ? "Choose local resource folder" : "Change resource folder", false);
-            browse.Margin = new Thickness(0, 12, 0, 0);
-            browse.Click += delegate { ChooseResourceRoot(); };
-            artStack.Children.Add(browse);
+            artStack.Children.Add(photoStatus);
+            if (photoModel != null)
+            {
+                Button openOfficial = ActionButton("Open official product photo", false);
+                openOfficial.Margin = new Thickness(0, 10, 0, 0);
+                openOfficial.Click += delegate { OpenOfficialUrl(photoModel.ImageUrl); };
+                artStack.Children.Add(openOfficial);
+            }
             _pageBody.Children.Add(grid);
 
             Border info = Card();
@@ -729,8 +1004,90 @@ namespace RkRebuild
             info.Child = infoBody;
             infoBody.Children.Add(Kicker("REBUILD STATUS"));
             infoBody.Children.Add(new TextBlock { Text = "This is a native Windows desktop process. It runs locally and does not open a browser, start a localhost server, or include Python.", Foreground = Brush(58, 66, 78), FontSize = 12, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0) });
-            infoBody.Children.Add(new TextBlock { Text = "This first rebuild milestone provides profile browsing, local key-label drafts, local macro notes, tray behavior, and optional startup. Hardware configuration, updates, and firmware actions are not implemented.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+            infoBody.Children.Add(new TextBlock { Text = "Model identification and product photography use read-only Windows/online metadata. Live lighting reads, hardware configuration writes, macro transfer, display control, updater actions, and firmware access remain unavailable.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
             _pageBody.Children.Add(info);
+        }
+
+        private async void RefreshPnpDevices(bool redraw)
+        {
+            if (_pnpScanRunning) return;
+            _pnpScanRunning = true;
+            try
+            {
+                List<PnpKeyboard> devices = await Task.Run(() => WindowsPnpDiscovery.Enumerate());
+                _pnpDevices = devices;
+                string snapshot = String.Join("|", FindKnownRkDevices()
+                    .Select(device => device.Identity + ":" + device.Name)
+                    .OrderBy(value => value, StringComparer.OrdinalIgnoreCase));
+                if (String.Equals(snapshot, _pnpSnapshot, StringComparison.Ordinal)) return;
+                _pnpSnapshot = snapshot;
+                if (redraw && _page == "Device") RenderPage();
+            }
+            catch { }
+            finally { _pnpScanRunning = false; }
+        }
+
+        private List<PnpKeyboard> FindKnownRkDevices()
+        {
+            return _pnpDevices
+                .Where(device => _knownDeviceIds.Contains(device.Identity))
+                .GroupBy(device => device.Identity, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .ToList();
+        }
+
+        private ModelProfile FindProfileForDevice(PnpKeyboard device)
+        {
+            if (device == null || !String.Equals(device.VendorId, "258A", StringComparison.OrdinalIgnoreCase)) return null;
+            List<ModelProfile> matches = _catalog.Models.Where(profile => profile.DirectPid && String.Equals(profile.Code, device.ProductId, StringComparison.OrdinalIgnoreCase)).ToList();
+            return matches.Count == 1 ? matches[0] : null;
+        }
+
+        private DriveModel FindPhotoModelForDevice(PnpKeyboard device, ModelProfile profile)
+        {
+            if (device != null)
+            {
+                List<DriveModel> exact = _driveDirectory.Models.Where(model => model.Connections.Any(connection =>
+                    String.Equals(device.VendorId, NormalizeDeviceId(connection.VendorId), StringComparison.OrdinalIgnoreCase) &&
+                    String.Equals(device.ProductId, NormalizeDeviceId(connection.ProductId), StringComparison.OrdinalIgnoreCase))).ToList();
+                if (exact.Count == 1) return exact[0];
+            }
+            return FindPhotoModelForProfile(profile);
+        }
+
+        private DriveModel FindPhotoModelForProfile(ModelProfile profile)
+        {
+            if (profile == null) return null;
+            string modelName = NormalizeModelName(profile.Name);
+            string family = NormalizeModelName(profile.Family);
+            return _driveDirectory.Models
+                .Select(model => new {
+                    Model = model,
+                    Normalized = NormalizeModelName(model.Name),
+                    Score = NormalizeModelName(model.Name) == modelName ? 0 :
+                        (!String.IsNullOrEmpty(modelName) && modelName.Contains(NormalizeModelName(model.Name), StringComparison.OrdinalIgnoreCase)) ? 1 :
+                        (!String.IsNullOrEmpty(family) && NormalizeModelName(model.Name).Contains(family, StringComparison.OrdinalIgnoreCase)) ? 2 : 10
+                })
+                .Where(candidate => candidate.Score < 10 && !String.IsNullOrWhiteSpace(candidate.Model.ImageUrl))
+                .OrderBy(candidate => candidate.Score)
+                .ThenBy(candidate => candidate.Normalized.Length)
+                .Select(candidate => candidate.Model)
+                .FirstOrDefault();
+        }
+
+        private string DescribeDeviceModel(PnpKeyboard device, ModelProfile profile)
+        {
+            if (profile != null) return profile.Name;
+            DriveModel photoModel = FindPhotoModelForDevice(device, null);
+            return photoModel == null ? "RK device " + device.VendorId + ":" + device.ProductId : photoModel.Name;
+        }
+
+        private static string NormalizeDeviceId(string value)
+        {
+            if (String.IsNullOrWhiteSpace(value)) return "";
+            string normalized = value.Trim();
+            if (normalized.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) normalized = normalized.Substring(2);
+            return normalized.ToUpperInvariant().PadLeft(4, '0');
         }
 
         private void RenderKeymap()
@@ -741,16 +1098,53 @@ namespace RkRebuild
                 _pageBody.Children.Add(CardWithText("No drawable key layout is recorded for this profile."));
                 return;
             }
+            Image officialImage = LoadProfileImage();
+            BitmapSource plate = officialImage == null ? null : officialImage.Source as BitmapSource;
+            if (plate != null)
+            {
+                double width = plate.PixelWidth;
+                double height = plate.PixelHeight;
+                double artMaxX = Math.Max(width, _selected.Keys.Max(k => k.X + k.W));
+                double artMaxY = Math.Max(height, _selected.Keys.Max(k => k.Y + k.H));
+                double scaleX = width / artMaxX;
+                double scaleY = height / artMaxY;
+                Canvas artCanvas = new Canvas { Width = width, Height = height, Background = Brushes.Transparent, Margin = new Thickness(10), ClipToBounds = true };
+                artCanvas.Children.Add(new Image { Source = plate, Width = width, Height = height, Stretch = Stretch.Fill });
+                foreach (LayoutKey key in _selected.Keys)
+                {
+                    string keyId = key.Id ?? "";
+                    string draftKey = _selected.Code + ":" + keyId;
+                    string label = _settings.KeyLabelDrafts.ContainsKey(draftKey) ? _settings.KeyLabelDrafts[draftKey] : key.Label;
+                    Button hit = new Button {
+                        Content = "", Tag = key, Width = Math.Max(8, key.W * scaleX), Height = Math.Max(8, key.H * scaleY),
+                        Background = Brushes.Transparent, BorderBrush = Brushes.Transparent, BorderThickness = new Thickness(1),
+                        Padding = new Thickness(0), Cursor = Cursors.Hand, ToolTip = keyId + " · " + label + " · click to edit label"
+                    };
+                    hit.MouseEnter += delegate { hit.Background = new SolidColorBrush(MediaColor.FromArgb(70, 255, 128, 0)); hit.BorderBrush = Brush(255, 128, 0); };
+                    hit.MouseLeave += delegate { hit.Background = Brushes.Transparent; hit.BorderBrush = Brushes.Transparent; };
+                    hit.Click += delegate(object sender, RoutedEventArgs e) { EditKeyLabel((LayoutKey)((Button)sender).Tag); };
+                    Canvas.SetLeft(hit, key.X * scaleX);
+                    Canvas.SetTop(hit, key.Y * scaleY);
+                    artCanvas.Children.Add(hit);
+                }
+                Border authenticKeyboard = Card();
+                authenticKeyboard.Padding = new Thickness(8);
+                authenticKeyboard.HorizontalAlignment = HorizontalAlignment.Center;
+                authenticKeyboard.Child = new ScrollViewer { Content = artCanvas, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled };
+                _pageBody.Children.Add(authenticKeyboard);
+                _pageBody.Children.Add(new TextBlock { Text = "Artwork and hit areas use the installed RK profile resources. Hover a key to locate it; key label changes remain local drafts.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(6, 10, 6, 0) });
+                return;
+            }
             double maxX = _selected.Keys.Max(k => k.X + k.W) + 12;
             double maxY = _selected.Keys.Max(k => k.Y + k.H) + 12;
             double scale = Math.Min(1.25, Math.Min(1030 / maxX, 440 / maxY));
-            Canvas canvas = new Canvas { Width = maxX * scale, Height = maxY * scale, Background = Brush(246, 247, 249), Margin = new Thickness(10), ClipToBounds = true };
+            Canvas canvas = new Canvas { Width = maxX * scale, Height = maxY * scale, Background = Brush(20, 20, 20), Margin = new Thickness(10), ClipToBounds = true };
             foreach (LayoutKey key in _selected.Keys)
             {
                 string keyId = key.Id ?? "";
                 string draftKey = _selected.Code + ":" + keyId;
                 string label = _settings.KeyLabelDrafts.ContainsKey(draftKey) ? _settings.KeyLabelDrafts[draftKey] : key.Label;
-                Button tile = new Button { Content = label, Tag = key, FontSize = 9, Padding = new Thickness(2), Width = Math.Max(28, key.W * scale - 2), Height = Math.Max(26, key.H * scale - 2), Background = Brushes.White, Foreground = Brush(56, 64, 76), BorderBrush = Brush(206, 212, 221), BorderThickness = new Thickness(1), ToolTip = keyId + " · source label: " + key.Label, Cursor = Cursors.Hand };
+                Button tile = new Button { Content = label, Tag = key, FontSize = 9, Padding = new Thickness(2), Width = Math.Max(28, key.W * scale - 2), Height = Math.Max(26, key.H * scale - 2), Background = Brush(30, 30, 30), Foreground = Brush(220, 220, 220), BorderBrush = Brush(105, 105, 105), BorderThickness = new Thickness(1), ToolTip = keyId + " · source label: " + key.Label, Cursor = Cursors.Hand };
                 tile.Click += delegate(object sender, RoutedEventArgs e) { EditKeyLabel((LayoutKey)((Button)sender).Tag); };
                 Canvas.SetLeft(tile, key.X * scale);
                 Canvas.SetTop(tile, key.Y * scale);
@@ -766,7 +1160,7 @@ namespace RkRebuild
         {
             string draftKey = _selected.Code + ":" + key.Id;
             string oldValue = _settings.KeyLabelDrafts.ContainsKey(draftKey) ? _settings.KeyLabelDrafts[draftKey] : key.Label;
-            TextEntryWindow dialog = new TextEntryWindow(key.Id + " label draft", "Displayed label", oldValue);
+            TextEntryWindow dialog = new TextEntryWindow(key.Id + " label draft", "Displayed label", oldValue, FontFamily);
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
@@ -841,7 +1235,7 @@ namespace RkRebuild
 
         private void AddMacro()
         {
-            TextEntryWindow dialog = new TextEntryWindow("New local macro note", "Name or note", "");
+            TextEntryWindow dialog = new TextEntryWindow("New local macro note", "Name or note", "", FontFamily);
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
@@ -856,7 +1250,7 @@ namespace RkRebuild
         private void RenderModels()
         {
             AddIntro("Software profile catalog", "The catalog contains 265 entries from one RK Windows package snapshot. These are software profiles, not a census of every product or physical revision.");
-            TextBox search = new TextBox { Height = 36, Padding = new Thickness(10, 7, 10, 6), FontSize = 12, BorderBrush = Brush(216, 221, 228), Background = Brushes.White, Margin = new Thickness(0, 0, 0, 12), ToolTip = "Search model name, family, region, or code" };
+            TextBox search = new TextBox { Height = 36, Padding = new Thickness(10, 7, 10, 6), FontSize = 12, BorderBrush = Brush(80, 80, 80), Background = Brush(20, 20, 20), Foreground = Brush(220, 220, 220), Margin = new Thickness(0, 0, 0, 12), ToolTip = "Search model name, family, region, or code" };
             _pageBody.Children.Add(search);
             StackPanel results = new StackPanel();
             _pageBody.Children.Add(results);
@@ -917,7 +1311,7 @@ namespace RkRebuild
             StackPanel controls = new StackPanel();
             DockPanel.SetDock(controls, Dock.Top);
             listPanel.Children.Add(controls);
-            TextBox search = new TextBox { Height = 35, Padding = new Thickness(9, 6, 9, 5), FontSize = 12, BorderBrush = Brush(216, 221, 228), Background = Brushes.White, ToolTip = "Search model, protocol, or connection ID" };
+            TextBox search = new TextBox { Height = 35, Padding = new Thickness(9, 6, 9, 5), FontSize = 12, BorderBrush = Brush(80, 80, 80), Background = Brush(20, 20, 20), Foreground = Brush(220, 220, 220), ToolTip = "Search model, protocol, or connection ID" };
             controls.Children.Add(search);
             ComboBox connectionFilter = new ComboBox { Height = 32, Margin = new Thickness(0, 8, 0, 8), Padding = new Thickness(6, 4, 6, 4), FontSize = 11 };
             connectionFilter.Items.Add("All connections");
@@ -960,7 +1354,7 @@ namespace RkRebuild
                         HorizontalContentAlignment = HorizontalAlignment.Left,
                         Padding = new Thickness(10, 8, 10, 8),
                         Margin = new Thickness(0, 0, 0, 6),
-                        Background = model == _selectedDriveModel ? Brush(235, 241, 251) : Brushes.White,
+                        Background = model == _selectedDriveModel ? Brush(60, 31, 15) : Brush(20, 20, 20),
                         BorderBrush = Brush(225, 229, 235),
                         BorderThickness = new Thickness(1),
                         Cursor = Cursors.Hand
@@ -1008,13 +1402,13 @@ namespace RkRebuild
             StackPanel selectors = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 12) };
             ComboBox modelSelector = new ComboBox {
                 Width = 300, Height = 34, Padding = new Thickness(8, 4, 8, 4),
-                Background = Brushes.White, BorderBrush = Brush(218, 223, 230),
+                Background = Brush(20, 20, 20), BorderBrush = Brush(80, 80, 80),
                 ItemsSource = _driveDirectory.Models.OrderBy(model => model.Name, StringComparer.OrdinalIgnoreCase).ToList(),
                 DisplayMemberPath = "Name"
             };
             ComboBox connectionSelector = new ComboBox {
                 Width = 430, Height = 34, Margin = new Thickness(10, 0, 0, 0), Padding = new Thickness(8, 4, 8, 4),
-                Background = Brushes.White, BorderBrush = Brush(218, 223, 230)
+                Background = Brush(20, 20, 20), BorderBrush = Brush(80, 80, 80)
             };
             selectors.Children.Add(modelSelector);
             selectors.Children.Add(connectionSelector);
@@ -1088,7 +1482,7 @@ namespace RkRebuild
                     keyBody.Children.Add(Paragraph(connection.LayoutGroupCount + " layout group(s) declared with ordered key slots", 11));
                     ComboBox layoutGroupSelector = new ComboBox {
                         Width = 290, Height = 30, Padding = new Thickness(7, 3, 7, 3),
-                        Background = Brushes.White, BorderBrush = Brush(218, 223, 230),
+                        Background = Brush(20, 20, 20), BorderBrush = Brush(80, 80, 80), Foreground = Brush(220, 220, 220),
                         IsEnabled = connection.LayoutGroups.Count > 0
                     };
                     foreach (DriveLayoutGroup group in connection.LayoutGroups) layoutGroupSelector.Items.Add(group);
@@ -1177,7 +1571,7 @@ namespace RkRebuild
                             };
                             ComboBox choiceSelector = new ComboBox {
                                 Height = 26, Padding = new Thickness(5, 2, 5, 2),
-                                Background = Brushes.White, BorderBrush = Brush(218, 223, 230), ItemsSource = choices
+                                Background = Brush(20, 20, 20), BorderBrush = Brush(80, 80, 80), Foreground = Brush(220, 220, 220), ItemsSource = choices
                             };
                             string mappingKey = contextPrefix + slot.SlotIndex;
                             string savedCode;
@@ -1553,7 +1947,7 @@ namespace RkRebuild
 
         private ComboBox DraftCombo(string label, List<string> values, string savedValue)
         {
-            ComboBox selector = new ComboBox { Width = 250, Height = 30, Padding = new Thickness(7, 3, 7, 3), Background = Brushes.White, BorderBrush = Brush(218, 223, 230), IsEnabled = values.Count > 0 };
+            ComboBox selector = new ComboBox { Width = 250, Height = 30, Padding = new Thickness(7, 3, 7, 3), Background = Brush(20, 20, 20), BorderBrush = Brush(80, 80, 80), Foreground = Brush(220, 220, 220), IsEnabled = values.Count > 0 };
             foreach (string value in values) selector.Items.Add(value);
             if (values.Contains(savedValue)) selector.SelectedItem = savedValue;
             else if (values.Count > 0) selector.SelectedIndex = 0;
@@ -1688,7 +2082,7 @@ namespace RkRebuild
         {
             foreach (Button button in results.Children.OfType<Button>())
             {
-                button.Background = Object.ReferenceEquals(button.Tag, _selectedDriveModel) ? Brush(235, 241, 251) : Brushes.White;
+                button.Background = Object.ReferenceEquals(button.Tag, _selectedDriveModel) ? Brush(60, 31, 15) : Brush(20, 20, 20);
             }
         }
 
@@ -1755,8 +2149,10 @@ namespace RkRebuild
         private Forms.NotifyIcon BuildTray()
         {
             Forms.NotifyIcon tray = new Forms.NotifyIcon();
-            tray.Icon = SystemIcons.Application;
-            tray.Text = "RK Rebuild — Community Edition";
+            string iconPath = Path.Combine(_settings.ResourceRoot ?? "", "appico.ico");
+            try { tray.Icon = File.Exists(iconPath) ? new System.Drawing.Icon(iconPath) : SystemIcons.Application; }
+            catch { tray.Icon = SystemIcons.Application; }
+            tray.Text = "RK Keyboard";
             Forms.ContextMenuStrip menu = new Forms.ContextMenuStrip();
             Forms.ToolStripMenuItem configure = new Forms.ToolStripMenuItem("Configuration");
             configure.Click += delegate { ShowFromTray(); };
@@ -1825,11 +2221,73 @@ namespace RkRebuild
                 dialog.SelectedPath = _settings.ResourceRoot;
                 if (dialog.ShowDialog() == Forms.DialogResult.OK)
                 {
-                    _settings.ResourceRoot = dialog.SelectedPath;
+                    _settings.ResourceRoot = NormalizeResourceRoot(dialog.SelectedPath);
                     SettingsStore.Save(_settings);
-                    RenderPage();
+                    FontFamily = LoadRkFont();
+                    BuildShell();
+                    SelectProfile(_selected, false);
+                    SetPage(_page);
                 }
             }
+        }
+
+        private static string FindInstalledResourceRoot()
+        {
+            List<string> candidates = new List<string>();
+            string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            if (!String.IsNullOrWhiteSpace(programFilesX86)) candidates.Add(Path.Combine(programFilesX86, "RK Keyboard Software"));
+            if (!String.IsNullOrWhiteSpace(programFiles)) candidates.Add(Path.Combine(programFiles, "RK Keyboard Software"));
+            candidates.Add(@"C:\Program Files (x86)\RK Keyboard Software");
+            return candidates.FirstOrDefault(path => File.Exists(Path.Combine(path, "Cfg.ini")) && Directory.Exists(Path.Combine(path, "skins"))) ?? "";
+        }
+
+        private static string NormalizeResourceRoot(string path)
+        {
+            if (String.IsNullOrWhiteSpace(path)) return "";
+            string fullPath = Path.GetFullPath(path);
+            if (Directory.Exists(Path.Combine(fullPath, "skins"))) return fullPath;
+            if (String.Equals(Path.GetFileName(fullPath), "Dev", StringComparison.OrdinalIgnoreCase))
+            {
+                DirectoryInfo parent = Directory.GetParent(fullPath);
+                if (parent != null && Directory.Exists(Path.Combine(parent.FullName, "skins"))) return parent.FullName;
+            }
+            return fullPath;
+        }
+
+        private FontFamily LoadRkFont()
+        {
+            try
+            {
+                string folder = Path.Combine(_settings.ResourceRoot ?? "", "font");
+                if (Directory.Exists(folder) && Directory.GetFiles(folder, "Open Sans*.ttf").Length > 0)
+                    return new FontFamily(new Uri(folder.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, UriKind.Absolute), "./#Open Sans");
+            }
+            catch { }
+            return new FontFamily("Arial");
+        }
+
+        private BitmapSource LoadSkinBitmap(string fileName)
+        {
+            try
+            {
+                string path = Path.Combine(_settings.ResourceRoot ?? "", "skins", fileName);
+                if (!File.Exists(path)) return null;
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                bitmap.Freeze();
+                return bitmap;
+            }
+            catch { return null; }
+        }
+
+        private Image SkinImage(string fileName, double width, double height)
+        {
+            BitmapSource bitmap = LoadSkinBitmap(fileName);
+            return bitmap == null ? null : new Image { Source = bitmap, Width = width, Height = height, Stretch = Stretch.Uniform, VerticalAlignment = VerticalAlignment.Center };
         }
 
         private Image LoadProfileImage()
@@ -1838,7 +2296,7 @@ namespace RkRebuild
             {
                 string folder = ProfileFolder();
                 if (String.IsNullOrEmpty(folder)) return null;
-                string[] names = { "keyimg.png", "kbled.png", "sideled.png" };
+                string[] names = { "kbled.png", "keyimg.png", "sideled.png" };
                 string path = names.Select(n => Path.Combine(folder, n)).FirstOrDefault(File.Exists);
                 if (String.IsNullOrEmpty(path)) return null;
                 BitmapImage bitmap = new BitmapImage();
@@ -1854,10 +2312,51 @@ namespace RkRebuild
         private string ProfileFolder()
         {
             if (String.IsNullOrEmpty(_settings.ResourceRoot)) return "";
-            string first = Path.Combine(_settings.ResourceRoot, "Dev", _selected.Code);
-            if (Directory.Exists(first)) return first;
-            string second = Path.Combine(_settings.ResourceRoot, _selected.Code);
-            return Directory.Exists(second) ? second : "";
+            string root = NormalizeResourceRoot(_settings.ResourceRoot);
+            string[] candidates = {
+                Path.Combine(root, "Dev", _selected.Code),
+                Path.Combine(root, _selected.Code)
+            };
+            string exact = candidates.FirstOrDefault(HasProfileArtwork);
+            if (!String.IsNullOrEmpty(exact)) return exact;
+
+            string configPath = Path.Combine(root, "Cfg.ini");
+            if (!File.Exists(configPath)) return "";
+            string family = NormalizeModelName(_selected.Family);
+            string modelName = NormalizeModelName(_selected.Name);
+            List<Tuple<int, string>> matches = new List<Tuple<int, string>>();
+            try
+            {
+                foreach (string line in File.ReadLines(configPath))
+                {
+                    string trimmed = line.Trim();
+                    if (!trimmed.StartsWith("DevName", StringComparison.OrdinalIgnoreCase)) continue;
+                    int equals = trimmed.IndexOf('=');
+                    if (equals < 0) continue;
+                    string[] values = trimmed.Substring(equals + 1).Split(new[] { ',' }, 2);
+                    if (values.Length != 2) continue;
+                    string code = values[0].Trim();
+                    string label = values[1].Trim();
+                    string candidate = Path.Combine(root, "Dev", code);
+                    if (!HasProfileArtwork(candidate)) continue;
+                    string normalizedLabel = NormalizeModelName(label);
+                    int score = !String.IsNullOrEmpty(modelName) && normalizedLabel.Contains(modelName, StringComparison.OrdinalIgnoreCase) ? 0 :
+                        !String.IsNullOrEmpty(family) && normalizedLabel.Contains(family, StringComparison.OrdinalIgnoreCase) ? 1 : 2;
+                    if (score < 2) matches.Add(Tuple.Create(score, candidate));
+                }
+            }
+            catch { return ""; }
+            return matches.OrderBy(item => item.Item1).Select(item => item.Item2).FirstOrDefault() ?? "";
+        }
+
+        private static bool HasProfileArtwork(string folder)
+        {
+            return Directory.Exists(folder) && new[] { "kbled.png", "keyimg.png", "sideled.png" }.Any(name => File.Exists(Path.Combine(folder, name)));
+        }
+
+        private static string NormalizeModelName(string value)
+        {
+            return new String((value ?? "").Where(Char.IsLetterOrDigit).ToArray());
         }
 
         private void AddIntro(string title, string detail)
@@ -1868,7 +2367,7 @@ namespace RkRebuild
 
         private Border Card()
         {
-            return new Border { Background = Brushes.White, BorderBrush = Brush(229, 232, 237), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9) };
+            return new Border { Background = new SolidColorBrush(MediaColor.FromArgb(215, 14, 17, 22)), BorderBrush = Brush(92, 92, 92), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(2) };
         }
 
         private Border CardWithText(string text)
@@ -1881,17 +2380,17 @@ namespace RkRebuild
 
         private TextBlock Kicker(string text)
         {
-            return new TextBlock { Text = text, Foreground = Brush(124, 133, 145), FontSize = 9, FontWeight = FontWeights.Bold };
+            return new TextBlock { Text = text, Foreground = Brush(180, 180, 180), FontSize = 9, FontWeight = FontWeights.Bold };
         }
 
         private TextBlock Headline(string text, double size)
         {
-            return new TextBlock { Text = text, Foreground = Brush(36, 43, 54), FontSize = size, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 7, 0, 0), TextWrapping = TextWrapping.Wrap };
+            return new TextBlock { Text = text, Foreground = Brush(235, 235, 235), FontSize = size, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 7, 0, 0), TextWrapping = TextWrapping.Wrap };
         }
 
         private TextBlock Paragraph(string text, double size)
         {
-            return new TextBlock { Text = text, Foreground = Brush(111, 120, 133), FontSize = size, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) };
+            return new TextBlock { Text = text, Foreground = Brush(175, 175, 175), FontSize = size, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) };
         }
 
         private Grid MetricGrid(string[,] rows)
@@ -1901,8 +2400,8 @@ namespace RkRebuild
             for (int c = 0; c < rows.GetLength(0); c++)
             {
                 StackPanel metric = new StackPanel { Margin = new Thickness(0, 2, 14, 2) };
-                metric.Children.Add(new TextBlock { Text = rows[c, 0], Foreground = Brush(126, 134, 147), FontSize = 9, FontWeight = FontWeights.Bold });
-                metric.Children.Add(new TextBlock { Text = rows[c, 1], Foreground = Brush(47, 55, 67), FontSize = 14, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(0, 5, 0, 0) });
+                metric.Children.Add(new TextBlock { Text = rows[c, 0], Foreground = Brush(165, 165, 165), FontSize = 9, FontWeight = FontWeights.Bold });
+                metric.Children.Add(new TextBlock { Text = rows[c, 1], Foreground = Brush(220, 220, 220), FontSize = 14, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(0, 5, 0, 0) });
                 Grid.SetColumn(metric, c);
                 grid.Children.Add(metric);
             }
@@ -1911,16 +2410,45 @@ namespace RkRebuild
 
         private Border StatusPill(string label, Brush background, Brush foreground)
         {
-            return new Border { Background = background, CornerRadius = new CornerRadius(12), Padding = new Thickness(10, 6, 10, 6), Child = new TextBlock { Text = label, Foreground = foreground, FontSize = 9, FontWeight = FontWeights.Bold } };
+            return new Border { Background = background, Padding = new Thickness(10, 6, 10, 6), Child = new TextBlock { Text = label, Foreground = foreground, FontSize = 9, FontWeight = FontWeights.Bold } };
         }
 
         private Button ActionButton(string label, bool primary)
         {
-            return new Button { Content = label, Height = 34, Padding = new Thickness(13, 0, 13, 0), FontSize = 11, Foreground = primary ? Brushes.White : Brush(55, 63, 75), Background = primary ? Brush(49, 94, 181) : Brushes.White, BorderBrush = primary ? Brush(49, 94, 181) : Brush(214, 219, 226), BorderThickness = new Thickness(1), Cursor = Cursors.Hand, HorizontalAlignment = HorizontalAlignment.Left };
+            BitmapSource normal = LoadSkinBitmap("btn_nr.png");
+            BitmapSource hover = LoadSkinBitmap("btn_ov.png");
+            Button button = new Button {
+                Content = label, Height = 38, MinWidth = 150, Padding = new Thickness(13, 0, 13, 0), FontSize = 11,
+                Foreground = Brush(220, 220, 220), Background = normal == null ? (primary ? Brush(201, 81, 0) : Brush(20, 20, 20)) : new ImageBrush(normal) { Stretch = Stretch.Fill },
+                BorderBrush = Brushes.Transparent, BorderThickness = new Thickness(0), Cursor = Cursors.Hand, HorizontalAlignment = HorizontalAlignment.Left
+            };
+            button.MouseEnter += delegate { if (hover != null) button.Background = new ImageBrush(hover) { Stretch = Stretch.Fill }; };
+            button.MouseLeave += delegate { if (normal != null) button.Background = new ImageBrush(normal) { Stretch = Stretch.Fill }; else button.Background = primary ? Brush(201, 81, 0) : Brush(20, 20, 20); };
+            return button;
         }
 
         private static string Blank(string value) { return String.IsNullOrEmpty(value) ? "not recorded" : value; }
-        private static SolidColorBrush Brush(byte r, byte g, byte b) { return new SolidColorBrush(MediaColor.FromRgb(r, g, b)); }
+        private static SolidColorBrush Brush(byte r, byte g, byte b)
+        {
+            if (r == 49 && g == 94 && b == 181) { r = 201; g = 81; b = 0; }
+            else if ((r == 232 && g == 240 && b == 252) || (r == 235 && g == 241 && b == 251)) { r = 56; g = 31; b = 18; }
+            else if (r == 246 && g == 247 && b == 249) { r = 20; g = 20; b = 20; }
+            else if ((r == 216 && g == 221 && b == 228) || (r == 218 && g == 223 && b == 230) || (r == 214 && g == 219 && b == 226) || (r == 229 && g == 232 && b == 237) || (r == 231 && g == 234 && b == 238)) { r = 78; g = 78; b = 78; }
+            else if (r == 29 && g == 35 && b == 45) { r = 20; g = 20; b = 20; }
+            else if (r == 43 && g == 51 && b == 64) { r = 39; g = 39; b = 39; }
+            else if (r == 63 && g == 71 && b == 84) { r = 66; g = 66; b = 66; }
+            else if (r == 60 && g == 31 && b == 15) { r = 54; g = 28; b = 15; }
+            else if (r == 45 && g == 35 && b == 28) { r = 46; g = 35; b = 28; }
+            else if (r == 64 && g == 120 && b == 82) { r = 95; g = 177; b = 104; }
+            else if (r == 133 && g == 90 && b == 28) { r = 255; g = 128; b = 0; }
+            else if ((r == 50 && g == 58 && b == 70) || (r == 47 && g == 55 && b == 67) || (r == 48 && g == 56 && b == 68) || (r == 52 && g == 60 && b == 72) || (r == 54 && g == 62 && b == 74) || (r == 55 && g == 63 && b == 75) || (r == 56 && g == 64 && b == 76) || (r == 58 && g == 66 && b == 78) || (r == 70 && g == 78 && b == 90) || (r == 80 && g == 88 && b == 101) || (r == 35 && g == 42 && b == 53) || (r == 36 && g == 43 && b == 54)) { r = 220; g = 220; b = 220; }
+            else if ((r == 100 && g == 108 && b == 120) || (r == 111 && g == 120 && b == 133) || (r == 120 && g == 128 && b == 140) || (r == 124 && g == 133 && b == 145) || (r == 126 && g == 134 && b == 147) || (r == 129 && g == 140 && b == 155) || (r == 130 && g == 138 && b == 150) || (r == 145 && g == 153 && b == 164)) { r = 175; g = 175; b = 175; }
+            else if (r == 165 && g == 174 && b == 189) { r = 175; g = 175; b = 175; }
+            else if (r == 199 && g == 205 && b == 214) { r = 205; g = 205; b = 205; }
+            else if (r == 206 && g == 212 && b == 221) { r = 220; g = 220; b = 220; }
+            else if (r < 90 && !(r == g && g == b)) { r = 220; g = 220; b = 220; }
+            return new SolidColorBrush(MediaColor.FromRgb(r, g, b));
+        }
     }
 
     internal sealed class TextEntryWindow : Window
@@ -1928,32 +2456,33 @@ namespace RkRebuild
         private readonly TextBox _entry;
         public string Value { get { return _entry.Text.Trim(); } }
 
-        public TextEntryWindow(string title, string label, string value)
+        public TextEntryWindow(string title, string label, string value, FontFamily appFont)
         {
             Title = title;
             Width = 430;
             Height = 205;
             ResizeMode = ResizeMode.NoResize;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            Background = new SolidColorBrush(MediaColor.FromRgb(246, 247, 249));
-            FontFamily = new FontFamily("Segoe UI");
+            Background = new SolidColorBrush(MediaColor.FromRgb(20, 20, 20));
+            Foreground = new SolidColorBrush(MediaColor.FromRgb(220, 220, 220));
+            FontFamily = appFont ?? new FontFamily("Arial");
             Grid grid = new Grid { Margin = new Thickness(22) };
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             Content = grid;
-            grid.Children.Add(new TextBlock { Text = label, Foreground = new SolidColorBrush(MediaColor.FromRgb(55, 63, 75)), FontSize = 12, Margin = new Thickness(0, 0, 0, 8) });
-            _entry = new TextBox { Text = value, FontSize = 13, Padding = new Thickness(9, 7, 9, 7), BorderBrush = new SolidColorBrush(MediaColor.FromRgb(214, 219, 226)) };
+            grid.Children.Add(new TextBlock { Text = label, Foreground = new SolidColorBrush(MediaColor.FromRgb(220, 220, 220)), FontSize = 12, Margin = new Thickness(0, 0, 0, 8) });
+            _entry = new TextBox { Text = value, FontSize = 13, Padding = new Thickness(9, 7, 9, 7), BorderBrush = new SolidColorBrush(MediaColor.FromRgb(78, 78, 78)), Background = new SolidColorBrush(MediaColor.FromRgb(20, 20, 20)), Foreground = new SolidColorBrush(MediaColor.FromRgb(220, 220, 220)) };
             Grid.SetRow(_entry, 1);
             grid.Children.Add(_entry);
             StackPanel buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
             Grid.SetRow(buttons, 3);
             grid.Children.Add(buttons);
-            Button cancel = new Button { Content = "Cancel", Width = 76, Height = 32, Margin = new Thickness(0, 0, 8, 0) };
+            Button cancel = new Button { Content = "Cancel", Width = 76, Height = 32, Margin = new Thickness(0, 0, 8, 0), Background = new SolidColorBrush(MediaColor.FromRgb(20, 20, 20)), Foreground = new SolidColorBrush(MediaColor.FromRgb(220, 220, 220)), BorderBrush = new SolidColorBrush(MediaColor.FromRgb(85, 85, 85)) };
             cancel.Click += delegate { DialogResult = false; };
             buttons.Children.Add(cancel);
-            Button save = new Button { Content = "Save draft", Width = 94, Height = 32, IsDefault = true, Background = new SolidColorBrush(MediaColor.FromRgb(49, 94, 181)), Foreground = Brushes.White };
+            Button save = new Button { Content = "Save draft", Width = 94, Height = 32, IsDefault = true, Background = new SolidColorBrush(MediaColor.FromRgb(201, 81, 0)), Foreground = Brushes.White, BorderBrush = new SolidColorBrush(MediaColor.FromRgb(201, 81, 0)) };
             save.Click += delegate { DialogResult = true; };
             buttons.Children.Add(save);
         }
