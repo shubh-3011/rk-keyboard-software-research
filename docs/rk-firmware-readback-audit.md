@@ -1,9 +1,12 @@
 # RK updater and firmware readback audit
 
-This note examines the installed model-specific updater and its bundled
-firmware-like package. It answers a narrow question: does the inspected RK
-software expose a demonstrated way to copy the firmware currently running in
-the connected RK S98 to a host file while leaving the keyboard unchanged?
+This note compares the installed 4.06 model-specific updater with the
+corresponding files in the separately extracted official 4.6-labeled Windows
+Hub Driver package. It answers a narrow question: do the examined RK software
+files expose a demonstrated way to copy the firmware currently running in the
+connected RK S98 to a host file while leaving the keyboard unchanged? This is
+a static assessment of these two package snapshots, not a claim about every RK
+software or firmware revision.
 
 The evidence here is static. No RK executable or updater was launched, no
 keyboard HID interface was opened, no keyboard report or serial command was
@@ -13,6 +16,18 @@ follow from a traced data flow but are not validated at runtime, and
 **unresolved** where static evidence is incomplete.
 
 ## Examined package
+
+The 4.6-labeled package contains byte-identical copies of the 4.06
+`Dev/01AF/Update.exe` and its `.upf`; their SHA-256 values are recorded in the
+[4.6 package manifest](rk-4.6-package-manifest.csv) and cross-version file
+comparison. Thus the updater analysis below applies to those exact updater
+files in both snapshots. The installed 4.06 `DeviceDriver.exe` has SHA-256
+`c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6`; the
+4.6 `DeviceDriver.exe` is a different binary (2,418,176 bytes; SHA-256
+`8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9`); its
+two G5 feature-read paths discussed below were audited separately. This
+limited cross-version check does not establish that every path in that driver
+has been analyzed.
 
 The installed updater is
 `C:\Program Files (x86)\RK Keyboard Software\Dev\01AF\Update.exe`, x86,
@@ -247,6 +262,13 @@ file name, and activation remain unresolved; this supersedes the earlier
 negative finding that no UART queue-to-file sink had been identified.
 
 ## Can the connected S98 firmware be copied without changing it?
+
+**Conclusion across the examined snapshots:** no complete, read-only S98
+firmware export is demonstrated. The 4.06 updater findings also apply to the
+identical updater shipped in the 4.6-labeled package. The changed 4.6 main
+driver has separate command-`0x88` and command-`0x82` G5 paths that request
+data through a feature write and return bounded response bytes to caller
+memory; those paths do not establish a firmware image or file export.
 
 **Proven:** Windows has not exposed this keyboard as a mass-storage volume
 from which firmware could simply be copied. The bundled `.upf` is a

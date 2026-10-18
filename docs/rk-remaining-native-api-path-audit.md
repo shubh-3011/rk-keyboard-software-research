@@ -82,6 +82,16 @@ CSV. For example, `FlatSB_GetScrollInfo` is called through thunk
 FlatSB call paths exist; it does not establish that the eight USER32 fallback
 pointer globals are read or invoked.
 
+An indexed-reference follow-up found a candidate instruction at
+`0x0044B2C0`, decoded by a linear disassembly as
+`jmp DWORD PTR [ebx+0x00502094]`. `EBX` values from `0x8` through `0x24` in
+four-byte steps would index the eight globals at `0x0050209C`–`0x005020B8`,
+but no register provenance or reachable control-flow path was recovered, and
+the instruction lies in a mixed code/string region. Treat this as an
+unresolved candidate; it does not prove a global read or fallback invocation.
+The separate direct FlatSB calls above do not settle it. See the updated
+[deep-scan report](rk-remaining-native-api-gap-deep-scan.md).
+
 **Unresolved:** the reviewed disassembly and whole-file little-endian address
 scan found the fallback globals only at resolver initialization stores, not at
 later direct reads, indirect calls, or callback handoffs. Their true runtime

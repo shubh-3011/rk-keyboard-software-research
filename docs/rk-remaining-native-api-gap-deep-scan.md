@@ -54,15 +54,27 @@ Each pointer global has exactly two raw DWORD references in the whole image,
 both inside the resolver: one successful-resolution store and one fallback
 store. Each fallback thunk address has exactly one raw hit, at its immediate
 load into `EAX` before the fallback store. The targeted disassembly confirms
-these are writes, not loads or invocations. No later direct global read,
-indirect call, or callback handoff was recovered in this image.
+these are writes, not direct loads or invocations. No later direct global
+read, indirect call, or callback handoff was recovered in this image.
 
-This strengthens the evidence for a missing in-image consumer: confidence is
-**high** that the observed procedure only initializes the slots, and
-**moderate** that no static consumer was recovered across the complete image.
-Computed pointer expressions, external callers, runtime patching, and other
-uninstaller versions remain outside this conclusion. The eight fallback
-imports therefore remain unresolved rather than unused.
+An additional linear-disassembly scan found one possible indexed reference:
+`0x0044B2C0` decodes as `jmp DWORD PTR [ebx+0x00502094]`. If `EBX` were
+`0x8` through `0x24` in four-byte steps, the effective address would land on
+the fallback slots `0x0050209C`–`0x005020B8`. The available evidence does not
+establish such an `EBX` value or range, that this mixed code/string region is
+executed as code, or a reachable path to the instruction. The base global
+`0x00502094` is separate from the eight slots and has a direct comparison at
+`0x0044AFAE`. This is a candidate computed consumer, not proof that a fallback
+pointer is read or called.
+
+The separate imported `comctl32!FlatSB_*` functions do have direct callsites,
+including `FlatSB_GetScrollInfo` at `0x00470D03`, `FlatSB_GetScrollPos` at
+`0x00471128`, `FlatSB_SetScrollPos` at `0x00471142`, and
+`FlatSB_SetScrollInfo` at `0x004713D3`. Those calls do not establish use of
+the USER32 fallback slots. Confidence remains **high** that no direct global
+consumer was recovered and **moderate** that no reachable in-image consumer
+has been established; the indexed candidate keeps actual use unresolved.
+The eight imports are therefore unresolved rather than unused.
 
 ## Status and limits
 

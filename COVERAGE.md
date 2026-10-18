@@ -112,6 +112,17 @@ model or runtime map.
   remain open. Addresses are specific to the 4.6 driver; see
   [`docs/rk-v4.6-windows-hook-callsite-audit.md`](docs/rk-v4.6-windows-hook-callsite-audit.md)
   and the separate [4.06 hook audit](docs/rk-406-windows-hook-callsite-audit.md).
+- A focused loader-API follow-up maps all three direct 4.6 `LoadLibraryA`
+  sites and four `GetModuleHandleA` sites to their module/export strings,
+  pointer consumers, and closest 4.06 counterparts. The callsite roles match
+  in this slice; branch execution and outside callers remain unresolved. See
+  [`docs/rk-v4.6-dynamic-loader-api-audit.md`](docs/rk-v4.6-dynamic-loader-api-audit.md).
+- A focused UI trace confirms the 4.6 driver constructs the added
+  `tc_adv_str44`, `tc_screen22/23`, and `tc_knob1–4` items through three
+  indexed localization loops. It also maps the eight knob profile rows into
+  shared application state and a gated settings signal, while leaving exact
+  MFC control ownership, event origin, and keyboard acceptance open. See
+  [`docs/rk-v4.6-ui-knob-localization-path-audit.md`](docs/rk-v4.6-ui-knob-localization-path-audit.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
   (`0xC8C8` bytes). The exact path base, MFC event association, and relation to
@@ -427,10 +438,12 @@ model or runtime map.
   [file-open crosswalk](docs/rk-uart-file-open-path-crosswalk.md).
   The updater also has two six-byte feature reads in a post-transfer helper;
   they do not constitute a complete firmware read.
-- No complete read-only S98 firmware export is demonstrated by the examined
-  package: HID reads are bounded verification/status paths, and UART response
-  sinks remain unconfigured and without a direct transition from initialized
-  state. Whether an undiscovered indirect or model-specific path exists is
+- No complete read-only S98 firmware export is demonstrated across the
+  installed 4.06 package and the separately extracted 4.6-labeled package.
+  Their `Dev/01AF/Update.exe` and `.upf` files are byte-identical; the changed
+  4.6 `DeviceDriver.exe` has separately traced G5 request/read paths that
+  return bounded data to caller memory without establishing a firmware file
+  export. Whether an undiscovered indirect or model-specific path exists is
   unresolved; see `docs/rk-firmware-readback-audit.md`.
 
 These gaps are intentional status labels, not claims that the missing work is
