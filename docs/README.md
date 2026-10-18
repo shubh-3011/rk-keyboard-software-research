@@ -10,6 +10,7 @@
 - [Public RK Drive Web App bundle and model registry audit](rk-drive-web-app-audit.md)
 - [RK Drive feature gates and mouse registry audit (2026-10-18)](rk-drive-feature-gate-and-mouse-audit-2026-10-18.md)
 - [RK Drive RK68 HE lighting UI-to-service/protocol crosswalk (2026-10-18)](rk-drive-rk68-he-lighting-ui-protocol-crosswalk-2026-10-18.md)
+- [RK Drive keymap, macro, and display static crosswalk (2026-10-18)](rk-drive-keymap-macro-display-crosswalk-2026-10-18.md)
 - [RK Drive mouse descriptor/profile registry](rk-drive-mouse-registry.csv)
 - [RK Drive bundle manifest](rk-drive-js-manifest.csv)
 - [RK Drive keyboard descriptor catalog](rk-drive-keyboard-catalog.csv)

@@ -123,6 +123,17 @@ and [reproducible verifier](../scripts/audit_rk_drive_rk68_he_lighting.py).
 This narrows one lighting gap but does not complete the feature-to-handler
 map for every model or prove any command is accepted by hardware.
 
+**Additional static traces — keymap, macros, and display.** Follow-up analysis
+maps the shared `IKeymapService` and `IMacroService` registrations, their
+service serializers, and the RK68 HE mapping/macro UI calls. The mapping page
+reads back individual key assignments and the macro page reads back writes
+and attempts rollback on mismatch. The report keeps the shared keymap
+serializer's physical-profile binding unresolved. It also traces the older
+TFT page through `u.protocol.setTftPic` and distinguishes it from the newer
+`IDisplayService`, for which no UI bridge was recovered. See the
+[keymap/macro/display crosswalk](rk-drive-keymap-macro-display-crosswalk-2026-10-18.md)
+and [hash-pinned verifier](../scripts/audit_rk_drive_keymap_macro_display.py).
+
 ## Proven, inferred, and unresolved
 
 - **Proven:** Seven public bundles are referenced by the current page and the
@@ -136,8 +147,9 @@ map for every model or prove any command is accepted by hardware.
   surface. Shared mouse IDs make model name resolution ambiguous if only the
   listed identity fields are available.
 - **Unresolved:** Full crosswalk from every menu control to a capability bit,
-  event handler, and packet for every model (including non-lighting families);
-  physical revision identification;
+  event handler, and packet for every model; the concrete keymap serializer's
+  physical-device binding; the new display SDK's UI bridge; physical revision
+  identification;
   whether mouse aliases are selected or deduplicated at runtime; completeness of
   the public model/photo registry; and actual device behavior. The public
   registry is an app snapshot, not a census of every RK product.

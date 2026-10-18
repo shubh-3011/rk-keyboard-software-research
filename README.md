@@ -97,6 +97,7 @@ as confirmed.
 - [RK Drive Web App bundle, model registry, and feature audit](docs/rk-drive-web-app-audit.md)
 - [RK Drive feature gates, mouse registry, and RK68 HE checks](docs/rk-drive-feature-gate-and-mouse-audit-2026-10-18.md)
 - [RK Drive RK68 HE lighting UI-to-service/protocol crosswalk](docs/rk-drive-rk68-he-lighting-ui-protocol-crosswalk-2026-10-18.md)
+- [RK Drive keymap, macro, and display static crosswalk](docs/rk-drive-keymap-macro-display-crosswalk-2026-10-18.md)
 - [RK Drive keyboard descriptor catalog](docs/rk-drive-keyboard-catalog.csv)
 - [RK Drive specialized keyboard profiles](docs/rk-drive-specialized-keyboard-profiles.csv)
 - [RK Drive mouse registry](docs/rk-drive-mouse-registry.csv)
