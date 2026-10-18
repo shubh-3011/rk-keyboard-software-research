@@ -31,6 +31,14 @@ The constructor at `0x0040ECB0` writes the vtable address point
 is stored at `0x005CBA28` as `10 3C 5E 00`, or `0x005E3C10`. The RTTI-backed
 class is `CDevG5KB` derived from `CHidDev` in the saved analysis.
 
+An independent RTTI read identifies the type descriptor at `0x006037A8` by
+its decorated name `.?AVCDevG5KB@@`. Two constructor paths, `0x0040ECB0` and
+`0x0040EDE0`, install the same vtable address point; the first initializes
+object fields through `this+0x2DC`. Direct callers of the first constructor
+are `0x0040E754`, `0x00415830`, `0x00415ABE`, and `0x0044665E`. Those
+constructor callers establish object creation sites, not a call to the
+GetRealData slot.
+
 The address point contains 27 consecutive little-endian pointers, occupying
 `0x005CBA2C` through `0x005CBA97` (entry addresses `0x005CBA2C` through
 `0x005CBA94`). The bytes at `0x005CBA98` begin UTF-16 `CDev`, an independent
@@ -120,9 +128,25 @@ The resolved UI text-drawing sites are not G5 data-read callers. The command-
 `0x88` helper itself still has no file API call, and its actual caller and any
 downstream consumer remain unresolved.
 
+### Static caller-attribution follow-up
+
+A hash-pinned scan of decoded application code found no direct call to
+`0x00410700`; the only direct call to helper `0x0040FF60` is the wrapper at
+`0x00410718`. The six nearby UI sites above have four pushed arguments and no
+statically established `CDevG5KB` receiver. Another `+0x68` dispatch at
+`0x004051AC` uses a different vtable. Code at `0x0043BA84` accesses a
+`CDevG5KB` field but dispatches slot `+0x28`, not `+0x68`. No scanned virtual
+call could be tied statically to the `CDevG5KB` vtable at `0x005CBA2C`.
+
+This leaves the command-`0x88` caller unresolved. It does not prove the method
+is never invoked: a runtime-polymorphic call through an escaped device pointer
+remains possible. The helper's returned bytes, selector fields, downstream
+consumer, and any firmware-file relationship are still unknown.
+
 ## Remaining gaps and related evidence
 
-- Find a real caller of the concrete G5 `+0x68` method at `0x00410700`.
+- Find a statically attributable caller of the concrete G5 `+0x68` method at
+  `0x00410700`; direct-call and decoded virtual-call scans have not found one.
 - Trace that caller's command-`0x88` output buffer through its complete
   downstream data flow, including possible file or configuration sinks.
 - Identify the command-`0x88` selector/request fields and response schema.

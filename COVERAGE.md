@@ -224,9 +224,10 @@ model or runtime map.
   `USER32!DrawTextW`, not to the G5 GetRealData slot. Their `0x8134`/`0x8135`
   values are Windows text-layout flags. A hash-pinned static checker verifies
   the adapter constructor, vtable slot, import, wrapper ABI, and callsites.
-  The actual G5 command-`0x88` caller remains unresolved; the helper has no
-  direct file sink. This does not establish a full read-only S98 firmware
-  export. See
+  A follow-up caller scan found no direct call to the G5 wrapper and no
+  statically attributable virtual caller; the actual G5 command-`0x88` caller
+  remains unresolved. The helper has no direct file sink. This does not
+  establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
   and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
   [call-resolution ledger](docs/rk-406-vtable-68-resolution.csv),
