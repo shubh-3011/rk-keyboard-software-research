@@ -39,7 +39,7 @@ The TypeDescriptor at `0x0061A0BC` has the MSVC decorated name
 at `0x005ECE58` declares two class entries; the second base descriptor points
 to TypeDescriptor `0x0061A0D4`, whose decorated name is
 `.?AVCHidDev@@` (name bytes at `0x0061A0DC`). Therefore this vtable is statically
-identified as `CDev3632`, derived from `CDevHidDev`.
+identified as `CDev3632`, derived from `CHidDev`.
 
 This is stronger than inferring a family from `Fw=3`: the class name is present
 in RTTI referenced by the actual vtable installed by the dedicated constructor.

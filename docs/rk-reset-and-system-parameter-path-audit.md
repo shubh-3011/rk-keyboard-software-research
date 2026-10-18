@@ -85,9 +85,10 @@ resource control does not prove a prompt is never shown.
 
 `CmdReset` is a profile `OPT` option consumed by the static reset-like
 orchestrator gate. It must not be conflated with a localized prompt merely
-because the names overlap. Likewise, internal app command `0x6401` has no
-matching static resource control or localized label and is not evidenced as a
-reset button.
+because the names overlap. Tray-menu command `0x6401` is statically mapped to
+the localized `tc_exit` (“Exit”) item, not a reset button: it closes helper
+windows, persists host-side `.dct` state, and signals the periodic worker's
+stop event. See the [tray icon workflow audit](rk-tray-icon-menu-workflow-audit.md).
 
 ## Periodic worker start, timeout work, and stop event
 

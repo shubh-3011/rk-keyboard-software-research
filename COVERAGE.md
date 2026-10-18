@@ -91,6 +91,16 @@ model or runtime map.
   and its [row-level map](docs/rk-v4.6-profile-selector-map.csv), plus the
   [`CDev3632` vtable audit](docs/rk-v4.6-fw3-cdev3632-vtable-audit.md) and
   [frame/selector audit](docs/rk-v4.6-cdev3632-frame-and-selector-audit.md).
+- A follow-up resolves all 265 direct-profile rows through the constructor's
+  installed vtable and MSVC RTTI: 133 `CDevRKKB`, 131 `CDevG5KB`, and one
+  `CDev3632` (M20). This corrects the earlier 4.06-rule projection, which put
+  Fw-three M20 in G5. The row-level route is verified for the exact 4.6 PE,
+  but no physical-model compatibility is validated; possible companion-device
+  paths are outside this direct-profile matrix. The 4.6 RKKB all-feature path
+  and complete G5 path remain incomplete. See the
+  [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
+  [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
+  [reproducer](scripts/audit_rk46_profile_family_rtti.py).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official
@@ -196,16 +206,19 @@ model or runtime map.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced. A separate label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language
-  selector, while most feature widget/command bindings remain open; see
-  `docs/rk-ui-control-command-crosswalk.md`.
+  selector and the tray-menu Configuration/Exit command origins, while most
+  feature widget/command bindings remain open; see
+  `docs/rk-ui-control-command-crosswalk.md` and
+  `docs/rk-tray-icon-menu-workflow-audit.md`.
 - A general-settings follow-up separates profile values and the main Apply
   memory/event edge from host-local `lang.ini`, generic MFC INI/registry, and
   per-device `.dct` persistence. Reset/factory prompt strings are present, but
   no prompt-to-reset-handler edge is recovered. See
   `docs/rk-general-settings-ui-persistence-audit.md`.
 - A reset/system-parameter follow-up maps the profile-gated reset virtual call,
-  family `+0x38` targets, periodic timeout worker and its `+0x48` family paths,
-  and the `0x6401` event that stops that worker. The localized reset prompts
+  family `+0x38` targets, periodic timeout worker and its `+0x48` family paths.
+  It also traces `0x6401` to the localized tray-menu Exit item; its event stops
+  the worker and is not a keyboard reset. The separate localized reset prompts
   still have no recovered control-to-handler edge; worker payload semantics
   and runtime execution remain unresolved. See
   `docs/rk-reset-and-system-parameter-path-audit.md`.
