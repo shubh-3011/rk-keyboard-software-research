@@ -29,10 +29,12 @@ python scripts/extract_rk_drive_catalog.py
 ```
 
 This refreshes the source manifest, the [177-row keyboard descriptor catalog](rk-drive-keyboard-catalog.csv),
-the [91-row image reference index](rk-drive-image-references.csv), and
-[`rk-drive-catalog.json`](../rk-drive-catalog.json). The script records the
-bundle hash and retrieval time. It keeps the JavaScript in memory and writes
-only derived model fields and references.
+the [20-row legacy mouse registry plus two CB75 connection rows](rk-drive-mouse-registry.csv),
+the keyboard and CB75 photo URL index, and [`rk-drive-catalog.json`](../rk-drive-catalog.json).
+The JSON includes the same mouse metadata under `mouseModels`. The script
+records bundle hashes and retrieval time. It keeps JavaScript in memory and
+writes only derived model fields and public URL references; no vendor code or
+images are copied.
 
 ## Registered keyboard descriptors
 
@@ -80,8 +82,11 @@ Static bundle evidence includes menu assets and model fields for key mapping,
 lighting, macros, a TFT/screen page, settings, advanced and behavior pages,
 and high-performance options whose asset labels include DKS, snap, SOCD,
 toggle, mod-tap, and macro. The bundle also contains separate mouse UI assets
-and a mouse communication chunk. The 177-row catalog produced here is
-keyboard-only; a separate mouse registry has not been reconstructed.
+and a mouse communication chunk. The keyboard catalog and mouse registry are
+separate metadata extracts. The mouse registry covers the 20 legacy descriptor
+entries and the two CB75-Mouse connections. See the
+[mouse and feature-gate audit](rk-drive-feature-gate-and-mouse-audit-2026-10-18.md)
+for the distinction between these records and the site's mouse controls.
 
 The public UI text also exposes key mapping, key-layer/Windows/macOS table
 selection, macro recording and editing, lighting modes, TFT image/frame

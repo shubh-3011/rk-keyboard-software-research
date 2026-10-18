@@ -9,9 +9,13 @@ model or runtime map.
   bundles, 177 keyboard connection descriptors, 96 display labels, and 91
   official-hosted image references. Its extracted model declarations also
   record key layers, OS tables, layout-group counts, and lighting-effect
-  fields. This is the browser app's observed registry, not every RK product.
-  Mouse registry and complete runtime feature reachability remain open; see
-  [`docs/rk-drive-web-app-audit.md`](docs/rk-drive-web-app-audit.md).
+  fields. A follow-up adds the 20-row legacy mouse registry, 20 chooser aliases,
+  CB75-Mouse profile, RK68 HE model/feature gates, and static feature families.
+  These are snapshots of the browser app's observed registry, not every RK
+  product; complete control-to-handler and hardware reachability remain open.
+  See the [base audit](docs/rk-drive-web-app-audit.md),
+  [feature-gate/mouse audit](docs/rk-drive-feature-gate-and-mouse-audit-2026-10-18.md),
+  and [mouse registry](docs/rk-drive-mouse-registry.csv).
 
 ## Additional official 4.6 Windows Hub Driver snapshot
 
@@ -281,6 +285,10 @@ model or runtime map.
   lie in the zero-filled `.data` tail. Computed aliases and external activation
   remain outside that proof. See
   [`docs/rk-uart-file-sink-reachability-audit.md`](docs/rk-uart-file-sink-reachability-audit.md).
+  A separate whole-file reference scan found no encoded static pointer entries
+  or UART stream initializer, and identified the only direct stdio opener as
+  the updater package parser reading `.upf` input in mode `r`; see the
+  [file-open crosswalk](docs/rk-uart-file-open-path-crosswalk.md).
   The updater also has two six-byte feature reads in a post-transfer helper;
   they do not constitute a complete firmware read.
 - A read-only command that can safely and completely copy firmware from an
