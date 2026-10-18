@@ -11,7 +11,7 @@ The source in [`rebuild/windows/`](rebuild/windows/) is a new C# WPF Windows
 application with its own process and no Python, browser, WebView, or local web
 server. It contains the first native shell, local profile/layout browser,
 local key-label and macro-note drafts, an RK Drive layer/table/effect draft
-composer, tray restore/exit, opt-in
+composer with descriptor-checked local JSON import/export, tray restore/exit, opt-in
 start-with-Windows, and a separate directory for the public RK Drive keyboard
 registry. The directory shows connection IDs and declared layers/tables/light
 effects, and fetches official-hosted product photos on demand without bundling
@@ -66,7 +66,7 @@ separate product.
 | Windows app shell | Native WPF shell in `rebuild/windows/`; older Python/WebView prototype retained separately | Feature-complete workflows, packaging/release, and evidence-linked parity coverage |
 | Tray and autostart | Configuration/Exit tray menu and opt-in per-user startup in the native milestone | Verify behavior on supported Windows configurations and document any remaining differences |
 | Model recognition | Searchable package profiles and a separate RK Drive model/connection directory; no device detection | Evidence-backed device identification with ambiguous IDs shown as ambiguous |
-| Keymap, macro, lighting, screen, audio | Layout viewer, local key-label and macro-note drafts, plus local RK Drive layer/table/effect drafts; no device controls | Reconstructed control paths, data models, and model-specific availability |
+| Keymap, macro, lighting, screen, audio | Layout viewer, local key-label and macro-note drafts, plus RK Drive layer/table/effect drafts with descriptor-checked JSON import/export; no device controls | Reconstructed control paths, data models, and model-specific availability |
 | Hardware configuration | Disabled | Protocol and write paths must be independently mapped; no claim from profile labels alone |
 | Firmware updater/readback | Not implemented | Complete static updater analysis and safe documented boundaries; current evidence does not show a reachable complete read-only S98 firmware export |
 | Vendor artwork/assets | Not included | Clean-room replacements; no copied vendor art in the public repo |

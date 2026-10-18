@@ -156,14 +156,14 @@ validation.
 | Web Driver feature family in static bundle | Keydeck status | Remaining gap |
 | --- | --- | --- |
 | Device chooser and USB/2.4 GHz descriptors | Registry metadata, including descriptor-level RK68 HE profile candidates | No report access, RK68 HE UUID confirmation, exact physical revision recognition, or hardware writes |
-| Key map, layers, Windows/macOS tables, and layout groups | Native RK Drive editor stages the selected descriptor's declared layer and OS table; existing key-label drafts remain separate | The Web Driver layout is not the same as the installed 4.06 profile schema; no compatible command serializer or device apply path |
-| Lighting and model-specific effect definitions | Native RK Drive editor stages a declared effect and enables only its listed speed/brightness/color/mix controls | Effect labels and preference values are not device payloads |
+| Key map, layers, Windows/macOS tables, and layout groups | Native RK Drive editor stages the selected descriptor's declared layer and OS table and supports descriptor-checked local JSON import/export; existing key-label drafts remain separate | The Web Driver layout is not the same as the installed 4.06 profile schema; no compatible command serializer or device apply path |
+| Lighting and model-specific effect definitions | Native RK Drive editor stages a declared effect and enables only its listed speed/brightness/color/mix controls; drafts support local JSON import/export | Effect labels and preference values are not device payloads |
 | Macro UI and macro-related assets | Local macro sequence/profile data | No recording/playback, persistence format parity, or transfer to device |
 | TFT/screen page and media references | Local screen profile and image metadata | No image conversion or transfer to device |
 | Performance, keyboard/function settings, advanced keys, DKS, snap, SOCD, toggle, mod-tap | Not implemented as model-gated editing | No verified profile schema or control-to-packet mapping for the web registry |
 | Mouse pages and communication module | Separate source-free mouse registry and feature-gate audit are now catalogued; the native keyboard directory excludes mice | Model-specific UI controls and hardware support remain unresolved |
 | Firmware and boot-mode paths | Not exposed in Keydeck | Requires a separate updater and firmware safety analysis |
-| Native tray, login startup, and Windows UI | Not part of the hosted web app | The new C# WPF rebuild has tray/startup, an RK Drive directory, and local layer/table/effect drafts, but not full feature parity or hardware access |
+| Native tray, login startup, and Windows UI | Not part of the hosted web app | The new C# WPF rebuild has tray/startup, an RK Drive directory, and descriptor-bound local layer/table/effect drafts, but not full feature parity or hardware access |
 
 The research Workbench remains a separate Python/WebView profile-editor
 prototype, not a native rebuild. The native rebuild embeds derived registry

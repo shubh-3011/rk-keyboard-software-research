@@ -91,6 +91,38 @@ namespace RkRebuild
         }
     }
 
+    internal sealed class DriveDraftPackage
+    {
+        public int SchemaVersion { get; set; }
+        public string SourceBundleSha256 { get; set; }
+        public string Model { get; set; }
+        public string Connection { get; set; }
+        public string VendorId { get; set; }
+        public string ProductId { get; set; }
+        public string UsagePage { get; set; }
+        public string Usage { get; set; }
+        public string Protocol { get; set; }
+        public bool Specialized { get; set; }
+        public string Uuid { get; set; }
+        public DriveDraft Draft { get; set; }
+
+        public DriveDraftPackage()
+        {
+            SchemaVersion = 1;
+            SourceBundleSha256 = "";
+            Model = "";
+            Connection = "";
+            VendorId = "";
+            ProductId = "";
+            UsagePage = "";
+            Usage = "";
+            Protocol = "";
+            Specialized = false;
+            Uuid = "";
+            Draft = new DriveDraft();
+        }
+    }
+
     internal static class SettingsStore
     {
         public static string Folder
@@ -887,6 +919,18 @@ namespace RkRebuild
             selectors.Children.Add(modelSelector);
             selectors.Children.Add(connectionSelector);
             _pageBody.Children.Add(selectors);
+
+            StackPanel draftFiles = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 12) };
+            Button exportDraft = ActionButton("Export saved draft", false);
+            Button importDraft = ActionButton("Import draft", false);
+            TextBlock draftFileStatus = new TextBlock { Foreground = Brush(111, 120, 133), FontSize = 9, Margin = new Thickness(10, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
+            exportDraft.ToolTip = "Export this model and connection's saved local draft as a portable JSON file.";
+            importDraft.ToolTip = "Validate and import a portable local draft for this exact model and connection descriptor.";
+            draftFiles.Children.Add(exportDraft);
+            importDraft.Margin = new Thickness(8, 0, 0, 0);
+            draftFiles.Children.Add(importDraft);
+            draftFiles.Children.Add(draftFileStatus);
+            _pageBody.Children.Add(draftFiles);
             StackPanel editor = new StackPanel();
             _pageBody.Children.Add(editor);
 
@@ -895,13 +939,15 @@ namespace RkRebuild
                 editor.Children.Clear();
                 DriveModel model = modelSelector.SelectedItem as DriveModel;
                 DriveConnection connection = connectionSelector.SelectedItem as DriveConnection;
+                exportDraft.IsEnabled = model != null && connection != null;
+                importDraft.IsEnabled = model != null && connection != null;
                 if (model == null || connection == null)
                 {
                     editor.Children.Add(CardWithText("Choose a model and a connection descriptor."));
                     return;
                 }
 
-                string draftKey = String.Join("|", model.Name, connection.Connection, connection.VendorId, connection.ProductId, connection.UsagePage, connection.Usage);
+                string draftKey = GetDriveDraftKey(model, connection);
                 DriveDraft saved;
                 if (!_settings.DriveDrafts.TryGetValue(draftKey, out saved) || saved == null) saved = new DriveDraft();
                 DriveDraft working = new DriveDraft {
@@ -1049,6 +1095,100 @@ namespace RkRebuild
                 editor.Children.Add(otherFeatures);
             };
 
+            exportDraft.Click += delegate
+            {
+                DriveModel model = modelSelector.SelectedItem as DriveModel;
+                DriveConnection connection = connectionSelector.SelectedItem as DriveConnection;
+                if (model == null || connection == null) return;
+                string draftKey = GetDriveDraftKey(model, connection);
+                DriveDraft saved;
+                if (!_settings.DriveDrafts.TryGetValue(draftKey, out saved) || saved == null) saved = new DriveDraft();
+                string validationError;
+                if (!ValidateDriveDraft(saved, connection, out validationError))
+                {
+                    MessageBox.Show("The saved draft cannot be exported: " + validationError, "RK Drive draft", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                SaveFileDialog dialog = new SaveFileDialog {
+                    Title = "Export RK Drive local draft",
+                    Filter = "RK Drive local draft (*.rkdrive.json)|*.rkdrive.json|JSON file (*.json)|*.json",
+                    DefaultExt = ".rkdrive.json",
+                    AddExtension = true,
+                    FileName = SafeFileSegment(model.Name) + "-" + SafeFileSegment(connection.Connection) + "-draft.rkdrive.json"
+                };
+                if (dialog.ShowDialog(this) != true) return;
+                DriveDraftPackage package = CreateDriveDraftPackage(model, connection, saved);
+                try
+                {
+                    File.WriteAllText(dialog.FileName, JsonSerializer.Serialize(package, new JsonSerializerOptions { WriteIndented = true }), new UTF8Encoding(false));
+                    draftFileStatus.Text = "Exported local draft JSON. It is not an RK device profile or firmware file.";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not export the draft.\n\n" + ex.Message, "RK Drive draft", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            };
+
+            importDraft.Click += delegate
+            {
+                DriveModel model = modelSelector.SelectedItem as DriveModel;
+                DriveConnection connection = connectionSelector.SelectedItem as DriveConnection;
+                if (model == null || connection == null) return;
+                OpenFileDialog dialog = new OpenFileDialog {
+                    Title = "Import RK Drive local draft",
+                    Filter = "RK Drive local draft (*.rkdrive.json)|*.rkdrive.json|JSON file (*.json)|*.json",
+                    CheckFileExists = true,
+                    Multiselect = false
+                };
+                if (dialog.ShowDialog(this) != true) return;
+                try
+                {
+                    FileInfo info = new FileInfo(dialog.FileName);
+                    if (info.Length > 1024 * 1024) throw new InvalidDataException("Draft files must be 1 MB or smaller.");
+                    string json = File.ReadAllText(dialog.FileName, Encoding.UTF8);
+                    using (JsonDocument document = JsonDocument.Parse(json))
+                    {
+                        JsonElement schemaVersion;
+                        if (document.RootElement.ValueKind != JsonValueKind.Object
+                            || !document.RootElement.TryGetProperty("SchemaVersion", out schemaVersion)
+                            || schemaVersion.ValueKind != JsonValueKind.Number
+                            || schemaVersion.GetInt32() != 1)
+                            throw new InvalidDataException("The file must declare supported schema version 1.");
+                    }
+                    DriveDraftPackage package = JsonSerializer.Deserialize<DriveDraftPackage>(json);
+                    if (package == null || !System.Text.RegularExpressions.Regex.IsMatch(package.SourceBundleSha256 ?? "", "^[0-9A-Fa-f]{64}$"))
+                        throw new InvalidDataException("The source catalog SHA-256 field is missing or invalid.");
+                    string identityError;
+                    if (!MatchesDriveDescriptor(package, model, connection, out identityError))
+                    {
+                        MessageBox.Show("This file does not target the selected descriptor. " + identityError, "RK Drive draft", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    string validationError;
+                    if (!ValidateDriveDraft(package.Draft, connection, out validationError))
+                    {
+                        MessageBox.Show("This draft contains a value not declared for the selected descriptor: " + validationError, "RK Drive draft", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    if (!String.Equals(package.SourceBundleSha256, _driveDirectory.BundleHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBoxResult stale = MessageBox.Show(
+                            "The draft was exported against a different RK Drive catalog bundle. Its descriptor identity and declared values match this local catalog, but the source catalog changed. Import it anyway?",
+                            "RK Drive catalog version differs", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (stale != MessageBoxResult.Yes) return;
+                    }
+                    _settings.DriveDrafts[GetDriveDraftKey(model, connection)] = CopyDriveDraft(package.Draft);
+                    SettingsStore.Save(_settings);
+                    draftFileStatus.Text = "Imported into this PC's local draft settings only.";
+                    redraw();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not import the draft. The local settings were not changed.\n\n" + ex.Message, "RK Drive draft", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            };
+
             modelSelector.SelectionChanged += delegate
             {
                 _selectedDriveModel = modelSelector.SelectedItem as DriveModel;
@@ -1062,6 +1202,81 @@ namespace RkRebuild
                 ? _selectedDriveModel
                 : _driveDirectory.Models.OrderBy(model => model.Name, StringComparer.OrdinalIgnoreCase).First();
             if (modelSelector.SelectedItem == null) modelSelector.SelectedIndex = 0;
+        }
+
+        private DriveDraftPackage CreateDriveDraftPackage(DriveModel model, DriveConnection connection, DriveDraft draft)
+        {
+            return new DriveDraftPackage {
+                SourceBundleSha256 = _driveDirectory.BundleHash ?? "",
+                Model = model.Name ?? "",
+                Connection = connection.Connection ?? "",
+                VendorId = connection.VendorId ?? "",
+                ProductId = connection.ProductId ?? "",
+                UsagePage = connection.UsagePage ?? "",
+                Usage = connection.Usage ?? "",
+                Protocol = connection.Protocol ?? "",
+                Specialized = connection.Specialized,
+                Uuid = connection.Uuid ?? "",
+                Draft = CopyDriveDraft(draft)
+            };
+        }
+
+        private static string GetDriveDraftKey(DriveModel model, DriveConnection connection)
+        {
+            return String.Join("|", model.Name, connection.Connection, connection.VendorId, connection.ProductId, connection.UsagePage, connection.Usage);
+        }
+
+        private static DriveDraft CopyDriveDraft(DriveDraft source)
+        {
+            if (source == null) return null;
+            return new DriveDraft {
+                Layer = source.Layer ?? "",
+                Table = source.Table ?? "",
+                Effect = source.Effect ?? "",
+                Brightness = source.Brightness,
+                Speed = source.Speed,
+                Color = source.Color ?? "",
+                MixColor = source.MixColor
+            };
+        }
+
+        private static bool MatchesDriveDescriptor(DriveDraftPackage package, DriveModel model, DriveConnection connection, out string error)
+        {
+            error = "The model label, connection, VID/PID, usage, protocol, specialized-profile flag, and UUID must match.";
+            return package != null && package.SchemaVersion == 1 && package.Draft != null
+                && String.Equals(package.Model ?? "", model.Name ?? "", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(package.Connection ?? "", connection.Connection ?? "", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(package.VendorId ?? "", connection.VendorId ?? "", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(package.ProductId ?? "", connection.ProductId ?? "", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(package.UsagePage ?? "", connection.UsagePage ?? "", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(package.Usage ?? "", connection.Usage ?? "", StringComparison.OrdinalIgnoreCase)
+                && String.Equals(package.Protocol ?? "", connection.Protocol ?? "", StringComparison.OrdinalIgnoreCase)
+                && package.Specialized == connection.Specialized
+                && String.Equals(package.Uuid ?? "", connection.Uuid ?? "", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool ValidateDriveDraft(DriveDraft draft, DriveConnection connection, out string error)
+        {
+            error = "";
+            if (draft == null) { error = "the draft data is missing."; return false; }
+            if (draft.Brightness < 0 || draft.Brightness > 100) { error = "brightness must be between 0 and 100."; return false; }
+            if (draft.Speed < 0 || draft.Speed > 100) { error = "speed must be between 0 and 100."; return false; }
+            string color = draft.Color ?? "";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(color, "^#[0-9A-Fa-f]{6}$")) { error = "color must use #RRGGBB format."; return false; }
+            if (!String.IsNullOrEmpty(draft.Layer) && !connection.Layers.Contains(draft.Layer)) { error = "the layer is not declared in this descriptor."; return false; }
+            if (!String.IsNullOrEmpty(draft.Table) && !connection.Tables.Contains(draft.Table)) { error = "the OS table is not declared in this descriptor."; return false; }
+            DriveEffect effect = String.IsNullOrEmpty(draft.Effect) ? null : connection.Effects.FirstOrDefault(item => String.Equals(item.Name, draft.Effect, StringComparison.OrdinalIgnoreCase));
+            if (!String.IsNullOrEmpty(draft.Effect) && effect == null) { error = "the lighting effect is not declared in this descriptor."; return false; }
+            if (draft.MixColor && (effect == null || !effect.MixColor)) { error = "color mixing is not declared for the selected effect."; return false; }
+            return true;
+        }
+
+        private static string SafeFileSegment(string value)
+        {
+            string safe = value ?? "model";
+            foreach (char invalid in Path.GetInvalidFileNameChars()) safe = safe.Replace(invalid, '-');
+            safe = safe.Trim().Trim('.');
+            return String.IsNullOrEmpty(safe) ? "model" : safe;
         }
 
         private ComboBox DraftCombo(string label, List<string> values, string savedValue)
