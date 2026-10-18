@@ -44,7 +44,8 @@ child handle stored at `this+0x20` for each embedded control:
    common block `0x0040B2AD` on a match. This is the `tc_restore` control.
 2. `0x0040AC92` performs the same comparison for `this+0x1DD8` and branches
    to `0x0040B2AD` on a match. This is the `tc_apply` control.
-3. The common block calls `0x0040B840`. If global `0x0062A234` is nonzero, it
+3. The common block calls `0x0040B840`. If the `ApplyNow` integer stored in
+   global `0x0062A234` is nonzero, it
    pushes the constant `1` and calls queue helper `0x00401100`
    (`0x0040B2AD`–`0x0040B2C4`). Both controls therefore converge on the same
    conditional request value; the queued value does not retain which label
@@ -59,6 +60,12 @@ index/range fields around `this+0x1458`–`0x1460`, and updates or clears a
 The profile-record field's semantic name and the meaning of message `0x110A`
 remain unresolved. This is a static state-update path; no message was sent
 during this analysis.
+
+Startup/configuration code at `0x004566B3` loads the gate through
+`GetPrivateProfileIntW` from section `OPT`, key `ApplyNow`, with default `0`;
+the return is stored to `0x0062A234` at `0x004566C9`. The import is
+`KERNEL32!GetPrivateProfileIntW` at IAT `0x005A63E0`. The specific INI pathname
+and wider user-facing meaning of the option remain unresolved.
 
 Queue helper `0x00401100` masks the request, places it on the queue, and
 releases the associated semaphore. The worker at `0x00401290` waits on that
@@ -79,7 +86,7 @@ same implementation.
   `+0x44` method. The G5 implementation is mapped; other family routes must
   be interpreted from their own vtables.
 - The return semantics of message `0x110A`, the profile field at record `+0x458`,
-  the gate at `0x0062A234`, runtime control reachability, and actual hardware
+  the wider UI semantics of `[OPT] ApplyNow`, runtime control reachability, and actual hardware
   effects remain unresolved.
 - This closes the specific V4.6 Apply/Restore UI-to-queue gap. It does not
   complete reverse engineering of every control, API, syscall, family,

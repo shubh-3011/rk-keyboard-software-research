@@ -37,6 +37,11 @@ EXPECTED = {
     0x0040B2AD: bytes.fromhex(
         "8b f7 e8 8c 05 00 00 83 3d 34 a2 62 00 00 74 0a 6a 01 e8 3c 5e ff ff"
     ),
+    0x00456573: bytes.fromhex("8b 2d e0 63 5a 00"),
+    0x0045669F: bytes.fromhex(
+        "8d 8c 24 70 05 00 00 51 6a 00 68 24 fc 5d 00 68 44 00 5d 00 ff d5"
+    ),
+    0x004566C9: bytes.fromhex("a3 34 a2 62 00"),
 }
 
 
@@ -72,7 +77,7 @@ def main() -> None:
     digest = hashlib.sha256(data).hexdigest()
     if digest != EXPECTED_SHA256:
         raise SystemExit(f"DeviceDriver.exe SHA-256 mismatch: {digest}")
-    pe = pefile.PE(data=data, fast_load=True)
+    pe = pefile.PE(data=data, fast_load=False)
     if pe.OPTIONAL_HEADER.ImageBase != 0x00400000:
         raise SystemExit("unexpected PE image base")
 
@@ -81,12 +86,27 @@ def main() -> None:
         if actual != expected:
             raise SystemExit(f"instruction bytes differ at 0x{va:08X}")
 
-    for va, expected in ((0x005DC1E8, "tc_restore"), (0x005DC220, "tc_apply")):
+    for va, expected in (
+        (0x005DC1E8, "tc_restore"),
+        (0x005DC220, "tc_apply"),
+        (0x005DFC24, "ApplyNow"),
+        (0x005D0044, "OPT"),
+    ):
         actual = read_utf16z(pe, data, va)
         if actual != expected:
             raise SystemExit(f"expected UTF-16 {expected!r} at 0x{va:08X}, got {actual!r}")
 
-    print(f"Verified {len(EXPECTED)} code slices and both localization keys.")
+    has_profile_int = any(
+        entry.dll.lower() == b"kernel32.dll"
+        and imp.name == b"GetPrivateProfileIntW"
+        and imp.address == 0x005A63E0
+        for entry in pe.DIRECTORY_ENTRY_IMPORT
+        for imp in entry.imports
+    )
+    if not has_profile_int:
+        raise SystemExit("KERNEL32!GetPrivateProfileIntW import not found at 0x005A63E0")
+
+    print(f"Verified {len(EXPECTED)} code slices, UI/config strings, and API import.")
     print(f"DeviceDriver.exe SHA-256: {digest}")
 
 
