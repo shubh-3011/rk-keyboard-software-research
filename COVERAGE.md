@@ -340,9 +340,11 @@ model or runtime map.
   [file-open crosswalk](docs/rk-uart-file-open-path-crosswalk.md).
   The updater also has two six-byte feature reads in a post-transfer helper;
   they do not constitute a complete firmware read.
-- A read-only command that can safely and completely copy firmware from an
-  attached keyboard. The conditional UART sink is not a demonstrated,
-  complete firmware backup method.
+- No complete read-only S98 firmware export is demonstrated by the examined
+  package: HID reads are bounded verification/status paths, and UART response
+  sinks remain unconfigured and without a direct transition from initialized
+  state. Whether an undiscovered indirect or model-specific path exists is
+  unresolved; see `docs/rk-firmware-readback-audit.md`.
 
 These gaps are intentional status labels, not claims that the missing work is
 impossible. New package snapshots and independently supported findings should

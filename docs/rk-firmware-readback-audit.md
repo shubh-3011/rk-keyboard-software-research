@@ -37,15 +37,18 @@ identity does not establish that this `.upf` belongs to the S98 or its
 receiver. The `.upf` is a host-side updater input, not evidence of firmware
 read from a keyboard.
 
-**Current Windows PnP snapshot (2026-10-18 05:38:26 +05:30):** read-only
-Plug-and-Play enumeration returned three present Bluetooth LE child nodes
-named `RK-S98RGB` and one present USB composite device with VID/PID
-`258A:0150`, hardware revision `0206`, and generic PnP manufacturer metadata.
-Its children include keyboard, consumer-control, vendor-defined, and mouse HID
-collections. No HID interface was opened and no HID report or GATT data was
-read. The friendly names, generic composite record, and child collections do
-not identify the USB device as the S98 or identify firmware revision; they
-also do not prove that a control channel is available. In the installed
+**Current Windows PnP snapshot (2026-10-18 13:24:08 +05:30):** read-only
+`Get-PnpDevice -PresentOnly` enumeration returned one present USB composite
+device with VID/PID `258A:0150`, three present Bluetooth nodes named
+`RK-S98RGB`, seven `HIDClass` children, two `Keyboard` children, and one
+`Mouse` child. The HID children include consumer-control, system-controller,
+vendor-defined, and USB Input Device entries. The same PnP query returned no
+`USBSTOR` nodes and one `DiskDrive` node with an NVMe instance ID; this does
+not identify an external or keyboard firmware volume. No HID interface was
+opened and no HID report or GATT data was read. The friendly names, generic
+composite record, and child collections do not identify the USB device as the
+S98 or identify firmware revision; they also do not prove that a control
+channel is available. In the installed
 profile crosswalk, `0150` is recorded as the wireless PID for an RK A70
 profile, while the eight S98 profile rows have direct PIDs `0174`, `01AF`,
 `01BF`, `0223`, `0224`, `022B`, `022F`, and `0230` and no installed
