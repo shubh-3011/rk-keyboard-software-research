@@ -107,8 +107,11 @@ model or runtime map.
   `HidD_SetFeature` writer path. This closes the static selected-file-to-frame
   array gap for the multi-frame path. The one-item `New PNG` branch is mapped
   as a GDI+ save of the first listed image. The generic image picker is mapped
-  through GDI+ local-image loading and preview geometry/invalidation; its
-  later paint/commit behavior and any link to the worker are unresolved.
+  through GDI+ local-image loading and preview geometry/invalidation. The
+  candidate paint handler does not read those preview fields, and the separate
+  list-processing routine shows no direct pointer link from the preview image
+  to the frame list. Visible rendering and indirect/runtime commit behavior
+  remain unresolved.
   Decoder details, visible control labels, runtime execution, and physical-
   model acceptance remain unverified. See
   [`docs/rk-v4.6-screen-gif-ui-transport-audit.md`](docs/rk-v4.6-screen-gif-ui-transport-audit.md).
@@ -418,12 +421,14 @@ model or runtime map.
   `docs/rk-audio-reactive-path-audit.md`.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
-  byte, acknowledgements, retries, and cancellation path. Image conversion,
-  UI reachability, screen-parameter schema, and physical compatibility remain
-  unresolved. A follow-up maps the GIF-to-PNG cache routine, GDI+ callsites,
-  and frame-conversion worker, but does not establish a file-import or
-  conversion-to-device-writer path; see `docs/rk-screen-gif-payload-audit.md`
-  and `docs/rk-screen-image-conversion-path-audit.md`.
+  byte, acknowledgements, retries, and cancellation path. The 4.06 screen
+  audit's UI reachability and physical compatibility remain unresolved. For
+  the separate hash-pinned 4.6 image/GIF path, NewGIF frames reach the static
+  worker and G5 writer path, while the generic single-image preview has no
+  recovered direct pointer path into that frame list. Screen-parameter schema
+  and hardware acceptance remain open; see `docs/rk-screen-gif-payload-audit.md`,
+  `docs/rk-screen-image-conversion-path-audit.md`, and
+  `docs/rk-v4.6-screen-gif-ui-transport-audit.md`.
 - Main-app HID enumeration and USB/HID interface notification filters are
   traced through register-indirect API calls and an RTTI-attributed
   `COemDrvDlg` `WM_DEVICECHANGE` message-map entry; runtime event delivery and

@@ -105,11 +105,25 @@ state, writes a rectangle at `[ESI+0x90]` through `USER32.SetRect` at
 `0x0047649A`, stores the scale at `[ESI+0xA4]`, and invalidates the window
 handle at `[ESI+0x20]` through `USER32.InvalidateRect` at `0x004764B2`.
 Failure cleanup disposes the wrapper and clears `[ESI+0xA0]`. These calls
-support image loading and preview-layout preparation. They do not show a
-write to the shared frame list used by the multi-frame worker or a call from
-this helper to that worker. The eventual paint/commit path for this local
-preview remains unresolved, so this evidence does not prove that the generic
-picker can transfer its file to the keyboard.
+support image loading and preview-layout preparation. The picker continuation
+at `0x0047440A` returns after this helper; it does not enter the NewGIF helper
+or the frame-snapshot/worker path.
+
+A follow-up trace checked the candidate `WM_PAINT` handler at `0x004721A0`
+and the separate image/frame routine at `0x004765D0`. The paint handler reads
+and draws member `[this+0x2304]`; its recovered body does not read the generic
+picker fields `+0xA0`, `+0x90`, or `+0xA4`, and does not call `0x004765D0`.
+The routine at `0x004765D0`, called independently from `0x004744E3`, checks
+`[this+0xA0]` and the scale at `[this+0xA4]`, then separately walks the
+existing frame list at `[this+0x6C]`, regenerates/replaces list-node image
+wrappers, and clears `[this+0xA0]`. No store or link of the generic picker
+image pointer into that frame list was found in these recovered paths.
+
+Thus static evidence currently leaves the generic picker's visible rendering
+unresolved and finds no direct dataflow from its image object to the frame list
+or the multi-frame screen worker. This does not rule out indirect runtime or
+class-alias behavior outside the recovered paths, and it does not prove that
+the generic picker can transfer its file to the keyboard.
 
 The profile display loader at `0x00473C50` formats the bundled path
 `%sDev\\%04X\\screen.gif` using the string at `0x005E3860`. At `0x00473D49`
@@ -249,9 +263,11 @@ successful transfer to a connected keyboard.
 - The multi-frame `NewGIF` picker and shared frame-list-to-worker ownership
   are mapped. The one-item `New PNG` branch is mapped as a GDI+ export of the
   first list image. The generic one-file picker and `0x004762E0` are mapped
-  through GDI+ image loading, preview geometry, and window invalidation; its
-  eventual paint/commit behavior and any relationship to the screen worker
-  remain unresolved. Exact decoder semantics of
+  through GDI+ image loading, preview geometry, and window invalidation. The
+  candidate paint handler does not read those preview fields, and the separate
+  `0x004765D0` list-processing routine does not show a direct link from the
+  preview image into the frame list. Visible rendering and indirect/runtime
+  commit behavior remain unresolved. Exact decoder semantics of
   `0x0046E2F0`, `0x0046E4A0`, and adjacent frame helpers remain open. The
   profile-bundled `screen.gif` loader is a separate observed input to
   screen-image state.
