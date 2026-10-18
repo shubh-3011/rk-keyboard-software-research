@@ -1001,9 +1001,6 @@ namespace RkRebuild
             AppearancePhoto appearance = _settings.AppearanceVariantOverrides.TryGetValue(appearancePreferenceKey, out savedAppearanceId)
                 ? appearanceVariants.FirstOrDefault(item => String.Equals(item.Id, savedAppearanceId, StringComparison.OrdinalIgnoreCase))
                 : null;
-            if (appearance == null)
-                appearance = appearanceVariants.FirstOrDefault(item => String.Equals(item.Id, "lavender-purple", StringComparison.OrdinalIgnoreCase))
-                    ?? appearanceVariants.FirstOrDefault();
             summary.Children.Add(Kicker(connected == null ? "SELECTED SOFTWARE PROFILE" : "CONNECTED KEYBOARD"));
             summary.Children.Add(Headline(connected == null ? _selected.Name : detectedProfile == null ? "Selected profile · " + _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
             summary.Children.Add(Paragraph(connected == null
@@ -1030,8 +1027,22 @@ namespace RkRebuild
             grid.Children.Add(artCard);
             StackPanel artStack = new StackPanel { Margin = new Thickness(19) };
             artCard.Child = artStack;
-            artStack.Children.Add(Kicker(connected == null ? "SELECTED PROFILE PHOTO" : detectedProfile == null ? "CONNECTED DEVICE · SELECTED PROFILE" : "CONNECTED MODEL PHOTO"));
-            artStack.Children.Add(new TextBlock { Text = appearance != null ? appearance.Name + " · choose the matching official S98 finish photo below." : photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
+            string photoKickerText = appearance != null
+                ? "USER-SELECTED FINISH PHOTO"
+                : appearanceVariants.Count > 0
+                    ? detectedProfile == null ? "S98 MODEL PHOTO · FINISH UNCONFIRMED" : "CONNECTED S98 MODEL · FINISH UNCONFIRMED"
+                    : connected == null ? "SELECTED PROFILE PHOTO" : detectedProfile == null ? "CONNECTED DEVICE · SELECTED PROFILE" : "CONNECTED MODEL PHOTO";
+            TextBlock photoKicker = Kicker(photoKickerText);
+            artStack.Children.Add(photoKicker);
+            TextBlock appearanceLabel = new TextBlock {
+                Text = appearance != null
+                    ? "Selected finish: " + appearance.Name + "."
+                    : appearanceVariants.Count > 0
+                        ? "Finish not confirmed. This is a model/layout reference photo; USB identity does not report case or keycap color."
+                        : photoModel == null ? "No official product image is mapped for this profile." : "Model/layout reference from RK Drive; physical finish and live RGB are not detected.",
+                Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12)
+            };
+            artStack.Children.Add(appearanceLabel);
             Image image = new Image { Stretch = Stretch.Uniform };
             TextBlock photoStatus = new TextBlock { Text = "Loading official model photo…", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
             string photoUrl = appearance != null ? appearance.ImageUrl : photoModel == null ? "" : photoModel.ImageUrl;
@@ -1056,7 +1067,7 @@ namespace RkRebuild
                 List<Button> appearanceCards = new List<Button>();
                 foreach (AppearancePhoto option in appearanceVariants)
                 {
-                    bool optionIsSelected = String.Equals(option.Id, appearance.Id, StringComparison.OrdinalIgnoreCase);
+                    bool optionIsSelected = appearance != null && String.Equals(option.Id, appearance.Id, StringComparison.OrdinalIgnoreCase);
                     Button card = new Button {
                         Width = 126,
                         Height = 92,
@@ -1082,6 +1093,8 @@ namespace RkRebuild
                         appearance = option;
                         _settings.AppearanceVariantOverrides[appearancePreferenceKey] = option.Id;
                         SettingsStore.Save(_settings);
+                        photoKicker.Text = "USER-SELECTED FINISH PHOTO";
+                        appearanceLabel.Text = "Selected finish: " + option.Name + ". This photo is your choice; USB identity does not report physical color.";
                         foreach (Button appearanceCard in appearanceCards)
                         {
                             AppearancePhoto cardPhoto = appearanceCard.Tag as AppearancePhoto;

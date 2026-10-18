@@ -413,7 +413,9 @@ the main app's `SetWindowsHookExW` references use thread-scoped CBT,
 MSGFILTER, and mouse hooks; the inspected updater sites likewise use UI-hook
 IDs, not `WH_KEYBOARD` or `WH_KEYBOARD_LL`. This does not prove the absence of
 all input observation, since key-state APIs are also imported and runtime
-branches are unknown. The optional `CreateProcessW` path may launch the
+branches are unknown. The 4.06 main-app hook IDs, callback addresses, and
+scope limitations are recorded in [`rk-406-windows-hook-callsite-audit.md`](rk-406-windows-hook-callsite-audit.md).
+The optional `CreateProcessW` path may launch the
 external per-device `Other\\<VID>_<PID>\\start.exe` helper when present.
 No Service Control Manager APIs were found. `unins000.exe` imports
 `DeviceIoControl`, but its one inspected call passes `FSCTL_SET_COMPRESSION`

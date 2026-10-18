@@ -23,9 +23,11 @@ WebView2.
   are not bundled, so loading them needs internet access.
 - For the ANSI S98 profile, a six-photo gallery offers official product
   thumbnails (Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition,
-  and Winter Limited Edition). Selecting a finish updates the large photo and
-  saves the choice for the device/profile. USB identity does not report
-  physical finish or keycap colors; photos are fetched at runtime.
+  and Winter Limited Edition). No finish is selected by default: the app shows
+  a model/layout reference and marks the finish unconfirmed until the user
+  chooses one. The selected finish updates the large photo and is saved for
+  the device/profile. USB identity does not report physical finish or keycap
+  colors; photos are fetched at runtime.
 - Read-only Windows USB/HID Plug and Play registry discovery. Catalogued VID/PID
   pairs can be matched to model profiles. It does not open a HID interface or
   send a device report.

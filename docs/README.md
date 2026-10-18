@@ -77,6 +77,7 @@
 ## Native APIs, device paths, and system calls
 
 - [Native API imports](rk-native-api-imports.md)
+- [4.06 main-app Windows hook callsites](rk-406-windows-hook-callsite-audit.md)
 - [IAT and thunk references](rk-native-api-xrefs.csv)
 - [Imports without a recovered direct/thunk call](rk-native-api-callsite-gaps.csv)
 - [Follow-up mapping of indirect import calls and callbacks](rk-native-api-indirect-call-audit.md)
