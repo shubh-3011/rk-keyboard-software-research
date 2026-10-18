@@ -7,50 +7,56 @@ Windows 4.06 package installed on this PC. The goal is to make existing open
 projects and the evidence easier to find, compare, and extend.
 
 This repository brings together versioned evidence, reproducible catalog
-tools, detailed software audits, and a source-built Windows research
-workbench so contributors can inspect how the examined RK package is
-organized and continue the analysis.
+tools, detailed software audits, and the source for an early native Windows
+reconstruction. It also retains an older profile-editor prototype so
+contributors can distinguish its limits from the current rebuild.
 
 The archive includes model profiles, installed-file hashes, localization and
 dialog-resource inventories, profile-to-driver maps, native API and
-updater-path crosswalks, and a downloadable Windows app. It documents a
-complete installed-file snapshot of RK 4.06 and a separately sourced static
-snapshot of the official Windows 4.6 Hub Driver package. These are bounded
-software snapshots, not a universal inventory of every RK release or keyboard;
-the workbench is not a feature-complete replacement for the vendor utility.
+updater-path crosswalks, and source for an early native Windows rebuild. It
+documents a complete installed-file snapshot of RK 4.06 and a separately
+sourced static snapshot of the official Windows 4.6 Hub Driver package. These
+are bounded software snapshots, not a universal inventory of every RK release
+or keyboard; the native rebuild is not a feature-complete replacement for the
+vendor utility.
 
-**Get the Windows app:** [latest RK Research Workbench release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest)
-· **Browse the source:** [`workbench/`](workbench/) · **Audit scope:** [coverage and open work](COVERAGE.md)
+**Native rebuild source:** [`rebuild/windows/`](rebuild/windows/) · **Rebuild status:** [roadmap](REBUILD-ROADMAP.md) · **Audit scope:** [coverage and open work](COVERAGE.md)
 
 This is independent community research, not the official RK software, and it
 is not affiliated with RK. No vendor executable, DLL, installer, firmware
-image, or copied artwork is included. The separate `workbench/` app is an
-original, open-source profile editor and does not implement vendor hardware
-writes. This archive does not claim that every RK model or revision has been
-reverse-engineered.
+image, or copied artwork is included. The new native app is an early local
+profile/layout browser with a separate RK Drive keyboard directory, on-demand
+photos from RK's host, and tray and startup options; it does not implement
+vendor hardware writes. The older `workbench/` prototype is a Python/WebView
+profile editor. Neither is a feature-complete RK replacement. This archive
+does not claim that every RK model or revision has been reverse-engineered.
 
 ## Our two open-source projects
 
 | Project | Best for | Available today |
 | --- | --- | --- |
-| [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio) | A user-facing web app and native Windows profile editor | Local model layouts, profile editing, and JSON import/export. Its hosted web app is at [keydeck-rk-s98.vercel.app](https://keydeck-rk-s98.vercel.app/). |
-| This research archive | Studying RK Windows software and building on documented evidence | Static audits, source scripts, versioned 4.06 and 4.6 profile catalogs, package manifests, and a downloadable source-built research workbench. |
+| [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio) | A user-facing web app plus a Python/PyInstaller desktop wrapper using WebView2 | Local model layouts, profile editing, and JSON import/export. Its hosted web app is at [keydeck-rk-s98.vercel.app](https://keydeck-rk-s98.vercel.app/). |
+| This research archive and native rebuild | Studying RK Windows software and reconstructing documented workflows in a separate Windows app | Static audits, source scripts, versioned catalogs/manifests, and an early C# WPF rebuild with two model catalogs, on-demand official photo references, local profile drafts, tray behavior, and opt-in startup. |
 
 Both projects are independent and open source. Neither currently sends
-settings, lighting, macro, screen, or firmware writes to a keyboard. The
-research workbench is a reference and profile editor, not a fully compatible
-hardware clone of the RK utility. See [coverage status](COVERAGE.md) for the
+settings, lighting, macro, screen, or firmware writes to a keyboard. Keydeck's
+Windows EXE is a local WebView2 wrapper. The research repo's new C# WPF app is
+a native Windows process, but it is an early reconstruction milestone, not a
+fully compatible hardware clone. See [coverage status](COVERAGE.md) for the
 confirmed findings and open questions.
 
 **Important: the released EXE is not a reverse-built copy of RK software.**
-`RK-Research-Workbench.exe` is a limited Python profile-editor prototype
-packaged with PyInstaller and shown in WebView2. The native reconstruction is
-a separate deliverable and has not been built. Its target is to recreate
-documented workflows from original source, with original replacement artwork;
-this repo does not redistribute RK's binaries or artwork. Exact feature parity
-is not established, and the hardware paths remain untested. The rebuild scope,
-gaps, and release criteria are tracked in
-[`REBUILD-ROADMAP.md`](REBUILD-ROADMAP.md).
+The old downloadable `RK-Research-Workbench.exe` is a limited Python
+profile-editor prototype packaged with PyInstaller and shown in WebView2. The
+new native reconstruction is separate source in [`rebuild/windows/`](rebuild/windows/)
+and builds as a self-contained C# WPF app. It provides local profile browsing,
+a separate RK Drive keyboard directory, photo links loaded from RK's host on
+demand, key-label drafts, macro notes, tray restore/exit, and opt-in startup.
+It does not yet implement hardware communication or full RK workflows. Both
+projects use original UI art; this repo does not redistribute RK binaries,
+JavaScript, or product images. Exact feature parity is not established. See the
+[`REBUILD-ROADMAP.md`](REBUILD-ROADMAP.md) and
+[`rebuild/windows/README.md`](rebuild/windows/README.md).
 
 For a broader, regularly maintained list of community projects and their
 documented scope, see the [open-source RK software directory](SOFTWARE-DIRECTORY.md).
@@ -164,24 +170,18 @@ as confirmed.
 - [Dated storefront model list and profile-name crosswalk](docs/rk-storefront-model-crosswalk.csv)
 - [All audit documents and evidence tables](docs/)
 
-## Open-source Windows workbench
+## Native Windows rebuild
 
-This is the current research prototype, not the native reconstruction target
-([status and parity gates](REBUILD-ROADMAP.md)).
+The [`rebuild/windows/` source](rebuild/windows/) is the native C# WPF
+reconstruction milestone. It builds as a self-contained Windows executable,
+uses the local 265-profile catalog, saves local-only key-label/macro drafts,
+supports tray restore/exit, and offers opt-in start-with-Windows. It has no
+device detection or hardware transport yet. Its feature boundaries and build
+steps are in [`rebuild/windows/README.md`](rebuild/windows/README.md).
 
-The [`workbench/` source](workbench/) packages the profile studio as a
-standalone Windows desktop app. It includes the same 188-profile catalog,
-local keymap, lighting, macro and display-profile editing, and JSON
-import/export. User data stays in the local Windows profile. The executable
-runs in its own WebView2 window and serves its bundled files only on loopback.
-
-This is an open-source implementation of safe profile-editing
-workflows, not a feature-complete clone of RK's hardware utility. It can
-identify an authorized device by USB/HID descriptor when the embedded runtime
-supports WebHID, but it does not open HID reports or write to the keyboard.
-Lighting, macros, screen transfers, firmware tools, and hardware writes are
-not implemented. The keyboard remains untouched. The app's limits and build
-steps are in [`workbench/README.md`](workbench/README.md).
+The older [`workbench/`](workbench/) prototype remains for reference. Its
+downloadable EXE uses Python/PyInstaller, a loopback HTTP server, and WebView2;
+it is not the native rebuild. See [`workbench/README.md`](workbench/README.md).
 
 The reports distinguish statically proven observations, inferences, and
 unresolved questions. Import presence, strings, byte patterns, profile labels,
@@ -258,9 +258,8 @@ are licensed under MIT; see [LICENSE](LICENSE) and
 [data provenance](DATA-PROVENANCE.md).
 
 The [Keydeck RK Studio project](https://github.com/shubh-3011/keydeck-rk-studio)
-is the companion web and Windows profile editor. This repository is the
-standalone research archive and also publishes a source-built Windows
-research workbench with its source and build instructions. That executable
-is a profile editor, not a complete hardware-compatible replacement for the
-vendor software; see the directory for community projects that document
-hardware configuration support.
+is the companion web app and Python/WebView2 desktop wrapper. This repository
+is the static research archive and source for the separate native Windows
+rebuild. The native app is an early offline profile workspace, not a complete
+hardware-compatible replacement; see the directory for community projects
+that document hardware configuration support.

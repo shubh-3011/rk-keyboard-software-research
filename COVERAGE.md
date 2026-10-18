@@ -3,6 +3,23 @@
 This file prevents the package snapshot from being mistaken for a universal RK
 model or runtime map.
 
+## Native Windows reconstruction milestone
+
+- The research repository now includes a source-first C# WPF Windows app in
+  [`rebuild/windows/`](rebuild/windows/), separate from the Keydeck web app
+  and the earlier Python/WebView2 workbench. It browses the 265-profile
+  4.6-labeled catalog and a second 177-row RK Drive keyboard directory with
+  on-demand photos linked to RK's host, plus local-only key-label drafts,
+  macro notes, notification-area restore/exit, and opt-in per-user startup.
+  Its standalone EXE is built by the project script; it does not need Python,
+  a browser, or WebView2.
+- The new app has no device detection or HID access. Key and macro edits are
+  local drafts, and lighting, hardware settings, screen transfer, updates,
+  reset, and firmware operations remain unavailable. This is an early native
+  shell, not a full or exact-function RK clone. See the
+  [rebuild README](rebuild/windows/README.md) and
+  [parity roadmap](REBUILD-ROADMAP.md).
+
 ## Public RK Drive Web App snapshot
 
 - A dated static snapshot of the public RK Drive Web App enumerates seven JS
@@ -24,6 +41,10 @@ model or runtime map.
   read/apply/readback/rollback, custom-main records, and grouped per-key RGB
   serialization in the hash-pinned entry bundle. It does not establish
   hardware acceptance or model-wide support.
+- A second live refresh at `2026-10-18T08:47:15Z` matched all seven saved
+  bundle hashes and the derived catalog data. This confirms the dated snapshot
+  against the public deployment at that time; it does not confirm hardware
+  behavior. See the [live recheck record](docs/rk-drive-live-recheck-2026-10-18.md).
 
 ## Additional official 4.6 Windows Hub Driver snapshot
 
@@ -36,6 +57,16 @@ model or runtime map.
   [`docs/rk-package-file-delta-v4.06-v4.6.md`](docs/rk-package-file-delta-v4.06-v4.6.md)
   and its row-level CSV. The absent classification is package-payload
   comparison, not an installer-deletion claim.
+- A new path-role inventory classifies all 1,249 files in the 4.6-labeled
+  extracted tree into 17 groups and inventories resources for all 265 named
+  profiles. It checks every path, size, and SHA-256 against the package
+  manifest before generating the tables. The Side LED resource rows confirm
+  that both `02B4` and `0258` set `ShowSideLED`, while only `02B4` has
+  `sideled.png` and four SideLed locale dictionaries. See the
+  [inventory report](docs/rk-v4.6-resource-inventory.md),
+  [group CSV](docs/rk-resource-group-inventory-v4.6.csv),
+  [per-profile asset CSV](docs/rk-model-resource-asset-inventory-v4.6.csv),
+  and [generator/verifier](scripts/audit_rk46_resource_inventory.py).
 - The extracted package contains 265 named profile files and 140 unique
   layouts. The generated catalog and comparison report are
   [`models-4.6.json`](models-4.6.json) and
@@ -187,6 +218,13 @@ model or runtime map.
   common-dialog, and property-sheet helpers. The `DrawThemeParentBackground`
   wrapper still has no recovered in-image caller; no runtime branch is
   established. See `docs/rk-dynamic-api-consumer-gap-audit.md`.
+- A new 4.06 G5 audit maps all 27 `CDevG5KB` vtable entries and follows the
+  `+0x68` GetRealData wrapper into its request-write/response-read helper.
+  Six generic `+0x68` callsites remain candidates because their receiver
+  vptrs are unresolved; the helper has no direct file sink. This does not
+  establish a full read-only S98 firmware export. See
+  [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
+  and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv).
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller

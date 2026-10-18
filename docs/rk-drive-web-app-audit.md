@@ -161,11 +161,13 @@ validation.
 | Macro UI and macro-related assets | Local macro sequence/profile data | No recording/playback, persistence format parity, or transfer to device |
 | TFT/screen page and media references | Local screen profile and image metadata | No image conversion or transfer to device |
 | Performance, keyboard/function settings, advanced keys, DKS, snap, SOCD, toggle, mod-tap | Not implemented as model-gated editing | No verified profile schema or control-to-packet mapping for the web registry |
-| Mouse pages and communication module | Not catalogued in this keyboard pass | Mouse model registry and feature map remain open |
+| Mouse pages and communication module | Separate source-free mouse registry and feature-gate audit are now catalogued; the native keyboard directory excludes mice | Model-specific UI controls and hardware support remain unresolved |
 | Firmware and boot-mode paths | Not exposed in Keydeck | Requires a separate updater and firmware safety analysis |
-| Native tray, login startup, and Windows UI | Not part of the hosted web app | The research EXE is a Python/WebView2 prototype; the native reconstruction is not built |
+| Native tray, login startup, and Windows UI | Not part of the hosted web app | The new C# WPF rebuild has tray/startup and an RK Drive directory, but not full feature parity or hardware access |
 
 The research Workbench remains a separate Python/WebView profile-editor
-prototype, not a native rebuild. It is documented in
-[`REBUILD-ROADMAP.md`](../REBUILD-ROADMAP.md). This site audit does not turn
-that prototype into a feature-complete or native clone.
+prototype, not a native rebuild. The native rebuild embeds derived registry
+fields and fetches a selected product image from RK's host on demand; it does
+not bundle or mirror vendor JavaScript or photos. Neither app reproduces the
+complete Web Driver workflows or communicates with a keyboard. See the
+[`native rebuild roadmap`](../REBUILD-ROADMAP.md) for current parity gaps.

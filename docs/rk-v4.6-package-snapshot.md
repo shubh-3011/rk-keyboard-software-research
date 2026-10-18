@@ -38,6 +38,10 @@ embedded component reports an internal 4.6 version.
 The full extracted tree's relative paths, byte sizes, and SHA-256 hashes are
 recorded in [`rk-4.6-package-manifest.csv`](rk-4.6-package-manifest.csv).
 The manifest contains metadata only; it does not redistribute the package.
+For the matched path-role and per-profile asset inventories, see the
+[resource inventory report](rk-v4.6-resource-inventory.md),
+[resource-group CSV](rk-resource-group-inventory-v4.6.csv), and
+[per-profile asset CSV](rk-model-resource-asset-inventory-v4.6.csv).
 Recreate it after static extraction with:
 
 ```powershell

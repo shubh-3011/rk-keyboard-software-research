@@ -1,4 +1,8 @@
-# RK Research Workbench for Windows
+# RK Research Workbench for Windows (legacy prototype)
+
+> This is the earlier Python/WebView2 profile-editor prototype. It is not the
+> native Windows reconstruction. Current native source and build instructions
+> are in [`../rebuild/windows/`](../rebuild/windows/).
 
 The RK Research Workbench is a source-backed, local Windows desktop profile
 studio packaged with this research repository. It reuses the open-source
@@ -26,13 +30,13 @@ is not yet a hardware-functional replacement for it. Those limits follow the
 static-only evidence in the parent [research report](../docs/reverse-engineering.md)
 and [coverage ledger](../COVERAGE.md).
 
-## Download
+## Previous prototype release
 
-Download `RK-Research-Workbench.exe` from the
-[latest GitHub release](https://github.com/shubh-3011/rk-keyboard-software-research/releases/latest).
-The release is built from this directory's source. The GitHub source archive
-for the release tag contains the code and docs; the executable is a separate
-release asset.
+The previously published `RK-Research-Workbench.exe` is built from this
+directory's source. It is the Python/PyInstaller/WebView2 prototype described
+above, not the native app. The native rebuild has a separate source folder and
+build instructions; do not use this legacy release to evaluate native tray,
+startup, or device behavior.
 
 Microsoft Edge WebView2 Runtime is required. Most supported Windows 10/11
 systems already have it. User profile data and WebView2 storage stay under

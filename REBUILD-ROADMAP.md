@@ -5,20 +5,30 @@ Windows reconstruction developed from the evidence in this repository. It is
 separate from [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio),
 the companion web/profile editor.
 
-## Current status: not built yet
+## Current status: first native milestone built from source
 
-The downloadable `RK-Research-Workbench.exe` is an earlier **profile-editor
-prototype**, not the reverse-built RK application. It is a PyInstaller bundle
-containing Python, a local static HTTP server, HTML/CSS/JavaScript, and a
-pywebview window backed by Microsoft Edge WebView2. It does not implement the
-RK native application, system-tray behavior, login autostart, or keyboard
-configuration writes. The source is in [`workbench/`](workbench/); its exact
-limits are in [`workbench/README.md`](workbench/README.md).
+The source in [`rebuild/windows/`](rebuild/windows/) is a new C# WPF Windows
+application with its own process and no Python, browser, WebView, or local web
+server. It contains the first native shell, local profile/layout browser,
+local key-label and macro-note drafts, tray restore/exit, opt-in
+start-with-Windows, and a separate directory for the public RK Drive keyboard
+registry. The directory shows connection IDs and declared layers/tables/light
+effects, and fetches official-hosted product photos on demand without bundling
+them. Its self-contained `.exe` is produced by the documented build script; it
+is not the old downloadable prototype.
 
-The prototype must not be described or advertised as a same-function RK
-replacement. The research repo currently contains reverse-engineering
-evidence and this prototype; it does **not yet contain the native clean-room
-reconstruction described below**.
+The downloadable `RK-Research-Workbench.exe` release is an earlier
+**profile-editor prototype**. It is a PyInstaller bundle containing Python, a
+local static HTTP server, HTML/CSS/JavaScript, and pywebview backed by
+Microsoft Edge WebView2. That app is described in [`workbench/`](workbench/)
+and [`workbench/README.md`](workbench/). It is not the native reconstruction.
+
+The new native app is still an early reconstruction milestone, not a same-
+function or pixel-matched RK replacement. Hardware communication, RK-native
+settings serialization, updates, firmware, and full workflow parity remain
+unimplemented or unresolved. The research archive and rebuild are distinct
+deliverables in this repository; the companion Keydeck web app remains a
+separate product.
 
 ## Reconstruction target
 
@@ -27,13 +37,15 @@ reconstruction described below**.
 - Familiar RK utility workflows and navigation, recreated from analyzed
   behavior: model selection, key mapping/layers, macros, lighting, keyboard
   options, audio-reactive effects, screen/GIF tooling, and update information.
-- Incorporate the public RK Drive registry as an evidence source for model
-  labels, USB/receiver IDs, and feature families. Its current snapshot has 177
-  connection descriptors across 96 labels. Add advanced behavior controls
-  such as DKS, snap, SOCD, toggle, or mod-tap only when model-specific settings
-  and their runtime paths are separately mapped.
-- Keep keyboard and mouse registries separate until the Web Driver's mouse
-  model map and supported controls have their own audit.
+- Continue using the public RK Drive registry as a separate evidence source
+  for model labels, USB/receiver IDs, and declared layer/table/light-effect
+  fields. Its current snapshot has 177 general connection descriptors across
+  96 labels, plus two specialized RK68 HE profiles. Add advanced behavior
+  controls such as DKS, snap, SOCD, toggle, or mod-tap only when model-specific
+  settings and their runtime paths are separately mapped.
+- Keep keyboard and mouse registries separate. A static mouse registry and
+  feature-gate audit exist, but their model-specific controls are not yet
+  reconstructed in the native application.
 - Windows integration such as a notification-area icon, minimize-to-tray, and
   an explicit user-controlled start-on-login option.
 - A source-first implementation with build instructions and an auditable
@@ -48,10 +60,10 @@ reconstruction described below**.
 
 | Area | Current prototype | Requirement before claiming parity |
 | --- | --- | --- |
-| Windows app shell | Python/PyInstaller + local HTML in WebView2 | Native desktop UI/process and standalone local app behavior |
-| Tray and autostart | Not implemented | Tray open/restore/exit; autostart opt-in that can be disabled |
-| Model recognition | Optional descriptor-only prompt | Evidence-backed model/revision identification with ambiguous IDs shown as ambiguous |
-| Keymap, macro, lighting, screen, audio | Local profile editing only | Reconstructed control paths, data models, and model-specific availability |
+| Windows app shell | Native WPF shell in `rebuild/windows/`; older Python/WebView prototype retained separately | Feature-complete workflows, packaging/release, and evidence-linked parity coverage |
+| Tray and autostart | Configuration/Exit tray menu and opt-in per-user startup in the native milestone | Verify behavior on supported Windows configurations and document any remaining differences |
+| Model recognition | Searchable package profiles and a separate RK Drive model/connection directory; no device detection | Evidence-backed device identification with ambiguous IDs shown as ambiguous |
+| Keymap, macro, lighting, screen, audio | Layout viewer, local key-label drafts, local macro notes; no device controls | Reconstructed control paths, data models, and model-specific availability |
 | Hardware configuration | Disabled | Protocol and write paths must be independently mapped; no claim from profile labels alone |
 | Firmware updater/readback | Not implemented | Complete static updater analysis and safe documented boundaries; current evidence does not show a reachable complete read-only S98 firmware export |
 | Vendor artwork/assets | Not included | Clean-room replacements; no copied vendor art in the public repo |
@@ -69,8 +81,8 @@ conditional UART file sinks with unresolved initialization and reachability.
 
 ## Exit criteria for a faithful reconstruction claim
 
-Do not call the reconstruction complete until the native source and EXE are
-available, tray/autostart behavior is documented, each official UI workflow is
-mapped to evidence, all model support is confidence-labeled, and unsupported
-or unverified device operations are visibly blocked. The existing profile
-prototype does not satisfy these criteria.
+Do not call the reconstruction complete until tray/autostart behavior is
+verified and documented, every claimed RK workflow is mapped to evidence,
+model support is confidence-labeled, and unsupported or unverified device
+operations are visibly blocked. The current native milestone and the older
+profile prototype do not satisfy these criteria.

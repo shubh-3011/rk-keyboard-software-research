@@ -11,4 +11,8 @@ workbench/build/
 workbench/dist/
 workbench/__pycache__/
 workbench/*.spec
+rebuild/windows/.dotnet/
+rebuild/windows/bin/
+rebuild/windows/obj/
+rebuild/windows/dist/
 *.dat
