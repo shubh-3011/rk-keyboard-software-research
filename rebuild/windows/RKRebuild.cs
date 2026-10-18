@@ -56,6 +56,7 @@ namespace RkRebuild
         public bool StartWithWindows { get; set; }
         public Dictionary<string, string> KeyLabelDrafts { get; set; }
         public Dictionary<string, List<string>> MacroDrafts { get; set; }
+        public Dictionary<string, DriveDraft> DriveDrafts { get; set; }
 
         public AppSettings()
         {
@@ -64,6 +65,29 @@ namespace RkRebuild
             StartWithWindows = false;
             KeyLabelDrafts = new Dictionary<string, string>();
             MacroDrafts = new Dictionary<string, List<string>>();
+            DriveDrafts = new Dictionary<string, DriveDraft>();
+        }
+    }
+
+    internal sealed class DriveDraft
+    {
+        public string Layer { get; set; }
+        public string Table { get; set; }
+        public string Effect { get; set; }
+        public int Brightness { get; set; }
+        public int Speed { get; set; }
+        public string Color { get; set; }
+        public bool MixColor { get; set; }
+
+        public DriveDraft()
+        {
+            Layer = "";
+            Table = "";
+            Effect = "";
+            Brightness = 100;
+            Speed = 50;
+            Color = "#FFFFFF";
+            MixColor = false;
         }
     }
 
@@ -86,6 +110,7 @@ namespace RkRebuild
                     {
                         if (saved.KeyLabelDrafts == null) saved.KeyLabelDrafts = new Dictionary<string, string>();
                         if (saved.MacroDrafts == null) saved.MacroDrafts = new Dictionary<string, List<string>>();
+                        if (saved.DriveDrafts == null) saved.DriveDrafts = new Dictionary<string, DriveDraft>();
                         return saved;
                     }
                 }
@@ -154,6 +179,11 @@ namespace RkRebuild
         public List<string> Layers = new List<string>();
         public List<string> Tables = new List<string>();
         public List<DriveEffect> Effects = new List<DriveEffect>();
+
+        public override string ToString()
+        {
+            return Connection + "  ·  VID " + VendorId + " PID " + ProductId + "  ·  " + Protocol;
+        }
     }
 
     internal sealed class DriveModel
@@ -384,6 +414,7 @@ namespace RkRebuild
             AddNav(nav, "Key mapping", "Key mapping");
             AddNav(nav, "Lighting", "Lighting");
             AddNav(nav, "Macros", "Macros");
+            AddNav(nav, "RK Drive editor", "RK Drive editor");
             nav.Children.Add(NavCaption("LIBRARY"));
             AddNav(nav, "Models", "Model profiles");
             AddNav(nav, "RK Drive directory", "RK Drive directory");
@@ -468,7 +499,7 @@ namespace RkRebuild
             _pageName.Text = title;
             foreach (Button button in FindVisualButtons(this))
             {
-                if (button.Tag is string && new[] { "Device", "Key mapping", "Lighting", "Macros", "Models", "RK Drive directory", "Preferences" }.Contains((string)button.Tag))
+                if (button.Tag is string && new[] { "Device", "Key mapping", "Lighting", "Macros", "RK Drive editor", "Models", "RK Drive directory", "Preferences" }.Contains((string)button.Tag))
                 {
                     bool active = (string)button.Tag == page;
                     button.Background = active ? Brush(49, 94, 181) : Brush(29, 35, 45);
@@ -509,6 +540,7 @@ namespace RkRebuild
             else if (_page == "Key mapping") RenderKeymap();
             else if (_page == "Lighting") RenderLighting();
             else if (_page == "Macros") RenderMacros();
+            else if (_page == "RK Drive editor") RenderDriveEditor();
             else if (_page == "Models") RenderModels();
             else if (_page == "RK Drive directory") RenderDriveDirectory();
             else RenderPreferences();
@@ -830,6 +862,241 @@ namespace RkRebuild
             noteBody.Children.Add(new TextBlock { Text = "Feature inventory from the same site", FontSize = 12, FontWeight = FontWeights.SemiBold, Foreground = Brush(54, 62, 74) });
             noteBody.Children.Add(new TextBlock { Text = "The public app bundle also contains mapping, lighting, macro, TFT/media, performance, advanced-key, device settings, and mouse pages. This native release uses the model-specific layer/table/effect declarations shown above; it does not yet reproduce those complete workflows or transfer settings to a keyboard.", FontSize = 10, Foreground = Brush(111, 120, 133), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
             _pageBody.Children.Add(note);
+        }
+
+        private void RenderDriveEditor()
+        {
+            AddIntro("RK Drive local configuration drafts", "This page uses the public site’s model, connection, layer, table, and lighting declarations to prepare settings on this PC. Saving changes this app’s local draft only; it does not open HID or send anything to a keyboard.");
+            if (_driveDirectory.Models.Count == 0)
+            {
+                _pageBody.Children.Add(CardWithText("The RK Drive model registry is empty."));
+                return;
+            }
+
+            StackPanel selectors = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 12) };
+            ComboBox modelSelector = new ComboBox {
+                Width = 300, Height = 34, Padding = new Thickness(8, 4, 8, 4),
+                Background = Brushes.White, BorderBrush = Brush(218, 223, 230),
+                ItemsSource = _driveDirectory.Models.OrderBy(model => model.Name, StringComparer.OrdinalIgnoreCase).ToList(),
+                DisplayMemberPath = "Name"
+            };
+            ComboBox connectionSelector = new ComboBox {
+                Width = 430, Height = 34, Margin = new Thickness(10, 0, 0, 0), Padding = new Thickness(8, 4, 8, 4),
+                Background = Brushes.White, BorderBrush = Brush(218, 223, 230)
+            };
+            selectors.Children.Add(modelSelector);
+            selectors.Children.Add(connectionSelector);
+            _pageBody.Children.Add(selectors);
+            StackPanel editor = new StackPanel();
+            _pageBody.Children.Add(editor);
+
+            Action redraw = delegate
+            {
+                editor.Children.Clear();
+                DriveModel model = modelSelector.SelectedItem as DriveModel;
+                DriveConnection connection = connectionSelector.SelectedItem as DriveConnection;
+                if (model == null || connection == null)
+                {
+                    editor.Children.Add(CardWithText("Choose a model and a connection descriptor."));
+                    return;
+                }
+
+                string draftKey = String.Join("|", model.Name, connection.Connection, connection.VendorId, connection.ProductId, connection.UsagePage, connection.Usage);
+                DriveDraft saved;
+                if (!_settings.DriveDrafts.TryGetValue(draftKey, out saved) || saved == null) saved = new DriveDraft();
+                DriveDraft working = new DriveDraft {
+                    Layer = saved.Layer, Table = saved.Table, Effect = saved.Effect,
+                    Brightness = saved.Brightness, Speed = saved.Speed, Color = saved.Color, MixColor = saved.MixColor
+                };
+
+                Border identity = Card();
+                StackPanel identityBody = new StackPanel { Margin = new Thickness(17) };
+                identity.Child = identityBody;
+                identityBody.Children.Add(Kicker("SELECTED PUBLIC DESCRIPTOR"));
+                identityBody.Children.Add(Headline(model.Name, 19));
+                identityBody.Children.Add(Paragraph(connection.ToString() + "  ·  usage " + Blank(connection.UsagePage) + ":" + Blank(connection.Usage), 10));
+                identityBody.Children.Add(new TextBlock {
+                    Text = "This registry match is a candidate description, not proof that the connected device is this model or revision.",
+                    Foreground = Brush(133, 90, 28), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0)
+                });
+                if (connection.Specialized)
+                {
+                    identityBody.Children.Add(new TextBlock {
+                        Text = "Specialized profile metadata: UUID " + Blank(connection.Uuid) + "  ·  minimum firmware " + Blank(connection.FirmwareMinimum) + "  ·  side light " + (connection.HasSideLight == true ? "declared" : "not declared"),
+                        Foreground = Brush(70, 78, 90), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0)
+                    });
+                }
+                editor.Children.Add(identity);
+
+                if (connection.HasDeclaredConfiguratorData)
+                {
+                    Border keyCard = Card();
+                    keyCard.Margin = new Thickness(0, 12, 0, 0);
+                    StackPanel keyBody = new StackPanel { Margin = new Thickness(17) };
+                    keyCard.Child = keyBody;
+                    keyBody.Children.Add(Kicker("KEYMAP DECLARATIONS"));
+                    keyBody.Children.Add(Paragraph(connection.LayoutGroupCount + " layout group(s) declared", 11));
+                    ComboBox layerSelector = DraftCombo("Key layer", connection.Layers, working.Layer);
+                    ComboBox tableSelector = DraftCombo("OS table", connection.Tables, working.Table);
+                    AddLabeledControl(keyBody, "Layer", layerSelector);
+                    AddLabeledControl(keyBody, "OS table", tableSelector);
+                    keyBody.Children.Add(new TextBlock {
+                        Text = "The public registry declares these choices, but this project has not recovered the matching web-layout data or a safe device apply path for this descriptor.",
+                        Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0)
+                    });
+                    Button saveKeymap = ActionButton("Save keymap draft", true);
+                    saveKeymap.Margin = new Thickness(0, 9, 0, 0);
+                    TextBlock keymapStatus = new TextBlock { Foreground = Brush(64, 120, 82), FontSize = 9, Margin = new Thickness(9, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+                    StackPanel keymapSaveRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 7, 0, 0) };
+                    saveKeymap.Click += delegate
+                    {
+                        working.Layer = layerSelector.SelectedItem as string ?? "";
+                        working.Table = tableSelector.SelectedItem as string ?? "";
+                        _settings.DriveDrafts[draftKey] = working;
+                        SettingsStore.Save(_settings);
+                        keymapStatus.Text = "Saved to this PC only.";
+                    };
+                    keymapSaveRow.Children.Add(saveKeymap);
+                    keymapSaveRow.Children.Add(keymapStatus);
+                    keyBody.Children.Add(keymapSaveRow);
+                    editor.Children.Add(keyCard);
+
+                    Border lightingCard = Card();
+                    lightingCard.Margin = new Thickness(0, 12, 0, 0);
+                    StackPanel lightingBody = new StackPanel { Margin = new Thickness(17) };
+                    lightingCard.Child = lightingBody;
+                    lightingBody.Children.Add(Kicker("LIGHTING DRAFT"));
+                    if (connection.Effects.Count == 0)
+                    {
+                        lightingBody.Children.Add(Paragraph("No lighting effects are declared for this registry row.", 10));
+                    }
+                    else
+                    {
+                        ComboBox effectSelector = DraftCombo("Effect", connection.Effects.Select(effect => effect.Name).ToList(), working.Effect);
+                        AddLabeledControl(lightingBody, "Declared effect", effectSelector);
+                        Slider brightness = new Slider { Minimum = 0, Maximum = 100, Value = Math.Max(0, Math.Min(100, working.Brightness)), Width = 220, IsEnabled = false };
+                        TextBox color = new TextBox { Width = 100, Height = 28, Padding = new Thickness(6, 4, 6, 3), Text = String.IsNullOrWhiteSpace(working.Color) ? "#FFFFFF" : working.Color, IsEnabled = false };
+                        Slider speed = new Slider { Minimum = 0, Maximum = 100, Value = Math.Max(0, Math.Min(100, working.Speed)), Width = 220, IsEnabled = false };
+                        CheckBox mixColor = new CheckBox { Content = "Mix colors", IsChecked = working.MixColor, IsEnabled = false, VerticalAlignment = VerticalAlignment.Center };
+                        TextBlock brightnessValue = new TextBlock { Width = 38, Foreground = Brush(111, 120, 133), VerticalAlignment = VerticalAlignment.Center };
+                        TextBlock speedValue = new TextBlock { Width = 38, Foreground = Brush(111, 120, 133), VerticalAlignment = VerticalAlignment.Center };
+                        brightness.ValueChanged += delegate { brightnessValue.Text = ((int)brightness.Value).ToString(); };
+                        speed.ValueChanged += delegate { speedValue.Text = ((int)speed.Value).ToString(); };
+                        brightnessValue.Text = ((int)brightness.Value).ToString();
+                        speedValue.Text = ((int)speed.Value).ToString();
+                        AddLabeledControl(lightingBody, "Brightness", PairControl(brightness, brightnessValue));
+                        AddLabeledControl(lightingBody, "Speed", PairControl(speed, speedValue));
+                        AddLabeledControl(lightingBody, "Color", color);
+                        AddLabeledControl(lightingBody, "Color blend", mixColor);
+                        Action updateControls = delegate
+                        {
+                            DriveEffect effect = connection.Effects.FirstOrDefault(item => String.Equals(item.Name, effectSelector.SelectedItem as string, StringComparison.OrdinalIgnoreCase));
+                            brightness.IsEnabled = effect != null && effect.Brightness;
+                            speed.IsEnabled = effect != null && effect.Speed;
+                            color.IsEnabled = effect != null && effect.ColorValueDefined;
+                            mixColor.IsEnabled = effect != null && effect.MixColor;
+                        };
+                        effectSelector.SelectionChanged += delegate { updateControls(); };
+                        updateControls();
+
+                        Button save = ActionButton("Save local draft", true);
+                        save.Margin = new Thickness(0, 10, 0, 0);
+                        TextBlock saveStatus = new TextBlock { Foreground = Brush(64, 120, 82), FontSize = 9, Margin = new Thickness(9, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+                        StackPanel saveRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0) };
+                        save.Click += delegate
+                        {
+                            working.Layer = layerSelector.SelectedItem as string ?? "";
+                            working.Table = tableSelector.SelectedItem as string ?? "";
+                            working.Effect = effectSelector.SelectedItem as string ?? "";
+                            working.Brightness = (int)brightness.Value;
+                            working.Speed = (int)speed.Value;
+                            working.Color = color.Text.Trim();
+                            working.MixColor = mixColor.IsChecked == true;
+                            _settings.DriveDrafts[draftKey] = working;
+                            SettingsStore.Save(_settings);
+                            saveStatus.Text = "Saved to this PC only.";
+                        };
+                        saveRow.Children.Add(save);
+                        saveRow.Children.Add(saveStatus);
+                        lightingBody.Children.Add(saveRow);
+                        lightingBody.Children.Add(new TextBlock {
+                            Text = "Only controls declared for the selected effect are enabled. Values remain local draft data; names and flags do not establish firmware support or a compatible packet.",
+                            Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0)
+                        });
+                    }
+                    editor.Children.Add(lightingCard);
+                }
+                else
+                {
+                    editor.Children.Add(CardWithText("This registry row has no general key-layer, OS-table, or effect declaration. The specialized profile data stays separate and is not inferred from another model."));
+                }
+
+                Border otherFeatures = Card();
+                otherFeatures.Margin = new Thickness(0, 12, 0, 0);
+                StackPanel featureBody = new StackPanel { Margin = new Thickness(17) };
+                otherFeatures.Child = featureBody;
+                featureBody.Children.Add(Kicker("OTHER RK DRIVE WORKFLOWS"));
+                featureBody.Children.Add(FeatureLine("Macros", "The native app has a local macro-note page; macro capture, event editing, profile serialization, and device transfer are not implemented."));
+                featureBody.Children.Add(FeatureLine("TFT and media", "The public bundle has a screen/media workflow. Per-model gates and the full handler path are still under audit."));
+                featureBody.Children.Add(FeatureLine("Performance and advanced keys", connection.Specialized
+                    ? "RK68 HE has a separate magnetic-switch workflow in the public app. The per-control gates and transfer path are only partly mapped."
+                    : "The bundle includes performance, DKS, snap, SOCD, toggle, and mod-tap surfaces. Support is not declared for this selected row."));
+                featureBody.Children.Add(FeatureLine("Device settings and firmware", "Information and update pages exist in the web app. This reconstruction does not open a device or expose update/boot actions."));
+                Button macros = ActionButton("Open local macro notes", false);
+                macros.Margin = new Thickness(0, 8, 0, 0);
+                macros.Click += delegate { SetPage("Macros"); };
+                featureBody.Children.Add(macros);
+                editor.Children.Add(otherFeatures);
+            };
+
+            modelSelector.SelectionChanged += delegate
+            {
+                _selectedDriveModel = modelSelector.SelectedItem as DriveModel;
+                DriveModel selected = _selectedDriveModel;
+                connectionSelector.ItemsSource = selected == null ? null : selected.Connections;
+                connectionSelector.SelectedIndex = selected == null || selected.Connections.Count == 0 ? -1 : 0;
+                redraw();
+            };
+            connectionSelector.SelectionChanged += delegate { redraw(); };
+            modelSelector.SelectedItem = _selectedDriveModel != null && _driveDirectory.Models.Contains(_selectedDriveModel)
+                ? _selectedDriveModel
+                : _driveDirectory.Models.OrderBy(model => model.Name, StringComparer.OrdinalIgnoreCase).First();
+            if (modelSelector.SelectedItem == null) modelSelector.SelectedIndex = 0;
+        }
+
+        private ComboBox DraftCombo(string label, List<string> values, string savedValue)
+        {
+            ComboBox selector = new ComboBox { Width = 250, Height = 30, Padding = new Thickness(7, 3, 7, 3), Background = Brushes.White, BorderBrush = Brush(218, 223, 230), IsEnabled = values.Count > 0 };
+            foreach (string value in values) selector.Items.Add(value);
+            if (values.Contains(savedValue)) selector.SelectedItem = savedValue;
+            else if (values.Count > 0) selector.SelectedIndex = 0;
+            selector.ToolTip = label + " declared by the RK Drive registry";
+            return selector;
+        }
+
+        private void AddLabeledControl(Panel parent, string label, UIElement control)
+        {
+            Grid row = new Grid { Margin = new Thickness(0, 5, 0, 0) };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(130) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            TextBlock caption = new TextBlock { Text = label, Foreground = Brush(70, 78, 90), FontSize = 10, VerticalAlignment = VerticalAlignment.Center };
+            row.Children.Add(caption);
+            Grid.SetColumn(control, 1);
+            row.Children.Add(control);
+            parent.Children.Add(row);
+        }
+
+        private StackPanel PairControl(UIElement first, UIElement second)
+        {
+            StackPanel pair = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+            pair.Children.Add(first);
+            pair.Children.Add(second);
+            return pair;
+        }
+
+        private TextBlock FeatureLine(string title, string description)
+        {
+            return new TextBlock { Text = title + "  ·  " + description, Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
         }
 
         private void RenderDriveDetails(StackPanel details, DriveModel model)

@@ -220,11 +220,17 @@ model or runtime map.
   established. See `docs/rk-dynamic-api-consumer-gap-audit.md`.
 - A new 4.06 G5 audit maps all 27 `CDevG5KB` vtable entries and follows the
   `+0x68` GetRealData wrapper into its request-write/response-read helper.
-  Six generic `+0x68` callsites remain candidates because their receiver
-  vptrs are unresolved; the helper has no direct file sink. This does not
-  establish a full read-only S98 firmware export. See
+  Six nearby `+0x68` callsites are resolved to a local GDI adapter and
+  `USER32!DrawTextW`, not to the G5 GetRealData slot. Their `0x8134`/`0x8135`
+  values are Windows text-layout flags. A hash-pinned static checker verifies
+  the adapter constructor, vtable slot, import, wrapper ABI, and callsites.
+  The actual G5 command-`0x88` caller remains unresolved; the helper has no
+  direct file sink. This does not establish a full read-only S98 firmware
+  export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
-  and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv).
+  and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
+  [call-resolution ledger](docs/rk-406-vtable-68-resolution.csv),
+  and [static checker](scripts/audit_rk406_g5_vcall_resolution.py).
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller

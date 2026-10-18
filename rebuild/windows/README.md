@@ -22,6 +22,10 @@ WebView2.
 - Profile selection and visual layouts from the catalog.
 - Local-only key-label drafts and macro notes stored under
   `%LOCALAPPDATA%\RK-Rebuild\settings.json`.
+- An **RK Drive editor** that stages the selected descriptor's declared key
+  layer, OS table, lighting effect, and supported effect controls as local
+  drafts. Drafts are keyed by model and connection row and saved only under
+  the current Windows user's local settings.
 - An optional local package folder setting for viewing profile artwork already
   present on this PC. Vendor assets are read from that folder at runtime and
   are not included in this repository or executable.
@@ -34,10 +38,13 @@ WebView2.
 
 This build does not detect or communicate with a keyboard. It does not read or
 write HID reports, apply key mappings or lighting, capture or transfer macros,
-control displays, run updates, or read/write firmware. Its key labels and
-macro notes are local drafts, not RK-native serialized settings. The catalog
-contains software profiles from one package snapshot; it is not a complete
-model/revision census. Model and feature parity are not certified.
+control displays, run updates, or read/write firmware. Its key labels, macro
+notes, key layer/table choices, and lighting values are local drafts, not
+RK-native serialized settings. The web bundle also exposes TFT/media,
+performance, advanced-key, function-setting, and firmware pages; those
+workflows are indexed in the source audit, but they are not implemented here.
+The catalog contains software profiles from one package snapshot; it is not a
+complete model/revision census. Model and feature parity are not certified.
 
 The source archive documents static control flow and known gaps separately in
 [`../../docs/README.md`](../../docs/README.md) and

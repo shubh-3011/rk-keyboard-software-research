@@ -36,3 +36,19 @@ The hash match shows that the saved source snapshot is current at this check;
 it does not establish hardware behavior or grant rights to redistribute RK's
 JavaScript, photos, or branding. Product image URLs are references to RK's
 host, not included artwork.
+
+## Later full-bundle refresh
+
+At `2026-10-18T11:19:18Z`, the extractor fetched all seven JavaScript URLs
+again into memory and compared the source hashes. All seven file sizes and
+SHA-256 values still match the checked-in manifest, including the 20,417,509-
+byte entry bundle. It again produced 177 keyboard connection descriptors, 96
+standard labels, two separate RK68 HE profiles, 96 image URL references, 20
+legacy mouse descriptors, and two CB75-Mouse connection rows. No vendor
+JavaScript or image bytes were retained.
+
+The native rebuild now includes an RK Drive local-draft page for the registry's
+declared key layers, OS tables, lighting effects, and per-effect controls. It
+does not copy or execute the site's JavaScript and does not connect to a
+keyboard. The other web workflows remain documented as feature inventory and
+unresolved model/handler paths in the [web app audit](rk-drive-web-app-audit.md).

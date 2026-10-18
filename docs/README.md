@@ -36,6 +36,8 @@
 - [4.6 G5 29-slot method evidence map](rk-v4.6-cdevg5-vtable-map.csv)
 - [4.06 G5 27-slot vtable and GetRealData audit](rk-406-cdevg5-vtable-audit.md)
 - [4.06 G5 slot evidence ledger](rk-406-cdevg5-vtable-map.csv)
+- [4.06 G5 nearby `+0x68` UI-call resolution ledger](rk-406-vtable-68-resolution.csv)
+- [4.06 G5 `+0x68` resolution checker](../scripts/audit_rk406_g5_vcall_resolution.py)
 - [4.6 `CDevRKKB` vtable, ApplySetting, and settings paths](rk-v4.6-cdevrkbb-settings-and-vtable-audit.md)
 - [4.6 RKKB 26-slot method evidence map](rk-v4.6-cdevrkbb-vtable-map.csv)
 - [4.6 RKKB vtable and settings-path verifier](../scripts/audit_rk46_cdevrkbb_vtable.py)

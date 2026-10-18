@@ -68,41 +68,62 @@ what the returned data represents, or that the operation reads firmware.
 The helper copies data into caller memory and contains no file-open or file-
 write sink. The caller's later use of the returned bytes remains unresolved.
 
-### Candidate `+0x68` virtual callers
+### `+0x68` dispatches in the nearby UI function
 
 Static disassembly shows six `+0x68` vtable dispatches in the function body
-beginning at `0x00401BD0`:
+beginning at `0x00401BD0`. These resolve to a local GDI text adapter, not to
+the G5 class:
 
-| Call instruction | Nearby buffer-size setup | Status |
+| Call instruction | Text pointer | DrawTextW flags | Resolution |
 | --- | --- | --- |
-| `0x00401E92` | `0x8134` | Receiver vptr/type unresolved; candidate only. |
-| `0x00401F1E` | `0x8134` | Receiver vptr/type unresolved; candidate only. |
-| `0x00401FB5` | `0x8134` | Receiver vptr/type unresolved; candidate only. |
-| `0x00402059` | `0x8134` | Receiver vptr/type unresolved; candidate only. |
-| `0x004020FD` | `0x8134` | Receiver vptr/type unresolved; candidate only. |
-| `0x0040217A` | `0x8135` | Receiver vptr/type unresolved; candidate only. |
+| `0x00401E92` | `[0x0062B760]` | `0x8134` | vtable `0x0059F314`, slot `+0x68` -> `0x0047111A` |
+| `0x00401F1E` | `[0x0062B75C]` | `0x8134` | same `USER32!DrawTextW` adapter |
+| `0x00401FB5` | `[0x0062B7A8]` | `0x8134` | same `USER32!DrawTextW` adapter |
+| `0x00402059` | `[0x0062B62C]` | `0x8134` | same `USER32!DrawTextW` adapter |
+| `0x004020FD` | `[0x0062B7B8]` | `0x8134` | same `USER32!DrawTextW` adapter |
+| `0x0040217A` | `[0x0062B7BC]` | `0x8135` | same `USER32!DrawTextW` adapter |
 
-These instructions prove dispatch through a method offset of `+0x68` on their
-respective objects. They do **not** prove that those objects use the
-`CDevG5KB` vtable or reach `0x00410700`; the objects' vptrs have not been
-resolved. There are other generic `+0x68` virtual calls elsewhere in the PE,
-so this six-call list is scoped to the one recovered function and its
-`0x8134`/`0x8135` buffer setup. The direct helper call found in the recovered
-G5 wrapper is `0x00410718 -> 0x0040FF60`; a direct call to wrapper address
-`0x00410700` was not found.
+At `0x00401C37`, the caller constructs a local object at `[esp+0x38]` through
+constructor `0x0047105C`. That constructor writes vtable pointer `0x0059F314`
+and zeroes the three following DWORD fields. At each listed call, after four
+arguments have been pushed, the caller loads the local object's vptr from
+`[esp+0x48]`, reads slot `[eax+0x68]`, sets `ecx` to that object, and calls the
+slot. Vtable entry `0x0059F37C` contains target `0x0047111A`.
 
-The six candidate sites are not connected by recovered data flow to a file
-sink. The saved native API xref inventory lists `DeviceDriver.exe`
-`WriteFile` callsites at other addresses, with none at these six sites, and
-the command-`0x88` helper itself has no file API call. This does not rule out
-an indirect or later consumer; tracing object identity, buffer ownership, and
-all downstream sinks is still open.
+Wrapper `0x0047111A` forwards the object's `this+4` field and four caller
+arguments through IAT VA `0x0059E6B8`; the PE import table maps that thunk to
+`USER32.dll!DrawTextW`. It returns with `ret 0x10`, matching cleanup for the
+four stack arguments. The arguments are the global text pointer, the DWORD at
+text pointer minus `0xC` used as the character count, a local rectangle
+pointer, and format flags. Treating that preceding DWORD as a string length
+is strongly inferred from its use as `cch`; the actual text and buffer
+initializers remain unresolved.
+
+The flags resolve to standard Windows text-layout values: `0x8134` is
+`DT_VCENTER | DT_WORDBREAK | DT_SINGLELINE | DT_NOCLIP | DT_END_ELLIPSIS`,
+and `0x8135` adds `DT_CENTER`. Their 62 and 13 occurrences in the disassembly
+do not identify a device selector or buffer size. The six sites are excluded
+as direct calls to the G5 `+0x68` method: they use a different vtable receiver
+and the four-argument `DrawTextW` ABI, while the concrete G5 wrapper at
+`0x00410700` returns with `ret 8` and calls helper `0x0040FF60` at
+`0x00410718`. A caller of the G5 method remains unresolved.
+
+The row-level evidence is in the
+[`six-call resolution ledger`](rk-406-vtable-68-resolution.csv).
+The hash-pinned static checker is
+[`audit_rk406_g5_vcall_resolution.py`](../scripts/audit_rk406_g5_vcall_resolution.py);
+run it against the same `DeviceDriver.exe` to verify the constructor, vtable
+slot, import mapping, wrapper cleanup, call shapes, and literal counts. It
+invokes `objdump` only and never executes the PE.
+
+The resolved UI text-drawing sites are not G5 data-read callers. The command-
+`0x88` helper itself still has no file API call, and its actual caller and any
+downstream consumer remain unresolved.
 
 ## Remaining gaps and related evidence
 
-- Resolve the six candidate receiver types and determine whether any dispatch
-  reaches the G5 `+0x68` target.
-- Trace any confirmed GetRealData caller's output buffer through its complete
+- Find a real caller of the concrete G5 `+0x68` method at `0x00410700`.
+- Trace that caller's command-`0x88` output buffer through its complete
   downstream data flow, including possible file or configuration sinks.
 - Identify the command-`0x88` selector/request fields and response schema.
 - Recover the action taxonomy used by slot `+0x60` and the event-record schema
