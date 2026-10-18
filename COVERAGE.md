@@ -187,8 +187,11 @@ model or runtime map.
 - The shared settings serializer's keymap, macro, lighting, RGB, and color
   group branches are mapped to G5/3632 commands. Separate RKKB writes for
   key/layer, macro-derived, LED, key-color, matrix, Fn, and music paths are
-  also documented. The semaphore-backed Apply worker, one UI event that
-  signals it, and three device-family vtable entries are statically mapped.
+  also documented. The semaphore-backed Apply worker, the `tc_apply` and
+  `tc_restore` main-window controls that signal it, and three device-family
+  vtable entries are statically mapped. The control labels, queue flag, and
+  worker dispatch are connected in the
+  [V4.6 UI-to-worker trace](docs/rk-v4.6-ui-setting-signal-audit.md).
   Profile-row logic selects the RKKB or G5 class for the checked records, but
   the concrete receiver type and data arguments at the worker call remain
   unresolved. G5 screen/GIF/page serializers and their virtual entries are

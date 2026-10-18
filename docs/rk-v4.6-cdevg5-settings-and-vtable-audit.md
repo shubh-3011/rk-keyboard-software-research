@@ -35,9 +35,11 @@ the selected device and apply arguments, then calls the object's vtable entry
 at offset `+0x44` (`0x004013D5`–`0x004013E7`). That slot resolves to
 `CDevG5KB::ApplySetting`, `0x004127B0`, in the verified table. The routine's
 embedded diagnostic at `0x005D33A0` records `hWnd`, `nFlag`, firmware value,
-data, delegate, and Bluetooth state. This establishes the worker-to-virtual-
-method dispatch statically. It does not establish which UI action signaled the
-worker or which arguments a real connected model supplied.
+data, delegate, and Bluetooth state. The V4.6 **Apply** and **Restore** main-
+window controls are now statically connected to a conditional queue signal
+with value `1`; see the [UI-to-worker trace](rk-v4.6-ui-setting-signal-audit.md).
+The runtime active class, request reachability, and arguments supplied by a
+connected model remain unvalidated.
 
 ## Apply flags and settings routes
 
@@ -72,9 +74,10 @@ listed in the CSV.
 - Profile-to-`CDevG5KB` routing covers the 131 direct profile rows in the
   package snapshot. It does not establish support for every RK model,
   receiver, firmware, hardware revision, or wireless state.
-- The complete UI control-to-worker signal edge and actual worker argument
-  construction remain unresolved for V4.6. Static calls into a serializer do
-  not demonstrate that every branch is reachable from the visible UI.
+- The two `tc_apply`/`tc_restore` control paths into the queue are mapped, but
+  the active runtime receiver and profile-field semantics remain unresolved.
+  Static calls into a serializer do not demonstrate that every branch is
+  reachable from the visible UI or accepted by a keyboard.
 - Packet schemas, many values and selectors, all error/retry responses,
   model-specific feature availability, and physical acceptance remain
   incomplete. Several reads and writes are active operations and were only
