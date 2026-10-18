@@ -103,6 +103,15 @@ model or runtime map.
   branch-spanning SetupAPI route is documented outside the conservative CSV
   heuristic. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md)
   and [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md).
+- A separate 4.6 hook pass maps four thread-scoped `SetWindowsHookExW`
+  registrations (`WH_CBT`, `WH_MSGFILTER`, and two `WH_MOUSE` hooks), their
+  forwarding sites, callback branches, and direct unhook calls. The direct
+  registrations do not include `WH_KEYBOARD` or `WH_KEYBOARD_LL`, but the
+  message-filter and key-state imports leave keyboard-related observation
+  unresolved. Callback purposes, full reachability, and two CBT unhook pairings
+  remain open. Addresses are specific to the 4.6 driver; see
+  [`docs/rk-v4.6-windows-hook-callsite-audit.md`](docs/rk-v4.6-windows-hook-callsite-audit.md)
+  and the separate [4.06 hook audit](docs/rk-406-windows-hook-callsite-audit.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
   (`0xC8C8` bytes). The exact path base, MFC event association, and relation to

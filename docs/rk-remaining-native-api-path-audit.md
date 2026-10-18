@@ -90,6 +90,19 @@ also unresolved why this image contains both direct FlatSB imports and the
 dynamic resolver/fallback table, and which route is used by each UI flow.
 Therefore none of these eight USER32 imports is classified as unused.
 
+## Cross-version package boundary
+
+The updater result carries over to the 4.6-labeled package because its
+`Dev/01AF/Update.exe` is byte-identical to the installed 4.06 updater (same
+2,109,952-byte size and SHA-256). The eight scrollbar fallback rows belong
+only to the 4.06 `unins000.exe`: the 4.6 package path/hash delta lists that
+file as absent. The 4.6 package's `uninstall.dll` is a separate PE and does
+not make those eight import findings apply to it. This boundary is confirmed
+by [`rk-file-manifest-delta-v4.06-v4.6.csv`](rk-file-manifest-delta-v4.06-v4.6.csv)
+and [`rk-4.6-package-manifest.csv`](rk-4.6-package-manifest.csv). It does not
+replace the separate, version-specific 4.6 `DeviceDriver.exe` import and
+hook-callsite audits.
+
 ## Limits and reproduction trail
 
 The relevant source artifacts are:

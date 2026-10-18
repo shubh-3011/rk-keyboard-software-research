@@ -409,12 +409,14 @@ flows. Their presence in the PE does not show that each conditional branch
 executes in a normal session.
 
 Targeted callsite inspection narrowed several potentially ambiguous imports:
-the main app's `SetWindowsHookExW` references use thread-scoped CBT,
+the 4.06 and 4.6 main-app `SetWindowsHookExW` sites use thread-scoped CBT,
 MSGFILTER, and mouse hooks; the inspected updater sites likewise use UI-hook
 IDs, not `WH_KEYBOARD` or `WH_KEYBOARD_LL`. This does not prove the absence of
 all input observation, since key-state APIs are also imported and runtime
-branches are unknown. The 4.06 main-app hook IDs, callback addresses, and
-scope limitations are recorded in [`rk-406-windows-hook-callsite-audit.md`](rk-406-windows-hook-callsite-audit.md).
+branches are unknown. The version-specific main-app hook IDs, callback
+addresses, and scope limitations are recorded in the
+[4.06 hook audit](rk-406-windows-hook-callsite-audit.md) and
+[4.6 hook audit](rk-v4.6-windows-hook-callsite-audit.md).
 The optional `CreateProcessW` path may launch the
 external per-device `Other\\<VID>_<PID>\\start.exe` helper when present.
 No Service Control Manager APIs were found. `unins000.exe` imports
