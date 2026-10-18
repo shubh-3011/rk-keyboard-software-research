@@ -59,6 +59,7 @@ namespace RkRebuild
         public Dictionary<string, string> KeyLabelDrafts { get; set; }
         public Dictionary<string, List<string>> MacroDrafts { get; set; }
         public Dictionary<string, DriveDraft> DriveDrafts { get; set; }
+        public Dictionary<string, string> PhotoVariantOverrides { get; set; }
 
         public AppSettings()
         {
@@ -68,6 +69,7 @@ namespace RkRebuild
             KeyLabelDrafts = new Dictionary<string, string>();
             MacroDrafts = new Dictionary<string, List<string>>();
             DriveDrafts = new Dictionary<string, DriveDraft>();
+            PhotoVariantOverrides = new Dictionary<string, string>();
         }
     }
 
@@ -149,6 +151,7 @@ namespace RkRebuild
                         if (saved.KeyLabelDrafts == null) saved.KeyLabelDrafts = new Dictionary<string, string>();
                         if (saved.MacroDrafts == null) saved.MacroDrafts = new Dictionary<string, List<string>>();
                         if (saved.DriveDrafts == null) saved.DriveDrafts = new Dictionary<string, DriveDraft>();
+                        if (saved.PhotoVariantOverrides == null) saved.PhotoVariantOverrides = new Dictionary<string, string>();
                         foreach (DriveDraft draft in saved.DriveDrafts.Values)
                             if (draft != null && draft.KeyMappings == null) draft.KeyMappings = new Dictionary<string, string>();
                         return saved;
@@ -945,7 +948,10 @@ namespace RkRebuild
             PnpKeyboard connected = rkDevices.Count == 1 ? rkDevices[0] : null;
             ModelProfile detectedProfile = connected == null ? null : FindProfileForDevice(connected);
             ModelProfile overviewProfile = detectedProfile ?? _selected;
-            DriveModel photoModel = connected == null ? FindPhotoModelForProfile(_selected) : FindPhotoModelForDevice(connected, detectedProfile);
+            ModelProfile photoProfile = connected == null ? _selected : detectedProfile;
+            string photoPreferenceKey = PhotoPreferenceKey(connected, photoProfile ?? overviewProfile);
+            List<DriveModel> photoVariants = GetPhotoVariants(connected, photoProfile);
+            DriveModel photoModel = GetPreferredPhotoModel(photoPreferenceKey, photoVariants, connected, photoProfile);
             summary.Children.Add(Kicker(connected == null ? "SELECTED SOFTWARE PROFILE" : "CONNECTED KEYBOARD"));
             summary.Children.Add(Headline(connected == null ? _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
             summary.Children.Add(Paragraph(connected == null
@@ -972,7 +978,7 @@ namespace RkRebuild
             StackPanel artStack = new StackPanel { Margin = new Thickness(19) };
             artCard.Child = artStack;
             artStack.Children.Add(Kicker(connected == null ? "MODEL PHOTO" : "CONNECTED MODEL PHOTO"));
-            artStack.Children.Add(new TextBlock { Text = photoModel == null ? "No official product image is mapped for this profile." : "Official model photo loaded on demand from the RK Drive image catalog.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
+            artStack.Children.Add(new TextBlock { Text = photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
             Image image = new Image { Stretch = Stretch.Uniform };
             TextBlock photoStatus = new TextBlock { Text = "Loading official model photo…", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
             if (photoModel != null) LoadDriveImage(image, photoModel.ImageUrl, photoStatus);
@@ -989,6 +995,27 @@ namespace RkRebuild
                 artStack.Children.Add(placeholder);
             }
             artStack.Children.Add(photoStatus);
+            if (photoVariants.Count > 1)
+            {
+                ComboBox photoSelector = new ComboBox {
+                    Height = 31,
+                    Margin = new Thickness(0, 9, 0, 0),
+                    Padding = new Thickness(7, 4, 7, 4),
+                    ItemsSource = photoVariants,
+                    DisplayMemberPath = "Name",
+                    SelectedItem = photoModel,
+                    ToolTip = "Select the RK product image that matches this keyboard's printed layout or physical finish."
+                };
+                photoSelector.SelectionChanged += delegate {
+                    DriveModel selectedPhoto = photoSelector.SelectedItem as DriveModel;
+                    if (selectedPhoto == null) return;
+                    _settings.PhotoVariantOverrides[photoPreferenceKey] = selectedPhoto.Name;
+                    SettingsStore.Save(_settings);
+                    LoadDriveImage(image, selectedPhoto.ImageUrl, photoStatus);
+                };
+                artStack.Children.Add(photoSelector);
+                artStack.Children.Add(new TextBlock { Text = "Photo variant. The device ID does not report case finish or live RGB color.", Foreground = Brush(150, 150, 150), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+            }
             if (photoModel != null)
             {
                 Button openOfficial = ActionButton("Open official product photo", false);
@@ -1043,43 +1070,76 @@ namespace RkRebuild
             return matches.Count == 1 ? matches[0] : null;
         }
 
-        private DriveModel FindPhotoModelForDevice(PnpKeyboard device, ModelProfile profile)
+        private List<DriveModel> GetPhotoVariants(PnpKeyboard device, ModelProfile profile)
         {
+            IEnumerable<DriveModel> candidates = Enumerable.Empty<DriveModel>();
+            if (profile != null)
+            {
+                string family = NormalizeModelName(profile.Family);
+                if (!String.IsNullOrEmpty(family))
+                    candidates = _driveDirectory.Models.Where(model => NormalizeModelName(model.Name).Contains(family, StringComparison.OrdinalIgnoreCase));
+                if (!candidates.Any())
+                    candidates = _driveDirectory.Models.Where(model => NormalizeModelName(profile.Name).Contains(NormalizeModelName(model.Name), StringComparison.OrdinalIgnoreCase));
+            }
+            else if (device != null)
+            {
+                candidates = _driveDirectory.Models.Where(model => model.Connections.Any(connection =>
+                    String.Equals(device.VendorId, NormalizeDeviceId(connection.VendorId), StringComparison.OrdinalIgnoreCase) &&
+                    String.Equals(device.ProductId, NormalizeDeviceId(connection.ProductId), StringComparison.OrdinalIgnoreCase)));
+            }
+            return candidates.Where(model => !String.IsNullOrWhiteSpace(model.ImageUrl))
+                .GroupBy(model => model.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .OrderBy(model => model.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private DriveModel GetPreferredPhotoModel(string preferenceKey, List<DriveModel> variants, PnpKeyboard device, ModelProfile profile)
+        {
+            if (variants == null || variants.Count == 0) return null;
+            string preferredName;
+            if (_settings.PhotoVariantOverrides.TryGetValue(preferenceKey, out preferredName))
+            {
+                DriveModel saved = variants.FirstOrDefault(model => String.Equals(model.Name, preferredName, StringComparison.OrdinalIgnoreCase));
+                if (saved != null) return saved;
+            }
+            if (profile != null)
+            {
+                string normalizedProfile = NormalizeModelName(profile.Name);
+                DriveModel profileMatch = variants
+                    .Where(model => normalizedProfile.Contains(NormalizeModelName(model.Name), StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(model => NormalizeModelName(model.Name).Length)
+                    .FirstOrDefault();
+                if (profileMatch != null) return profileMatch;
+
+                string region = NormalizeModelName(profile.Region);
+                if (!String.IsNullOrEmpty(region) && region != "ANSI")
+                {
+                    DriveModel regionMatch = variants.FirstOrDefault(model => NormalizeModelName(model.Name).EndsWith(region, StringComparison.OrdinalIgnoreCase));
+                    if (regionMatch != null) return regionMatch;
+                }
+            }
             if (device != null)
             {
-                List<DriveModel> exact = _driveDirectory.Models.Where(model => model.Connections.Any(connection =>
+                List<DriveModel> exact = variants.Where(model => model.Connections.Any(connection =>
                     String.Equals(device.VendorId, NormalizeDeviceId(connection.VendorId), StringComparison.OrdinalIgnoreCase) &&
                     String.Equals(device.ProductId, NormalizeDeviceId(connection.ProductId), StringComparison.OrdinalIgnoreCase))).ToList();
                 if (exact.Count == 1) return exact[0];
             }
-            return FindPhotoModelForProfile(profile);
+            return variants.FirstOrDefault(model => profile != null && NormalizeModelName(model.Name).EndsWith(NormalizeModelName(profile.Family), StringComparison.OrdinalIgnoreCase))
+                ?? variants.FirstOrDefault();
         }
 
-        private DriveModel FindPhotoModelForProfile(ModelProfile profile)
+        private static string PhotoPreferenceKey(PnpKeyboard device, ModelProfile profile)
         {
-            if (profile == null) return null;
-            string modelName = NormalizeModelName(profile.Name);
-            string family = NormalizeModelName(profile.Family);
-            return _driveDirectory.Models
-                .Select(model => new {
-                    Model = model,
-                    Normalized = NormalizeModelName(model.Name),
-                    Score = NormalizeModelName(model.Name) == modelName ? 0 :
-                        (!String.IsNullOrEmpty(modelName) && modelName.Contains(NormalizeModelName(model.Name), StringComparison.OrdinalIgnoreCase)) ? 1 :
-                        (!String.IsNullOrEmpty(family) && NormalizeModelName(model.Name).Contains(family, StringComparison.OrdinalIgnoreCase)) ? 2 : 10
-                })
-                .Where(candidate => candidate.Score < 10 && !String.IsNullOrWhiteSpace(candidate.Model.ImageUrl))
-                .OrderBy(candidate => candidate.Score)
-                .ThenBy(candidate => candidate.Normalized.Length)
-                .Select(candidate => candidate.Model)
-                .FirstOrDefault();
+            return device != null ? "device:" + device.Identity : "profile:" + (profile == null ? "unknown" : profile.Code);
         }
 
         private string DescribeDeviceModel(PnpKeyboard device, ModelProfile profile)
         {
             if (profile != null) return profile.Name;
-            DriveModel photoModel = FindPhotoModelForDevice(device, null);
-            return photoModel == null ? "RK device " + device.VendorId + ":" + device.ProductId : photoModel.Name;
+            List<DriveModel> candidates = GetPhotoVariants(device, null);
+            return candidates.Count == 1 ? candidates[0].Name : "RK device " + device.VendorId + ":" + device.ProductId;
         }
 
         private static string NormalizeDeviceId(string value)
@@ -2040,6 +2100,7 @@ namespace RkRebuild
 
         private async void LoadDriveImage(Image target, string imageUrl, TextBlock status)
         {
+            target.Source = null;
             Uri uri;
             if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps || !String.Equals(uri.Host, "drive.rkgaming.com", StringComparison.OrdinalIgnoreCase))
             {
@@ -2066,6 +2127,7 @@ namespace RkRebuild
             }
             catch
             {
+                target.Source = null;
                 status.Text = "RK's image host could not be reached. Use the link below to open the product image.";
             }
         }

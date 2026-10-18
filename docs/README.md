@@ -5,6 +5,7 @@
 - [Open-source RK software directory](../SOFTWARE-DIRECTORY.md)
 - [Native clean-room reconstruction status and parity gates](../REBUILD-ROADMAP.md)
 - [Native Windows WPF rebuild source and build instructions](../rebuild/windows/README.md)
+- [Connected-device model and photo resolution, including ambiguity limits](rk-device-photo-resolution.md)
 - [Official public software and model-selected download paths](rk-official-driver-distribution-audit.md)
 - [Main software reverse-engineering report](reverse-engineering.md)
 - [Official Windows 4.6 package snapshot](rk-v4.6-package-snapshot.md)

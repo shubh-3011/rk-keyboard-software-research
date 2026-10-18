@@ -16,10 +16,11 @@ WebView2.
   Search includes
   connection type, protocol, VID/PID, and HID usage identifiers. Each record
   shows its declared key layers, OS tables, layout count, and lighting modes.
-- On-demand display of product photos directly from `drive.rkgaming.com`,
-  including model-photo selection on the device overview. The executable does
-  not contain or mirror those images or the vendor's JavaScript; a photo needs
-  internet access.
+- On-demand display of product photos directly from `drive.rkgaming.com`.
+  Connected-device photos prefer the exact software profile and layout region
+  over a shared VID/PID image alias. Where the catalog exposes several possible
+  images, the overview lets you select one and remembers that choice. Photos
+  are not bundled, so loading them needs internet access.
 - Read-only Windows USB/HID Plug and Play registry discovery. Catalogued VID/PID
   pairs can be matched to model profiles. It does not open a HID interface or
   send a device report.
@@ -54,8 +55,10 @@ WebView2.
 ## Not a full RK replacement yet
 
 PnP discovery uses Windows SetupAPI's present-device list and reads device
-metadata only. It does not confirm firmware revision or read the keyboard's
-live lighting mode/color.
+metadata only. A shared wireless-receiver VID/PID may identify several product
+labels, so the app asks you to select the matching photo in that case. The
+reported USB identity does not confirm shell finish, keycap color, firmware
+revision, or the keyboard's live lighting mode/color.
 This build does not communicate with the keyboard. It does not read or write
 HID reports, apply key mappings or lighting, capture or transfer macros,
 control displays, run updates, or read/write firmware. Its key labels, macro

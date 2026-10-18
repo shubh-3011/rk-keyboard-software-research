@@ -25,9 +25,10 @@ vendor utility.
 This is independent community research, not the official RK software, and it
 is not affiliated with RK. No vendor executable, DLL, installer, firmware
 image, or copied artwork is included. The new native app is an early local
-profile/layout browser with a separate RK Drive keyboard directory, on-demand
-photos from RK's host, and tray and startup options; it does not implement
-vendor hardware writes. The older `workbench/` prototype is a Python/WebView
+profile/layout browser with a separate RK Drive keyboard directory, automatic
+photo matching by profile and layout region, selectable photo variants,
+on-demand photos from RK's host, and tray and startup options; it does not
+implement vendor hardware writes. The older `workbench/` prototype is a Python/WebView
 profile editor. Neither is a feature-complete RK replacement. This archive
 does not claim that every RK model or revision has been reverse-engineered.
 
