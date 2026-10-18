@@ -21,6 +21,15 @@ software profile in the user's local settings. This resolves visual ambiguity
 for the user; it does not make a shared receiver ID uniquely identify the
 keyboard.
 
+For an ambiguous connected ID, the native rebuild now keeps the chosen
+software profile as the photo/layout context and labels it as selected rather
+than detected. The user's finish-photo choice is stored under that profile
+when the USB ID is shared, avoiding a false claim that a receiver ID uniquely
+names one keyboard. In a read-only PnP snapshot on 2026-10-18, this PC exposed
+VID `258A`, PID `0150`, revision `0206`; the RK Drive catalog has 46 model
+labels for VID/PID `258A:0150`, including S98. That observation alone does not
+prove the attached device's model or finish.
+
 ## What the device ID cannot tell us
 
 The public model catalogs do not map S98 case finishes or keycap colorways to

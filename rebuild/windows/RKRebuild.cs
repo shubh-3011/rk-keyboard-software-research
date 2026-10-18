@@ -984,9 +984,10 @@ namespace RkRebuild
             PnpKeyboard connected = rkDevices.Count == 1 ? rkDevices[0] : null;
             ModelProfile detectedProfile = connected == null ? null : FindProfileForDevice(connected);
             ModelProfile overviewProfile = detectedProfile ?? _selected;
-            ModelProfile photoProfile = connected == null ? _selected : detectedProfile;
+            ModelProfile photoProfile = detectedProfile ?? _selected;
             string photoPreferenceKey = PhotoPreferenceKey(connected, photoProfile ?? overviewProfile);
             List<DriveModel> photoVariants = GetPhotoVariants(connected, photoProfile);
+            int connectedPhotoCandidateCount = connected == null ? 0 : GetPhotoVariants(connected, null).Count;
             DriveModel photoModel = GetPreferredPhotoModel(photoPreferenceKey, photoVariants, connected, photoProfile);
             List<AppearancePhoto> appearanceVariants = photoProfile != null
                 && String.Equals(photoProfile.Family, "S98", StringComparison.OrdinalIgnoreCase)
@@ -1002,22 +1003,23 @@ namespace RkRebuild
                 appearance = appearanceVariants.FirstOrDefault(item => String.Equals(item.Id, "lavender-purple", StringComparison.OrdinalIgnoreCase))
                     ?? appearanceVariants.FirstOrDefault();
             summary.Children.Add(Kicker(connected == null ? "SELECTED SOFTWARE PROFILE" : "CONNECTED KEYBOARD"));
-            summary.Children.Add(Headline(connected == null ? _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
+            summary.Children.Add(Headline(connected == null ? _selected.Name : detectedProfile == null ? "Selected profile · " + _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
             summary.Children.Add(Paragraph(connected == null
                 ? "Catalog code " + _selected.Code + "  ·  Family " + Blank(_selected.Family) + "  ·  " + Blank(_selected.Region)
-                : "Windows reports VID " + connected.VendorId + "  ·  PID " + connected.ProductId + "  ·  " + connected.Name, 13));
+                : "Windows reports VID " + connected.VendorId + "  ·  PID " + connected.ProductId + "  ·  " + connected.Name + (detectedProfile == null ? "  ·  selected profile is not confirmed by this device ID" : ""), 13));
             summary.Children.Add(new Border { Height = 1, Background = Brush(231, 234, 238), Margin = new Thickness(0, 12, 0, 14) });
             summary.Children.Add(MetricGrid(new string[,] { { "KEYS", overviewProfile.KeyCount.ToString() }, { "LAYOUT", overviewProfile.LayoutId }, { "LAYERS", overviewProfile.Layers.Count.ToString() }, { "LIGHTING SLOTS", overviewProfile.LightingSlots.Count.ToString() } }));
             summary.Children.Add(new TextBlock {
                 Text = rkDevices.Count == 0 ? "Connection status: no supported RK VID/PID found in Windows PnP records" :
-                    rkDevices.Count == 1 ? "Connection status: device present  ·  model match " + (detectedProfile == null ? "not confirmed by the software profile catalog" : "matches catalog profile " + detectedProfile.Code) :
+                    rkDevices.Count == 1 ? "Connection status: device present  ·  model match " + (detectedProfile == null ? "not confirmed; USB ID appears in " + connectedPhotoCandidateCount + " RK Drive labels" : "matches catalog profile " + detectedProfile.Code) :
                     "Connection status: " + rkDevices.Count + " RK device records found  ·  choose a single device to confirm the model",
-                Foreground = Brush(rkDevices.Count == 1 ? (byte)35 : (byte)166, rkDevices.Count == 1 ? (byte)118 : (byte)95, rkDevices.Count == 1 ? (byte)75 : (byte)24),
+                Foreground = Brush(rkDevices.Count == 1 && detectedProfile != null ? (byte)35 : (byte)166, rkDevices.Count == 1 && detectedProfile != null ? (byte)118 : (byte)95, rkDevices.Count == 1 && detectedProfile != null ? (byte)75 : (byte)24),
                 FontSize = 12, Margin = new Thickness(0, 18, 0, 0), TextWrapping = TextWrapping.Wrap
             });
             summary.Children.Add(new TextBlock {
                 Text = connected == null ? "The selected profile is catalog data; it does not prove the model or revision currently connected." :
-                    (detectedProfile != null && detectedProfile.Rgb ? "RGB capability is declared for this catalog profile. Live lighting mode and color are not read by PnP identification." : "The matched model and revision remain subject to the catalog's profile coverage."),
+                    detectedProfile == null ? "The USB ID is shared by multiple RK model labels. The displayed layout and photo follow your selected profile; finish choice is manual and live RGB is not read." :
+                    (detectedProfile.Rgb ? "RGB capability is declared for this catalog profile. Live lighting mode and color are not read by PnP identification." : "The matched model and revision remain subject to the catalog's profile coverage."),
                 Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0)
             });
 
@@ -1026,7 +1028,7 @@ namespace RkRebuild
             grid.Children.Add(artCard);
             StackPanel artStack = new StackPanel { Margin = new Thickness(19) };
             artCard.Child = artStack;
-            artStack.Children.Add(Kicker(connected == null ? "MODEL PHOTO" : "CONNECTED MODEL PHOTO"));
+            artStack.Children.Add(Kicker(connected == null ? "SELECTED PROFILE PHOTO" : detectedProfile == null ? "CONNECTED DEVICE · SELECTED PROFILE" : "CONNECTED MODEL PHOTO"));
             artStack.Children.Add(new TextBlock { Text = appearance != null ? "Select the S98 product photo that matches your keyboard's finish." : photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
             Image image = new Image { Stretch = Stretch.Uniform };
             TextBlock photoStatus = new TextBlock { Text = "Loading official model photo…", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
@@ -1204,7 +1206,10 @@ namespace RkRebuild
 
         private static string PhotoPreferenceKey(PnpKeyboard device, ModelProfile profile)
         {
-            return device != null ? "device:" + device.Identity : "profile:" + (profile == null ? "unknown" : profile.Code);
+            if (device != null && profile != null && String.Equals(device.ProductId, NormalizeDeviceId(profile.Code), StringComparison.OrdinalIgnoreCase))
+                return "device:" + device.Identity;
+            if (profile != null) return "profile:" + profile.Code;
+            return device != null ? "device:" + device.Identity : "profile:unknown";
         }
 
         private string DescribeDeviceModel(PnpKeyboard device, ModelProfile profile)
