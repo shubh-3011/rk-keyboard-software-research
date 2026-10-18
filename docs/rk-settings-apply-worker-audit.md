@@ -45,8 +45,13 @@ share the single mask field.
 For a semaphore wake, `FUN_00401170` loads the root object through global
 `0x0062B380`, checks its state through vtable slot `+0x28`, and calls the
 root object's `+0x3C` method at `0x004012A0`. The call receives the shared mask
-from `0x0061972C` plus thread/device context values. The concrete vtable and
-argument values at this callsite are unresolved. Log strings referenced by
+from `0x0061972C` plus thread/device context values. The concrete runtime
+vtable and argument values at this callsite are unresolved. A later static
+follow-up maps a profile-row constructor path and selected writes to this
+active-root global; it provides a conditional class route, not a runtime
+receiver. See the
+[active-profile follow-up](rk-406-active-profile-apply-dispatch-follow-up.md).
+Log strings referenced by
 this path include “Start Thread”, “Start Apply: pDev or pHidDev=NULL”,
 “Start Apply: hDevice=0x%x, vid=%04x, pid=%04x, nFlag=0x%x, pHidDev=%x”,
 “Update settings failed!”, “Apply Over”, and “thread exit”. After the virtual

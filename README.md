@@ -154,6 +154,7 @@ as confirmed.
 - [Lighting, RGB, and color payload audit](docs/rk-rgb-lighting-color-payload-audit.md)
 - [Settings serializer and command paths](docs/rk-setting-serializer-audit.md)
 - [Settings Apply signaling, worker, and family dispatch](docs/rk-settings-apply-worker-audit.md)
+- [4.06 selected-profile Apply dispatch and conditional S98 path](docs/rk-406-active-profile-apply-dispatch-follow-up.md)
 - [Reset, periodic system-parameter worker, and stop-event paths](docs/rk-reset-and-system-parameter-path-audit.md)
 - [Recovered Apply signal callsites and masks](docs/rk-apply-signal-callers.csv)
 - [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)

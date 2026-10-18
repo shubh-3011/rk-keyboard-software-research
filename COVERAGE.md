@@ -207,8 +207,14 @@ model or runtime map.
   worker dispatch are connected in the
   [V4.6 UI-to-worker trace](docs/rk-v4.6-ui-setting-signal-audit.md).
   Profile-row logic selects the RKKB or G5 class for the checked records, but
-  the concrete receiver type and data arguments at the worker call remain
-  unresolved. G5 screen/GIF/page serializers and their virtual entries are
+  the runtime receiver type and data arguments at the worker call remain
+  unresolved. A targeted follow-up traces the selected-profile constructor into
+  the active-root global; all eight installed S98 rows conditionally select
+  G5 and its `+0x3C` Apply target. Other selected-root writes and runtime state
+  keep this a conditional path. See
+  [`docs/rk-406-active-profile-apply-dispatch-follow-up.md`](docs/rk-406-active-profile-apply-dispatch-follow-up.md)
+  and its [hash-pinned verifier](scripts/audit_rk406_active_profile_apply.py).
+  G5 screen/GIF/page serializers and their virtual entries are
   also mapped, while the screen worker's concrete target and several payload
   meanings remain open. See
   `docs/rk-settings-apply-worker-audit.md` and

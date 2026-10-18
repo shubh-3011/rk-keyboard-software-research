@@ -80,6 +80,7 @@
 - [API and system-call crosswalk](rk-system-api-crosswalk.md)
 - [UI event, persistence, and device worker](rk-ui-event-worker-path-audit.md)
 - [Settings Apply signaling, worker, and family dispatch](rk-settings-apply-worker-audit.md)
+- [RK 4.06 active-profile Apply dispatch follow-up](rk-406-active-profile-apply-dispatch-follow-up.md)
 - [All recovered Apply signal callsites and masks](rk-apply-signal-callers.csv)
 - [HID enumeration and device notifications](rk-device-enumeration-notification-audit.md)
 - [Updater UART receive state machine](rk-updater-uart-state-machine.md)
