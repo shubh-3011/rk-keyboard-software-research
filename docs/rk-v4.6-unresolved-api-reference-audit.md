@@ -63,10 +63,19 @@ a shared loop block, which calls through `EBX` at `0x004B29B0` and, on a later
 branch, at `0x004B29D2`. The surrounding instructions process wide characters,
 so character-navigation/string parsing is a likely role (**inferred**).
 
-`RegEnumKeyExW` is loaded into `EBX` at `0x004ACF65`. A branch reaches a shared
-argument-setup block and calls through `EBX` at `0x004ACFAC`; the return value
-feeds a loop condition. This supports a registry-key enumeration call path,
-but the exact key and purpose are unresolved.
+`RegEnumKeyExW` is loaded into `EBX` at `0x004ACF65`. The call at
+`0x004ACFAC` receives the current key handle, subkey index zero, a 0x100-wide-
+character name buffer, and a length pointer. On success, the returned child
+name is passed to `0x004ACEF8`, which calls the `RegOpenKeyExW` wrapper at
+`0x00436780`; the helper's returned status controls the loop. The visible code
+does not establish recursive descent or successful removal of each child.
+When enumeration returns nonzero, the code closes the current key and calls
+`0x004AC9FB` with the caller-provided path. That helper resolves
+`RegDeleteKeyExW` by name and falls back to imported `RegDeleteKeyW` at
+`0x004ACA4F` / IAT `0x005A6030`. This places enumeration/open attempts in a
+deletion-related path, while exact key/path, child-traversal semantics, and
+runtime reachability remain unresolved. See the focused
+[registry path audit](rk-v4.6-registry-subtree-delete-audit.md).
 
 `PlaySoundW` is loaded into `ESI` at `0x005155BD` and called at
 `0x005155E4` and `0x00515603` along branches in the same routine. This supports

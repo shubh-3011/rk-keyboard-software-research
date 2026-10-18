@@ -600,6 +600,7 @@ namespace RkRebuild
     {
         public string Id;
         public string Name;
+        public string Series;
         public string ImageUrl;
         public string SourceUrl;
 
@@ -615,6 +616,7 @@ namespace RkRebuild
                     .Select(item => new AppearancePhoto {
                         Id = ModelCatalog.GetString(item, "id"),
                         Name = ModelCatalog.GetString(item, "name"),
+                        Series = ModelCatalog.GetString(item, "series"),
                         ImageUrl = ModelCatalog.GetString(item, "imageUrl"),
                         SourceUrl = ModelCatalog.GetString(item, "sourceUrl")
                     })
@@ -1029,7 +1031,7 @@ namespace RkRebuild
             StackPanel artStack = new StackPanel { Margin = new Thickness(19) };
             artCard.Child = artStack;
             artStack.Children.Add(Kicker(connected == null ? "SELECTED PROFILE PHOTO" : detectedProfile == null ? "CONNECTED DEVICE · SELECTED PROFILE" : "CONNECTED MODEL PHOTO"));
-            artStack.Children.Add(new TextBlock { Text = appearance != null ? "Select the S98 product photo that matches your keyboard's finish." : photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
+            artStack.Children.Add(new TextBlock { Text = appearance != null ? appearance.Name + " · choose the matching official S98 finish photo below." : photoModel == null ? "No official product image is mapped for this profile." : "The default photo follows the detected model and layout region when the catalog provides a match.", Foreground = Brush(175, 175, 175), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) });
             Image image = new Image { Stretch = Stretch.Uniform };
             TextBlock photoStatus = new TextBlock { Text = "Loading official model photo…", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0) };
             string photoUrl = appearance != null ? appearance.ImageUrl : photoModel == null ? "" : photoModel.ImageUrl;
@@ -1049,25 +1051,51 @@ namespace RkRebuild
             artStack.Children.Add(photoStatus);
             if (appearanceVariants.Count > 1)
             {
-                ComboBox appearanceSelector = new ComboBox {
-                    Height = 31,
-                    Margin = new Thickness(0, 9, 0, 0),
-                    Padding = new Thickness(7, 4, 7, 4),
-                    ItemsSource = appearanceVariants,
-                    DisplayMemberPath = "Name",
-                    SelectedItem = appearance,
-                    ToolTip = "Choose the official S98 appearance photo that matches the physical keyboard."
-                };
-                appearanceSelector.SelectionChanged += delegate {
-                    AppearancePhoto selectedAppearance = appearanceSelector.SelectedItem as AppearancePhoto;
-                    if (selectedAppearance == null) return;
-                    appearance = selectedAppearance;
-                    _settings.AppearanceVariantOverrides[appearancePreferenceKey] = selectedAppearance.Id;
-                    SettingsStore.Save(_settings);
-                    LoadDriveImage(image, selectedAppearance.ImageUrl, photoStatus);
-                };
-                artStack.Children.Add(appearanceSelector);
-                artStack.Children.Add(new TextBlock { Text = "Photo selection is manual; USB identity does not report the case or keycap finish. The RGB swatch remains a profile value, not a live reading.", Foreground = Brush(150, 150, 150), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+                artStack.Children.Add(new TextBlock { Text = "CHOOSE YOUR S98 FINISH", Foreground = Brush(111, 120, 133), FontSize = 9, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 12, 0, 5) });
+                WrapPanel appearanceChoices = new WrapPanel { Margin = new Thickness(0, 0, 0, 0) };
+                List<Button> appearanceCards = new List<Button>();
+                foreach (AppearancePhoto option in appearanceVariants)
+                {
+                    bool optionIsSelected = String.Equals(option.Id, appearance.Id, StringComparison.OrdinalIgnoreCase);
+                    Button card = new Button {
+                        Width = 126,
+                        Height = 92,
+                        Padding = new Thickness(4),
+                        Margin = new Thickness(0, 0, 6, 6),
+                        Background = Brush(255, 255, 255),
+                        BorderBrush = optionIsSelected ? Brush(49, 94, 181) : Brush(225, 229, 232),
+                        BorderThickness = new Thickness(optionIsSelected ? 2 : 1),
+                        Cursor = Cursors.Hand,
+                        IsTabStop = true,
+                        Tag = option,
+                        ToolTip = option.Name + " · " + (String.IsNullOrWhiteSpace(option.Series) ? "RK official product photo" : option.Series)
+                    };
+                    StackPanel optionBody = new StackPanel();
+                    Image thumbnail = new Image { Height = 54, Stretch = Stretch.Uniform };
+                    TextBlock thumbnailStatus = new TextBlock { Visibility = Visibility.Collapsed };
+                    LoadDriveImage(thumbnail, ThumbnailUrl(option.ImageUrl, 380), thumbnailStatus);
+                    optionBody.Children.Add(thumbnail);
+                    optionBody.Children.Add(new TextBlock { Text = option.Name, Foreground = Brush(48, 56, 68), FontSize = 9, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(1, 2, 1, 0) });
+                    optionBody.Children.Add(new TextBlock { Text = String.Equals(option.Series, "Special edition", StringComparison.OrdinalIgnoreCase) ? "Special edition" : "Standard finish", Foreground = Brush(120, 128, 140), FontSize = 8, Margin = new Thickness(1, 1, 1, 0) });
+                    card.Content = optionBody;
+                    card.Click += delegate {
+                        appearance = option;
+                        _settings.AppearanceVariantOverrides[appearancePreferenceKey] = option.Id;
+                        SettingsStore.Save(_settings);
+                        foreach (Button appearanceCard in appearanceCards)
+                        {
+                            AppearancePhoto cardPhoto = appearanceCard.Tag as AppearancePhoto;
+                            bool selected = cardPhoto != null && String.Equals(cardPhoto.Id, option.Id, StringComparison.OrdinalIgnoreCase);
+                            appearanceCard.BorderBrush = selected ? Brush(49, 94, 181) : Brush(225, 229, 232);
+                            appearanceCard.BorderThickness = new Thickness(selected ? 2 : 1);
+                        }
+                        LoadDriveImage(image, option.ImageUrl, photoStatus);
+                    };
+                    appearanceCards.Add(card);
+                    appearanceChoices.Children.Add(card);
+                }
+                artStack.Children.Add(appearanceChoices);
+                artStack.Children.Add(new TextBlock { Text = "Finish photo is saved for this model. USB identity cannot detect the physical color; live RGB is not read.", Foreground = Brush(150, 150, 150), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 0) });
             }
             else if (photoVariants.Count > 1)
             {
@@ -2173,6 +2201,19 @@ namespace RkRebuild
             openSite.Click += delegate { OpenOfficialUrl("https://drive.rkgaming.com/"); };
             details.Children.Add(openSite);
             details.Children.Add(new TextBlock { Text = "Static registry metadata only. Shared receiver IDs and model labels can be ambiguous; the directory does not confirm hardware identity.", Foreground = Brush(111, 120, 133), FontSize = 9, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 9, 0, 0) });
+        }
+
+        private static string ThumbnailUrl(string imageUrl, int width)
+        {
+            Uri uri;
+            if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out uri)) return imageUrl;
+            string query = uri.Query.TrimStart('?');
+            if (Regex.IsMatch(query, "(^|&)width=\\d+", RegexOptions.IgnoreCase))
+                query = Regex.Replace(query, "(^|&)width=\\d+", "$1width=" + width, RegexOptions.IgnoreCase);
+            else
+                query = String.IsNullOrEmpty(query) ? "width=" + width : query + "&width=" + width;
+            UriBuilder builder = new UriBuilder(uri) { Query = query };
+            return builder.Uri.ToString();
         }
 
         private async void LoadDriveImage(Image target, string imageUrl, TextBlock status)

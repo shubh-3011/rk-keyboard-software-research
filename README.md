@@ -27,7 +27,7 @@ is not affiliated with RK. No vendor executable, DLL, installer, firmware
 image, or copied artwork is included. The new native app is an early local
 profile/layout browser with a separate RK Drive keyboard directory, automatic
 photo matching by profile and layout region, selectable photos for ambiguous
-IDs, and a manual S98 finish-photo selector using RK-hosted images. It does not
+IDs, and an S98 finish-photo gallery using RK-hosted thumbnails. It does not
 implement vendor hardware writes. The older `workbench/` prototype is a Python/WebView
 profile editor. Neither is a feature-complete RK replacement. This archive
 does not claim that every RK model or revision has been reverse-engineered.
@@ -51,9 +51,9 @@ The old downloadable `RK-Research-Workbench.exe` is a limited Python
 profile-editor prototype packaged with PyInstaller and shown in WebView2. The
 new native reconstruction is separate source in [`rebuild/windows/`](rebuild/windows/)
 and builds as a self-contained C# WPF app. It provides local profile browsing,
-a separate RK Drive keyboard directory, official model-photo links and manual
-S98 appearance choices, read-only
-Windows Plug and Play identification, key-label drafts, macro notes, tray
+a separate RK Drive keyboard directory, official model-photo links, a manual
+S98 finish-photo gallery, read-only Windows Plug and Play identification,
+key-label drafts, macro notes, tray
 restore/exit, and opt-in startup. It does not yet implement HID communication
 or full RK workflows. The
 Windows rebuild reads RK's skin, fonts, and installed profile artwork locally;

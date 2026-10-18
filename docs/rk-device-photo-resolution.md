@@ -33,12 +33,12 @@ prove the attached device's model or finish.
 ## What the device ID cannot tell us
 
 The public model catalogs do not map S98 case finishes or keycap colorways to
-distinct USB product IDs. The native app now offers six official S98 appearance
-photos from RK's public product pages and remembers a user-selected photo for
-the connected device/profile. This is a manual appearance choice, not a finish
-detected from the USB identity. PnP metadata also does not report the currently
-active RGB effect or color, so the app does not present a product photo as a
-live view of keyboard lighting.
+distinct USB product IDs. The native app now presents six official S98 finish
+photos as thumbnail choices, updates the overview photo when one is selected,
+and remembers the choice for the connected device/profile. This is a manual
+appearance choice, not a finish detected from the USB identity. PnP metadata
+also does not report the currently active RGB effect or color, so the app does
+not present a product photo as a live view of keyboard lighting.
 
 Product photos load from RK Drive or RK's public store over HTTPS. They are not
 bundled in the executable or repository, and an internet connection is needed

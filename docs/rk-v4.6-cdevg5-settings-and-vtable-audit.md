@@ -65,7 +65,10 @@ page transfer, UI path and protocol limits are documented in the
 table additionally contains power, password and real-data reads; the
 command-`0x11` reset write; command-`0x08` writer; input/macro conversion
 helpers; and cancel-event state. Their exact slot, target and evidence are
-listed in the CSV.
+listed in the CSV. A follow-up traces the `+0x34` password-query method as a
+command-`0x82` feature-report request/response that copies chunks to caller
+memory; its caller and returned-data meaning remain unresolved. See the
+[password-query read-path audit](rk-v4.6-cdevg5-password-query-audit.md).
 
 ## Limits and remaining work
 

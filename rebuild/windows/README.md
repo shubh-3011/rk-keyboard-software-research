@@ -21,10 +21,11 @@ WebView2.
   over a shared VID/PID image alias. Where the catalog exposes several possible
   images, the overview lets you select one and remembers that choice. Photos
   are not bundled, so loading them needs internet access.
-- For the ANSI S98 profile, an appearance selector offers six official product
-  photos (Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition, and
-  Winter Limited Edition). The selection is manual because USB identity does
-  not report physical finish or keycap colors; the photo is fetched at runtime.
+- For the ANSI S98 profile, a six-photo gallery offers official product
+  thumbnails (Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition,
+  and Winter Limited Edition). Selecting a finish updates the large photo and
+  saves the choice for the device/profile. USB identity does not report
+  physical finish or keycap colors; photos are fetched at runtime.
 - Read-only Windows USB/HID Plug and Play registry discovery. Catalogued VID/PID
   pairs can be matched to model profiles. It does not open a HID interface or
   send a device report.

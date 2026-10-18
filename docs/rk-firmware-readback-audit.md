@@ -156,6 +156,22 @@ capture. No inspected feature-read path streams a full firmware image to a
 host file. A separate conditional UART response-to-file path is present and
 described below.
 
+### V4.6 main-driver G5 reads
+
+The separate, hash-pinned V4.6 `DeviceDriver.exe` also contains a G5
+`+0x70` `GetRealData` route: its wrapper calls helper `0x00410890`, which
+sends a command-`0x88` feature request, reads matching response chunks capped
+at `0x200` bytes, and copies them into caller memory. The caller and meaning
+of those bytes are unresolved; the helper contains no file sink. The nearby
+G5 `+0x34` password-query method uses command `0x82` and likewise copies
+response data into caller memory. Neither method establishes that its data is
+firmware or that a full image is exported. Their requests include a feature
+write, so they are not passive reads. See the
+[V4.6 G5 password-query audit](rk-v4.6-cdevg5-password-query-audit.md) and
+[vtable evidence map](rk-v4.6-cdevg5-vtable-map.csv). This V4.6 driver is a
+different binary from the installed 4.06 updater and its findings do not
+resolve the updater's UART file-sink path.
+
 The updater also contains a separate serial transport and event-driven
 dispatcher. `FUN_00404E60` calls `CreateFileW` at `0x00404F09` with
 `GENERIC_READ | GENERIC_WRITE`, `OPEN_EXISTING`, and overlapped I/O, then sets

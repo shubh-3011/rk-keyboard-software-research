@@ -147,12 +147,16 @@ model or runtime map.
   worker `+0x44` dispatch, `ApplySetting` mask branches, and shared 65-byte
   feature-report writer. Both class audits leave UI triggers, payload meanings,
   full model support, and hardware acceptance open; the complete G5 protocol
-  map remains incomplete. See the
+  map remains incomplete. A targeted trace corrects the `+0x34` password
+  query to command `0x82` and maps its chunk copies to caller memory; the
+  separate `+0x70` command-`0x88` return meaning and caller remain unresolved.
+  See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
   [reproducer](scripts/audit_rk46_profile_family_rtti.py), plus the
   [G5 vtable/settings audit](docs/rk-v4.6-cdevg5-settings-and-vtable-audit.md),
-  [29-slot map](docs/rk-v4.6-cdevg5-vtable-map.csv), and
+  [29-slot map](docs/rk-v4.6-cdevg5-vtable-map.csv),
+  [password-query trace](docs/rk-v4.6-cdevg5-password-query-audit.md), and
   [G5 verifier](scripts/audit_rk46_cdevg5_vtable.py), plus the
   [RKKB vtable/settings audit](docs/rk-v4.6-cdevrkbb-settings-and-vtable-audit.md),
   [26-slot map](docs/rk-v4.6-cdevrkbb-vtable-map.csv), and
@@ -212,6 +216,11 @@ model or runtime map.
   follow-up still have caller-fed values, cached-pointer consumers, external
   callers, or runtime reachability gaps; see
   `docs/rk-dynamic-api-resolution-audit.md`.
+- A hash-pinned V4.6 follow-up traces the indirect `RegEnumKeyExW` call into
+  child-key name/open handling and a caller-path `RegDeleteKeyExW`/`RegDeleteKeyW`
+  helper. This places it in a deletion-related path, but does not prove correct
+  recursive traversal, the exact registry path, or runtime reachability; see
+  `docs/rk-v4.6-registry-subtree-delete-audit.md`.
 - A hash-pinned 4.06 follow-up resolves the main driver's `OLEACC.dll`
   delay-import descriptor, all three export names, and the shared
   `LoadLibraryA`/`GetProcAddress` helper's IAT patch and tail-dispatch path.
