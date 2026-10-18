@@ -143,10 +143,13 @@ branches based on `wParam`:
 | 3 | Calls status helper `FUN_00409A50`; on nonzero return, updates `0x041C`, disables `0x0419` and `0x03E9`, kills timer 3, sleeps one second, and creates `FUN_00406BD0`. | This supplies another static entry to the follow-on section worker. The timer's creation and runtime trigger are unresolved. |
 | 4 | Calls `FUN_0040A580`, which contains the `HidD_SetFeature` site above. | No direct timer-4 creation edge from the click handler was recovered. |
 
-The audited code and API cross-reference inventory do not establish where
-these timer IDs are first scheduled for this dialog or whether the timer-3
-path is reached after a particular `0x0419` click. Do not infer a runtime
-sequence from the presence of a `WM_TIMER` branch alone.
+The command handler and its immediate workers contain no direct `SetTimer`
+call. A separate inventory of every imported `SetTimer` reference in this
+exact image found no window timer scheduled with ID 2, 3, or 4; it accounts
+for the direct calls, cached-pointer calls, and variable-ID helpers in the
+[timer-origin audit](rk-updater-timer-origin-static-audit.md). The creation
+or delivery source for these three handler IDs remains unresolved. Do not
+infer a runtime sequence from the presence of a `WM_TIMER` branch alone.
 
 ## Separate UART receive state machine
 
@@ -195,5 +198,8 @@ limits separate from the `.upf` HID section-transfer path.
 - [`rk-updater-progress-control-audit.md`](rk-updater-progress-control-audit.md):
   progress-control bindings and all 14 statically resolved `PBM_SETPOS` call
   sites (13 direct IAT calls and one register-indirect call).
+- [`rk-updater-timer-origin-static-audit.md`](rk-updater-timer-origin-static-audit.md):
+  imported `SetTimer` reference inventory and the unresolved origin of dialog
+  timer IDs 2, 3, and 4.
 - [`rk-uart-firmware-path-semantics-audit.md`](rk-uart-firmware-path-semantics-audit.md):
   response-to-stream sinks and their unresolved reachability.

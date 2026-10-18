@@ -101,11 +101,12 @@ model or runtime map.
   See the [Side LED audit](docs/rk-v4.6-side-led-static-audit.md) and its
   [message-map follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md).
   Other detailed native control-flow reports remain tied to the 4.06 binaries.
-- A separate 4.6 screen/GIF trace maps image selection and profile GIF loading,
-  RGB565 frame conversion, G5 vtable methods for parameter/page transfer, and
-  the `HidD_SetFeature` writer path. It does not establish that the selected
-  image owns the frame buffer sent to that path, nor that a physical model
-  accepts it. See
+- A separate 4.6 screen/GIF trace maps the user-selected NewGIF path through
+  shared frame-list fields, the 512-entry worker snapshot, the RGB565
+  converter, G5 vtable methods for parameter/page transfer, and the
+  `HidD_SetFeature` writer path. This closes the static selected-file-to-frame
+  array gap for the multi-frame path; decoder details, visible control labels,
+  runtime execution, and physical-model acceptance remain unverified. See
   [`docs/rk-v4.6-screen-gif-ui-transport-audit.md`](docs/rk-v4.6-screen-gif-ui-transport-audit.md).
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
@@ -263,7 +264,11 @@ model or runtime map.
   in the per-API audit. A full-image pointer-reference scan adds evidence for
   the two Update.exe ANSI loader imports and eight unins000.exe scrollbar
   fallback imports, but establishes no invocation and classifies none as
-  unused; see `docs/rk-remaining-native-api-gap-deep-scan.md` and
+  unused. An instruction-level census maps the nine direct updater loader
+  helper calls to wide descriptors and records zero exact pointer matches for
+  the ANSI descriptors; indirect/computed selection remains unresolved. See
+  `docs/rk-remaining-native-api-gap-deep-scan.md`,
+  `docs/rk-update-ansi-loader-call-boundary-audit.md`, and
   `docs/rk-remaining-api-reference-scan.csv`.
   The `PostQuitMessage` wrapper path is tied to seven callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are

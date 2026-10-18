@@ -92,15 +92,59 @@ The profile display loader at `0x00473C50` formats the bundled path
 it calls the GDI+ `GdipCreateBitmapFromFile` thunk with that path, queries
 image dimensions, and obtains the frame count at `0x00473E2F`. This is evidence
 that the package's profile GIF is loaded into the application's screen-image
-state; it is not evidence that a user's chosen file is the same object passed
-to the writer below.
+state. A separate user-selected file path is statically connected to the frame
+objects consumed by the screen transfer worker below.
 
 GDI+ API names and their 4.6 thunk sites are also listed in the
 [4.6 native API call-site inventory](rk-v4.6-native-api-call-sites.csv). The
 inventory records sites such as `GdipImageGetFrameCount` at `0x00471746` and
 `GdipImageSelectActiveFrame` at `0x004719EA`. These calls support multi-frame
-image processing, while the selected-file-to-frame-array ownership chain
-remains unresolved.
+image processing.
+
+## Recovered user-file-to-frame-worker bridge
+
+The 4.6 image/GIF control flow contains a concrete bridge from the NewGIF file
+dialog to the frame array consumed by the screen worker. This is static
+evidence: the program was not run and no device report was sent.
+
+1. The UI dispatcher at `0x00474780` calls NewGIF helper `0x00476D30` with
+   `EBX = parent + 0x88`. The helper branches on `[EBX+0x64]` and enters its
+   multi-frame `NewGIF` picker at `0x00476E38` when the frame count is not one.
+   After a successful dialog return, execution reaches `0x00476E94` and the
+   per-frame loop beginning at `0x00476EFF`; that loop walks the linked list at
+   `[EBX+0x6C]`, calls frame helper `0x0046E4A0` for each listed image object,
+   then calls finalizers `0x0046E5E0` and `0x0046E390`.
+2. This is the same count and list later read by the frame-snapshot handler.
+   There, `EDI = parent + 0xE0`; `[EDI+0x0C]` is the same address as
+   `[EBX+0x64]` (`parent + 0xEC`), and `[EDI+0x14]` is the same address as
+   `[EBX+0x6C]` (`parent + 0xF4`). The handler walks that list, copies each
+   node's first pointer into a temporary object's pointer array beginning at
+   `+0x3A8`, stores the count at `+0x3A4`, caps the copy at 512 entries, and
+   calls `0x004811E6` with that temporary object.
+3. The temporary object's constructor `0x0046C4D0` installs vtable
+   `0x005E2ABC`. Setup function `0x004811E6` calls the dialog-creation helper
+   `0x0048102B`, which reaches `CreateDialogIndirectParamW` at `0x0048113E`
+   with dialog procedure `0x00480AD7`. On `WM_INITDIALOG` (`0x110`), that
+   procedure retrieves the associated object and invokes vtable slot `+0x150`;
+   the exact pointer at `0x005E2C0C` for the temporary object's vtable is
+   `0x0046CE50`.
+4. `0x0046CE50` calls thread helper `0x0057552B` with worker callback
+   `0x0046CA80` and the temporary object. The helper reaches the direct
+   `CreateThread` call at `0x0057559F`; its start wrapper `0x005754B4`
+   dispatches the saved callback and context. The callback scans the same
+   `+0x3A4` count and `+0x3A8` pointer array. Its frame loop at `0x0046CCB1`
+   indexes those pointers, calls the RGB565 converter at `0x0046C7D0`, then
+   calls the device vtable slot `+0x54` at `0x0046CCFC`. The GIF-parameter
+   method at `0x0046CC22` calls slot `+0x58` before that loop.
+
+These address and field equalities connect the selected-file processing path,
+the shared frame list, the worker's frame array, and the documented G5 HID
+writer path. They establish that this code path is designed to pass the
+selected-image frame objects into the screen transfer routine. They do not
+prove that a particular model accepts the data, complete UI label/control
+identity, exact decoder semantics for every helper, or successful runtime
+behavior. The single-image picker branch and profile-bundled `screen.gif`
+loader remain separate inputs to shared screen state.
 
 ## Frame conversion and `BurnScreen` transfer sequence
 
@@ -147,13 +191,13 @@ successful transfer to a connected keyboard.
 ## Remaining gaps and model limits
 
 - The MFC table identifies message handlers but strips their class/method
-  names. The selected UI control's full handler-to-image-object ownership is
-  not recovered.
-- The image file picker and `0x004762E0` processing path are visible, and the
-  `BurnScreen` converter-to-writer path is visible, but this audit does not
-  prove the chosen-file object is what populates the frame array consumed by
-  `BurnScreen`. The profile-bundled `screen.gif` loader is a separate observed
-  path.
+  names. The NewGIF-to-worker object path is mapped, but the visible command
+  label/control identity and class owner of the candidate map are unresolved.
+- The multi-frame `NewGIF` picker and shared frame-list-to-worker ownership
+  are mapped. The exact decoder semantics of `0x0046E2F0`, `0x0046E4A0`, and
+  adjacent frame helpers, plus the single-image picker behavior, are not fully
+  recovered. The profile-bundled `screen.gif` loader is a separate observed
+  input to screen state.
 - The `0x0C` report is identified as the G5 page-transfer request by its code
   location, log context and call chain. A complete field-by-field protocol
   definition, CRC algorithm interpretation, device acceptance behavior and

@@ -53,10 +53,14 @@ progress control `0x0413`; it is not an unresolved window receiver. The
 three chunk-state formulas are also traced to chunk count and total length.
 This does not prove which handler is reached for a given selected firmware,
 device, or click. The second progress control `0x041B` has no direct position
-update found. Timer creation/ownership, dynamic aliases, and the relationship
-between the UART state machine and the `0x0419` button workflow remain
-unresolved. These limits are separate from whether the binary contains
-transfer routines capable of HID writes.
+update found. The imported `SetTimer` reference inventory found no window
+timer creation for the `WM_TIMER` handler's IDs 2, 3, or 4; their
+scheduling/delivery source remains unresolved. Ownership of the other timer
+IDs, dynamic aliases, and the relationship between the UART state machine
+and the `0x0419` button workflow remain unresolved. See the
+[timer-origin audit](rk-updater-timer-origin-static-audit.md). These limits
+are separate from whether the binary contains transfer routines capable of
+HID writes.
 
 ## Related evidence
 

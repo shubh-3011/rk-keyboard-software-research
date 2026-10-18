@@ -74,7 +74,7 @@ static interpretations, not runtime observations.
 | `WM_PAINT` (`0x000F`) | `0x00407C80` | Draws/centers the dialog icon. |
 | `WM_QUERYDRAGICON` (`0x0037`) | `0x00407D60` | Returns the dialog icon field at `this+0xC8`. |
 | Legacy `WM_CTLCOLOR` (`0x0019`) | `0x00407D70` | Selects text color from dialog state and calls a virtual method; concrete target remains unresolved. |
-| `WM_TIMER` (`0x0113`) | `0x00409950` | Handles timer IDs 2, 3, and 4. ID 3 calls status helper `0x00409A50`; on success it updates controls, kills timer 3, sleeps 1 second, and creates worker thread `0x00406BD0`. IDs 2 and 4 call other helpers. Timer creation/trigger semantics remain unresolved. |
+| `WM_TIMER` (`0x0113`) | `0x00409950` | Handles timer IDs 2, 3, and 4. ID 3 calls status helper `0x00409A50`; on success it updates controls, kills timer 3, sleeps 1 second, and creates worker thread `0x00406BD0`. IDs 2 and 4 call other helpers. The pinned image's imported `SetTimer` references contain no identified window timer for IDs 2, 3, or 4; scheduling/delivery and runtime trigger remain unresolved. See the [timer-origin audit](rk-updater-timer-origin-static-audit.md). |
 | `WM_COMMAND` ID `0x0002` | `0x00407DE0` | Calls a virtual dispatch at vtable `+0x180`, default/cancel-like by position, but its exact concrete target is unresolved. |
 | Message `0x0401` | `0x00407E00` | Consumes the serial receive queue; see the [UART state-machine report](rk-updater-uart-state-machine.md). |
 | `WM_COMMAND` ID `0x0419` | `0x00409DC0` | One-click firmware upgrade handler; complete state sequence remains under audit. |

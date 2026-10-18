@@ -32,7 +32,10 @@ control/dialog records use the `LoadLibraryA` thunk. The surrounding helper
 sequence at `0x00416570` calls the descriptor's first field with its module
 name field, then passes the result and export-name parameter to
 `GetProcAddress` at `0x00416592`. This explains what the records would do if
-selected; it does not prove selection.
+selected; it does not prove selection. A focused, instruction-level census
+now maps all nine direct calls to that helper to their exact wide descriptor
+and export-name source, and records zero exact in-image pointer matches to the
+four ANSI descriptor bases; see the [updater ANSI loader call-boundary audit](rk-update-ansi-loader-call-boundary-audit.md).
 
 Recovered direct-call sites to `0x00416570` are `0x004163C1`, `0x004163F1`,
 `0x004164BB`, `0x004164EB`, `0x004165FE`, `0x0041664F`, `0x004171CE`,
