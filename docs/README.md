@@ -64,6 +64,7 @@
 - [Remaining API reference scan evidence](rk-remaining-api-reference-scan.csv)
 - [Dynamic API lookup candidates](rk-dynamic-api-targets.csv)
 - [Dynamic API argument and resolver paths](rk-dynamic-api-resolution-audit.md)
+- [DeviceDriver.exe OLEACC delay-import resolver and call paths](rk-main-delayload-api-audit.md)
 - [Follow-up: dynamic API export names and cached-pointer consumers](rk-dynamic-api-consumer-gap-audit.md)
 - [Raw system-call byte matches](rk-native-syscall-byte-matches.csv)
 - [API and system-call crosswalk](rk-system-api-crosswalk.md)

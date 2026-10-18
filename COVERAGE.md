@@ -143,6 +143,12 @@ model or runtime map.
   follow-up still have caller-fed values, cached-pointer consumers, external
   callers, or runtime reachability gaps; see
   `docs/rk-dynamic-api-resolution-audit.md`.
+- A hash-pinned 4.06 follow-up resolves the main driver's `OLEACC.dll`
+  delay-import descriptor, all three export names, and the shared
+  `LoadLibraryA`/`GetProcAddress` helper's IAT patch and tail-dispatch path.
+  This closes those argument/consumer gaps only; runtime reachability and
+  other dynamic API questions remain open. See
+  `docs/rk-main-delayload-api-audit.md`.
 - A focused follow-up resolves fixed export strings and static cached-pointer
   consumers for the DeviceDriver UxTheme wrappers and Update common-control,
   common-dialog, and property-sheet helpers. The `DrawThemeParentBackground`

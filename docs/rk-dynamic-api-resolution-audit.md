@@ -24,8 +24,8 @@ execution.
 | Callsite | API | Static argument and result flow | Status |
 | --- | --- | --- | --- |
 | `0x00473B25` | `LoadLibraryA` | Passes caller argument `[EBP+8]` as the ANSI module name. Saves the returned module handle in a local and returns it through cleanup logic. | **Proven:** module name is a function argument. **Unresolved:** its caller-provided value and target module. |
-| `0x00589485` | `LoadLibraryA` | Passes the runtime ANSI name at `[EBP-0x38]`; stores the returned handle in `EDI`. | **Proven:** dynamically sourced module name and handle. **Unresolved:** exact string value and caller source. |
-| `0x0058955C` | `GetProcAddress` | Uses the handle in `EDI` and runtime export-name pointer `[EBP-0x30]`; the returned function pointer is called at `0x00589580`. | **Proven:** both module and export names are runtime data, and the returned pointer is invoked. **Unresolved:** precise export name and higher-level function purpose. |
+| `0x00589485` | `LoadLibraryA` | Part of the shared delay-load helper `0x0058938F`; it passes the DLL name rebased from the delay-import descriptor at `0x005F90BC`. | **Proven:** the descriptor names `OLEACC.dll`, and the returned module handle is used for export lookup. See the [delay-loaded accessibility API audit](rk-main-delayload-api-audit.md). |
+| `0x0058955C` | `GetProcAddress` | The same helper selects an export name from the descriptor's INT entry matching the IAT slot passed by its thunk. The result is stored in that IAT slot at `0x005895A3`, returned to the shared delay thunk, and tail-dispatched at `0x00589367`. | **Proven:** the three possible names are `AccessibleObjectFromWindow`, `LresultFromObject`, and `CreateStdAccessibleObject`. At `0x00589580`, the helper instead calls through function-pointer global `0x00609A50`; this is not a call through the resolved export pointer. See the [delay-loaded accessibility API audit](rk-main-delayload-api-audit.md). |
 | `0x00474F91` | `LoadLibraryW` | A small module wrapper first calls `GetModuleHandleW` with the wide name at `[ESI+0x0C]`; if that returns null, it calls `LoadLibraryW` with the same name. It caches the resulting handle at `[ESI+4]` and records whether it loaded the module at `[ESI+8]`. | **Proven:** existing-module lookup, fallback load, and handle/ownership bookkeeping. **Unresolved:** name value and higher-level consumer. |
 | `0x0047B34F` | `LoadLibraryW` | Passes `[EBP+8]` and saves the returned handle for the return path. The cleanup block at `0x0047B36F` preserves last-error state through `GetLastError`/`SetLastError` calls (`0x0047B383`/`0x0047B39D`); it does not call `FreeLibrary` at this site. | **Proven:** parameter-driven load and last-error cleanup. **Unresolved:** module name, caller context, and whether another owner later releases the handle. |
 | `0x0047F568` | `LoadLibraryW` | Passes a temporary wide-character buffer at `[EBP-0x230]`. A preceding helper fills the `0x112`-character buffer from runtime arguments and checks the produced length before loading. | **Proven:** generated/runtime module name is passed to the loader. **Unresolved:** buffer contents, helper semantics, and caller. |
@@ -91,13 +91,12 @@ review of all rows found these additional argument and pointer-use paths:
   (`0x00573867`). The inspected wrappers call these when available or retain
   a documented fallback.
 
-The generated-name loader at `0x00589485` still receives its module name at
-`[EBP-0x38]`; `GetProcAddress` at `0x0058955C` receives its export name at
-`[EBP-0x30]` and its returned pointer is invoked at `0x00589580`. The exact
-runtime names remain unknown. The `DllGetVersion` wrapper at `0x0055F001`
-has no direct call reference to its entry at `0x0055EFFA`, so its static
-reachability is also unresolved. Static inspection of the 47 rows does not
-establish runtime branch execution or calls made inside Windows libraries.
+The delay-load helper at `0x00589485`/`0x0058955C` is resolved in the
+[focused accessibility API audit](rk-main-delayload-api-audit.md). The
+separate `DllGetVersion` wrapper at `0x0055F001` still has no direct call
+reference to its entry at `0x0055EFFA`, so its static reachability remains
+unresolved. Static inspection of the 47 rows does not establish runtime
+branch execution or calls made inside Windows libraries.
 
 ## Installer helper resolver paths
 
