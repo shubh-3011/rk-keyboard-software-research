@@ -85,6 +85,34 @@ The virtual call is family-dependent: this trace does not prove that every
 connected descriptor selects G5 or that every profile's request reaches the
 same implementation.
 
+## Related profile-mutation callers
+
+Two other ledger entries, `0x0041ED5A` and `0x0041F19A`, also enqueue value
+`1` behind the same `ApplyNow` gate. Their local code is a data-mutation path,
+not enough evidence to name a visible button or control:
+
+- At `0x0041EC50`–`0x0041ED4A`, the method reads the selected profile index
+  from `this+0x2184`, consults the 16-byte records based at `0x00630870`,
+  writes a record into a `this`-relative table, sets a flag at `this+0x30`,
+  and calls `0x00418890`. The gated queue call is at `0x0041ED5A`.
+- At `0x0041EE30`–`0x0041F18A`, a second method also checks the selected
+  profile index and record table, updates a bit in `this+0x30`, and calls the
+  same helper. Its gated queue call is at `0x0041F19A`.
+- Helper `0x00418890` rejects a nonnegative index at or above `0x84` (132);
+  negative indices instead load a fallback index from `this+0x80` and return
+  if that value is negative. It writes a 32-bit value to the indexed row at
+  `this+0xAC+36*index`, then calls the imported `USER32!InvalidateRect` at
+  IAT `0x005A6744` on the window at `this+0x20` with a null rectangle and erase
+  enabled. This proves a view invalidation, not the user's semantic name for
+  the row. The fallback index does not pass through the `0x84` upper-bound
+  comparison in this helper.
+
+The next call in both paths is `0x00460DA0` with global `0x0062A1FC`; its
+effect and the UI origins of both mutation methods remain open. The evidence
+therefore separates these two direct queue producers from the specifically
+identified Restore/Apply controls without claiming their originating UI is
+known.
+
 ## Findings and remaining limits
 
 - The visible **Restore** and **Apply** controls are both statically connected

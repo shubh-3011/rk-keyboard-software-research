@@ -37,6 +37,18 @@ EXPECTED = {
     0x0040B2AD: bytes.fromhex(
         "8b f7 e8 8c 05 00 00 83 3d 34 a2 62 00 00 74 0a 6a 01 e8 3c 5e ff ff"
     ),
+    0x00418890: bytes.fromhex(
+        "3d 84 00 00 00 7d 26 85 c0 7d 0a 8b 81 80 00 00 00 85 c0 7c 18 "
+        "8d 04 c0 6a 01 89 94 81 ac 00 00 00 8b 41 20 6a 00 50 ff 15 44 67 5a 00 c3"
+    ),
+    0x0041ED44: bytes.fromhex(
+        "8b 8d ac 21 00 00 e8 41 9b ff ff 83 3d 34 a2 62 00 00 74 0a "
+        "6a 01 e8 a1 23 fe ff"
+    ),
+    0x0041F184: bytes.fromhex(
+        "8b 89 ac 21 00 00 e8 01 97 ff ff 83 3d 34 a2 62 00 00 74 0a "
+        "6a 01 e8 61 1f fe ff"
+    ),
     0x00456573: bytes.fromhex("8b 2d e0 63 5a 00"),
     0x0045669F: bytes.fromhex(
         "8d 8c 24 70 05 00 00 51 6a 00 68 24 fc 5d 00 68 44 00 5d 00 ff d5"
@@ -112,6 +124,16 @@ def main() -> None:
     if not has_profile_int:
         raise SystemExit("KERNEL32!GetPrivateProfileIntW import not found at 0x005A63E0")
 
+    has_invalidate_rect = any(
+        entry.dll.lower() == b"user32.dll"
+        and imp.name == b"InvalidateRect"
+        and imp.address == 0x005A6744
+        for entry in pe.DIRECTORY_ENTRY_IMPORT
+        for imp in entry.imports
+    )
+    if not has_invalidate_rect:
+        raise SystemExit("USER32!InvalidateRect import not found at 0x005A6744")
+
     config_path = args.config or args.driver.with_name("Cfg.ini")
     config_data = config_path.read_bytes()
     config_digest = hashlib.sha256(config_data).hexdigest()
@@ -132,7 +154,9 @@ def main() -> None:
     if apply_now != "1":
         raise SystemExit(f"expected packaged [OPT] ApplyNow=1, got {apply_now!r}")
 
-    print(f"Verified {len(EXPECTED)} code slices, UI/config strings, API import, and Cfg.ini.")
+    print(
+        f"Verified {len(EXPECTED)} code slices, UI/config strings, API imports, and Cfg.ini."
+    )
     print(f"DeviceDriver.exe SHA-256: {digest}")
     print(f"Cfg.ini SHA-256: {config_digest} ([OPT] ApplyNow={apply_now})")
 
