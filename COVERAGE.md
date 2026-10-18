@@ -189,6 +189,11 @@ model or runtime map.
   caller is attributable to G5 `+0x70`, and its firmware meaning/range remain
   unresolved. See
   [`docs/rk-v4.6-hid-getfeature-argument-audit.md`](docs/rk-v4.6-hid-getfeature-argument-audit.md).
+  A focused caller audit screens signature-compatible `+0x70` sites against
+  same-receiver larger-interface slots and point-output use; none is
+  attributable to G5. Vtable aliases and other dispatch encodings remain
+  unexcluded. See
+  [`docs/rk-v4.6-cdevg5-realdata-caller-audit.md`](docs/rk-v4.6-cdevg5-realdata-caller-audit.md).
   See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and

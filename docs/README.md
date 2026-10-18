@@ -37,6 +37,7 @@
 - [4.6 `CDevG5KB` vtable, ApplySetting, and settings paths](rk-v4.6-cdevg5-settings-and-vtable-audit.md)
 - [4.6 G5 29-slot method evidence map](rk-v4.6-cdevg5-vtable-map.csv)
 - [4.6 G5 command-`0x82` password-query read path](rk-v4.6-cdevg5-password-query-audit.md)
+- [4.6 G5 `+0x70` GetRealData caller-attribution audit](rk-v4.6-cdevg5-realdata-caller-audit.md)
 - [4.06 G5 27-slot vtable and GetRealData audit](rk-406-cdevg5-vtable-audit.md)
 - [4.06 G5 slot evidence ledger](rk-406-cdevg5-vtable-map.csv)
 - [4.06 G5 nearby `+0x68` UI-call resolution ledger](rk-406-vtable-68-resolution.csv)

@@ -108,7 +108,8 @@ slot. The command's meaning, caller-supplied length, firmware address/range,
 full-image behavior and persistence remain unresolved; the method has no file
 sink, and no device response was observed. Details and the incompatible
 callback candidate are in the
-[V4.6 firmware readback audit](rk-firmware-readback-audit.md).
+[V4.6 firmware readback audit](rk-firmware-readback-audit.md) and the
+[focused caller-attribution audit](rk-v4.6-cdevg5-realdata-caller-audit.md).
 
 ## Limits and remaining work
 

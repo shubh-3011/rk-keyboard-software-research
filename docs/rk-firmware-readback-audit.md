@@ -194,6 +194,9 @@ at `0x004899D9` is inside a Windows hook-callback path that also calls
 incompatible with the G5 method's writable output-buffer argument. The actual
 caller, requested length, data meaning, firmware address/range, full-image
 behavior, and downstream persistence remain unresolved.
+The broader candidate screening also excludes signature-shaped point/layout
+methods where the same receiver is used at vtable slots beyond the G5 table;
+see the [focused `+0x70` caller audit](rk-v4.6-cdevg5-realdata-caller-audit.md).
 
 The nearby G5 `+0x34` password-query method follows the same broad pattern for
 command `0x82`. Stack accounting at `0x00410E7E` likewise resolves its
