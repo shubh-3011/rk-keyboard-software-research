@@ -62,12 +62,12 @@ invocation totals or runtime frequencies.
 
 The import-entry coverage counts are derived from the per-row address lists:
 an entry is in the left call-reference column if the row has at least one
-direct IAT call or relative call to an import thunk. The current
-`rk-native-api-imports.md` summary instead says `unins000.exe` has 507 such
-entries and 12 without a call reference; its CSV rows yield 506 and 13. The
-resulting totals are 1,856 and 62, respectively. Imports without these
-references may be used through an indirect pointer, callback, or path outside
-this scan; they are not proven unused.
+direct IAT call or relative call to an import thunk. Recounting all 1,918 CSV
+rows gives 506 entries with such a reference and 13 without for
+`unins000.exe`; the totals are 1,856 and 62. These counts match the summary
+in `rk-native-api-imports.md`. Imports without these references may be used
+through an indirect pointer, callback, or path outside this scan; they are not
+proven unused.
 
 The exact 62 rows lacking both a direct IAT call and a relative call to an
 import thunk are extracted in
