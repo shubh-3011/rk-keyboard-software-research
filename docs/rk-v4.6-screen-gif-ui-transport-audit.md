@@ -81,19 +81,43 @@ Two image-selection paths are visible in the dialog code:
    (`*.png`, `*.jpg`, `*.bmp`). After that picker returns, `0x0047440A` passes
    the resulting path to image-processing helper `0x004762E0`.
 
-2. `0x00476D30`, called at `0x00474780`, constructs a separate `NewGIF`
-   dialog. It uses the GIF filter, title and `.gif` extension strings at
-   `0x005E3BB8`, `0x005E3BDC` and `0x005E3BEC`, respectively. This proves a
-   GIF-related UI action, but does not by itself prove that the resulting file
-   is uploaded to the keyboard.
+2. `0x00476D30`, called at `0x00474780`, selects a file workflow based on
+   `[EBX+0x64]`. When the count is exactly one, it opens a `New PNG` path and
+   saves the first list item's image to a PNG file, as detailed below. When
+   the count is not one, it enters the multi-frame `NewGIF` path using the GIF
+   filter, title and `.gif` extension strings at `0x005E3BB8`, `0x005E3BDC`
+   and `0x005E3BEC`. Only the multi-frame branch feeds the linked frame list
+   into the worker path traced below.
+
+### Generic one-file picker preview path
+
+The generic picker caller at `0x0047440A` reaches `0x004762E0` with the
+selected path. This helper first disposes an existing object at `[ESI+0xA0]`
+when present, then allocates a 16-byte wrapper and initializes its vtable to
+`0x005ACE9C`. It calls `GdipCreateBitmapFromFile` at `0x0047633E`, stores the
+returned image pointer at wrapper `+0x04` and the status at `+0x08`, then
+stores the wrapper at `[ESI+0xA0]`. The API ledger maps subsequent calls at
+`0x0047636C`, `0x00476395`, and `0x004763B9` to
+`GdipGetImageWidth`/`GdipGetImageHeight`.
+
+The helper calculates a size/scale for the local image using the preview
+state, writes a rectangle at `[ESI+0x90]` through `USER32.SetRect` at
+`0x0047649A`, stores the scale at `[ESI+0xA4]`, and invalidates the window
+handle at `[ESI+0x20]` through `USER32.InvalidateRect` at `0x004764B2`.
+Failure cleanup disposes the wrapper and clears `[ESI+0xA0]`. These calls
+support image loading and preview-layout preparation. They do not show a
+write to the shared frame list used by the multi-frame worker or a call from
+this helper to that worker. The eventual paint/commit path for this local
+preview remains unresolved, so this evidence does not prove that the generic
+picker can transfer its file to the keyboard.
 
 The profile display loader at `0x00473C50` formats the bundled path
 `%sDev\\%04X\\screen.gif` using the string at `0x005E3860`. At `0x00473D49`
 it calls the GDI+ `GdipCreateBitmapFromFile` thunk with that path, queries
 image dimensions, and obtains the frame count at `0x00473E2F`. This is evidence
 that the package's profile GIF is loaded into the application's screen-image
-state. A separate user-selected file path is statically connected to the frame
-objects consumed by the screen transfer worker below.
+state. In the multi-frame `NewGIF` path, user-selected files are statically
+connected to the frame objects consumed by the screen transfer worker below.
 
 GDI+ API names and their 4.6 thunk sites are also listed in the
 [4.6 native API call-site inventory](rk-v4.6-native-api-call-sites.csv). The
@@ -137,14 +161,43 @@ evidence: the program was not run and no device report was sent.
    calls the device vtable slot `+0x54` at `0x0046CCFC`. The GIF-parameter
    method at `0x0046CC22` calls slot `+0x58` before that loop.
 
-These address and field equalities connect the selected-file processing path,
+These address and field equalities connect the multi-frame selected-file path,
 the shared frame list, the worker's frame array, and the documented G5 HID
 writer path. They establish that this code path is designed to pass the
 selected-image frame objects into the screen transfer routine. They do not
 prove that a particular model accepts the data, complete UI label/control
 identity, exact decoder semantics for every helper, or successful runtime
-behavior. The single-image picker branch and profile-bundled `screen.gif`
-loader remain separate inputs to shared screen state.
+behavior.
+
+## Single-frame `New PNG` export
+
+The one-item branch of `0x00476D30` is an image export path, not a PNG import
+path into the worker. At `0x00476D6A` the helper reads the item count from
+`[EBX+0x64]`; equality with one branches to `0x00476D8A`. That branch uses
+the PNG filter/title/extension records at `0x005E3B78`, `0x005E3B9C`, and
+`0x005E3BAC`, invokes the common-dialog helpers `0x00483285` and
+`0x00483AE6`, and retrieves the chosen pathname at `0x00476DCB` through
+`0x00483C15`.
+
+The helper then calls `0x0046D1D0` at `0x00476DDD` with `EAX=EBX+0x58` and
+`EDX=0`. `0x0046D1D0` reads the linked list at `[EAX+0x14]` (the same address
+as `[EBX+0x6C]`) and returns the first item's object pointer. The caller
+passes that image object and the selected pathname to `0x00458AA0`. That
+routine calls encoder lookup helper `0x004589B0`, which compares encoder MIME
+strings against the embedded UTF-16 `image/png` at `0x005E3280` and returns
+the matching encoder identifier. At `0x00458AE1`, the call goes through
+thunk `0x005908E4` / IAT VA `0x005A6988`, identified in the API callsite
+ledger as `GdipSaveImageToFile`; arguments include the image pointer at
+`[item+4]`, the chosen path, the PNG encoder identifier, and null encoder
+parameters.
+
+This branch reads the existing first list item for file output. It does not
+add or replace a linked-list entry and does not call the screen worker from
+this branch. Thus the `New PNG` action is statically mapped as saving the
+current first image to a PNG file. The profile-bundled `screen.gif` remains a
+separate input to screen-image state. The generic picker at `0x00473B00` and
+its `0x004762E0` preview setup form another path; its later paint/commit
+relationship to the screen worker remains unresolved.
 
 ## Frame conversion and `BurnScreen` transfer sequence
 
@@ -194,10 +247,14 @@ successful transfer to a connected keyboard.
   names. The NewGIF-to-worker object path is mapped, but the visible command
   label/control identity and class owner of the candidate map are unresolved.
 - The multi-frame `NewGIF` picker and shared frame-list-to-worker ownership
-  are mapped. The exact decoder semantics of `0x0046E2F0`, `0x0046E4A0`, and
-  adjacent frame helpers, plus the single-image picker behavior, are not fully
-  recovered. The profile-bundled `screen.gif` loader is a separate observed
-  input to screen state.
+  are mapped. The one-item `New PNG` branch is mapped as a GDI+ export of the
+  first list image. The generic one-file picker and `0x004762E0` are mapped
+  through GDI+ image loading, preview geometry, and window invalidation; its
+  eventual paint/commit behavior and any relationship to the screen worker
+  remain unresolved. Exact decoder semantics of
+  `0x0046E2F0`, `0x0046E4A0`, and adjacent frame helpers remain open. The
+  profile-bundled `screen.gif` loader is a separate observed input to
+  screen-image state.
 - The `0x0C` report is identified as the G5 page-transfer request by its code
   location, log context and call chain. A complete field-by-field protocol
   definition, CRC algorithm interpretation, device acceptance behavior and

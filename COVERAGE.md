@@ -105,8 +105,12 @@ model or runtime map.
   shared frame-list fields, the 512-entry worker snapshot, the RGB565
   converter, G5 vtable methods for parameter/page transfer, and the
   `HidD_SetFeature` writer path. This closes the static selected-file-to-frame
-  array gap for the multi-frame path; decoder details, visible control labels,
-  runtime execution, and physical-model acceptance remain unverified. See
+  array gap for the multi-frame path. The one-item `New PNG` branch is mapped
+  as a GDI+ save of the first listed image. The generic image picker is mapped
+  through GDI+ local-image loading and preview geometry/invalidation; its
+  later paint/commit behavior and any link to the worker are unresolved.
+  Decoder details, visible control labels, runtime execution, and physical-
+  model acceptance remain unverified. See
   [`docs/rk-v4.6-screen-gif-ui-transport-audit.md`](docs/rk-v4.6-screen-gif-ui-transport-audit.md).
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
