@@ -1221,9 +1221,13 @@ performed for this audit.
 
 ## Device identification and safety boundary
 
-The Windows PnP inventory on this PC exposes a composite `0x258A:0x0150`
-device with keyboard, mouse, consumer-control, system-control, and
-vendor-defined HID collections. Its product description is generic. The
+The Windows PnP inventory on this PC (2026-10-18 05:38:26 +05:30) includes a
+generic USB composite device with VID/PID `0x258A:0x0150`, hardware revision
+`0206`, and keyboard, mouse, consumer-control, and vendor-defined HID child
+collections. It also includes three Bluetooth LE child nodes named
+`RK-S98RGB`. This was an OS PnP query only: no HID interface was opened and no
+HID report or GATT data was read. The inventory does not establish that the
+USB composite device and the Bluetooth nodes are the same keyboard. The
 installed profiles list `0x0150` as a receiver ID for at least one model, and
 public S98 inventories also report `0x258A:0x0150`; this ID alone cannot prove
 which model is connected. See this
@@ -1238,11 +1242,12 @@ feature-report probe.
 
 ## Firmware readback assessment
 
-The current Windows PnP inventory exposes the connected `0x258A:0x0150` unit
-as a USB composite HID device and an `RK-S98RGB` Bluetooth LE device. Its USB
-children are keyboard, mouse, consumer/system-control, and vendor-defined HID
-interfaces. Windows exposes no matching USB mass-storage device, disk, or
-volume from which a firmware file can be copied.
+The current Windows PnP inventory includes a generic `0x258A:0x0150` USB
+composite HID device and three Bluetooth LE child nodes named `RK-S98RGB`, but
+does not establish that they refer to one physical keyboard. Its USB children
+include keyboard, mouse, consumer-control, and vendor-defined HID collections.
+No matching USB mass-storage device, disk, or volume was present in the
+inventory from which a firmware file could be copied.
 
 The only firmware-like update package in the installed RK package is
 `Dev/01AF/KB_762_1_v258A_p01AF_F90_8818_V90.0f.1.00.upf` (193,652 bytes,

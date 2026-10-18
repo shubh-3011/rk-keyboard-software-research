@@ -42,11 +42,15 @@ research workbench is a reference and profile editor, not a fully compatible
 hardware clone of the RK utility. See [coverage status](COVERAGE.md) for the
 confirmed findings and open questions.
 
-**Product distinction:** the currently released research EXE is a Python
-PyInstaller + WebView2 profile-editor prototype. It is not the native
-reverse-built RK application and has no tray, autostart, or hardware-write
-implementation. The intended clean-room native reconstruction is a separate,
-unfinished deliverable tracked in [`REBUILD-ROADMAP.md`](REBUILD-ROADMAP.md).
+**Important: the released EXE is not a reverse-built copy of RK software.**
+`RK-Research-Workbench.exe` is a limited Python profile-editor prototype
+packaged with PyInstaller and shown in WebView2. The native reconstruction is
+a separate deliverable and has not been built. Its target is to recreate
+documented workflows from original source, with original replacement artwork;
+this repo does not redistribute RK's binaries or artwork. Exact feature parity
+is not established, and the hardware paths remain untested. The rebuild scope,
+gaps, and release criteria are tracked in
+[`REBUILD-ROADMAP.md`](REBUILD-ROADMAP.md).
 
 For a broader, regularly maintained list of community projects and their
 documented scope, see the [open-source RK software directory](SOFTWARE-DIRECTORY.md).

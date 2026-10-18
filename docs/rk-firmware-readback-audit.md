@@ -31,24 +31,26 @@ SHA-256
 `e21c11e023247afc7fdbbe27548570240efa5b646147741d5354eecb3041b628`.
 The file begins with `5A A5 BLESINO`; its header includes VID/PID `258A:01AF`
 and version text `V1.00`. The local `Dev/01AF/KB.ini` has `Fw=1`,
-`VerNeedToUpdate=0x2108`, and `NoUpdate=1`. Windows previously enumerated the
-connected unit as `258A:0150`, which is not the package PID. That descriptor
-does not establish that this `.upf` belongs to the connected S98 or its
+`VerNeedToUpdate=0x2108`, and `NoUpdate=1`. A USB composite device observed in
+PnP has VID/PID `258A:0150`, which is not the package PID. That generic PnP
+identity does not establish that this `.upf` belongs to the S98 or its
 receiver. The `.upf` is a host-side updater input, not evidence of firmware
 read from a keyboard.
 
-**Current Windows descriptor snapshot (2026-10-18):** a read-only
+**Current Windows PnP snapshot (2026-10-18 05:38:26 +05:30):** read-only
 Plug-and-Play enumeration returned three present Bluetooth LE child nodes
-named `RK-S98RGB` and no present USB device node with VID `258A`. No HID
-interface was opened and no report or GATT data was read. These friendly names
-and PnP child records do not identify the keyboard's firmware revision or
-prove a control channel is available. A prior USB descriptor observation
-reported `258A:0150`; in the installed profile crosswalk, `0150` is recorded
-as the wireless PID for an RK A70 profile, while the eight S98 profile rows
-have direct PIDs `0174`, `01AF`, `01BF`, `0223`, `0224`, `022B`, `022F`, and
-`0230` and no installed `PID_Wireless` value. The historical `0150` node
-therefore cannot be confidently assigned to the S98 or its current Bluetooth
-LE nodes.
+named `RK-S98RGB` and one present USB composite device with VID/PID
+`258A:0150`, hardware revision `0206`, and generic PnP manufacturer metadata.
+Its children include keyboard, consumer-control, vendor-defined, and mouse HID
+collections. No HID interface was opened and no HID report or GATT data was
+read. The friendly names, generic composite record, and child collections do
+not identify the USB device as the S98 or identify firmware revision; they
+also do not prove that a control channel is available. In the installed
+profile crosswalk, `0150` is recorded as the wireless PID for an RK A70
+profile, while the eight S98 profile rows have direct PIDs `0174`, `01AF`,
+`01BF`, `0223`, `0224`, `022B`, `022F`, and `0230` and no installed
+`PID_Wireless` value. The USB `258A:0150` node therefore remains ambiguous and
+cannot be confidently assigned to the S98 or its Bluetooth LE nodes.
 
 ## `.upf` parser and host-to-device flow
 
