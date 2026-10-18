@@ -107,11 +107,21 @@ not enough evidence to name a visible button or control:
   the row. The fallback index does not pass through the `0x84` upper-bound
   comparison in this helper.
 
-The next call in both paths is `0x00460DA0` with global `0x0062A1FC`; its
-effect and the UI origins of both mutation methods remain open. The evidence
-therefore separates these two direct queue producers from the specifically
-identified Restore/Apply controls without claiming their originating UI is
-known.
+The next call in both paths is `0x00460DA0`, passed the value in global
+`0x0062A1FC`. That helper is also covered in the
+[Side LED message-map follow-up](rk-v4.6-side-led-message-map-follow-up.md): it
+formats a local path with `%s%04X\\pro.dct`, opens it with
+`KERNEL32!CreateFileW` using `CREATE_ALWAYS`, and writes `0x5F14` bytes from
+each eligible list object with `KERNEL32!WriteFile`. It skips file creation
+when its initial list scan finds no eligible object. The exact runtime base
+path and file-record schema remain unresolved.
+
+In both methods, the `[OPT] ApplyNow` branch controls only the call to queue
+helper `0x00401100`; both control-flow paths converge on `0x00460DA0`. Thus
+the local persistence helper can run even when queue signal `1` is skipped.
+This is a host-file write path and does not establish a keyboard write. The
+UI origins of both mutation methods remain open, separating them from the
+specifically identified Restore/Apply controls.
 
 ## Findings and remaining limits
 

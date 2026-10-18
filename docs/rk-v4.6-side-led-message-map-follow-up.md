@@ -75,13 +75,23 @@ record shape consumed by the Side LED report builder:
    report path, not proof of a Side-LED-specific report ID or device response.
 
 Several candidate callback bodies also call `0x00460DA0`. Its static path
-formats a local path using the `pro.dct` literal at `0x005E1814`, opens the
-result with a file API, and performs a write through an indirect API call.
-This supports local profile persistence. No direct call from the candidate
-Side LED callbacks to `0x00412060` was found in the inspected call bodies.
-The report-builder route is consequently a data-flow connection through
-shared device-object state; whether a UI change triggers that builder
-immediately, on a timer, or through another callback remains unresolved.
+formats a local path with `%s%04X\\pro.dct` using the literal at
+`0x005E1814` and opens it through `KERNEL32!CreateFileW` at `0x00460E25` with
+`GENERIC_READ | GENERIC_WRITE`, share mode `3`, `CREATE_ALWAYS`, and normal
+file attributes. If its initial scan of the list at global `0x00619DCC` finds
+at least one eligible object, it traverses the list and writes `0x5F14` bytes
+from each eligible object pointer through `KERNEL32!WriteFile` at
+`0x00460EA8`. Before that write, when object field `+0x423C` equals `0x1E`,
+it replaces that DWORD with the zero-extended byte at global `0x0062B811`. It
+closes the file handle after processing the list. This is host-local
+profile-state persistence; the runtime base path and the file-record schema
+are unresolved.
+
+No direct call from the candidate Side LED callbacks to `0x00412060` was
+found in the inspected call bodies. The report-builder route is consequently
+a data-flow connection through shared device-object state; whether a UI
+change triggers that builder immediately, on a timer, or through another
+callback remains unresolved.
 
 ## Findings and remaining uncertainty
 

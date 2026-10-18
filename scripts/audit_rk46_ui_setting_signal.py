@@ -49,6 +49,16 @@ EXPECTED = {
         "8b 89 ac 21 00 00 e8 01 97 ff ff 83 3d 34 a2 62 00 00 74 0a "
         "6a 01 e8 61 1f fe ff"
     ),
+    0x0041ED62: bytes.fromhex("8b 15 fc a1 62 00 52 e8 32 20 04 00"),
+    0x0041F1A2: bytes.fromhex("8b 15 fc a1 62 00 52 e8 f2 1b 04 00"),
+    0x00460E0E: bytes.fromhex(
+        "6a 00 68 80 00 00 00 6a 02 6a 00 6a 03 68 00 00 00 c0 "
+        "8d 54 24 20 52 ff 15 74 64 5a 00"
+    ),
+    0x00460E92: bytes.fromhex(
+        "6a 00 8d 54 24 10 52 68 14 5f 00 00 50 57 c7 44 24 20 "
+        "00 00 00 00 ff d3"
+    ),
     0x00456573: bytes.fromhex("8b 2d e0 63 5a 00"),
     0x0045669F: bytes.fromhex(
         "8d 8c 24 70 05 00 00 51 6a 00 68 24 fc 5d 00 68 44 00 5d 00 ff d5"
@@ -109,6 +119,8 @@ def main() -> None:
         (0x005D0044, "OPT"),
         (0x005DFB8C, "cfg.ini"),
         (0x005D0288, "%s%s"),
+        (0x005CFD8C, "%s%04X\\%s"),
+        (0x005E1814, "pro.dct"),
     ):
         actual = read_utf16z(pe, data, va)
         if actual != expected:
@@ -133,6 +145,19 @@ def main() -> None:
     )
     if not has_invalidate_rect:
         raise SystemExit("USER32!InvalidateRect import not found at 0x005A6744")
+
+    expected_file_apis = {
+        (b"CreateFileW", 0x005A6474),
+        (b"WriteFile", 0x005A646C),
+    }
+    found_file_apis = {
+        (imp.name, imp.address)
+        for entry in pe.DIRECTORY_ENTRY_IMPORT
+        if entry.dll.lower() == b"kernel32.dll"
+        for imp in entry.imports
+    }
+    if not expected_file_apis <= found_file_apis:
+        raise SystemExit("KERNEL32!CreateFileW/WriteFile imports do not match expected IATs")
 
     config_path = args.config or args.driver.with_name("Cfg.ini")
     config_data = config_path.read_bytes()

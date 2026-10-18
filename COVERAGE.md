@@ -125,8 +125,9 @@ model or runtime map.
   [signal verifier](scripts/audit_rk46_apply_signal_callers.py), and
   [UI/config trace](docs/rk-v4.6-ui-setting-signal-audit.md). Two further
   signal producers are now traced to profile-record mutations and an indexed
-  dirty-row setter that calls `USER32!InvalidateRect`; their user-facing
-  origins and `0x00460DA0` follow-up remain unresolved.
+  dirty-row setter that calls `USER32!InvalidateRect`. Their UI origins remain
+  unresolved; both also invoke a host-local `pro.dct` writer after the queue
+  gate, as documented in the [UI/config trace](docs/rk-v4.6-ui-setting-signal-audit.md).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official
