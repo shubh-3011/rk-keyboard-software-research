@@ -70,14 +70,18 @@ by [`audit_rk46_apply_signal_callers.py`](../scripts/audit_rk46_apply_signal_cal
 Global `0x0062A234`, which many callers test before signaling, receives the
 return at `0x004566C9` from `KERNEL32!GetPrivateProfileIntW` (IAT
 `0x005A63E0`) called at `0x004566B3`. Its arguments identify section `OPT`, key
-`ApplyNow`, default `0`, and a local filename buffer. Adjacent calls read
-`UIDebug`, `Title`, and `FontName`. **Proven:** this global stores the integer
+`ApplyNow`, default `0`, and a local filename buffer built from shared path
+string `0x006354B8` plus `cfg.ini`. The examined package's `app/Cfg.ini`
+(`AB9C84BB951BCFEC99E18E0C6A77ECE913E14376265C33276E3B176C030B6CC5`)
+explicitly has `[OPT] ApplyNow=1`. Adjacent calls read `UIDebug`, `Title`, and
+`FontName`. **Proven:** this global stores the integer
 configuration value for `[OPT] ApplyNow`. A zero value blocks callers that
 explicitly require it to be nonzero; callers comparing it with a register value
-have a separate condition. The exact INI pathname and the option's broader UI
-semantics remain unresolved. This gate is not evidence that a keyboard is
-connected. The active device pointer used by the worker is the separate global
-`0x00647320`.
+have a separate condition. In the examined package the relative file is
+`app/Cfg.ini`; the runtime absolute path and the option's broader UI semantics
+remain unresolved. The file on the user's current PC was not inspected. This
+gate is not evidence that a keyboard is connected. The active device pointer
+used by the worker is the separate global `0x00647320`.
 
 There is also an inline producer: code at `0x0045DF36` pushes the constant 2
 through `0x0043E6C0`, and `0x0045DF45` releases the same `0x006356C4`

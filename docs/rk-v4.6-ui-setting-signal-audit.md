@@ -64,8 +64,16 @@ during this analysis.
 Startup/configuration code at `0x004566B3` loads the gate through
 `GetPrivateProfileIntW` from section `OPT`, key `ApplyNow`, with default `0`;
 the return is stored to `0x0062A234` at `0x004566C9`. The import is
-`KERNEL32!GetPrivateProfileIntW` at IAT `0x005A63E0`. The specific INI pathname
-and wider user-facing meaning of the option remain unresolved.
+`KERNEL32!GetPrivateProfileIntW` at IAT `0x005A63E0`. Its filename buffer is
+formatted earlier at `0x0045654D` using `%s%s`, the shared path string at
+`0x006354B8`, and suffix `cfg.ini` at `0x005DFB8C`. The same path string is
+used to build relative skin-resource paths. The examined package contains
+`app/Cfg.ini` (case-insensitive filename match), SHA-256
+`ab9c84bb951bcfec99e18e0c6a77ece913e14376265c33276e3b176c030b6cc5`; its
+`[OPT]` section explicitly sets `ApplyNow=1`. Thus the package snapshot enables
+this queue gate. A user's edited runtime configuration may differ; the file on
+the user's current PC was not inspected. The option's wider UI meaning remains
+unresolved.
 
 Queue helper `0x00401100` masks the request, places it on the queue, and
 releases the associated semaphore. The worker at `0x00401290` waits on that
@@ -86,8 +94,8 @@ same implementation.
   `+0x44` method. The G5 implementation is mapped; other family routes must
   be interpreted from their own vtables.
 - The return semantics of message `0x110A`, the profile field at record `+0x458`,
-  the wider UI semantics of `[OPT] ApplyNow`, runtime control reachability, and actual hardware
-  effects remain unresolved.
+  the wider UI semantics of `[OPT] ApplyNow`, runtime control reachability,
+  and actual hardware effects remain unresolved.
 - This closes the specific V4.6 Apply/Restore UI-to-queue gap. It does not
   complete reverse engineering of every control, API, syscall, family,
   protocol field, model, or firmware behavior.

@@ -115,11 +115,15 @@ model or runtime map.
   [RKKB vtable/settings audit](docs/rk-v4.6-cdevrkbb-settings-and-vtable-audit.md),
   [26-slot map](docs/rk-v4.6-cdevrkbb-vtable-map.csv), and
   [RKKB verifier](scripts/audit_rk46_cdevrkbb_vtable.py). A follow-up verifies
-  all 24 decoded callers of the deferred-settings signal helper, its argument
-  pushes, a separate inline queue producer, and the semaphore handle split;
-  those edges still do not resolve to unique UI controls or receiver classes.
-  See the [caller ledger](docs/rk-v4.6-apply-signal-callers.csv) and
-  [signal verifier](scripts/audit_rk46_apply_signal_callers.py).
+  all 24 decoded callers of the deferred-settings signal helper, their
+  argument pushes, a separate inline queue producer, and the semaphore handle
+  split. A further trace maps the main-window `tc_restore`/`tc_apply` controls
+  to one caller and resolves the shared gate to `[OPT] ApplyNow` (default 0;
+  bundled `app/Cfg.ini` sets 1); most other signal callers still lack unique UI
+  origins and concrete receiver classes. See the
+  [caller ledger](docs/rk-v4.6-apply-signal-callers.csv),
+  [signal verifier](scripts/audit_rk46_apply_signal_callers.py), and
+  [UI/config trace](docs/rk-v4.6-ui-setting-signal-audit.md).
 - This additional package is one Windows Hub Driver release. It does not
   cover the separate RK Web Driver, model-selected custom drivers/firmware,
   every historical utility, or every marketed hardware revision. The official

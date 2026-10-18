@@ -42,6 +42,9 @@ EXPECTED = {
         "8d 8c 24 70 05 00 00 51 6a 00 68 24 fc 5d 00 68 44 00 5d 00 ff d5"
     ),
     0x004566C9: bytes.fromhex("a3 34 a2 62 00"),
+    0x0045654D: bytes.fromhex(
+        "68 8c fb 5d 00 68 b8 54 63 00 68 88 02 5d 00"
+    ),
 }
 
 
@@ -71,6 +74,7 @@ def main() -> None:
         / "app"
         / "DeviceDriver.exe",
     )
+    parser.add_argument("--config", type=Path)
     args = parser.parse_args()
 
     data = args.driver.read_bytes()
@@ -91,6 +95,8 @@ def main() -> None:
         (0x005DC220, "tc_apply"),
         (0x005DFC24, "ApplyNow"),
         (0x005D0044, "OPT"),
+        (0x005DFB8C, "cfg.ini"),
+        (0x005D0288, "%s%s"),
     ):
         actual = read_utf16z(pe, data, va)
         if actual != expected:
@@ -106,8 +112,29 @@ def main() -> None:
     if not has_profile_int:
         raise SystemExit("KERNEL32!GetPrivateProfileIntW import not found at 0x005A63E0")
 
-    print(f"Verified {len(EXPECTED)} code slices, UI/config strings, and API import.")
+    config_path = args.config or args.driver.with_name("Cfg.ini")
+    config_data = config_path.read_bytes()
+    config_digest = hashlib.sha256(config_data).hexdigest()
+    expected_config_digest = "ab9c84bb951bcfec99e18e0c6a77ece913e14376265c33276e3b176c030b6cc5"
+    if config_digest != expected_config_digest:
+        raise SystemExit(f"Cfg.ini SHA-256 mismatch: {config_digest}")
+    config_text = config_data.decode("utf-16")
+    section = ""
+    apply_now = None
+    for line in config_text.splitlines():
+        line = line.strip()
+        if line.startswith("[") and line.endswith("]"):
+            section = line[1:-1].strip().casefold()
+        elif section == "opt" and "=" in line:
+            key, value = line.split("=", 1)
+            if key.strip().casefold() == "applynow":
+                apply_now = value.strip()
+    if apply_now != "1":
+        raise SystemExit(f"expected packaged [OPT] ApplyNow=1, got {apply_now!r}")
+
+    print(f"Verified {len(EXPECTED)} code slices, UI/config strings, API import, and Cfg.ini.")
     print(f"DeviceDriver.exe SHA-256: {digest}")
+    print(f"Cfg.ini SHA-256: {config_digest} ([OPT] ApplyNow={apply_now})")
 
 
 if __name__ == "__main__":
