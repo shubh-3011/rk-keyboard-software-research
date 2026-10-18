@@ -82,23 +82,25 @@ CSV. For example, `FlatSB_GetScrollInfo` is called through thunk
 FlatSB call paths exist; it does not establish that the eight USER32 fallback
 pointer globals are read or invoked.
 
-An indexed-reference follow-up found a candidate instruction at
-`0x0044B2C0`, decoded by a linear disassembly as
-`jmp DWORD PTR [ebx+0x00502094]`. `EBX` values from `0x8` through `0x24` in
-four-byte steps would index the eight globals at `0x0050209C`–`0x005020B8`,
-but no register provenance or reachable control-flow path was recovered, and
-the instruction lies in a mixed code/string region. Treat this as an
-unresolved candidate; it does not prove a global read or fallback invocation.
-The separate direct FlatSB calls above do not settle it. See the updated
-[deep-scan report](rk-remaining-native-api-gap-deep-scan.md).
+An earlier linear-disassembly scan printed a possible indexed reference at
+`0x0044B2C0`. A boundary-aware recheck shows that byte is the final `0xFF` of
+the relative displacement for `call 0x00409A8C` at `0x0044B2BC`; the next
+instruction starts at `0x0044B2C1` and is `mov [0x00502094],eax`. The apparent
+`jmp DWORD PTR [ebx+0x00502094]` is therefore a misaligned decode, and no EBX
+provenance or fallback-table use follows from it. This correction removes the
+candidate but does not locate a consumer. See the focused
+[candidate correction](rk-unins000-scrollbar-fallback-indexed-candidate.md)
+and the [deep-scan report](rk-remaining-native-api-gap-deep-scan.md).
 
 **Unresolved:** the reviewed disassembly and whole-file little-endian address
 scan found the fallback globals only at resolver initialization stores, not at
 later direct reads, indirect calls, or callback handoffs. Their true runtime
-consumers, if any, may be computed or external to the examined path. It is
-also unresolved why this image contains both direct FlatSB imports and the
-dynamic resolver/fallback table, and which route is used by each UI flow.
-Therefore none of these eight USER32 imports is classified as unused.
+consumers, if any, may be computed or external to the examined path. The
+indexed candidate at `0x0044B2C0` was reclassified as a misaligned decode
+inside a call displacement; it does not supply a consumer. It is also
+unresolved why this image contains both direct FlatSB imports and the dynamic
+resolver/fallback table, and which route is used by each UI flow. Therefore
+none of these eight USER32 imports is classified as unused.
 
 ## Cross-version package boundary
 

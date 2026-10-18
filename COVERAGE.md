@@ -75,9 +75,21 @@ model or runtime map.
   layouts. The generated catalog and comparison report are
   [`models-4.6.json`](models-4.6.json) and
   [`docs/rk-profile-catalog-v4.6-delta.md`](docs/rk-profile-catalog-v4.6-delta.md).
+- A dated cross-catalog matrix compares those profile IDs with the RK Drive
+  registry: 39 exact direct-ID overlaps in the 4.06 catalog and 93 in the
+  4.6-labeled catalog. It separates shared wireless receiver IDs and details
+  the S98 regional candidates; these are registry matches, not validation of
+  physical model identity or compatibility. See
+  [`docs/rk-package-drive-model-evidence-matrix-2026-10-18.md`](docs/rk-package-drive-model-evidence-matrix-2026-10-18.md).
 - The 4.6 `DeviceDriver.exe` has a different SHA-256 from 4.06. Its import and
   binary changes are audited separately in
   [`docs/rk-v4.6-native-binary-delta-audit.md`](docs/rk-v4.6-native-binary-delta-audit.md).
+  A follow-up checked all eight `0F 05`/`0F 34` byte candidates against
+  instruction boundaries and adjacent indexed tables: none is a direct
+  syscall/sysenter instruction in this PE. This static result does not cover
+  calls made inside Windows or device-driver code. See
+  [`docs/rk-v4.6-system-call-byte-audit.md`](docs/rk-v4.6-system-call-byte-audit.md)
+  and its [candidate ledger](docs/rk-v4.6-syscall-byte-matches.csv).
   Separate static follow-ups now map the 4.6 profile selector and the Side LED
   configuration/UI/report-builder path, but this is still not a full
   function-level reanalysis. Side LED is enabled in profiles `02B4` and
@@ -431,15 +443,23 @@ model or runtime map.
   wireless/companion paths.
 - Full call graphs for every native procedure, all indirect/COM/callback
   targets, or the runtime branch taken on a given PC.
+  For the 4.06 uninstaller's eight USER32 scrollbar fallback imports, a focused
+  recheck rejected the apparent indexed site at `0x0044B2C0` as a decode inside
+  a call displacement; no in-image invocation site was recovered. The imports
+  remain unresolved. See
+  [`docs/rk-unins000-scrollbar-fallback-indexed-candidate.md`](docs/rk-unins000-scrollbar-fallback-indexed-candidate.md).
 - Every MFC control label and action, every profile tuple's meaning, all
   packet fields, or the protocol meaning and runtime reachability of the UART
   command/response paths. The 15 updater dispatch slots are separately mapped.
   A focused trace now maps command `0x0419` through `.upf` parsing, mode
   selection, HID discovery, and update-worker dispatch; its downstream HID
-  feature-write paths are statically visible. Timer origins, progress-message
-  consumers, runtime selection, and indirect coupling to the UART state machine
-  remain unresolved. See
+  feature-write paths are statically visible. A progress follow-up maps all 14
+  `PBM_SETPOS` sites (13 direct IAT calls and one register-indirect call) to
+  resource control `0x0413` and traces three chunk-progress formulas; control
+  `0x041B` remains without a direct position update. Timer origins, runtime
+  selection, and indirect coupling to the UART state machine remain unresolved. See
   [`docs/rk-updater-command-0419-static-path-audit.md`](docs/rk-updater-command-0419-static-path-audit.md).
+  See also the [progress-control audit](docs/rk-updater-progress-control-audit.md).
   A focused audit of the updater's `0x0422` “retain dongle pairing” checkbox
   verifies its `BM_GETCHECK` read and normalized store to a zero-initialized
   global, then finds no second direct reference to that flag in the exact PE.

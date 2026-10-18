@@ -135,15 +135,15 @@ The 4.6-folder scan of executable `.text` bytes found:
 
 These are raw byte matches, not system-call counts. The surrounding byte context
 shows several matches inside x86 relative-call displacements (`E8 rel32`),
-two `0F 05` matches in lookup-table-like data, and a `0F 05` overlap between
-an `AND` immediate and an `ADD EAX,imm32` opcode. The second `0F 34` match
-overlaps a byte-memory instruction's SIB/displacement fields. The remaining
-candidates were not individually instruction-boundary or control-flow
-validated in this pass. Therefore no direct syscall/sysenter instruction or
-reachable native syscall wrapper is established here. This is consistent with
-the 4.06 crosswalk's conclusion, but requires a separate 4.6 disassembly to
-make a full instruction/reachability statement. The 4.06 baseline byte counts
-and interpretation are documented in
+two `0F 05` matches in lookup-table-like data, and an overlap between an
+`AND` immediate and an `ADD EAX,imm32` opcode. The second `0F 34` match
+overlaps a byte-memory instruction's SIB/displacement fields. A separate
+boundary review of all eight candidates found no direct `syscall`, `sysenter`,
+or `int 2e` instruction in this PE; see the
+[4.6 system-call byte audit](rk-v4.6-system-call-byte-audit.md) and its
+[candidate ledger](rk-v4.6-syscall-byte-matches.csv). This is not a runtime
+trace and does not cover system calls made by external libraries or drivers.
+The 4.06 baseline byte counts and interpretation are documented in
 [`rk-system-api-crosswalk.md`](rk-system-api-crosswalk.md) and
 [`rk-native-syscall-byte-matches.csv`](rk-native-syscall-byte-matches.csv).
 

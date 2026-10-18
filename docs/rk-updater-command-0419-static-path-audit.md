@@ -32,7 +32,7 @@ entry at `.rdata` `0x005943F0` routes command `0x0419` to
 | `0x03E8` | Firmware path edit | Its value is consumed by the selected-file parser path. |
 | `0x03E9` | Browse button | File-picker handler is `0x0040B0A0`; disabled during portions of upgrade work. |
 | `0x041C` | Status text | Set to messages including “Please load firmware!”, firmware error, HID search, and upgrade-mode status. |
-| `0x0413`, `0x041B` | Progress controls | Present in the dialog resource. A complete posted-progress-message-to-control mapping is unresolved. |
+| `0x0413`, `0x041B` | Progress controls | Both are `msctls_progress32`; direct `0x0402` position messages target `0x0413`. `0x041B` is separately bound and initially hidden; no direct position update to it was found. See the [progress-control audit](rk-updater-progress-control-audit.md). |
 | `0x041E`, `0x041F`, `0x0421` | Version/device information fields | Parser and device-selection branches write display values; exact field semantics are only partly recovered. |
 | `0x0424`, `0x0425` | VID and PID edit fields | Read by the click handler and converted to target values when the parsed file is accepted. |
 
@@ -125,10 +125,12 @@ and limits of those paths are described in
 
 `FUN_0040C090` then branches on the dispatcher result and mode, updates
 `this+0x8E6D`/`this+0x8E6E`/`this+0x8E6F`, changes status and button enablement,
-and posts message `0x0402` to a dialog-owned window at `0x0040C28E`–
-`0x0040C2A3`. The `0x0402` receiver and full mapping from progress values to
-controls `0x0413`/`0x041B` are not present in the recovered updater message
-map, so that UI edge remains unresolved.
+and synchronously sends message `0x0402` with `wParam=0`, `lParam=0` through
+`SendMessageW` at `0x0040C29D` to the HWND at `this+0x108`, which is the
+progress control `0x0413`. The other direct position updates to `0x0413`,
+including chunk progress calculations, are mapped in the
+[progress-control audit](rk-updater-progress-control-audit.md). The separate
+control `0x041B` is initially hidden and has no direct position update found.
 
 ## Timer message path
 
@@ -174,8 +176,10 @@ limits separate from the `.upf` HID section-transfer path.
 - **Inferred:** the user-visible “one-click upgrade” command is a host-file
   to device upgrade workflow with HID mode-switch and transfer stages.
 - **Unresolved:** actual runtime selection, device/interface chosen, branch
-  results, message `0x0402` consumer, timer origins, final progress-control
-  updates, and any coupling to the UART state table.
+  results, timer origins, use of progress control `0x041B`, and any coupling
+  to the UART state table. Direct message `0x0402` position updates to
+  control `0x0413` are established statically; runtime selection of those
+  sites remains unobserved.
 - **Not established:** a full device-neutral model of updater behavior or a
   safe passive firmware-copy path. No runtime test is justified by this
   static trace.
@@ -188,5 +192,8 @@ limits separate from the `.upf` HID section-transfer path.
   parser and HID update/verification paths.
 - [`rk-updater-uart-state-machine.md`](rk-updater-uart-state-machine.md):
   15-state UART response dispatcher.
+- [`rk-updater-progress-control-audit.md`](rk-updater-progress-control-audit.md):
+  progress-control bindings and all 14 statically resolved `PBM_SETPOS` call
+  sites (13 direct IAT calls and one register-indirect call).
 - [`rk-uart-firmware-path-semantics-audit.md`](rk-uart-firmware-path-semantics-audit.md):
   response-to-stream sinks and their unresolved reachability.

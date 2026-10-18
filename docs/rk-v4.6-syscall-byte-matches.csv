@@ -1,0 +1,9 @@
+pattern,bytes,va,candidate_context,classification,interpreted_instruction_va,interpreted_instruction,interpretation
+syscall,"0f 05",0x00426049,"e8 da 0f 05 00",inside_instruction,0x00426047,"call 0x477026","E8 rel32 call; candidate bytes are part of displacement"
+syscall,"0f 05",0x0046A474,"0f 0f 0f 0f 0f 0f 0f 05 06 07",indexed_table,0x0046A370,"movzx ecx,byte ptr [ecx+0x46a3fc]","Candidate is inside byte table indexed by code at 0x0046A370"
+syscall,"0f 05",0x0046A5A4,"0f 0f 0f 0f 0f 0f 0f 05 06 07 08 09 0a 0b",indexed_table,0x0046A4A0,"movzx ecx,byte ptr [ecx+0x46a52c]","Candidate is inside byte table indexed by code at 0x0046A4A0"
+syscall,"0f 05",0x004C54CD,"e8 0f 05 f4 ff",inside_instruction,0x004C54CC,"call 0x4059e0","E8 rel32 call; candidate bytes are part of displacement"
+syscall,"0f 05",0x004D018F,"e8 f7 0f 05 00",inside_instruction,0x004D018D,"call 0x521189","E8 rel32 call; candidate bytes are part of displacement"
+syscall,"0f 05",0x004ED924,"83 e0 0f 05 00 ea 00 00",crosses_instruction_boundary,0x004ED922,"and eax,0xf; add eax,0xea00","0F is AND immediate; 05 is next instruction opcode"
+sysenter,"0f 34",0x005197B0,"e8 0f 34 00 00",inside_instruction,0x005197AD,"call 0x51cbc3","E8 rel32 call; candidate bytes are part of displacement"
+sysenter,"0f 34",0x00582EBD,"88 54 0f 34 8b 0e",inside_instruction,0x00582EBB,"mov byte ptr [edi+ecx+0x34],dl","Candidate bytes are SIB/displacement within MOV"

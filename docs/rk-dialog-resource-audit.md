@@ -86,7 +86,12 @@ static interpretations, not runtime observations.
 | Internal command ID `0x8006` | `0x0040CF70` | No matching resource control; toggles global state and calls `GetSubMenu`/`CheckMenuItem`, consistent with a menu toggle rather than a hardware operation. |
 
 Resource controls `0x0413`, `0x041B`, `0x0422`, and `0x0423` are bound by the
-dialog initialization routine. Selected control-to-handler links were
+dialog initialization routine. The two progress controls are both
+`msctls_progress32`; direct `0x0402` position messages target `0x0413`, while
+`0x041B` is initially hidden and has no direct position update found. See the
+[progress-control audit](rk-updater-progress-control-audit.md) for the
+complete 14-site tally (13 direct IAT calls and one register-indirect call)
+and limits. Selected control-to-handler links were
 separately cross-checked against resource 102, language 1028:
 
 | Resource 102 control ID | Stored caption | Handler | Static interpretation and limit |

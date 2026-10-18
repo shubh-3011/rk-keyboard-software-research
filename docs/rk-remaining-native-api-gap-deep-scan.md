@@ -57,24 +57,24 @@ load into `EAX` before the fallback store. The targeted disassembly confirms
 these are writes, not direct loads or invocations. No later direct global
 read, indirect call, or callback handoff was recovered in this image.
 
-An additional linear-disassembly scan found one possible indexed reference:
-`0x0044B2C0` decodes as `jmp DWORD PTR [ebx+0x00502094]`. If `EBX` were
-`0x8` through `0x24` in four-byte steps, the effective address would land on
-the fallback slots `0x0050209C`–`0x005020B8`. The available evidence does not
-establish such an `EBX` value or range, that this mixed code/string region is
-executed as code, or a reachable path to the instruction. The base global
-`0x00502094` is separate from the eight slots and has a direct comparison at
-`0x0044AFAE`. This is a candidate computed consumer, not proof that a fallback
-pointer is read or called.
+An earlier linear-disassembly scan printed a possible indexed reference at
+`0x0044B2C0`, but a boundary-aware recheck rejected that decode. The call at
+`0x0044B2BC` has bytes `E8 CB E7 FB FF`; the alleged jump begins at its final
+displacement byte. The next valid instruction boundary is `0x0044B2C1`, where
+`A3 94 20 50 00` stores EAX to global `0x00502094`. No EBX range or fallback
+slot access can be inferred from the misaligned decode. See the focused
+[candidate correction](rk-unins000-scrollbar-fallback-indexed-candidate.md).
 
 The separate imported `comctl32!FlatSB_*` functions do have direct callsites,
 including `FlatSB_GetScrollInfo` at `0x00470D03`, `FlatSB_GetScrollPos` at
 `0x00471128`, `FlatSB_SetScrollPos` at `0x00471142`, and
 `FlatSB_SetScrollInfo` at `0x004713D3`. Those calls do not establish use of
-the USER32 fallback slots. Confidence remains **high** that no direct global
-consumer was recovered and **moderate** that no reachable in-image consumer
-has been established; the indexed candidate keeps actual use unresolved.
-The eight imports are therefore unresolved rather than unused.
+the USER32 fallback slots. The false indexed candidate no longer keeps a
+possible in-image reference open; confidence remains **high** that no direct
+global consumer was recovered and **moderate** that no reachable in-image
+consumer has been established. Computed aliases, callback handoffs, and
+external consumers remain unresolved. The eight imports are therefore
+unresolved rather than unused.
 
 ## Status and limits
 
