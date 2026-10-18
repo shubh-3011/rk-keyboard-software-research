@@ -53,6 +53,7 @@
 - [4.6 screen/GIF UI-to-transport trace](rk-v4.6-screen-gif-ui-transport-audit.md)
 - [4.6 driver binary/API delta](rk-v4.6-native-binary-delta-audit.md)
 - [4.6 native import call paths and limitations](rk-v4.6-native-api-call-path-audit.md)
+- [4.6 HID GetFeature handle-argument audit for all six read callsites](rk-v4.6-hid-getfeature-argument-audit.md)
 - [4.6 native API feature-path follow-up](rk-v4.6-native-api-feature-follow-up.md)
 - [4.6 native import callsite ledger](rk-v4.6-native-api-call-sites.csv)
 - [4.6 `LoadLibraryA` and `GetModuleHandleA` call paths](rk-v4.6-dynamic-loader-api-audit.md)

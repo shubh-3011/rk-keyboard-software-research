@@ -20,29 +20,32 @@ For each chunk, the function zeroes a `0x208`-byte report, writes command
 `HidD_SetFeature` with `0x208` bytes using the handle at object `+0x04`. The
 routine retries this set stage up to three times and calls a short delay
 helper between attempts. It then calls `HidD_GetFeature` through thunk
-`0x00590A0E` at `0x00410E7E`, but the first argument is a zero-extended byte
-from object `+0x2DC`, not the `+0x04` handle passed to `HidD_SetFeature`.
-Only if that call reports success and response byte 1 is `0x82` does the code
-copy up to `0x200` bytes from response offset 8 into the caller buffer. A
-diagnostic at `0x005D2E84` is `GetPassword failed`.
+`0x00590A0E` at `0x00410E7E`. The first argument resolves to the saved
+`[this+0x04]` handle also used by `HidD_SetFeature`. The separate byte from
+`+0x2DC` is restored into the report before the call. Only if the API reports
+success and response byte 1 is `0x82` does the code copy up to `0x200` bytes
+from response offset 8 into the caller buffer. A diagnostic at `0x005D2E84`
+is `GetPassword failed`.
 
 ## Interpretation and limits
 
 The vtable placement, command bytes, request chunking, and conditional copy
 instructions are directly visible in this exact binary. The diagnostic
 supports calling this a password-query method, but the password representation
-and purpose of returned bytes are not decoded. Because the `HidD_GetFeature`
-first argument is the byte field at `+0x2DC`, not the `+0x04` handle used by
-the preceding write, successful device readback is not established. This is
-a suspicious handle-argument mismatch and may prevent a valid feature read.
-A report write is part of the attempted query; this is not a passive HID read.
+and purpose of returned bytes are not decoded. Correct stack accounting shows
+that `HidD_GetFeature` uses the same handle as the preceding write; the apparent
+mismatch was an offset-reading error. This is a code-level conditional
+response-read/copy path, but no device read was performed to verify a
+successful response. A report write is part of the method; this is not a
+passive HID read.
 
 The G5-specific caller, model/revision guard, user-interface route, downstream
 consumer, and any file/configuration persistence are unresolved. No file sink
 is present in the method body. These instructions do not establish firmware
 access, firmware bytes, or a keyboard-compatible operation. The separate
-`+0x70` `GetRealData` method is a distinct command-`0x88` attempted
-read/copy path with the same `+0x2DC` versus `+0x04` handle mismatch; its
-caller and returned-data meaning are also unresolved. See the
+`+0x70` `GetRealData` method is a distinct command-`0x88` conditional
+read/copy path using the saved `[this+0x04]` handle; its caller and returned-data
+meaning are also unresolved. See the
 [G5 vtable map](rk-v4.6-cdevg5-vtable-map.csv) and
-[firmware readback audit](rk-firmware-readback-audit.md).
+[firmware readback audit](rk-firmware-readback-audit.md), plus the
+[six-call argument audit](rk-v4.6-hid-getfeature-argument-audit.md).

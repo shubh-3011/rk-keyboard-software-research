@@ -106,8 +106,10 @@ model or runtime map.
 - A new 4.6 API follow-up traces `SendInput` to a gated 50-record UTF-16 text
   lookup and Unicode key-event batches, the added GDI+ property calls to an
   animated-image timer/frame path, and `GetPrivateProfileStringA` to `OPT` /
-  `TouchWeb` with an RK Drive URL fallback. Text-macro identity, the final
-  URL consumer action, asset ownership, and runtime reachability remain open;
+  `TouchWeb` with an RK Drive URL fallback and selector-`0x12` internal
+  action/command dispatch. The visible control origin, actual browser/device
+  outcome, text-macro identity, asset ownership, and runtime reachability
+  remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
   [`docs/rk-v4.6-native-api-feature-follow-up.md`](docs/rk-v4.6-native-api-feature-follow-up.md).
 - A separate 4.6 hook pass maps four thread-scoped `SetWindowsHookExW`
@@ -181,11 +183,12 @@ model or runtime map.
   and an object handle with `HidD_GetAttributes`. The stored path meaning and
   runtime reachability remain unresolved; the method was not invoked. A
   targeted trace maps `+0x34` command `0x82` and `+0x70` command `0x88` to
-  conditional response-copy code, but both `HidD_GetFeature` calls pass a
-  one-byte field at `+0x2DC` instead of the `+0x04` handle used by
-  `HidD_SetFeature`. The resulting readback is not established. No caller is
-  attributable to G5 `+0x70`, and its firmware meaning/range remains
-  unresolved.
+  conditional response-copy code. A stack audit of all six `HidD_GetFeature`
+  calls confirms each uses the same handle as its paired `HidD_SetFeature`;
+  `+0x2DC` is a separate report byte. No hardware response was observed. No
+  caller is attributable to G5 `+0x70`, and its firmware meaning/range remain
+  unresolved. See
+  [`docs/rk-v4.6-hid-getfeature-argument-audit.md`](docs/rk-v4.6-hid-getfeature-argument-audit.md).
   See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
@@ -458,9 +461,9 @@ model or runtime map.
   installed 4.06 package and the separately extracted 4.6-labeled package.
   Their `Dev/01AF/Update.exe` and `.upf` files are byte-identical; the changed
   4.6 `DeviceDriver.exe` has separately traced G5 request/read paths that
-  contain conditional copy code, but their `HidD_GetFeature` calls pass a
-  byte field instead of the handle used by `HidD_SetFeature`, so successful
-  readback is not established. Neither path establishes a firmware file
+  contain conditional copy code, and the six V4.6 `HidD_GetFeature` callsites
+  use the same handle as their paired `HidD_SetFeature` calls. No hardware
+  response was observed, and neither G5 path establishes a firmware file
   export. Whether an undiscovered indirect or model-specific path exists is
   unresolved; see `docs/rk-firmware-readback-audit.md`.
 

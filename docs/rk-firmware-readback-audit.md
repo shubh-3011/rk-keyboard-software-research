@@ -178,13 +178,14 @@ wrapper `0x00411030`, which calls helper `0x00410890` unless object busy flag
 `+0x238` is set. The helper builds `0x208`-byte feature reports with command
 `0x88` at byte 1, uses chunks capped at `0x200`, and contains a conditional
 copy from response offset 8 to caller memory until the caller-supplied length
-is covered. It contains no file sink. This is an **attempted** read/copy
-route, not proof of successful readback: `HidD_SetFeature` at `0x00410992`
-receives handle `[this+0x04]`, but `HidD_GetFeature` at `0x004109F1` receives
-the zero-extended byte at `[this+0x2DC]`. The opened handle is stored
-separately at `+0x04`; constructor code initializes the byte field and
-discovery later stores a byte there. The conditional copy is reached only if
-the read call reports success and the response command matches.
+is covered. It contains no file sink. `HidD_SetFeature` at `0x00410992` and
+`HidD_GetFeature` at `0x004109F1` use the same saved `[this+0x04]` handle.
+Correct stack accounting at the GetFeature call shows that the pending delay
+argument makes `[esp+0x14]` refer to that saved handle; `[esp+0x18]` is the
+separately stored byte at `[this+0x2DC]`, which is copied into the report.
+The conditional copy is reached only if the read call reports success and the
+response command matches. This confirms a conditional code-level response
+read/copy path, not an observed device read.
 
 A scan of 77 decoded indirect `call *+0x70` sites did not identify a caller
 attributable to this G5 method. A superficially plausible two-argument call
@@ -195,14 +196,16 @@ caller, requested length, data meaning, firmware address/range, full-image
 behavior, and downstream persistence remain unresolved.
 
 The nearby G5 `+0x34` password-query method follows the same broad pattern for
-command `0x82` and also passes the zero-extended `+0x2DC` byte as the first
-argument to `HidD_GetFeature` at `0x00410E7E`, rather than the handle used by
-its `HidD_SetFeature` call. It likewise contains only a conditional copy and
-does not demonstrate successful device readback. Neither method establishes
-that returned data is firmware or that a full image is exported. Their
-requests include feature writes, so they are not passive reads. See the
+command `0x82`. Stack accounting at `0x00410E7E` likewise resolves its
+`HidD_GetFeature` handle to the saved `[this+0x04]` handle used by
+`HidD_SetFeature`; the `+0x2DC` byte is a separate report field. Both methods
+contain conditional response-copy code, but no successful hardware response
+was observed. Neither method establishes that returned data is firmware or
+that a full image is exported. Their requests include feature writes, so they
+are not passive reads. See the
 [V4.6 G5 password-query audit](rk-v4.6-cdevg5-password-query-audit.md),
-[vtable/settings audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md), and
+[vtable/settings audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md),
+[six-call handle-argument audit](rk-v4.6-hid-getfeature-argument-audit.md), and
 [vtable evidence map](rk-v4.6-cdevg5-vtable-map.csv). This V4.6 driver is a
 different binary from the installed 4.06 updater and its findings do not
 resolve the updater's UART file-sink path.
@@ -287,10 +290,11 @@ negative finding that no UART queue-to-file sink had been identified.
 firmware export is demonstrated. The 4.06 updater findings also apply to the
 identical updater shipped in the 4.6-labeled package. The changed 4.6 main
 driver has separate command-`0x88` and command-`0x82` G5 paths that issue
-feature writes and contain conditional response-copy code. Their
-`HidD_GetFeature` calls pass the byte at object `+0x2DC` rather than the
-`+0x04` handle used by the preceding feature write, so successful readback is
-not established. No caller or full-image/file export is identified.
+feature writes and contain conditional response-copy code. The six V4.6
+`HidD_GetFeature` callsites were stack-audited and each uses the same handle
+as its paired `HidD_SetFeature`; the `+0x2DC` byte is a separate report field.
+Static code does not establish an observed device response, a caller for the
+G5 `+0x70` path, or a full-image/file export.
 
 **Proven:** Windows has not exposed this keyboard as a mass-storage volume
 from which firmware could simply be copied. The bundled `.upf` is a

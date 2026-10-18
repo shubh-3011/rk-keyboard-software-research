@@ -60,27 +60,42 @@ The added `KERNEL32!GetPrivateProfileStringA` import at `0x005A63C8` is called
 at `0x00456748`. The call supplies section string `OPT`, key `TouchWeb`, a
 null default, a 50-byte result buffer at `0x00629EA0`, and a filename produced
 by path helper `0x004587C0`. When the result buffer is empty, code copies the
-literal `https://drive.rkgaming.com` into the same buffer. The buffer is later
-passed to internal helpers at `0x0041D0DD` and `0x00460999`.
+literal `https://drive.rkgaming.com` into the same buffer. The value is later
+copied into a model-dialog object's string field at `+0x5EC1` from the
+initialization path at `0x00460999` and a `CKeyDlg` handler at `0x0041D0DD`.
+The handler is `0x0041CF20`, present in the message map at `0x005D4CA0`; its
+branch copies the value when the selected row is type `0x0B` or matches global
+index `0x0062A27C`. The visible control label/origin for that branch remains
+unresolved.
 
-The static evidence supports a local `OPT\TouchWeb` URL/configuration lookup
-with an RK Drive fallback. The exact profile-file path and the final action
-performed by either internal consumer are unresolved; the fallback literal
-does not prove that a browser or network connection is opened. This ANSI
-import is absent from the installed 4.06 import table, but that alone does
-not prove the entire setting or behavior was newly introduced.
+Consumer `0x00412906` reads the NUL-terminated field, logs it with the
+`SendWeb: ` prefix, then calls `0x00410C90` with the string, object, and byte
+length. The dispatcher has two static branches: when the object has no direct
+handle but has a child object at `+0x254`, it calls `0x0040DF10` with selector
+`0x12`; when the object has a direct handle, it calls `0x0040FFD0`, also with
+selector `0x12`, passing the string length and the byte at object `+0x2DC` as
+separate arguments. The dispatcher returns the internal helper's success
+status. This maps the setting into RK-specific action/command handling; it
+does not establish an opened browser, a successful report transfer, or what
+the device does with the string. The exact configuration-file path/value and
+runtime reachability remain unresolved. No direct static browser-launch call
+was identified in this trace.
+
+This ANSI import is absent from the installed 4.06 import table, but that
+alone does not prove the entire setting or behavior was newly introduced.
 
 ## Conclusions and limits
 
 **Proven statically:** the exact 4.6 image contains a host `SendInput` path,
 an animated-image frame/timer path using the two added GDI+ property APIs, and
-an `OPT` / `TouchWeb` profile-string read with an RK Drive URL fallback.
+an `OPT` / `TouchWeb` profile-string read with an RK Drive URL fallback that
+feeds selector-`0x12` RK action/command helpers.
 
 **Inferred:** the input helper likely serves text-macro playback, and the
 property lookup likely supplies animation timing. Those names are not assigned
 to unidentified controls or state fields.
 
 **Unresolved:** reachability, the actual profile filename/value, the
-`TouchWeb` consumer action, which model uses each UI path, and any runtime
-device effect. The host input path is not evidence of keyboard firmware
-access or a HID write.
+visible `TouchWeb` control origin, which model uses each UI path, and any
+runtime device effect. The host input path is not evidence of keyboard
+firmware access or a HID write.

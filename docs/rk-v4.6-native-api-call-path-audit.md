@@ -71,7 +71,7 @@ instruction paths are now statically mapped:
 
 | API | IAT VA | Decoded callsite evidence | What it supports |
 | --- | ---: | --- | --- |
-| `KERNEL32!GetPrivateProfileStringA` | `0x005A63C8` | Direct call `0x00456748` | Reads local section `OPT`, key `TouchWeb`, into a 50-byte buffer; empty value takes an RK Drive URL fallback. Final consumer action remains unresolved. |
+| `KERNEL32!GetPrivateProfileStringA` | `0x005A63C8` | Direct call `0x00456748` | Reads local section `OPT`, key `TouchWeb`, into a 50-byte buffer; empty value takes an RK Drive URL fallback. The value reaches selector-`0x12` RK action/command helpers; browser launch and device outcome are not established. |
 | `USER32!SendInput` | `0x005A66DC` | Direct call `0x0045877A` | Helper emits 28-byte Unicode keyboard down/up record pairs in batches of at most 64 code units. A caller at `0x0044B1BF` is gated by numeric fields and selects text from a fixed table; its visible feature name/reachability remain inferred or unresolved. |
 | `gdiplus!GdipGetPropertyItemSize` | `0x005A696C` | Thunk `0x00590914` jumps to the IAT; relative caller `0x0046F34C` | Reads property identifier `0x5100` in a multi-frame image timing path; frame selection and timer are mapped, while the asset/feature tie remains unresolved. |
 | `gdiplus!GdipGetPropertyItem` | `0x005A6968` | Thunk `0x0059091A` jumps to the IAT; relative caller `0x0046F376` | Reads the item used by the same image-frame timing path. See the dedicated follow-up for the interval and fallback evidence. |
@@ -132,6 +132,14 @@ show a keyboard write.
 caller passes `0x41` bytes. `HidD_GetFeature` is imported at IAT VA
 `0x005A6200`, with thunk `0x00590A0E`; relative callsites are `0x0040F975`,
 `0x004101C1`, `0x0041054E`, `0x0041078C`, `0x004109F1`, and `0x00410E7E`.
+
+A stack-argument follow-up maps each GetFeature call to its paired SetFeature
+call and confirms that all six pass the same handle. In the G5 `+0x34` and
+`+0x70` helpers, the apparent `+0x2DC` handle mismatch disappears when the
+pending delay argument is included in the stack calculation; that byte is
+copied separately into the report. This is static argument evidence only; no
+hardware response was observed. See the
+[six-call handle audit](rk-v4.6-hid-getfeature-argument-audit.md).
 
 This proves that the executable contains code that calls Windows HID feature
 report APIs with those buffer lengths. The functions consume a handle and

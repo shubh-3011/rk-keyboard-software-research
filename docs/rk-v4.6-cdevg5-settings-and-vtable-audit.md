@@ -88,26 +88,26 @@ table additionally contains power, password and real-data query methods; the
 command-`0x11` reset write; command-`0x08` writer; input/macro conversion
 helpers; and cancel-event state. Their exact slot, target and evidence are
 listed in the CSV. A follow-up traces the `+0x34` password-query method as a
-command-`0x82` feature write followed by conditional read/copy code, but the
-`HidD_GetFeature` first argument is the one-byte `+0x2DC` field rather than
-the `+0x04` handle used by `HidD_SetFeature`. Successful readback, caller and
-returned-data meaning remain unresolved. See the
+command-`0x82` feature write followed by conditional response-read/copy code.
+Correct stack accounting shows that `HidD_GetFeature` uses the same saved
+`[this+0x04]` handle as `HidD_SetFeature`; the byte at `+0x2DC` is copied
+separately into the report. Runtime response, caller and returned-data meaning
+remain unresolved. See the
 [password-query read-path audit](rk-v4.6-cdevg5-password-query-audit.md).
 
 The `+0x70` method at `0x00411030` is a busy-guarded wrapper around
 `0x00410890`. The helper builds command-`0x88` feature reports of `0x208`
 bytes and, when its conditional path succeeds, copies response bytes beginning
 at offset 8 into the caller buffer in chunks capped at `0x200`, bounded by
-the caller's requested length. However, the `HidD_SetFeature` call at
-`0x00410992` receives handle `[this+0x04]`, while the following
-`HidD_GetFeature` call at `0x004109F1` receives a zero-extended byte from
-`[this+0x2DC]`. Discovery stores that byte separately from the opened handle.
-This is therefore an attempted conditional read/copy route; successful device
-readback is not established and the handle argument may be a defect. A scan
+the caller's requested length. `HidD_SetFeature` at `0x00410992` and
+`HidD_GetFeature` at `0x004109F1` use the same saved `[this+0x04]` handle. The
+byte at `[this+0x2DC]` is stored separately and copied into the report. The
+response-copy code is conditional on API success and matching command. A scan
 of 77 decoded `call *+0x70` sites found no caller attributable to this G5
 slot. The command's meaning, caller-supplied length, firmware address/range,
 full-image behavior and persistence remain unresolved; the method has no file
-sink. Details and the incompatible callback candidate are in the
+sink, and no device response was observed. Details and the incompatible
+callback candidate are in the
 [V4.6 firmware readback audit](rk-firmware-readback-audit.md).
 
 ## Limits and remaining work
