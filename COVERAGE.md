@@ -526,8 +526,11 @@ model or runtime map.
   this still does not identify the device as an S98. Three direct
   `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
   1032-byte feature read failed. No output report or `HidD_SetFeature` payload
-  was sent. The
-  updater's temporary `AFX`/delete-on-close serializer also has no direct
+  was sent. A cached BLE follow-up found three disconnected `RK-S98RGB` nodes
+  in separate PnP containers from the USB device; HID characteristic access
+  was denied, and no GATT values were read or written. See
+  `docs/rk-firmware-readback-audit.md`. The updater's temporary
+  `AFX`/delete-on-close serializer also has no direct
   UART/HID receive caller. Whether an
   undiscovered indirect or model-specific firmware export exists is
   unresolved; see `docs/rk-firmware-readback-audit.md`.

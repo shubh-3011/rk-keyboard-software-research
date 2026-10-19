@@ -1273,6 +1273,15 @@ which model is connected. The shared VID/PID occurs in 46 profile records.
 See the [firmware readback audit](rk-firmware-readback-audit.md) for access
 results and the [S98 HID inventory example](https://gist.github.com/andrewbt/10e59b562963200c80017babd2434947).
 
+A 2026-10-19 cached BLE follow-up found three disconnected Windows nodes
+named `RK-S98RGB`, each in a distinct PnP container from the USB device and
+from the other BLE nodes. Their HID service characteristics were inaccessible
+in the cached GATT view, and Windows exposed no BLE HID interface path to open.
+The cached services and the advertised `F200/F202` properties do not link the
+BLE nodes to the USB receiver or establish a firmware-read route; no GATT
+value was read or written. See the
+[firmware readback audit](rk-firmware-readback-audit.md).
+
 The Keydeck rebuild only reads the browser-visible descriptor after device
 permission. It does not open the HID device, receive feature reports, send
 reports, or replay captured data. Exact product IDs and product names can
