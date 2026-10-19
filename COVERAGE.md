@@ -77,6 +77,19 @@ For current blockers and the recommended reverse-engineering order, see the
   could and could not recover; no 4.6 callback body was exposed. This remains
   an installer/uninstaller gap, not proof the setup has no script. See the
   [overlay recovery follow-up](docs/rk-v4.6-inno-overlay-static-recovery-followup.md).
+- A separate hash-pinned static pass inventories all 135 ordinary import rows
+  and 281 decoded calls to the outer installer's IAT thunks. It finds one raw
+  `0F 05` byte pair inside a `JMP` displacement and no recognized direct
+  syscall instruction in the executable sections. This does not recover the
+  Inno callbacks, setup sequence, overlay behavior, or runtime side effects.
+  See the [installer API boundary audit](docs/rk-v4.6-installer-native-api-boundary-audit.md),
+  [callsite ledger](docs/rk-v4.6-installer-native-api-call-sites.csv), and
+  [hash-pinned scanner](scripts/audit_rk46_installer_native_api.py).
+- A package-membership crosscheck records the exact artifacts represented by
+  the installed 4.06 tree, extracted 4.6 setup payload, and dated RK Drive
+  snapshot, and compares all 17 baseline-only paths plus key profile/resource
+  deltas. It confirms these are bounded snapshots, not the full RK release
+  universe. See the [package/version boundary audit](docs/rk-package-membership-and-version-boundary-audit-2026-10-19.md).
 - A normalized path/hash comparison with the installed 4.06 tree records
   743 identical, 50 changed, 455 added, and 17 absent application paths; see
   [`docs/rk-package-file-delta-v4.06-v4.6.md`](docs/rk-package-file-delta-v4.06-v4.6.md)
@@ -272,14 +285,16 @@ For current blockers and the recommended reverse-engineering order, see the
   [`docs/rk-v4.6-ui-knob-localization-path-audit.md`](docs/rk-v4.6-ui-knob-localization-path-audit.md).
   A follow-up confirms the conditional `CKeyDlg` message-`0x477` handler can
   queue setting `2`, which reaches the G5 flag-2 command-4 serializer and
-  `HidD_SetFeature` path for the mapped G5 profiles. The distinct `lParam=2`
-  sender, payload semantics, runtime reachability, and device acceptance remain
-  unresolved;
-  a separate popup trace links `0x00435A23` to localized knob-option arrays,
-  but that sender uses `lParam=0`, not the command-4 branch's required `2`.
-  The `lParam=2` origin and exact visible widget remain unknown. See the
+  `HidD_SetFeature` path for the mapped G5 profiles. A separate popup trace
+  links `0x00435A23` to localized knob-option arrays, but that sender uses
+  `lParam=0`, not the command-4 branch's required `2`. The exact `lParam=2`
+  sender and visible control remain unresolved. See the
   [knob-to-command-4 audit](docs/rk-v4.6-knob-signal-to-g5-command04-follow-up.md)
   and [popup-origin trace](docs/rk-v4.6-knob-popup-origin-partial-audit.md).
+  A follow-up checks the known popup creators and confirms that none of the
+  statically traced senders establishes delivery to `CKeyDlg` with `lParam=2`;
+  the exact sender and visible control remain unresolved. See the
+  [`0x0477` argument-origin audit](docs/rk-v4.6-0x477-lparam2-origin-audit.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
   (`0xC8C8` bytes). The exact path base, MFC event association, and relation to
@@ -290,16 +305,20 @@ For current blockers and the recommended reverse-engineering order, see the
 - In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
-  these two files; the `.upf` remains unvalidated and is not a device dump. A
+  these two files; the `.upf` remains unvalidated and is not a device dump.
   Focused updater follow-ups map the conditional mode-3 HID preflight and
   fallback, including fixed `0603:1021` and `0603:1020` selectors, and trace
   the successful `1021` status response through a secondary worker to a
   conditional `1020` section-transfer path. The `.upf` has a malformed
-  declared A-section length; runtime branch predicates and device responses
-  remain unknown. A potential six-byte buffer versus advertised feature-length
+  declared A-section length; a new static parser trace also finds a signed
+  allocation/loop boundary anomaly for A and a one-byte overrun in B's
+  four-byte transform loop if that sample reaches it. Runtime branch
+  predicates, allocator behavior, and device responses remain unknown. A
+  potential six-byte buffer versus advertised feature-length
   mismatch is recorded as static risk only. See the
   [preflight audit](docs/rk-v4.6-update-mode3-hid-preflight-audit.md) and
-  [status-to-transfer follow-up](docs/rk-v4.6-mode3-status-to-transfer-worker-followup.md).
+  [status-to-transfer follow-up](docs/rk-v4.6-mode3-status-to-transfer-worker-followup.md),
+  plus the [section-transform and length-boundary audit](docs/rk-upf-section-transform-and-length-boundary-audit.md).
 - A per-key XML comparison covers seven UI locales, generic and profile LED
   dictionaries, and profile side-light labels. It records added knob/screen
   strings and side-light resources, eight changed values, two malformed
