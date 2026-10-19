@@ -411,6 +411,15 @@ model or runtime map.
   establish reachable or complete firmware readback. See
   `docs/rk-3632-response-semantics-audit.md` and
   `docs/rk-uart-firmware-path-semantics-audit.md`.
+- After explicit authorization, the live `258A:0150` HID collections were
+  opened with read-only handles for descriptor inspection. A follow-up parses
+  input/output/feature button and value capability arrays, documenting report
+  IDs, usage ranges, and field widths without reading an input report or
+  issuing an output or feature write. The 19-entry `FF02:0002` descriptor and
+  three feature layouts still do not identify protocol commands, current
+  settings, or the physical keyboard model. See
+  `docs/rk-firmware-readback-audit.md` and
+  `scripts/probe_rk_hid_capabilities.ps1`.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced. A separate label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language

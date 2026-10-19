@@ -128,6 +128,40 @@ alternative in the installed 4.06 selector. Its `258A:0150` identity has no
 direct profile code in the installed catalog; 4.06 classifies it through a
 special wireless/receiver path whose later six-byte match remains unresolved.
 
+**HID capability-array snapshot (2026-10-19):** a second read-only probe,
+[probe_rk_hid_capabilities.ps1](../scripts/probe_rk_hid_capabilities.ps1),
+opened each matching collection with `GENERIC_READ`, obtained preparsed data,
+and called `HidP_GetButtonCaps` / `HidP_GetValueCaps`. These Windows HID parser
+calls decode the collection's descriptor capability arrays; they do not read
+input reports, send output reports, call `HidD_GetFeature`, or write device
+state. Microsoft documents those arrays as descriptor capabilities returned
+from preparsed data, with the array sizes supplied by `HIDP_CAPS`
+([button capability arrays](https://learn.microsoft.com/en-us/windows-hardware/drivers/hid/button-capability-arrays),
+[value capability arrays](https://learn.microsoft.com/en-us/windows-hardware/drivers/hid/value-capability-arrays)).
+
+The capability rows add these descriptor-level details to the prior report
+length table:
+
+| Collection | Type / report ID | Parsed capability | Descriptor fields |
+| --- | --- | --- | --- |
+| MI_01/COL_01 | Input `13` | Button cap `FF02:0002` | Report count 19 |
+| MI_01/COL_01 | Output `13` | Button cap `FF02:0002` | Report count 19 |
+| MI_01/COL_02 | Input `01` | Button usage range `0001:0081–0083` | Report count 1 |
+| MI_01/COL_03 | Input `02` | Button usage range `000C:0000–02FF` | Report count 1 |
+| MI_01/COL_04 | Input `03` | Value usage `FF02:002F` | 3 fields, 8 bits, logical range 0–255 |
+| MI_01/COL_06 | Feature `05` | Value usage range `FF00:0000–0004` | 1 field, 8 bits, logical range 0–255 |
+| MI_01/COL_07 | Feature `06` | Value usage range `FF00:0001–0002` | 1 field, 8 bits, logical range 0–255 |
+| MI_01/COL_08 | Feature `0A` | Value usage range `FF01:0001–0002` | 1 field, 8 bits, logical range 0–255 |
+
+The capability row for `MI_01/COL_01` agrees with the `20`-byte input/output
+lengths: the descriptor exposes report ID `13` plus 19 reported buttons. This
+is a structural match only; it does not establish the meaning of those 19
+fields or any accepted command. The three feature layouts likewise identify
+descriptor report IDs and usage ranges, not live configuration values. The
+three collections inaccessible in the earlier metadata pass again returned
+Win32 access denied. The raw direct `HidD_GetFeature` results and their
+limitations remain unchanged above.
+
 **Cached BLE HID metadata (2026-10-19):** Windows has three present Bluetooth
 roots named `RK-S98RGB`; their BLE HID service children share their respective
 root containers. All three report `ConnectionStatus=Disconnected`. The USB
