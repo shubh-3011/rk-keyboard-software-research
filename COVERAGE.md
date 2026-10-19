@@ -16,11 +16,14 @@ model or runtime map.
   Its standalone EXE is built by the project script; it does not need Python,
   a browser, or WebView2.
 - The app uses Windows SetupAPI's present-device list and reads USB/HID PnP
-  properties to match known VID/PID pairs to catalog entries. It does not open a keyboard interface,
-  read HID reports, or learn current RGB color/mode. Key and macro edits are
-  local drafts, and lighting writes, hardware settings, screen transfer,
-  updates, reset, and firmware operations remain unavailable. The native
-  reconstruction is incomplete and is not a full RK clone. See the
+  properties to match known VID/PID pairs to catalog entries. The app itself
+  does not open a keyboard interface, read HID reports, or learn current RGB
+  color/mode. Separately, the reverse-engineering report records a read-only
+  HID inspection of the attached device; it did not write to the keyboard.
+  Key and macro edits are local drafts, and lighting writes, hardware
+  settings, screen transfer, updates, reset, and firmware operations remain
+  unavailable. The native reconstruction is incomplete and is not a full RK
+  clone. See the
   [rebuild README](rebuild/windows/README.md) and
   [parity roadmap](REBUILD-ROADMAP.md).
 

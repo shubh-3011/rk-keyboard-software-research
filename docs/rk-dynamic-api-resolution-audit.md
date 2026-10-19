@@ -5,11 +5,15 @@
 The installed PE inventory records 128 direct-IAT or import-thunk
 `LoadLibrary*`/`GetProcAddress` call rows across four binaries. This note
 records static reviews of those 47 driver, four installer-helper, 54 updater,
-and 23 uninstaller rows, plus seven manually confirmed register-indirect
-`GetProcAddress` calls in the 4.06 driver. The combined CSV therefore has 135
-rows. This targeted addition does not enumerate every register-indirect
-reference to a loader IAT slot. The audit uses x86 disassembly only; none of
-the applications was executed and no device was contacted. The
+and 23 uninstaller rows, plus 108 manually confirmed register-indirect
+`GetProcAddress` call instructions. The additional 101 calls expand the 17
+previously unexpanded `GetProcAddress` IAT-reference blocks in `DeviceDriver.exe`,
+`Update.exe`, and `InitSetup.dll`; the earlier seven calls expand one other
+main-driver block. The combined CSV therefore has 236 rows. This callsite
+inventory is based on x86 disassembly; no RK application was executed to
+produce it. Separate read-only HID feature reads occurred during the broader
+research work, but they are outside this callsite audit and do not establish
+that any listed resolver path ran. The
 additional snapshots are `Update.exe` SHA-256
 `27894463B0DFE5BC3F5DC19D4D3351D9DFB692C402BF277BDE3889D37E4A206C` and
 `unins000.exe` SHA-256
@@ -67,19 +71,65 @@ the first call instruction; each added row uses the decoded `call ESI`
 address. Static flow confirms the module/name arguments and pointer stores,
 not execution, export availability, or later use of every cached pointer.
 
-Other `GetProcAddress` IAT loads in the 4.06 snapshots remain outside these
-new rows and are not resolved by this pass. The cross-reference lists the
-remaining `DeviceDriver.exe` operand locations `0x004332B9`, `0x0047EF7B`,
-`0x0047F88C`, `0x00482A9C`, `0x00488F64`, `0x0048A3E8`, `0x004BB18C`,
-`0x0057614E`, `0x0057644A`, and `0x00582162`; `Update.exe` locations
-`0x0041BA02`, `0x0041C21F`, `0x00424BF1`, and `0x0053D882`; and
-`InitSetup.dll` locations `0x10002B53`, `0x10002E4F`, and `0x10009462`.
-These are IAT-reference locations, not confirmed call instruction addresses.
-Their corresponding register-call sites, export-name arguments, and target
-consumers remain unresolved in this ledger. Some have separate partial
-discussion elsewhere, but this inventory does not convert them all into
-invocation rows or resolve every target. The full dynamic resolver call graph
-therefore remains open.
+### Previously unexpanded `GetProcAddress` IAT-reference blocks
+
+The remaining 17 IAT-reference locations in the cross-reference are not
+load-only references: static x86 decoding confirms one or more actual indirect
+`GetProcAddress` invocations in every block. The operand addresses below come
+from `rk-native-api-xrefs.csv`; exact `call` instruction addresses, literal
+export names, and per-row source tags are in
+[`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv).
+
+| Binary / IAT-reference operand | Confirmed invocation sites and recovered arguments / result flow |
+| --- | --- |
+| `DeviceDriver.exe` `0x004332B9` | Six calls at `0x004332C3`, `0x004332DE`, `0x004332F4`, `0x004332FD`, `0x0043330A`, and `0x00433317`; module `MenuEx.dll`; exports `SetMenuAlign`, `DllPreTranslateMessage`, conditional `CreateMenuEx` on two mutually exclusive paths, `DestroyMenuEx`, and `SetGdiInit`. Results are cached in globals `0x0062AC70`–`0x0062AC84`. |
+| `DeviceDriver.exe` `0x0047EF7B` | Four calls at `0x0047EF85`, `0x0047EF92`, `0x0047EF9F`, `0x0047EFA7`; module handle from `GetModuleHandleW("KERNEL32")`; exports `CreateActCtxW`, `ReleaseActCtx`, `ActivateActCtx`, and `DeactivateActCtx`; results cached in `0x00605964`–`0x00605970`. |
+| `DeviceDriver.exe` `0x0047F88C` | Calls at `0x0047F89C` and `0x0047F903`; module handle from `GetModuleHandleW("kernel32.dll")`; exports `GetUserDefaultUILanguage` and `GetSystemDefaultUILanguage`. Each returned pointer is called immediately at `0x0047F8A6` and `0x0047F90D`. |
+| `DeviceDriver.exe` `0x00482A9C` | Four calls at `0x00482AA6`, `0x00482AB8`, `0x00482ACA`, `0x00482ADC`; module handle from `GetModuleHandleW("KERNEL32")`; the same activation-context exports as the `0x0047EF7B` block, cached in `0x006059DC`–`0x006059E8`. |
+| `DeviceDriver.exe` `0x00488F64` | Eight calls at `0x00488F7B`, `0x00488F8E`, `0x00488FA1`, `0x00488FB4`, `0x00489008`, `0x00489038`, `0x0048904B`, and `0x0048905E`. They resolve four `UxTheme.dll` exports (`DrawThemeParentBackground`, `DrawThemeTextEx`, `BeginBufferedPaint`, `EndBufferedPaint`), `USER32.DLL!SetLayeredWindowAttributes`, and three `dwmapi.dll` exports (`DwmExtendFrameIntoClientArea`, `DwmDefWindowProc`, `DwmIsCompositionEnabled`). Results are cached in object fields `[ESI+0x1E0]`–`[ESI+0x1FC]`. |
+| `DeviceDriver.exe` `0x0048A3E8` | Eight calls at `0x0048A3FD`, `0x0048A410`, `0x0048A423`, `0x0048A436`, `0x0048A489`, `0x0048A4AC`, `0x0048A4BF`, and `0x0048A4D2`; the same four UxTheme, one USER32, and three DWM exports and object-field cache layout as the preceding block. |
+| `DeviceDriver.exe` `0x004BB18C` | Seven calls at `0x004BB196`, `0x004BB1A0`, `0x004BB1AD`, `0x004BB1BA`, `0x004BB1C7`, `0x004BB1D4`, and `0x004BB1E4`; `UxTheme.dll` exports `OpenThemeData`, `CloseThemeData`, `DrawThemeBackground`, `GetThemeColor`, `GetThemeSysColor`, `GetCurrentThemeName`, and `GetWindowTheme`; results are cached in object fields `[ESI+0x4C]`–`[ESI+0x64]`. |
+| `DeviceDriver.exe` `0x0057614E` | Calls at `0x00576152` and `0x00576162`; module handle from `GetModuleHandleW("KERNEL32.DLL")` with the wrapper fallback; exports `EncodePointer` and `DecodePointer`; results are stored in `[ESI+0x1F8]` and `[ESI+0x1FC]`. |
+| `DeviceDriver.exe` `0x0057644A` | Four calls at `0x00576454`, `0x0057645C`, `0x00576469`, and `0x00576476`; `KERNEL32.DLL` exports `FlsAlloc`, `FlsGetValue`, `FlsSetValue`, and `FlsFree`; results are cached in globals `0x00609394`–`0x006093A0`, with imported-API fallbacks and decoded pointer consumers also present. |
+| `DeviceDriver.exe` `0x00582162` | Five calls at `0x0058216C`, `0x00582189`, `0x0058219E`, `0x005821B3`, and conditional `0x005821CB`; `USER32.DLL` exports `MessageBoxA`, `GetActiveWindow`, `GetLastActivePopup`, `GetUserObjectInformationA`, and `GetProcessWindowStation`. Returned pointers pass through helper `0x00575F68`, are cached in `0x00609978`–`0x00609988`, then decoded by helper `0x00575FE3` before indirect use. |
+| `Update.exe` `0x0041BA02` | Calls at `0x0041BA18` and `0x0041BA3C`; module handle from `GetModuleHandleW("user32.dll")`; `GetGestureInfo` and `CloseGestureInfoHandle` results are cached in `0x005C15AC` and `0x005C15B0`. |
+| `Update.exe` `0x0041C21F` | Calls at `0x0041C235` and `0x0041C259`; module handle from `GetModuleHandleW("user32.dll")`; `GetTouchInputInfo` and `CloseTouchInputHandle` results are cached in `0x005C159C` and `0x005C15A0`. |
+| `Update.exe` `0x00424BF1` | Calls at `0x00424BFB`, `0x00424C27`, and `0x00424C44`; module helpers are called with `D2D1.dll` and `DWrite.dll`; exports are `D2D1CreateFactory`, `D2D1MakeRotateMatrix`, and `DWriteCreateFactory`. The first and third returned pointers are called immediately; the second is cached at `[ESI+0x18]`. |
+| `Update.exe` `0x0053D882` | Thirty-three `call ESI` invocations from `0x0053D88E` through `0x0053DAEE`, at `0x13`-byte intervals, using literal kernel32 export names. The names are `FlsAlloc`, `FlsFree`, `FlsGetValue`, `FlsSetValue`, `InitializeCriticalSectionEx`, `CreateEventExW`, `CreateSemaphoreExW`, `SetThreadStackGuarantee`, `CreateThreadpoolTimer`, `SetThreadpoolTimer`, `WaitForThreadpoolTimerCallbacks`, `CloseThreadpoolTimer`, `CreateThreadpoolWait`, `SetThreadpoolWait`, `CloseThreadpoolWait`, `FlushProcessWriteBuffers`, `FreeLibraryWhenCallbackReturns`, `GetCurrentProcessorNumber`, `GetLogicalProcessorInformation`, `CreateSymbolicLinkW`, `SetDefaultDllDirectories`, `EnumSystemLocalesEx`, `CompareStringEx`, `GetDateFormatEx`, `GetLocaleInfoEx`, `GetTimeFormatEx`, `GetUserDefaultLocaleName`, `IsValidLocaleName`, `LCMapStringEx`, `GetCurrentPackageId`, `GetTickCount64`, and two literal requests: `GetFileInformationByHandleExW` at callsite `0x0053DADB` (string VA `0x0058CC50`; canonical API export name `GetFileInformationByHandleEx`) and `SetFileInformationByHandleW` at callsite `0x0053DAEE` (string VA `0x0058CC70`; canonical API export name `SetFileInformationByHandle`). Each result is XOR-obfuscated with `0x005B41B0` and cached in `0x005C8160`–`0x005C81E0`; wrapper `0x0053DAFE` decodes and calls the `SetThreadStackGuarantee` slot. |
+| `InitSetup.dll` `0x10002B53` | Calls at `0x10002B57` and `0x10002B67`; module handle from `GetModuleHandleW("KERNEL32.DLL")` with wrapper fallback; `EncodePointer` and `DecodePointer` results are cached at `[ESI+0x1F8]` and `[ESI+0x1FC]`. |
+| `InitSetup.dll` `0x10002E4F` | Calls at `0x10002E59`, `0x10002E66`, `0x10002E73`, and `0x10002E80`; `KERNEL32.DLL` exports `FlsAlloc`, `FlsGetValue`, `FlsSetValue`, and `FlsFree`; results are cached in `0x1000F240`–`0x1000F24C`. |
+| `InitSetup.dll` `0x10009462` | Calls at `0x1000946C`, `0x10009489`, `0x1000949E`, `0x100094B3`, and conditional `0x100094CB`; `USER32.DLL` exports `MessageBoxA`, `GetActiveWindow`, `GetLastActivePopup`, `GetUserObjectInformationA`, and `GetProcessWindowStation`. Returned pointers pass through helper `0x100029AA` and are cached in `0x1000F894`–`0x1000F8A4`. |
+
+#### Current-host export availability check (runtime evidence)
+
+The two suffix-bearing spellings are the exact ASCII strings requested by the
+pinned `Update.exe` snapshot (SHA-256
+`27894463b0dfe5bc3f5dc19d4d3351d9dfb692c402bf277bde3889d37e4a206c`) at
+`0x0058CC50` and `0x0058CC70`. A read-only `GetProcAddress` probe against the
+already-loaded `kernel32.dll` in this analysis process ran on Microsoft
+Windows 11 Pro, version `10.0.26200`, build `26200`:
+
+| Literal requested name | Canonical API export name | Current-host lookup |
+| --- | --- | --- |
+| `GetFileInformationByHandleExW` (`Update.exe` callsite `0x0053DADB`) | `GetFileInformationByHandleEx` | Literal name returned null; canonical name returned non-null. |
+| `SetFileInformationByHandleW` (`Update.exe` callsite `0x0053DAEE`) | `SetFileInformationByHandle` | Literal name returned null; canonical name returned non-null. |
+
+The probe used PowerShell P/Invoke declarations for `GetModuleHandleA` and
+`GetProcAddress`, looked up the already-loaded `kernel32.dll`, then queried
+the four literal/canonical strings. This establishes export availability
+only for the current process's loaded `kernel32.dll` on that OS build. It
+does not show that `Update.exe` was run,
+that either callsite is reachable, or how another Windows build, forwarded
+exports, or a fallback path behaves. No RK binary was executed and no
+hardware was accessed during this export lookup probe.
+
+This pass converts all 17 previously listed operand references into
+invocation rows; it does not close the full resolver graph. It does not prove
+that conditional branches execute, that a named export exists on the target
+Windows version, or that every cached pointer is subsequently consumed. The
+three `DWM` lookups and desktop/UI helpers above have statically visible cache
+or invocation paths; for several theme, FLS, runtime compatibility, and
+installer pointers, the complete set of later consumers remains untraced.
 
 ## What this resolves
 
@@ -422,11 +472,12 @@ direct read in the disassembly, and indirect/data-driven consumers remain
 possible. None of these callsite traces proves runtime reachability or
 Windows-version-specific export availability.
 
-The original 128 direct-IAT/import-thunk rows are reviewed in this audit, and
-the focused driver sequence above adds seven confirmed register-indirect
-calls. The expanded CSV does not exhaust the other IAT-reference locations
-listed above, nor does it prove any path executes. Runtime-supplied names,
-some cached-pointer consumers, indirect control flow, and callers outside
-the inspected images remain unresolved. See the
-[system API crosswalk](rk-system-api-crosswalk.md) for aggregate scope and
-limits.
+The original 128 direct-IAT/import-thunk rows are reviewed in this audit,
+and 108 confirmed register-indirect invocations are now recorded: seven from
+the initial USER32 block and 101 from the 17 blocks above. This covers the
+previously listed `GetProcAddress` IAT-reference operands across these three
+binaries, but does not exhaust the full dynamic resolver graph or prove any
+path executes. Runtime-supplied values, some cached-pointer consumers,
+indirect control flow, and callers outside the inspected images remain
+unresolved. See the [system API crosswalk](rk-system-api-crosswalk.md) for
+aggregate scope and limits.

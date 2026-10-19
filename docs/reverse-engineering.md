@@ -1,17 +1,20 @@
-# RK Keyboard Software static audit
+# RK Keyboard Software reverse-engineering audit
 
 This document records what can be established from the RK Keyboard Software
-installed on the development PC. The work is offline and static: it examines
-copies of the application files, profile data, resources, imports, and strings.
-It does not execute the RK utility, open a keyboard HID interface, or send
-reports to a device.
+installed on the development PC. Most findings are offline and static: they
+examine copies of the application files, profile data, resources, imports, and
+strings. A separate read-only live check opened selected HID collections and
+made three `HidD_GetFeature` requests; its results and limits are in the
+[firmware readback audit](rk-firmware-readback-audit.md). No RK utility or
+updater was executed, and no output report, `HidD_SetFeature` payload, UART
+command, or bootloader operation was sent.
 
 The audit is broader than the initial catalog pass, but it is not a complete
 hardware protocol reverse engineering. The native driver contains several
 device-family paths and hardware-write operations. The static profile-to-
 handler rules are now documented, but the exact firmware revision for each
-model, full command schemas, and a safe active identification request are not
-proven. Keydeck therefore remains descriptor-only and does not write settings,
+model, full command schemas, and a validated non-mutating identification
+request are not proven. Keydeck therefore remains descriptor-only and does not write settings,
 lighting, macros, screen data, or firmware to a keyboard.
 
 This detailed address-level report describes the installed 4.06 package. A
@@ -70,12 +73,12 @@ strings are separately recorded in
 [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv). That inventory has
 128 direct-IAT/import-thunk `LoadLibrary*`/`GetProcAddress` rows across the
 four PEs that import these loader APIs. The dynamic-target CSV also contains
-seven manually confirmed register-indirect `GetProcAddress` calls in the
-4.06 `DeviceDriver.exe`, for 135 rows total. Other loader-IAT references
-remain unexpanded, so the CSV is not a complete register-indirect call graph.
-These are static byte/address-level references, not a record of executed
-system calls. The import, IAT-reference, dynamic-loader, and raw system-call
-byte-scan inventories are reconciled in the
+108 statically confirmed register-indirect `GetProcAddress` calls: seven in
+the initial driver block and 101 in 17 other IAT-reference blocks across
+`DeviceDriver.exe`, `Update.exe`, and `InitSetup.dll`, for 236 rows total.
+Those listed references are expanded into calls, but this is not a complete
+resolver graph or a record of executed code. The import, IAT-reference,
+dynamic-loader, and raw system-call byte-scan inventories are reconciled in the
 [system API crosswalk](rk-system-api-crosswalk.md).
 
 The static profile selector for every configured model is captured in
@@ -1100,14 +1103,16 @@ listed static import tables. Across the five analyzed binaries, the scan found
 128 direct-IAT/import-thunk `GetProcAddress`/`LoadLibrary*` rows in four
 binaries: 47 in `DeviceDriver.exe`, 54 in `Update.exe`, four in
 `InitSetup.dll`, and 23 in `unins000.exe`. The ledger additionally records
-seven confirmed register-indirect `GetProcAddress` calls in the main driver,
-bringing it to 135 rows. Twenty-two original direct-IAT/import-thunk rows
-have no nearby literal candidate. Other IAT-reference locations are not all
-expanded into call rows. Many recoverable names are Windows/MFC compatibility APIs (for example transacted
-file/registry functions, DWM/theme helpers, and task dialogs), but candidate
-strings do not prove argument flow or execution. Some targets are not
-statically recoverable. COM vtable calls, other indirect calls, and exact
-executed paths remain untraced.
+108 confirmed register-indirect
+`GetProcAddress` calls (seven in the first driver block and 101 in the 17
+additional listed blocks), bringing it to 236 rows. Twenty-two original
+direct-IAT/import-thunk rows have no nearby literal candidate. The listed
+`GetProcAddress` IAT-reference blocks are now expanded into invocation rows,
+but this does not close every dynamic resolver graph. Many recoverable names
+are Windows/MFC compatibility APIs (for example transacted file/registry
+functions, DWM/theme helpers, and task dialogs), but candidate strings do not
+prove argument flow or execution. Some target consumers remain untraced. COM
+vtable calls, other indirect calls, and exact executed paths remain untraced.
 
 The updater's static UI and call traces identify an `.upf` file chooser and
 firmware burn flow, plus version/status/acknowledgment handling. Its section-B
@@ -1200,6 +1205,10 @@ with ten additional model-localized LED XML files as described above.
 The [resource and localization audit](rk-resource-localization-audit.md)
 contains the per-file hashes, exact-string locale comparisons, all 362 UI/LED
 key rows, and per-profile illustration/effect-resource coverage.
+The focused [localized macro and screen UI audit](rk-ui-localized-action-audit.md)
+maps the numeric edit controls, their proven handlers, and related device-
+discovery and screen timers. Exact XML-label-to-control bindings and some
+virtual callback paths remain unresolved.
 
 | RK utility workflow | Evidence in package |
 | --- | --- |
@@ -1238,13 +1247,13 @@ Still unproven:
   a bad state.
 
 The native driver was inspected with Ghidra against a byte-identical working
-copy; REA was used for PE resource inspection. Static analysis advanced these
-findings without touching hardware. The complete UI event flow, exact
-model-to-firmware-revision mapping, and every device-family transaction have
-not been reconstructed. No report capture or keyboard write has been
-performed for this audit.
+copy; REA was used for PE resource inspection. The static analysis and the
+separate read-only HID inspection are described in their respective sections.
+The complete UI event flow, exact model-to-firmware-revision mapping, and
+every device-family transaction have not been reconstructed. No keyboard
+write was performed; the feature-read results are documented separately.
 
-## Device identification and safety boundary
+## Device identity and live device access
 
 The Windows PnP inventory on this PC (2026-10-18 13:24:08 +05:30) includes one
 present USB composite device with VID/PID `0x258A:0x0150`, three Bluetooth
@@ -1252,20 +1261,24 @@ nodes named `RK-S98RGB`, seven `HIDClass` children, two `Keyboard` children,
 and one `Mouse` child. The HID children include consumer-control,
 system-controller, vendor-defined, and USB Input Device entries. The query
 also returned no `USBSTOR` nodes and one `DiskDrive` node with an NVMe instance
-ID. This was a read-only OS PnP query: no HID interface was opened and no HID
-report or GATT data was read. The inventory does not establish that the USB
-composite device and the Bluetooth nodes are the same keyboard. The
+ID. A separate live audit opened seven HID paths for `258A:0150` and made
+three descriptor-declared feature reads. Two returned short data and the
+1,032-byte request failed; no output report or `HidD_SetFeature` write was
+sent. The report bytes do not identify the physical model. The PnP inventory
+does not establish that the USB composite device and the Bluetooth nodes are
+the same keyboard. The
 installed profiles list `0x0150` as a receiver ID for at least one model, and
 public S98 inventories also report `0x258A:0x0150`; this ID alone cannot prove
-which model is connected. See this
-[S98 HID inventory example](https://gist.github.com/andrewbt/10e59b562963200c80017babd2434947).
+which model is connected. The shared VID/PID occurs in 46 profile records.
+See the [firmware readback audit](rk-firmware-readback-audit.md) for access
+results and the [S98 HID inventory example](https://gist.github.com/andrewbt/10e59b562963200c80017babd2434947).
 
-Keydeck only reads the browser-visible descriptor after device permission. It
-does not open the HID device, receive feature reports, send reports, or replay
-captured data. Exact product IDs and product names can identify some models;
-shared receiver IDs remain ambiguous. Wireless profile matching now compares
-both VID and PID when the profile supplies both. No model is guessed from a
-feature-report probe.
+The Keydeck rebuild only reads the browser-visible descriptor after device
+permission. It does not open the HID device, receive feature reports, send
+reports, or replay captured data. Exact product IDs and product names can
+identify some models; shared receiver IDs remain ambiguous. Wireless profile
+matching now compares both VID and PID when the profile supplies both. The
+live feature-read result did not identify the attached model.
 
 ## Firmware readback assessment
 
@@ -1298,10 +1311,11 @@ are in the zero-filled `.data` tail. The code therefore shows a potential
 response-to-file sink, not an activated or complete firmware export workflow.
 The generic HID data path inspected for the native driver sends a feature
 report before it calls `HidD_GetFeature`, so an attempted “read” is not a
-passive USB capture. No keyboard feature report was sent, no updater was
-launched, and no bootloader mode was entered. With the evidence available,
-there is still no demonstrated way to copy the running firmware while
-guaranteeing the keyboard remains unchanged.
+passive USB capture. The live check made three read-only feature requests, but
+sent no output report or `HidD_SetFeature` payload. No updater was launched and
+no bootloader mode was entered. With the evidence available, there is still no
+demonstrated way to copy the running firmware while guaranteeing the keyboard
+remains unchanged.
 
 The dedicated [updater and firmware readback audit](rk-firmware-readback-audit.md)
 records the parser fields, traced HID verification buffers, conditional UART

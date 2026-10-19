@@ -107,36 +107,39 @@ reference count.
 ## Dynamic loader callsites
 
 [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv) currently contains
-135 rows: the original 128 direct-IAT/import-thunk rows and seven manually
-confirmed register-indirect `GetProcAddress` calls in `DeviceDriver.exe`.
-Recounting by binary and imported loader API gives:
+236 rows: the original 128 direct-IAT/import-thunk rows and 108 manually
+confirmed register-indirect `GetProcAddress` calls. The latter include seven
+calls in the first main-driver block and 101 calls across the 17 other
+previously unexpanded IAT-reference blocks in `DeviceDriver.exe`, `Update.exe`,
+and `InitSetup.dll`. Recounting by binary and imported loader API gives:
 
 | PE | `GetProcAddress` | `LoadLibraryA` | `LoadLibraryW` | `LoadLibraryExA` | `LoadLibraryExW` | Total rows | Rows with no nearby literal candidate (`[]`) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `DeviceDriver.exe` | 45 | 3 | 6 | 0 | 0 | 54 | 7 |
-| `InitSetup.dll` | 3 | 1 | 0 | 0 | 0 | 4 | 0 |
-| `Dev/01AF/Update.exe` | 47 | 0 | 2 | 0 | 5 | 54 | 4 |
+| `DeviceDriver.exe` | 95 | 3 | 6 | 0 | 0 | 104 | 7 |
+| `InitSetup.dll` | 14 | 1 | 0 | 0 | 0 | 15 | 0 |
+| `Dev/01AF/Update.exe` | 87 | 0 | 2 | 0 | 5 | 94 | 4 |
 | `unins000.exe` | 9 | 1 | 9 | 1 | 3 | 23 | 11 |
 | `uninstall.dll` | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| **Total** | **104** | **5** | **17** | **1** | **8** | **135** | **22** |
+| **Total** | **205** | **5** | **17** | **1** | **8** | **236** | **22** |
 
 The 22 empty candidate lists count the original direct-IAT/import-thunk
-rows; all seven added register-indirect rows have statically traced module
-and export-name arguments. Nearby DLL or export strings are candidates only:
-adjacency does not
-prove that a given string is passed to a specific resolver call, that the
-returned pointer is invoked, or that the branch executes. Several API paths
-are traced in the main report, including main-app DPI/menu/GDI compatibility,
-updater activation-context/WinRT setup, installer modal-error handling, and
-uninstaller ACL updates. The remaining resolver/data-flow links remain open.
-The [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) reviews
-the original 128 loader call rows (47 in `DeviceDriver.exe`, four in
-`InitSetup.dll`, 54 in `Update.exe`, and 23 in `unins000.exe`) and adds seven
-register-indirect calls in `DeviceDriver.exe`. Other IAT-reference locations
-that may lead to register calls remain unexpanded; this is not a complete
-register-indirect resolver inventory. Some caller-supplied module/export
-values, indirect consumers, external callers, and runtime reachability remain
-unresolved.
+rows; all 108 added register-indirect rows have statically recovered module
+and export arguments. Nearby DLL or export strings are candidates only for
+the original scan rows: adjacency does not prove call execution. The 17
+previously unexpanded `GetProcAddress` IAT-reference blocks are now decoded
+into concrete call rows, but this remains a bounded static inventory, not a
+complete resolver graph. Several API paths are traced in the main report,
+including main-app DPI/menu/GDI compatibility, updater activation-context/WinRT
+setup, installer modal-error handling, and uninstaller ACL updates. Caller
+reachability, full consumers for all cached pointers, and runtime execution
+remain unresolved. Two updater literals are the W-suffixed strings
+`GetFileInformationByHandleExW` and `SetFileInformationByHandleW`, while the
+canonical export names omit `W`. A current-host `GetProcAddress` probe on
+Windows 11 Pro 10.0.26200 build 26200 returned null for the literal requests
+and non-null for `GetFileInformationByHandleEx` and
+`SetFileInformationByHandle`; see the audit for method and limits. See the
+[dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) for
+per-call evidence and caveats.
 
 ## Native system-call boundary
 
@@ -181,8 +184,8 @@ call without instruction-boundary and reachability evidence.
   report. These are disassembled paths, not observed runs.
 - **Unresolved:** full call graphs for all 13,735 main-app procedures, all
   indirect/COM-vtable and callback targets, remaining caller-fed values and
-  argument-to-returned-pointer links across the 135 target-ledger rows and
-  unexpanded IAT references,
+  argument-to-returned-pointer links across the 236 target-ledger rows,
+  complete consumers for every resolved function pointer,
   the third uninstaller raw `E8`
   candidate, exact runtime branches, and any native system calls occurring
   inside Windows or device drivers. Runtime tracing must remain separate from
