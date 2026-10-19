@@ -192,6 +192,7 @@
 - [4.6 driver binary/API delta](rk-v4.6-native-binary-delta-audit.md)
 - [4.6 driver executable-section linear-sweep inventory and limitations](rk-v4.6-driver-linear-sweep-inventory.md)
 - [4.6 driver linear-sweep inventory script](../scripts/audit_rk46_driver_linear_sweep.py)
+- [4.6 DeviceDriver root-seeded CFG and call-edge audit](rk-v4.6-rooted-cfg-callgraph-audit.md)
 - [4.6 native import call paths and limitations](rk-v4.6-native-api-call-path-audit.md)
 - [4.6 HID GetFeature handle-argument audit for all six read callsites](rk-v4.6-hid-getfeature-argument-audit.md)
 - [4.6 native API feature-path follow-up](rk-v4.6-native-api-feature-follow-up.md)

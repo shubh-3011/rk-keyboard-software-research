@@ -928,6 +928,14 @@ For current blockers and the recommended reverse-engineering order, see the
   unresolved. The inventory includes statically linked MFC framework maps and
   does not prove runtime dispatch or complete map coverage; see
   `docs/rk-v4.6-mfc-message-map-inventory.md`.
+- A hash-pinned root-seeded CFG pass for that 4.6 image starts from its PE
+  entrypoint, 1,033 unique MFC handlers, and 37 proven device-family vtable
+  targets. It records 3,433 root candidates, 31,520 basic blocks, 13,652
+  unique direct-call edges, 3,019 exact IAT call sites, and 73 IAT tail-jump
+  sites. It visits 580,139 decoded instruction bytes (33.66% of raw `.text`),
+  while leaving 3,537 indirect calls, 123 indirect jumps, and 147 possible
+  tail transfers unresolved; the full function/CFG gap remains open. See
+  `docs/rk-v4.6-rooted-cfg-callgraph-audit.md`.
 - A separate V4.6 trace follows literal private message `0x0477` from both
   shared popup click handlers into the RTTI-attributed page maps; the screen
   dialog map's `CScreenDlg` owner is now confirmed statically. The page-level
