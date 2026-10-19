@@ -456,9 +456,10 @@ model or runtime map.
   `docs/rk-keymap-translation-audit.md`.
 - The macro audit maps the 834-byte `.mck` record, reversible byte rotation,
   raw concatenated `mac.dct` persistence, import/export branches, and three
-  family-specific serialization paths. The editor follow-up maps custom
-  message handlers, dirty bits, and mouse-hook callsites but finds no proven
-  physical-key capture producer or event-row constructor; see
+  family-specific serialization paths. The editor follow-up ties four custom
+  messages to tree-control mouse/Delete interactions and proves that the row
+  builder reconstructs rows from editor tree/list state. A physical-input to
+  recorder path remains unproven; see
   `docs/rk-macro-format-and-path-audit.md` and
   `docs/rk-macro-capture-path-audit.md`.
 - The audio follow-up traces WASAPI loopback capture, 24 visualization bands,
