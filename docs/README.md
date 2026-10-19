@@ -21,6 +21,8 @@
 - [RK68 HE web setup and lighting-to-WebHID call paths](rk68-he-static-webhid-callpaths-2026-10-20.md)
 - [RK68 HE source-offset evidence ledger](rk68-he-static-webhid-callpath-evidence-2026-10-20.csv)
 - [RK68 HE hash-checked scanner](../scripts/audit_rk68_he_webhid_callpaths.py)
+- [RK68 HE selected route-to-controller feature paths](rk68-he-route-feature-callpaths-2026-10-20.csv)
+- [RK68 HE route feature-path scanner](../scripts/audit_rk68_he_route_feature_callpaths.py)
 - [Product-specific Hub software package audit and family comparison](rk-product-specific-software-package-audit-2026-10-19.md)
 - [Product-specific package hash catalog](rk-product-specific-software-package-catalog-2026-10-19.csv)
 - [R99 extracted package file manifest](rk-r99-package-manifest-2026-10-19.csv)

@@ -123,12 +123,17 @@ For current blockers and the recommended reverse-engineering order, see the
   [scanner](scripts/audit_rk_drive2_connection_path.py).
 - A hash-pinned static pass over the separate `rk.hubx.pro` app maps the
   `/setup` connect action through the picker and model gates, and traces one
-  `/lighting` action through the V3 controller to `HIDDevice.sendReport`.
-  It records two catalogued RK68 HE variants and a bounded V3 method surface;
-  it does not establish runtime behavior, every feature page's controller
-  path, or full RK68 HE revision coverage. See the [call-path report](docs/rk68-he-static-webhid-callpaths-2026-10-20.md),
+  `/lighting` action through the V3 controller to `HIDDevice.sendReport`. A
+  route-level follow-up also traces selected `/keyboard`, `/macro`,
+  `/advanced`, `/performance`, `/features`, `/settings`, and `/devices` paths
+  through stores/controllers to source-level report calls. It records two
+  catalogued RK68 HE variants and bounded feature paths; rhythm receiver
+  behavior, custom-layout device effects, several performance chains, runtime
+  behavior, and full revision coverage remain open. See the [call-path report](docs/rk68-he-static-webhid-callpaths-2026-10-20.md),
   [55-row source-offset ledger](docs/rk68-he-static-webhid-callpath-evidence-2026-10-20.csv),
-  and [hash-checked scanner](scripts/audit_rk68_he_webhid_callpaths.py).
+  [route-feature ledger](docs/rk68-he-route-feature-callpaths-2026-10-20.csv),
+  and both [setup scanner](scripts/audit_rk68_he_webhid_callpaths.py) and
+  [route scanner](scripts/audit_rk68_he_route_feature_callpaths.py).
 - The QMK selector reports 83 rows and 83 distinct artifact URLs across seven
   model choices. Its 38 JSON definitions all match a `keyboard.json` embedded
   in the separately listed 38 ZIP source overlays; these are declarative
