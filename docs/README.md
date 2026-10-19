@@ -114,6 +114,7 @@
 - [One-click updater command `0x0419` static UI-to-worker trace](rk-updater-command-0419-static-path-audit.md)
 - [Updater progress-control bindings and `PBM_SETPOS` sites](rk-updater-progress-control-audit.md)
 - [Updater timer-origin inventory and `WM_TIMER` scheduling gap](rk-updater-timer-origin-static-audit.md)
+- [Updater low `WM_TIMER` producer follow-up](rk-updater-low-timer-producer-followup.md)
 - [Updater UART file-sink direct-reference and initialization audit](rk-uart-file-sink-reachability-audit.md)
 - [Updater UART file-open path crosswalk](rk-uart-file-open-path-crosswalk.md)
 - [Updater UART file API call-graph reconciliation](rk-uart-file-api-callgraph-reconciliation.md)

@@ -98,5 +98,6 @@ or that a keyboard was contacted.
 
 - [Updater command `0x0419` UI-to-worker trace](rk-updater-command-0419-static-path-audit.md)
 - [Updater progress-control audit](rk-updater-progress-control-audit.md)
+- [Low `WM_TIMER` producer follow-up](rk-updater-low-timer-producer-followup.md)
 - [Updater dialog resources and selected handlers](rk-dialog-resource-audit.md)
 - [Native API import and reference ledger](rk-native-api-xrefs.csv)

@@ -154,6 +154,7 @@ as confirmed.
 - [Dynamic API resolution paths](docs/rk-dynamic-api-resolution-audit.md)
 - [Dynamic API export and cached-pointer consumer follow-up](docs/rk-dynamic-api-consumer-gap-audit.md)
 - [Updater UART receive state machine](docs/rk-updater-uart-state-machine.md)
+- [Updater low `WM_TIMER` producer follow-up](docs/rk-updater-low-timer-producer-followup.md)
 - [One-click updater command `0x0419` static UI-to-worker trace](docs/rk-updater-command-0419-static-path-audit.md)
 - [Updater dongle-pairing checkbox state and direct-reference audit](docs/rk-updater-dongle-pairing-option-audit.md)
 - [Updater UART file-sink direct-reference and initialization audit](docs/rk-uart-file-sink-reachability-audit.md)

@@ -525,8 +525,12 @@ model or runtime map.
   feature-write paths are statically visible. A progress follow-up maps all 14
   `PBM_SETPOS` sites (13 direct IAT calls and one register-indirect call) to
   resource control `0x0413` and traces three chunk-progress formulas; control
-  `0x041B` remains without a direct position update. Timer origins, runtime
-  selection, and indirect coupling to the UART state machine remain unresolved. See
+  `0x041B` remains without a direct position update. A follow-up finds no
+  direct `WM_TIMER` producer for updater IDs 2, 3, or 4 in the inspected posting
+  and timer callsites; dynamic window-procedure forwarding and callback virtual
+  targets remain unresolved. Runtime selection and indirect coupling to the UART
+  state machine also remain unresolved. See the
+  [timer producer follow-up](docs/rk-updater-low-timer-producer-followup.md) and
   [`docs/rk-updater-command-0419-static-path-audit.md`](docs/rk-updater-command-0419-static-path-audit.md).
   See also the [progress-control audit](docs/rk-updater-progress-control-audit.md).
   A focused audit of the updater's `0x0422` “retain dongle pairing” checkbox
