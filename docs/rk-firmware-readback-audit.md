@@ -77,21 +77,24 @@ cannot be confidently assigned to the S98 or its Bluetooth LE nodes.
 **Current descriptor-only HID snapshot (2026-10-19):** after explicit user
 authorization to open the HID interface, a read-access handle was used only
 for `HidD_GetAttributes`, `HidD_GetManufacturerString`,
-`HidD_GetProductString`, `HidD_GetPreparsedData`, and `HidP_GetCaps` on the
-present `258A:0150` collections. During this metadata pass, no input report
-was read and no output report or `HidD_SetFeature` payload was sent; the
-separate direct feature-read results are listed below. Seven of ten
-enumerated collections could be opened; Windows returned access denied for
-MI_00, MI_01/COL_05, and MI_01/COL_09. The accessible descriptor results were:
+`HidD_GetProductString`, `HidD_GetSerialNumberString`,
+`HidD_GetPreparsedData`, and `HidP_GetCaps` on the present `258A:0150`
+collections. During this metadata pass, no input report was read and no output
+report or `HidD_SetFeature` payload was sent; the separate direct feature-read
+results are listed below. Seven of ten enumerated collections could be opened;
+Windows returned access denied for MI_00, MI_01/COL_05, and MI_01/COL_09. The
+accessible descriptor results were:
 
 The metadata pass was repeated with the repository's
 [read-only HID metadata probe](../scripts/probe_rk_hid_metadata.ps1). It
 requests `GENERIC_READ` only, and imports no report-read, report-write, or
 device-control API. The rerun reproduced the same seven successful
 collections, three Win32 access-denied results, VID/PID/revision, manufacturer
-string, and report lengths shown here. Its C# `Marshal.WriteInt32` and
-`Marshal.WriteInt16` calls initialize local SetupAPI/string buffers; they do
-not write to the keyboard.
+string, and report lengths shown here. The additional serial-string call
+failed with Win32 87 on every accessible collection; that leaves a serial
+number unavailable and does not establish that the receiver has no serial
+number. The probe's C# `Marshal.WriteInt32` and `Marshal.WriteInt16` calls
+initialize local SetupAPI/string buffers; they do not write to the keyboard.
 
 | Interface collection | Usage page:usage | Input bytes | Output bytes | Feature bytes | Feature report IDs |
 | --- | --- | ---: | ---: | ---: | --- |

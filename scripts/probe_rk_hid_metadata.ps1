@@ -83,6 +83,10 @@ public static class RkReadOnlyHidMetadata
 
     [DllImport("hid.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool HidD_GetSerialNumberString(SafeFileHandle handle, IntPtr buffer, int bufferLength);
+
+    [DllImport("hid.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool HidD_GetPreparsedData(SafeFileHandle handle, out IntPtr preparsedData);
 
     [DllImport("hid.dll", SetLastError = true)]
@@ -133,6 +137,7 @@ public static class RkReadOnlyHidMetadata
         public string Attributes { get; set; }
         public string Manufacturer { get; set; }
         public string Product { get; set; }
+        public string SerialNumber { get; set; }
     }
 
     private static string ReadDescriptorString(SafeFileHandle handle, bool manufacturer)
@@ -145,6 +150,22 @@ public static class RkReadOnlyHidMetadata
                 ? HidD_GetManufacturerString(handle, buffer, 512)
                 : HidD_GetProductString(handle, buffer, 512);
             return ok ? (Marshal.PtrToStringUni(buffer) ?? String.Empty) : String.Empty;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    private static bool TryReadSerialNumberString(SafeFileHandle handle, out string value)
+    {
+        IntPtr buffer = Marshal.AllocHGlobal(512);
+        try
+        {
+            for (int i = 0; i < 256; i++) Marshal.WriteInt16(buffer, i * 2, 0);
+            bool ok = HidD_GetSerialNumberString(handle, buffer, 512);
+            value = ok ? (Marshal.PtrToStringUni(buffer) ?? String.Empty) : String.Empty;
+            return ok;
         }
         finally
         {
@@ -214,6 +235,10 @@ public static class RkReadOnlyHidMetadata
                                 attributes.ProductID.ToString("X4") + " rev " + attributes.VersionNumber.ToString("X4");
                         row.Manufacturer = ReadDescriptorString(handle, true);
                         row.Product = ReadDescriptorString(handle, false);
+                        string serialNumber;
+                        row.SerialNumber = TryReadSerialNumberString(handle, out serialNumber)
+                            ? (String.IsNullOrEmpty(serialNumber) ? "<empty>" : serialNumber)
+                            : "unavailable Win32 " + Marshal.GetLastWin32Error();
 
                         IntPtr preparsed;
                         if (!HidD_GetPreparsedData(handle, out preparsed))
@@ -271,6 +296,6 @@ if (-not ('RkReadOnlyHidMetadata' -as [type])) {
 
 [RkReadOnlyHidMetadata]::Enumerate($VendorId, $ProductId) |
     Sort-Object Interface |
-    Format-Table Interface, Open, Detail, Attributes, Manufacturer, Product, UsagePage, Usage,
+    Format-Table Interface, Open, Detail, Attributes, Manufacturer, Product, SerialNumber, UsagePage, Usage,
         InputBytes, OutputBytes, FeatureBytes, FeatureButtonCaps,
         FeatureValueCaps, FeatureDataIndices -AutoSize
