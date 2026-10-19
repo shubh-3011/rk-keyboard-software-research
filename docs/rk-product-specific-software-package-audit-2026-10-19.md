@@ -59,13 +59,48 @@ The `GamingKeyboardWriter.dll` is byte-identical in both packages
 (SHA-256 `8b716fa567e84791f77f94582ce8af648e4c3741bf70406b3135eb2129c695d2`).
 It dynamically loads `Bin\\GK\\SonixHidDll.dll` and resolves
 `FindDeviceWithID`, `HIDReportOut`, `HIDReportIn`, and `HIDReportIn2`. The newer
-RK918 package's GK helper enumerates three interface GUIDs; its older GM helper
-and both S108 helpers use `HidD_GetHidGuid`. The helper's output routine
+RK918 package's GK helper (SHA-256
+`c7e129af90ef793e362650384088945bcdbff08d6fdf434e0f73990b3922ef87`)
+enumerates three interface GUIDs; its older GM helper and both S108 helpers
+use `HidD_GetHidGuid` (older helper SHA-256
+`eca32342eb27abc8349b8487bdbed679c62b77039e37748a201835047cd83959`). The
+helper's output routine
 constructs feature reports with report ID 0 and Writer callers request 64-byte
 reports. Static callers contain words such as `0xE004`, `0xAB04`, `0xF104`,
 `0xF004`, `0x0204`, and `0x0504`, but their meanings and product mapping are
 unresolved. The detailed evidence is package-build-specific and does not
 establish successful device communication.
+
+The package's `Bin\\GK\\LightingUI.xml` declares a `CWTEventListener`, a
+`GK::ID_LIGHT_Switch`, and 16 brightness selectors
+(`GK::ID_LIGHT_BrightnessSlider_0` through `_15`; RK file lines 37, 103, 129,
+189, and 2460). Its `Entry.xml` configures the Writer plugin with
+`MemoryType=1`, `ToolType=1`, `CommandDelayTime=10`, brightness values 1–16,
+and lighting modes 1–25 in the RK918-labeled package (lines 189–244) versus
+1–19 in S108 (lines 183–232).
+`Entry.xml` connects Writer with Profile, Macro, Persister, and UI event
+listener components. The two profile databases have matching schemas,
+including `KeyLightGeneral` (with `ProfileName`, `LightMode`, `Direction`,
+`Frequency`, `Brightness`, `Color1`, `Color2`, and `IsFullColor`), per-effect
+`KeyLight*`, `ProfileSummary`, `GamingMode`, and macro tables; each has three
+default profiles and 32 `KeyLightGeneral` rows per profile, with stored mode
+indexes 9–40. This establishes configuration/UI structure, not the meaning or
+serialized device values of each mode or brightness index.
+
+Focused Writer disassembly shows its loader at VA `0x10002E80` constructing and
+loading `\\bin\\GK\\SonixHidDll.dll`, then resolving the four helper exports.
+The `FindDeviceWithID` path obtains two properties (keys `0x4268` and `0x4269`)
+and passes them to a helper that compares them with HID VID/PID attributes;
+their numeric values remain unresolved. Writer callsites build 64-byte
+requests, including `0x10002759`, `0x10002962`, `0x10002A1F`, `0x10002C4B`, and
+`0x10002CBB`. One caller at `0x10002759` sends `0xE004`, reads four response
+bytes at `0x100027DC`, and retries up to three times; other callers send
+`0xF104` at `0x10002C4B` and `0xF004` at `0x10002CBB`. The helper's output
+routine prepends feature report ID zero, while input routines strip the
+report-ID byte before copying response data. A helper read call at
+`0x10002BD1` requests four bytes with a `0x7D0` (2,000 ms) timeout. Exact
+UI-slider-to-Writer method binding, command meanings, returned status
+semantics, and brightness value mapping remain unresolved.
 
 ### R99 RK Driver package
 
@@ -80,8 +115,9 @@ include SetupAPI enumeration, Raw Input and global-hook APIs, tray notification,
 Registry, WinMM, GDI+, and custom exports from `mui.dll`; the package also
 contains `CH375DLL.DLL` and `driver\\CH372DRV.EXE`. These imports indicate
 available OS integration points, not proven runtime behavior or exact device
-operations. The main EXE's direct calls into the helper exports and the
-installer's driver-install sequence still need full call-path analysis.
+operations. Some direct CH375, HID, and SetupAPI paths are now mapped below;
+full function reachability, helper argument/return semantics, and the complete
+installer sequence remain open.
 
 A separate hash-pinned scanner records 2,559 imports and 4,110 direct
 imported-call/tail-jump candidates across all seven package PEs. It links nine
@@ -89,6 +125,90 @@ CH375 exports called by the main app to 30 `DeviceIoControl` candidates in the
 helper, all carrying IOCTL `0x223CDC`; it also maps HID descriptor/capability
 calls and SetupAPI enumeration candidates. Candidate-level details and
 unresolved function-boundary issues are in the [R99 native API audit](rk-r99-native-api-boundary-audit-2026-10-19.md).
+
+Focused callsite review of `RK Driver.exe` (SHA-256
+`61dd118400a4652ba053db6ceb87cdd865e183f59822948ea9018da218aec2e5`)
+confirms a CH375 path through its app-shipped 2022 `CH375DLL.DLL` (SHA-256
+`a7d5acb61f0d4b0ccbc5b045c1cdf01146cfdaacff23f3931459f17ecd85f571`) and a
+separate HID/SetupAPI path. Two CH375 discovery loops enumerate, obtain USB ID
+and device name, and close candidates (main EXE VAs `0x41A961`–`0x41A9B8` and
+`0x41AE56`–`0x41AEAC`). The ID check compares words `0x4348` and `0x55E0`, which
+match the archived INF's USB VID/PID. The selected-path branch sets exclusive
+access and timeout, then calls `CH375WriteData` at `0x41AF64`, `0x41B024`, and
+`0x41B0D6`; it calls `CH375ReadData` at `0x41AFA1` and `0x41B102`. Two request
+builders write 4-byte values `0x281` and `0x283`; another loop processes chunks
+up to `0x3C` bytes. These values are request data, not decoded command
+semantics or proof of device response.
+
+The app also has a distinct HID/SetupAPI path: a candidate opened with
+`CreateFileW` is checked with `HidD_GetAttributes`, preparsed data, and
+`HidP_GetCaps` (VAs `0x43E067`–`0x43E0A7`); another path enumerates SetupAPI
+interfaces and reads detail/device properties (`0x474ED6`–`0x47521A`). Static
+evidence shows both CH375 and HID paths in the same build, but does not show
+which branch a given model or runtime connection uses.
+
+A separate static examination of the archived 2023 driver payload resolves
+that boundary further. `CH375WDM.sys` dispatches IOCTL `0x223CDC` through its
+device-control handler; the handler requires an input buffer of at least eight
+bytes, parses an operation and declared length from `IRP.SystemBuffer`, and
+sets completion information to the operation's result length plus eight. For
+operation 16, jump-table branches for suboperations 3 and 4 call internal
+helpers and return 8 and 4 bytes respectively. No `OutputBufferLength` check
+was found in this dispatch path; this is a static review item, not a claim of a
+runtime vulnerability. A 2023 `CH375DLL.dll` maps `CH375QueryBufUploadEx`,
+`CH375ClearBufUpload`, and `CH375SetBufUploadEx` to operation 16 with
+suboperations 3, 4, and a set/config path. The DLL shipped beside the main app
+is a different version from this archived 2023 helper, so their precise
+equivalence remains unresolved.
+
+The pinned files are x86 `CH375WDM.sys` SHA-256
+`cd261de65db8f3824495b9466a100b069828c48f92223463cd150b35e067efe4`,
+the archive's `WIN 1X\\CH375WDM.sys` SHA-256
+`bbe2b9a1a571ccabef21cc1ad082f8c062fe86772900cda52e355d5129a17a79`,
+2023 `CH375DLL.dll` SHA-256
+`8aadd025422d4634aaaf6ce2de6106ff2915a41c15ede3c1b8118e206e3e997d`,
+`SETUP.EXE` SHA-256
+`4b58be5dbcfa0a452b7d62fa61ff8a8e5935fc5d524ef086379ec92e11db5519`, and
+`CH375WDM.INF` SHA-256
+`f41675a827a53d23b59f23677a3d091a8974e251b38ef0c355608f5b47bbb0cf`.
+The two `.sys` files have identical PE sections but different whole-file
+lengths and signed/overlay bytes, so they are not byte-identical.
+
+Useful x86 file-offset/VA anchors for the 2023 build are:
+
+- `DriverEntry` sets the `IRP_MJ_DEVICE_CONTROL` dispatch slot at `+0x70` to
+  handler VA `0x137F0` (file offset `0x37F0`). The handler compares IOCTL
+  `0x223CDC` at `0x13864`–`0x13871`, checks `InputBufferLength >= 8` at
+  `0x138B4`–`0x138BB`, parses operation/length/body at `0x138C1`–`0x138D2`,
+  and sets `IRP.Information = result_length + 8` at `0x14562`–`0x14568`.
+- Operation 16 dispatch starts at `0x142F8`; jump table `0x147A8` sends
+  suboperation 3 to `0x144F4`, which calls helper `0x10970` with `body+4` and
+  returns 8 bytes; suboperation 4 goes to `0x14529`, which calls helper
+  `0x118F0` and returns 4 bytes. Operation 18 at `0x146A0` stores its first
+  body byte at extension offset `+0x3A5`; no matching named 2023 export was
+  found.
+- `CH375DriverCommand` in the 2023 DLL at VA `0x4013D3` passes the same buffer
+  for input/output and sizes both from `DWORD(buffer+4) + 8`. Its query, clear,
+  and set exports build operation-16 requests: query is length 8 with body
+  suboperation 3 and endpoint-1; clear is length 8 with body suboperation 4
+  and endpoint-1; set is length 12 with option, endpoint-1, and requested
+  length fields. These are static buffer mappings; internal driver helper
+  behavior is not fully named.
+
+The 2023 `CH375WDM.INF` maps `VID_4348&PID_55E0` and declares a demand-start
+`CH375` kernel service. Its `SETUP.EXE` statically calls SetupAPI install
+functions, resolves `UpdateDriverForPlugAndPlayDevicesA` dynamically, and
+invokes `SetupCopyOEMInfA` / `SetupInstallFilesFromInfSectionA` and
+`SetupCommitFileQueueA`. This proves the package contains an installer path;
+it does not prove it was run on this PC or that the driver controls a specific
+RK model. The INF's `DriverVer` is `10/16/2023,3.4.2023.10`; its service uses
+`%10%\\System32\\Drivers\\CH375WDM.SYS` with demand start. The installer calls
+`SetupDiCallClassInstaller(DIF_INSTALLDEVICE)` at `0x402F87`, resolves
+`UpdateDriverForPlugAndPlayDevicesA` at `0x4032C8`–`0x4032FF`, calls
+`SetupCopyOEMInfA` at `0x40354B`, and calls
+`SetupInstallFilesFromInfSectionA` / `SetupCommitFileQueueA` at
+`0x403F0B`/`0x403F23` and `0x404192`/`0x4041A9`. These static paths do not
+establish that installation occurred on this PC.
 
 Static resources include 20 layout XMLs covering R87V2, R98, R98GT, R99,
 RK99, RKK99, RR99, RR99_UK, T87, and T98, with wired and `_Dongle` variants.
@@ -107,9 +227,9 @@ The F99 AI selector target is a signed NSIS 3 Unicode installer for RK Setup
 entries, 91 renderer JavaScript chunks, 53 CSS chunks, model imagery, and an
 x64 native HID addon. The app loads `mi-hid.node`; static wrapper code exposes
 enumeration, open/read/close, and write methods. The application code contains
-a 2-second device enumeration loop, VID/PID filtering, 128-byte output report
-construction, and a queued writer drained every 30 ms. These are static
-implementation paths, not observed I/O.
+a 2-second device enumeration loop, VID/PID filtering, a 128-byte scratch
+buffer, variable-length output-report construction, and a queued writer
+drained every 30 ms. These are static implementation paths, not observed I/O.
 
 The package contains 68 VID/PID rows (57 unique pairs) and imports native
 Windows APIs including `CreateFileW`, `ReadFile`, `WriteFile`, and
@@ -213,16 +333,19 @@ treated as evidence that all S98 hardware revisions are supported.
 
 - Expand the partial F99 analysis with focused, source-path-limited passes on
   the main process entry point, renderer chunks, preload candidates, and the
-  native-addon wrapper; map returned paths to exact UI/IPC/native call chains.
-  The whole-ASAR pass exhausted its graph-result budget and does not provide a
-  complete function map.
+  native-addon wrapper; extend the now-mapped device, verification, DPI, and
+  OTA chains to the remaining UI and native call paths. The whole-ASAR pass
+  exhausted its graph-result budget and does not provide a complete function
+  map.
 - Recover full call graphs and data flow for the three application families,
-  especially R99 helper calls, GamingForceZ plugin/DLL calls, and F99
+  including remaining R99 helper operations/return semantics, exact
+  GamingForceZ UI-event-to-Writer mappings, and the remaining F99
   renderer-to-native-addon calls.
 - Map all model/profile/configuration data to product and revision identifiers;
   distinguish labels and selector metadata from verified compatibility.
-- Analyze firmware/QMK packages and other current product-specific downloads,
-  then expand to historical and regional packages.
+- Analyze the remaining firmware/QMK packages beyond the eight S98 regional
+  updater variants, plus other current product-specific downloads; then expand
+  to historical and regional packages.
 - Analyze the F99 Mac payload using a format-capable environment; inspect all
   package assets and runtime owners; complete installer and updater behavior.
 - Determine the limits of firmware readback from documented static paths.
