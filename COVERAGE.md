@@ -705,6 +705,11 @@ For current blockers and the recommended reverse-engineering order, see the
   unresolved. The inventory includes statically linked MFC framework maps and
   does not prove runtime dispatch or complete map coverage; see
   `docs/rk-v4.6-mfc-message-map-inventory.md`.
+- A separate V4.6 trace follows literal private message `0x0477` from both
+  shared popup click handlers into the RTTI-attributed page maps; the screen
+  dialog map's `CScreenDlg` owner is now confirmed statically. The page-level
+  action for every selection remains incomplete; see
+  `docs/rk-v4.6-private-message-0477-popup-fanout.md`.
 - A dated snapshot of RK's public storefront navigation records 43 listed
   variants across 33 model tokens and compares them with the installed
   profile names. The resulting candidates are not treated as compatible

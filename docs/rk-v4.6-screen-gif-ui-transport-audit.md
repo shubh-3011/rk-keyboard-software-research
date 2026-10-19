@@ -49,10 +49,12 @@ In this table, slot 20 (`+0x50`) is `0x00410B60`, slot 21 (`+0x54`) is
 
 ## MFC screen/image dialog map
 
-The 24-byte MFC message-map records beginning at `0x005E36B8` form a candidate
-screen/image dialog map. The class name itself is not present in this table;
-the attribution is inferred from its image/GIF-related neighbors and the
-screen-specific edit handler. These are addresses in the 4.6 PE:
+The 24-byte MFC message-map records beginning at `0x005E36B8` are attributed
+to `CScreenDlg` by the validated RTTI/vtable association in the
+[4.6 MFC inventory](rk-v4.6-mfc-message-map-inventory.md): accessor
+`0x004720C0` returns descriptor `0x005E3790`, and a vtable reference at
+`0x005E3974` is preceded by Complete Object Locator `0x005EDE94`, whose type
+descriptor names `.?AVCScreenDlg@@`. These are addresses in the 4.6 PE:
 
 | Map entry VA | Message / signature | Control ID or code | Handler VA | Static reading |
 | --- | --- | --- | --- | --- |
@@ -257,9 +259,9 @@ successful transfer to a connected keyboard.
 
 ## Remaining gaps and model limits
 
-- The MFC table identifies message handlers but strips their class/method
-  names. The NewGIF-to-worker object path is mapped, but the visible command
-  label/control identity and class owner of the candidate map are unresolved.
+- The MFC table identifies handlers and the map's class owner, but strips
+  C++ method names. The NewGIF-to-worker object path is mapped, while the
+  visible command label and exact control identity remain unresolved.
 - The multi-frame `NewGIF` picker and shared frame-list-to-worker ownership
   are mapped. The one-item `New PNG` branch is mapped as a GDI+ export of the
   first list image. The generic one-file picker and `0x004762E0` are mapped

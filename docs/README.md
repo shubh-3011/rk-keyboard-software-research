@@ -69,6 +69,7 @@
 - [4.6 MFC message-map summary CSV](rk-v4.6-mfc-message-map-summary.csv)
 - [4.6 MFC message-map entry CSV](rk-v4.6-mfc-message-map-entries.csv)
 - [4.6 MFC message-map scanner](../scripts/audit_rk46_mfc_message_maps.py)
+- [4.6 private `0x0477` shared-popup sender and page fanout](rk-v4.6-private-message-0477-popup-fanout.md)
 - [4.6 `CLedDlg` map decoder](../scripts/audit_rk46_cleddlg_message_map.py)
 - [4.6 screen/GIF UI-to-transport trace](rk-v4.6-screen-gif-ui-transport-audit.md)
 - [4.6 screen-dialog child event to frame worker](rk-v4.6-screen-dialog-worker-edge.md)

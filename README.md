@@ -144,6 +144,7 @@ as confirmed.
 - [4.6 Side LED message-map and selection-state follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md)
 - [4.6 `CLedDlg` message map and position-selection worker path](docs/rk-v4.6-cleddlg-message-map-and-selection-worker-audit.md)
 - [4.6 MFC message-map inventory: 145 candidates and 1,214 entries](docs/rk-v4.6-mfc-message-map-inventory.md)
+- [4.6 private `0x0477` shared-popup sender and page fanout](docs/rk-v4.6-private-message-0477-popup-fanout.md)
 - [4.6 screen/GIF UI-to-transport trace](docs/rk-v4.6-screen-gif-ui-transport-audit.md)
 - [4.6 native binary/API delta](docs/rk-v4.6-native-binary-delta-audit.md)
 - [4.6 imported API callsite audit and limits](docs/rk-v4.6-native-api-call-path-audit.md)
