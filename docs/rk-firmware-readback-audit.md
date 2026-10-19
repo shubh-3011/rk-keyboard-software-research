@@ -76,7 +76,8 @@ cannot be confidently assigned to the S98 or its Bluetooth LE nodes.
 
 **Current descriptor-only HID snapshot (2026-10-19):** after explicit user
 authorization to open the HID interface, a read-access handle was used only
-for `HidD_GetAttributes`, `HidD_GetPreparsedData`, and `HidP_GetCaps` on the
+for `HidD_GetAttributes`, `HidD_GetManufacturerString`,
+`HidD_GetProductString`, `HidD_GetPreparsedData`, and `HidP_GetCaps` on the
 present `258A:0150` collections. During this metadata pass, no input report
 was read and no output report or `HidD_SetFeature` payload was sent; the
 separate direct feature-read results are listed below. Seven of ten
@@ -87,9 +88,10 @@ The metadata pass was repeated with the repository's
 [read-only HID metadata probe](../scripts/probe_rk_hid_metadata.ps1). It
 requests `GENERIC_READ` only, and imports no report-read, report-write, or
 device-control API. The rerun reproduced the same seven successful
-collections, three Win32 access-denied results, VID/PID/revision, and report
-lengths shown here. Its C# `Marshal.WriteInt32` call initializes the local
-SetupAPI interface-detail structure; it does not write to the keyboard.
+collections, three Win32 access-denied results, VID/PID/revision, manufacturer
+string, and report lengths shown here. Its C# `Marshal.WriteInt32` and
+`Marshal.WriteInt16` calls initialize local SetupAPI/string buffers; they do
+not write to the keyboard.
 
 | Interface collection | Usage page:usage | Input bytes | Output bytes | Feature bytes | Feature report IDs |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -102,13 +104,42 @@ SetupAPI interface-detail structure; it does not write to the keyboard.
 | MI_01/COL_08 | `FF01:0001` | 0 | 0 | 8 | `0A` |
 
 The opened device attributes report VID/PID `258A:0150` and version `0206`.
-Its product string was returned with garbled character decoding and is not
-used as identity evidence. The 4.6 public registry has 46 receiver profiles
+`HidD_GetManufacturerString` returns `SINOWEALTH` on each accessible
+collection. `HidD_GetProductString` decodes to garbled text (`慇業杮䬠`), so
+that value is not used as identity evidence. The 4.6 public registry has 46 receiver profiles
 with this same VID/PID and `FF02:0002` usage, spanning S98 and other models;
 the connected hardware therefore still cannot be identified as S98 from this
 descriptor or VID/PID alone. This is a live interface/descriptor observation,
 not a report-level protocol trace. The Bluetooth PnP nodes named `RK-S98RGB`
 remain generic BLE records without a proven association to the USB receiver.
+
+**Cached BLE HID metadata (2026-10-19):** Windows has three present Bluetooth
+roots named `RK-S98RGB`; their BLE HID service children share their respective
+root containers. All three report `ConnectionStatus=Disconnected`. The USB
+`258A:0150` composite device is in a different PnP container, and Windows
+exposes no common parent/container linking it to any BLE root. This leaves
+the BLE names as model labels, not proof that a BLE entry and the USB receiver
+are the same physical unit.
+
+The BLE HID service instance ID contains
+`VID&02046D_PID&B35A_REV&0011`, which encodes a vendor-ID source, VID, PID, and
+revision. The Bluetooth Device Information Service defines source `0x02` as
+USB-IF and specifies little-endian VID/PID/version fields; interpreted by
+that layout, the ID indicates source `0x02`, VID `0x046D`, PID `0xB35A`, and
+revision `0x0011` ([Bluetooth SIG PnP_ID specification](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/DIS_v1.2/out/en/index-en.html)).
+This does not match the USB receiver's `258A:0150` identity. It is Windows
+PnP metadata; the cached characteristic values themselves were not read.
+
+Cached GATT service discovery (Windows `BluetoothCacheMode.Cached`) returned
+services `1800`, `1812`, `180F`, `180A`, and `F200` for each BLE root. Cached
+characteristic enumeration for HID service `1812` returned `AccessDenied` on
+all three, so no report map or HID caps were obtained. The additional `F200`
+service exposes characteristic `F202` with Read, Write, and
+WriteWithoutResponse properties; no characteristic value was read and no
+write was issued. SetupAPI HID-interface enumeration found no corresponding
+BLE interface path for either candidate VID/PID, so no BLE HID handle was
+opened. These are cached Windows observations, not a live GATT session or
+proof of a firmware-read path.
 
 **Direct feature-read attempt (2026-10-19):** using only the descriptor's
 feature report IDs and lengths, `HidD_GetFeature` was called once per

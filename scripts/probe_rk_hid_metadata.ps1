@@ -75,6 +75,14 @@ public static class RkReadOnlyHidMetadata
 
     [DllImport("hid.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool HidD_GetManufacturerString(SafeFileHandle handle, IntPtr buffer, int bufferLength);
+
+    [DllImport("hid.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool HidD_GetProductString(SafeFileHandle handle, IntPtr buffer, int bufferLength);
+
+    [DllImport("hid.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool HidD_GetPreparsedData(SafeFileHandle handle, out IntPtr preparsedData);
 
     [DllImport("hid.dll", SetLastError = true)]
@@ -123,6 +131,25 @@ public static class RkReadOnlyHidMetadata
         public int FeatureValueCaps { get; set; }
         public int FeatureDataIndices { get; set; }
         public string Attributes { get; set; }
+        public string Manufacturer { get; set; }
+        public string Product { get; set; }
+    }
+
+    private static string ReadDescriptorString(SafeFileHandle handle, bool manufacturer)
+    {
+        IntPtr buffer = Marshal.AllocHGlobal(512);
+        try
+        {
+            for (int i = 0; i < 256; i++) Marshal.WriteInt16(buffer, i * 2, 0);
+            bool ok = manufacturer
+                ? HidD_GetManufacturerString(handle, buffer, 512)
+                : HidD_GetProductString(handle, buffer, 512);
+            return ok ? (Marshal.PtrToStringUni(buffer) ?? String.Empty) : String.Empty;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
     }
 
     public static Row[] Enumerate(string vendorId, string productId)
@@ -185,6 +212,8 @@ public static class RkReadOnlyHidMetadata
                         if (HidD_GetAttributes(handle, ref attributes))
                             row.Attributes = attributes.VendorID.ToString("X4") + ":" +
                                 attributes.ProductID.ToString("X4") + " rev " + attributes.VersionNumber.ToString("X4");
+                        row.Manufacturer = ReadDescriptorString(handle, true);
+                        row.Product = ReadDescriptorString(handle, false);
 
                         IntPtr preparsed;
                         if (!HidD_GetPreparsedData(handle, out preparsed))
@@ -242,6 +271,6 @@ if (-not ('RkReadOnlyHidMetadata' -as [type])) {
 
 [RkReadOnlyHidMetadata]::Enumerate($VendorId, $ProductId) |
     Sort-Object Interface |
-    Format-Table Interface, Open, Detail, Attributes, UsagePage, Usage,
+    Format-Table Interface, Open, Detail, Attributes, Manufacturer, Product, UsagePage, Usage,
         InputBytes, OutputBytes, FeatureBytes, FeatureButtonCaps,
         FeatureValueCaps, FeatureDataIndices -AutoSize
