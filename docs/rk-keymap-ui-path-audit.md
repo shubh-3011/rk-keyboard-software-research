@@ -43,6 +43,24 @@ The parser validates all three index bytes `+4` through `+6` against the 132-slo
 
 The parser also sets up a `0x2100`-byte four-layer-sized region, but the visible `[KEY]` loop writes the base 132-row region. RKKB apply `FUN_00413BF0` (`0x00413BF0`) calls the translator four times on input layers spaced `0x840` bytes apart. **Unresolved:** the constructor/copy path that populates those four runtime input layers from profile defaults and any edited UI state. The shared slot-index table does not, by itself, prove that the parser's action record is the translator's per-layer input record.
 
+### `[FN1]`, `[FN2]`, and `[TAP]` profile parsing
+
+**Proven statically.** After the inline `[KEY]` loop, at
+`0x004522D4`–`0x00452323`, `FUN_004513B0` calls the shared `FUN_00450D70`
+parser with section names `FN1`, `FN2`, and `TAP`
+and destination tables `0x0061720C`, `0x00617A4C`, and `0x0061828C`.
+`FUN_00450D70` formats dynamic `K%d` keys and processes up to 132 entries;
+each destination spans `0x840` bytes at the same 16-byte record stride.
+This closes the earlier parser/storage gap: the Fn and tap profile sections
+are read into their own tables. It does not identify the semantic meaning of
+each tuple cell or prove how those tables populate the four layer records read
+by the translators or reach the `10 F8` output path.
+
+The later `FUN_00450820` call is a separate helper. Its dynamic profile keys
+are `[OPT]` `GaoshouKey%d` and `GaoshouKeyColor%d`, not the `[FN1]` or `[FN2]`
+sections. Do not use that call as evidence for Fn-row parsing or layer
+population.
+
 ## UI and event crosswalk
 
 The main feature UI is built dynamically; static resources do not expose a complete set of remapping control IDs. The [UI control crosswalk](rk-ui-control-command-crosswalk.md) and [localization audit](rk-resource-localization-audit.md) establish these specific edges:
@@ -63,7 +81,7 @@ The main Apply's signal and family vtable targets are described in the [Apply wo
 
 ## Explicit unresolved items
 
-- **`[FN1]` and `[FN2]` profile rows:** their stored tuples are catalogued, but no recovered call chain maps a row to a specific layer record or writer. The visible key parser loop above reads only the `KEY` section. `FUN_00450820` is called later in profile initialization, but its body was not included in the available decompiler export; its purpose must not be guessed.
+- **`[FN1]` and `[FN2]` profile rows:** parser and destination tables are now mapped through `FUN_00450D70`; no recovered consumer maps a specific row to a layer record or writer. Tuple-cell meanings and the relationship between the per-section tables and the four runtime layers remain unresolved. `FUN_00450820` is a separate `[OPT]` Gaoshou-key/color reader, not the Fn parser.
 - **Mouse/key selection path:** no reliable mapping from a clicked rendered key to a `K<n>` record, popup choice, or `CKeyFunPickDlg` input field was recovered.
 - **Picker commit path:** the local dirty/selection update in `0x0041F810` is statically visible, but its later consumer is not linked to the runtime four-layer records.
 - **Layer population:** the four runtime layers consumed by the family translators are known, but their complete construction from `[KEY]`, `[FN1]`, `[FN2]`, and UI edits is not.

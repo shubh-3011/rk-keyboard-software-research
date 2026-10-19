@@ -1221,7 +1221,10 @@ the tuple-to-command mapping. The profile corpus also contains `[KEY]`,
 the installed set has 63 `[FN1]` sections and 17 `[FN2]` sections. Most `[KEY]`
 rows contain four layout coordinates followed by additional mapping values.
 The latter fields and the Fn rows are retained as raw integer tuples because
-the mapping semantics have not been decoded. `LayerNum` is not equivalent to
+their parser storage is known but the tuple-to-layer semantics have not been
+decoded. The profile initializer reads `[FN1]`, `[FN2]`, and `[TAP]` into
+separate 132-entry tables; their consumer and relation to the four translated
+runtime layers remain unresolved. `LayerNum` is not equivalent to
 the number of populated Fn sections: for example, profile `022F` declares
 `LayerNum=4` but has only an `[FN1]` section.
 

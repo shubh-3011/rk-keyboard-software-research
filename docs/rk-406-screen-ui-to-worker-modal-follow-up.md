@@ -171,6 +171,32 @@ the `CMenuDlg` object. The English locale XML maps `tc_screen14` to “New” an
 `tc_screen15` to “Import”. These English labels are statically resolved; the
 runtime language and actual display were not observed.
 
+## `tc_screen12` transfer control and click route
+
+**Confirmed statically.** The screen dialog's generated transfer control is
+created at `0x0046C31C`: the child slot is `this+0x1408`, and the localization
+slot passed to `FUN_0044F5C0` is `0x0062B8F8`, which is `tc_screen12` in the
+`tc_screen%d` table. English text is “Apply”; the Chinese, Russian, and Korean
+translations explicitly say “save to keyboard.”
+
+`FUN_0046D300` is the click handler. At `0x0046D399`–`0x0046D3A8`, it
+compares the clicked HWND with the generated child at `[this+0x1408]+0x20`.
+On a match, the branch at `0x0046D3AE` checks global `0x0062B380` and calls
+the device object's vtable slot `+0x28`. If that gate fails, the handler shows
+`tc_screen19`, the localized USB-only warning, through `0x004360D0`. The
+meaning of the global and virtual gate is unresolved; this code does not by
+itself establish wireless mode, connection readiness, or model eligibility.
+
+The success path requires a positive count at `this+0xEC`, copies up to 512
+nodes from the F4 collection at `this+0xF4` into a modal snapshot, and invokes
+the modal route at `0x00479A27`. Its `WM_INITDIALOG` calls `FUN_00466820`,
+which starts worker `FUN_00466450`. For an object using the recovered G5
+vtable, that worker reaches the existing slot `+0x4C` command-`0x0C` frame
+writer and slot `+0x50` command-`0x0D` GIF metadata writer, as mapped above.
+This closes the static label → control → click handler → modal → conditional
+G5 writer path. It does not establish runtime device selection or keyboard
+acceptance.
+
 ## `0x0477` value-zero bitmap branch
 
 **Confirmed statically.** The same handler passes `wParam=0` to `0x0046D5B0`;

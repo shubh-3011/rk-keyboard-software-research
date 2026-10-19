@@ -1,10 +1,14 @@
 # RK profile tuple semantics
 
-This is a confidence-ranked interpretation of the mapping tuples stored in
-the installed RK Keyboard Software 4.06 profiles. It is based on the 189
-`KB.ini` files and the hash-matched `DeviceDriver.exe` snapshot documented in
-the [profile schema audit](rk-profile-schema-audit.md). No RK process or
-keyboard interface was run or opened.
+This is a confidence-ranked interpretation of mapping and lighting tuples
+stored in the installed RK Keyboard Software 4.06 profiles. It is based on the
+189 `KB.ini` files and the hash-matched `DeviceDriver.exe` snapshot documented
+in the [profile schema audit](rk-profile-schema-audit.md). The `[KEY]` parser
+and RKKB slot-byte dataflow are now traced in the
+[keymap UI/serializer audit](rk-keymap-ui-path-audit.md); `LedOpt%d` parsing
+and selected record/UI consumers are traced in the
+[lighting profile-to-record audit](rk-lighting-profile-record-path-audit.md).
+No RK process or keyboard interface was run or opened.
 
 The repository preserves every source tuple. The descriptions below do not
 authorize normalizing, dropping, or rewriting cells whose meanings remain
@@ -18,25 +22,28 @@ These are visual layout coordinates in the profile projection. They are not
 established as keyboard matrix coordinates. Zero-sized rectangles can still
 have mapping records and must not be dropped from device-related data.
 
-Most rows then have four further DWORD-like values. Standard S98 profile
-`022F` examples show values that match familiar Windows virtual-key codes:
-Esc is `0x1B`, F1 is `0x70`, Tab is `0x09`, and Q is `0x51`. Corpus-wide
-patterns support the following candidate roles, but the raw `KB.ini` columns
-have not been traced end-to-end into the native runtime records:
+Most rows then have further values. Standard S98 profile `022F` examples show
+values that match familiar Windows virtual-key codes: Esc is `0x1B`, F1 is
+`0x70`, Tab is `0x09`, and Q is `0x51`. The native parser's direct field
+destinations are now known; those familiar values remain evidence for a
+candidate key-code interpretation, not proof of how every type is understood
+or encoded:
 
 | Cell after `x,y,x2,y2` | Observed pattern | Candidate interpretation | Confidence and limit |
 | --- | --- | --- | --- |
-| 5 | Mostly `0x02` | Action or mapping type | Inference from repeated values; no source-to-runtime conversion recovered. |
-| 6 | Common keys match Windows VK values | Primary key/action code | Strong pattern match for standard keys; other action values and device-specific translations remain open. |
-| 7 | Mostly zero | Auxiliary or extension code | Candidate only; zero frequency does not define its role. |
-| 8 | Values from 0 through 131, 126 distinct values in the corpus | Matrix/output index | Candidate only. `FUN_00411260` rejects runtime matrix indices above `0x83`, but no load path proves this raw cell becomes that runtime field. |
+| 5 | Mostly `0x02` | Action/type tag | **Parser destination proven:** used to build the top byte/type in the 16-byte base action record. Full type enum remains unresolved. |
+| 6 | Common keys match Windows VK values | Action/code input | **Parser dataflow proven:** enters the type-2 special-key branch or low 24 bits of the first DWORD. Windows-VK meaning remains inferred for familiar values; translation varies by type. |
+| 7 | Mostly zero | Auxiliary/extended input | **Parser dataflow proven:** can enter record byte `+8` or DWORD `+0x0C` depending on type. General meaning remains unresolved. |
+| 8 | Values from 0 through 131, 126 distinct values in the corpus | Output-slot index | **Direct link proven:** copied to base record byte `+4`, which is the bounded 0–131 slot byte read by the RKKB `FUN_00413B20` translation path. It is not proven to be a physical switch-matrix position. |
+| 9–10, when present | Values constrained below 132 by the parser | Additional slot/index bytes | **Parser destination proven:** override record bytes `+5`/`+6`; their downstream roles are unresolved. |
 
-The runtime translator at `FUN_00411260` (`0x00411260`) processes 132-entry
-layers of 16-byte records and calls a device-specific virtual method at object
-vtable offset `+0x60`. It also reads a byte from a separate global table and
-reports invalid entries using the name `MatrixInx`. This proves a
-device-specific translation stage exists; it does not prove how `[KEY]`
-columns 5–8 populate the translated record.
+The separate G5/3632 translator at `FUN_00411260` (`0x00411260`) processes
+four layers of 132 16-byte records and calls a device-specific virtual method
+at object vtable offset `+0x60`. It bounds its selected slot at `0x83` and
+uses the name `MatrixInx` in an error path. The parser-to-slot-byte relation
+above is specifically confirmed for the shared RKKB table at
+`0x006169D0`; it does not establish that G5/3632 receives the same parsed
+record or that the slot corresponds to a physical matrix coordinate.
 
 The corpus has nonstandard row widths that carry additional values:
 
@@ -57,9 +64,16 @@ cell rather than an additional numeric value.
 
 The three cells likely encode action class, subtype, and value, but the exact
 schema is not decoded. Values such as `0x07000005` and `0x07000010` resemble
-a packed HID usage-page and usage convention; that is a candidate
-interpretation only because device-specific virtual translators sit between
-profile data and packets.
+a packed HID usage-page and usage convention; that remains a candidate
+interpretation. The profile initializer `FUN_004513B0` calls the shared
+`FUN_00450D70` parser separately for `[FN1]`, `[FN2]`, and `[TAP]`, with
+destinations `0x0061720C`, `0x00617A4C`, and `0x0061828C`, respectively.
+`FUN_00450D70` formats `K%d` keys and reads up to 132 entries into the
+corresponding 0x840-byte tables. This proves those sections are parsed and
+stored. The separate `FUN_00450820` helper reads `[OPT]` `GaoshouKey%d` and
+`GaoshouKeyColor%d` values; it is not the `[FN1]`/`[FN2]` parser. How these
+stored tables populate four runtime layers or reach family-specific packets
+remains unresolved.
 
 `FUN_00411260` identifies runtime macro records by tag byte `+3 == 5` and
 reads a macro buffer ID at `+8`. This proves macro dispatch in the translated
@@ -68,21 +82,21 @@ and those offsets.
 
 ## `LedOpt*` rows
 
-The installed profiles contain 3,765 six-cell `LedOpt*` tuples. Comments and
-profile-localized labels identify some effects: for example, profile `020B`
-annotates `LedOpt1=1` as steady lighting, `LedOpt2=2` as breathing,
-`LedOpt3=3` as a fantasy effect, and `LedOpt18=19` as custom lighting. The
-labels corroborate slot names in that profile but do not establish that a
-cell value universally selects a device effect. Zero and duplicate values,
-including the custom value `19`, rule out assuming a direct slot-to-enum
-mapping.
-
-The first cell is a plausible effect/mode value. The remaining five cells
-often look boolean, but their per-device behavior and command positions are
-unknown. The driver has no individual string literals `LedOpt1` through
-`LedOpt21`; generic INI access or an indirect consumer is still possible.
-See the [settings serializer audit](rk-setting-serializer-audit.md) for
-lighting command paths and packet limitations.
+The installed profiles contain 3,765 six-cell `LedOpt*` tuples. The driver
+formats `LedOpt%d` and reads keys 1–24 dynamically in `FUN_004513B0`; it does
+not need individual `LedOpt1`–`LedOpt21` string literals. The six parsed cells
+are placed into a 24-row table. Cell 4 conditionally initializes runtime
+record field `+0x08` to 1 or 2; cells 2–6 are also copied into dialog state
+and affect related control visibility. Comments and profile-localized labels
+identify some effects: profile `020B`, for example, annotates `LedOpt1=1` as
+steady lighting, `LedOpt2=2` as breathing, `LedOpt3=3` as a fantasy effect,
+and `LedOpt18=19` as custom lighting. These annotations and the partial
+parser/UI/record paths do not establish a universal cell-to-effect or
+cell-to-command mapping. Zero and duplicate values, including custom value
+`19`, rule out assuming a direct slot-to-enum mapping. The record initializer,
+packer consumers, and remaining tuple limits are detailed in the
+[lighting profile-to-record audit](rk-lighting-profile-record-path-audit.md)
+and [settings serializer audit](rk-setting-serializer-audit.md).
 
 ## `OPT` fields and end-to-end gap
 
@@ -98,8 +112,13 @@ display and serializer data; the physical scale and specific UI event handler
 remain unresolved. A field name or literal match alone does not establish
 units or device behavior.
 
-No complete path has been recovered from the `KB.ini` parser through every
-`KEY`, `FN`, `LedOpt`, and `OPT` cell into UI state, device-family virtual
-translation, and serialized packet bytes. The data is exhaustive at the
-storage level; behavioral meaning is only partially decoded.
+Storage coverage is exhaustive for the installed profile corpus, and several
+important partial paths are now direct: `[KEY]` cells 1–10 populate coordinate
+arrays or base action-record fields; cell 8 supplies the RKKB slot byte;
+`LedOpt%d` values populate table/UI state and selected serializer fields; and
+specific `OPT` settings reach family serializers. The complete construction
+of four runtime layers from `[KEY]`, `[FN1]`, `[FN2]`, and UI edits remains
+unresolved. Full action enums, `LedOpt` meanings, `OPT` field semantics, and
+model-specific wire schemas are only partly decoded. No profile-field map
+proves physical behavior across all keyboards or firmware revisions.
 

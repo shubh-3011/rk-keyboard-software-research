@@ -67,9 +67,11 @@ The caller in `FUN_00413BF0` (`0x00413BF0`) invokes `FUN_00413B20` four times.
 The source advances by `0x840` bytes and destination by `0x210` bytes each
 time. Thus the observed runtime shape is four layers of 132 16-byte input
 records, translated into four layers of 132 DWORD values. The complete
-translated output size is `4 * 0x210 = 0x840` bytes. This proves the sizes and
-loop structure, not that the four runtime inputs are populated directly from
-the `[KEY]`, `[FN1]`, or `[FN2]` text sections.
+translated output size is `4 * 0x210 = 0x840` bytes. The profile initializer
+also parses `[FN1]`, `[FN2]`, and `[TAP]` into separate 132-record tables via
+`FUN_00450D70`; see the [profile-to-UI audit](rk-keymap-ui-path-audit.md).
+Whether those tables or the `[KEY]` records populate the four source regions
+read here remains unresolved.
 
 The other family path, `FUN_00411260` (`0x00411260`), also loops over four
 layers and 132 16-byte records. For nonzero records it calls a virtual
@@ -140,14 +142,16 @@ is placed in the 0x780-byte block.
   the RKKB translator reads that byte as a bounded 0–131 output slot. See the
   [profile-to-UI path audit](rk-keymap-ui-path-audit.md). The purpose of the
   optional ninth and tenth cells remains unresolved.
-- **Candidate: `[FN1]`/`[FN2]` tuples describe alternate actions at the same
-  visual key IDs.** Their section/key naming supports that reading, but no
-  static parser trace connects a sample row such as `FN1/K2` to one of the
-  four native 16-byte records or to the `10 F8` payload.
+- **Partially resolved: `[FN1]`/`[FN2]` section storage.** `FUN_00450D70`
+  reads `K1`–`K132` from each section into separate 16-byte-record tables.
+  Their alternate-action interpretation remains high confidence from the
+  section/key names, but no recovered consumer connects a specific row such
+  as `FN1/K2` to one of the four translator inputs or the `10 F8` payload.
 - **Partially resolved: profile tuple columns to runtime records.** The
-  `[KEY]` parser's base action record and cell-8 slot-index path are mapped.
-  Construction of the four translated runtime layers from `[KEY]`, `[FN1]`,
-  `[FN2]`, and edited UI state remains unresolved.
+  `[KEY]` parser's base action record and cell-8 slot-index path, plus the
+  `[FN1]`/`[FN2]`/`[TAP]` parser destinations, are mapped. Construction of the
+  four translated runtime layers from those parsed arrays and edited UI state
+  remains unresolved.
 - **Unresolved: full `0x780` payload schema.** The wrapper length and prefix
   are proven; caller context ties it to macro staging, while the error string
   says “SendKey”. No runtime capture is available, and this static audit does

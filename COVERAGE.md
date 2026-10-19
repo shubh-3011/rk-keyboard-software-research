@@ -561,10 +561,15 @@ model or runtime map.
   across four dimension pairs, with S98 entries using `320,172`. Runtime
   dimensions were not observed. Neither E4 result is proven to become an F4
   transfer-frame item; the profile cache trigger and source-file enumeration
-  remain unresolved. The transfer action copies F4
-  items to a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
-  and `+0x50` calls resolve to G5 page and GIF writers when the active object
-  uses the recovered G5 vtable. For the separate hash-pinned 4.6 image/GIF
+  remain unresolved. The transfer control `tc_screen12` is now bound to its
+  generated child and click handler; Chinese, Russian, and Korean labels
+  clarify that it saves to the keyboard. The handler applies an unresolved
+  global/device-vtable gate, then copies up to 512 F4 items to a modal object;
+  its `WM_INITDIALOG` starts the frame worker, whose `+0x4C` and `+0x50` calls
+  resolve to G5 page and GIF writers when the active object uses the recovered
+  G5 vtable. The false gate branch shows the localized USB-only warning. The
+  gate's meaning, runtime device selection, and physical acceptance remain
+  unknown. For the separate hash-pinned 4.6 image/GIF
   path, NewGIF frames reach the static worker and G5 writer path, while the
   generic single-image preview has no recovered direct pointer path into that
   frame list. Screen-parameter schema and hardware acceptance remain open; see

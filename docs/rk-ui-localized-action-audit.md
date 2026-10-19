@@ -78,10 +78,11 @@ warning, `tc_screen14` New, `tc_screen15` Import, `tc_screen16` Playback
 interval, `tc_screen17` pause-first prompt, `tc_screen18` frames,
 `tc_screen19` USB-only transfer warning, and `tc_screen20`/`tc_screen21`
 Left/Right. Most XML values do not map in the current evidence to screen
-controls. The two-row menu is a proven exception: its rows map to
-`tc_screen14` (“New”) and `tc_screen15` (“Import”), and its second row's
-value-one route opens the `0x0477` image picker. The other screen labels remain
-unbound. The existing
+controls. Three screen labels now have recovered control/action links:
+`tc_screen12` is the transfer control (English “Apply”; Chinese, Russian, and
+Korean translate it as “save to keyboard”), while the two-row menu maps to
+`tc_screen14` (“New”) and `tc_screen15` (“Import”); the Import row opens the
+`0x0477` image picker. The other screen labels remain unbound. The existing
 [`rk-localization-key-matrix.csv`](rk-localization-key-matrix.csv) and
 [`rk-resource-localization-audit.md`](rk-resource-localization-audit.md)
 retain all seven locale variants and the complete key inventory.
@@ -93,7 +94,7 @@ retain all seven locale variants and the complete key inventory.
 | Exact `tc_macro_*` key-to-ID mapping, including the choice between cycle-count and delay labels | External XML leaf keys are not PE resource IDs. The app dialog templates do not contain feature controls, and no direct key-to-control string cross-reference was recovered. The XML loader may construct key names or select them indirectly. |
 | Exact user action and localized key for macro edit ID `0x0108` | The selected subtype-3 macro-row path reads the text, converts it to an integer, and passes it into the event-row update helper. The XML contains delay labels but has no statically recovered control binding; `0x0042B030` exposes virtual callbacks whose targets and notification meaning are unresolved. The exact field semantics (including units) are therefore still inferred. |
 | Macro control behavior for IDs `0x0105`, `0x0106`, `0x0109` and localized action buttons | Some IDs appear in nearby macro code and the `0x0042B030` checks `0x0109`, but this trace does not establish a key-to-control binding or action semantics for each. |
-| Bindings for remaining `tc_screen*` keys to `CScreenDlg` controls/events | The two-row menu binds to `tc_screen14` (“New”) and `tc_screen15` (“Import”), and its value-one row reaches the `0x0477` picker. Most other screen keys still lack a proven child-control/event binding; artwork or GIF processing does not supply those crosswalks. |
+| Bindings for remaining `tc_screen*` keys to `CScreenDlg` controls/events | `tc_screen12` is bound to the transfer child/click path, and the two-row menu binds to `tc_screen14` (“New”) and `tc_screen15` (“Import”), with Import reaching the `0x0477` picker. The other screen keys still lack a proven child-control/event binding; artwork or GIF processing does not supply those crosswalks. |
 | Complete form construction and virtual/reflected event graph | This pass traced the numeric edits and one owner-level ID filter. It did not recover all custom control classes, callback tables, label draw calls, dynamically generated menus, or every path through macro/screen child views. |
 
 The xref scan in `_rk_analysis/reports/device-string-xrefs.txt` contains no
