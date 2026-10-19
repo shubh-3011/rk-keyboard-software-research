@@ -96,6 +96,7 @@
 - [4.06/4.6 HID enumeration, access-mask, and preparsed-data lifecycle crosswalk](rk-device-enumeration-handle-lifecycle-cross-version.md)
 - [Imports without a recovered direct/thunk call](rk-native-api-callsite-gaps.csv)
 - [Follow-up mapping of indirect import calls and callbacks](rk-native-api-indirect-call-audit.md)
+- [4.06 DeviceDriver `GetProfileIntW` drag/scroll settings call path](rk-device-driver-getprofileintw-callpath.md)
 - [V4.6 registry child-enumeration and delete path](rk-v4.6-registry-subtree-delete-audit.md)
 - [Uninstaller third `E8` candidate and conditional `SetLastError` call](rk-unins000-third-e8-candidate-audit.md)
 - [Remaining unresolved native API invocation paths](rk-remaining-native-api-path-audit.md)

@@ -41,6 +41,14 @@ The complete map owner chains and raw command candidates are in
 [`rk-mfc-map-owner-evidence.csv`](rk-mfc-map-owner-evidence.csv) and
 [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv).
 
+For `CScreenDlg`, the private-message map row at `0x005DA4B8` links message
+`0x0477` to handler `0x0046DBF0`. Its value-one branch opens an image file
+picker and inserts the selected path object into a local screen-editor list
+before rebuilding and invalidating views. This is a message-to-action link;
+the visible control or caller that posts `0x0477`, its exact locale key, and
+the selected object's relation to the F4 transfer-frame list remain unknown.
+See the [4.06 screen UI follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
+
 ## Inferred label-to-field matches
 
 | Locale key and English text | Candidate control/handler | Basis and confidence |
@@ -67,8 +75,9 @@ drag/zoom instruction, `tc_screen3` frame-limit prompt, `tc_screen4` preview,
 warning, `tc_screen14` New, `tc_screen15` Import, `tc_screen16` Playback
 interval, `tc_screen17` pause-first prompt, `tc_screen18` frames,
 `tc_screen19` USB-only transfer warning, and `tc_screen20`/`tc_screen21`
-Left/Right. These XML values do not map in the current evidence to screen
-control IDs or action handlers. The existing
+Left/Right. The XML values do not map in the current evidence to screen
+control IDs or to the `0x0477` message branch; the branch's initiating control
+and label remain unidentified. The existing
 [`rk-localization-key-matrix.csv`](rk-localization-key-matrix.csv) and
 [`rk-resource-localization-audit.md`](rk-resource-localization-audit.md)
 retain all seven locale variants and the complete key inventory.
@@ -80,7 +89,7 @@ retain all seven locale variants and the complete key inventory.
 | Exact `tc_macro_*` key-to-ID mapping, including the choice between cycle-count and delay labels | External XML leaf keys are not PE resource IDs. The app dialog templates do not contain feature controls, and no direct key-to-control string cross-reference was recovered. The XML loader may construct key names or select them indirectly. |
 | Exact user action and localized key for macro edit ID `0x0108` | The selected subtype-3 macro-row path reads the text, converts it to an integer, and passes it into the event-row update helper. The XML contains delay labels but has no statically recovered control binding; `0x0042B030` exposes virtual callbacks whose targets and notification meaning are unresolved. The exact field semantics (including units) are therefore still inferred. |
 | Macro control behavior for IDs `0x0105`, `0x0106`, `0x0109` and localized action buttons | Some IDs appear in nearby macro code and the `0x0042B030` checks `0x0109`, but this trace does not establish a key-to-control binding or action semantics for each. |
-| Exact binding of any `tc_screen*` key to `CScreenDlg` IDs/events | The screen map and numeric edit are proven, but no button/menu/action ID could be joined to `tc_screen1`–`tc_screen21`. Screen artwork or GIF processing does not supply that UI crosswalk. |
+| Exact binding of any `tc_screen*` key to `CScreenDlg` IDs/events | The `0x0477` message-to-open-picker/list-update route is proven, but no visible button/menu/control ID or label binding could be joined to `tc_screen1`–`tc_screen21`, including `tc_screen15` (“Import”). Screen artwork or GIF processing does not supply that UI crosswalk. |
 | Complete form construction and virtual/reflected event graph | This pass traced the numeric edits and one owner-level ID filter. It did not recover all custom control classes, callback tables, label draw calls, dynamically generated menus, or every path through macro/screen child views. |
 
 The xref scan in `_rk_analysis/reports/device-string-xrefs.txt` contains no

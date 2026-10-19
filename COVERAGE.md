@@ -350,6 +350,12 @@ model or runtime map.
   each of the eight uninstaller fallback globals appears only in two resolver
   stores, with no consumer recovered.
   The `PostQuitMessage` wrapper path is tied to seven callers.
+  A focused follow-up traces the five indirect `GetProfileIntW` sites in the
+  4.06 driver to exact `windows` drag/scroll keys, defaults, global stores,
+  rectangle/tick consumers, and recovered vtable targets. This deepens the
+  already-mapped API path; it does not reduce the ten unresolved import rows
+  or establish runtime profile values/UI effects. See
+  [`docs/rk-device-driver-getprofileintw-callpath.md`](docs/rk-device-driver-getprofileintw-callpath.md).
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
   inventoried and statically reviewed across the driver, installer helper,
   updater, and uninstaller. Other resolver callsites outside the focused
@@ -541,10 +547,14 @@ model or runtime map.
   UI trace identifies NewPNG/NewGIF as save-as dialogs (`bOpenFileDialog=0`),
   not input-file pickers: NewPNG reads from `CScreenDlg+0xE0`, while NewGIF
   traverses the existing `CScreenDlg+0xF4` list. Separately, cache regeneration
-  calls a builder that appends indexed source objects to F4. The trigger and
-  source-file enumeration that initialize the cache/list, and any distinct
-  user import route, remain unresolved. The transfer action copies F4 items to
-  a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
+  calls a builder that appends indexed source objects to F4. A focused follow-up
+  now maps `CScreenDlg` message `0x0477` to a value-one branch that opens an
+  image file picker, inserts the selected path object into the local list at
+  `+0xE4`, rebuilds, and invalidates child views. The visible control/caller
+  that posts the message, its localized label, and the selected object's
+  relation to the F4 transfer-frame list remain unresolved; so do the profile
+  cache trigger and source-file enumeration. The transfer action copies F4
+  items to a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
   and `+0x50` calls resolve to G5 page and GIF writers when the active object
   uses the recovered G5 vtable. For the separate hash-pinned 4.6 image/GIF
   path, NewGIF frames reach the static worker and G5 writer path, while the

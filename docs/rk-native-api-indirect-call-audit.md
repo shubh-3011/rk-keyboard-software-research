@@ -91,6 +91,15 @@ The compact address lists below are instruction addresses in the corresponding x
 | `SetupDiGetDeviceInterfaceDetailW` | `0x004165A1`, `0x004165EF` |
 | `PlaySoundW` | `0x0050DE0B`, `0x0050DE2A` |
 
+The five `GetProfileIntW` calls are described in the focused
+[`GetProfileIntW call-path audit`](rk-device-driver-getprofileintw-callpath.md).
+Static argument and literal recovery identifies the `windows` profile keys
+`DragMinDist`, `DragDelay`, `DragScrollInset`, `DragScrollDelay`, and
+`DragScrollInterval`, their numeric defaults, and the global destinations for
+the returned values. This resolves the call arguments and immediate dataflow;
+the active profile values, backing store on this machine, and downstream UI
+effects remain unknown.
+
 The device-related paths corroborate the documented SetupAPI and notification routes: `SetupDiGetDeviceInterfaceDetailW` is loaded from its IAT slot at `0x00416580` in the function beginning at `0x00416570`; notification registration loads `RegisterDeviceNotificationW` at `0x00446FE6` in the function beginning at `0x00446FC0`; and cleanup loads `UnregisterDeviceNotification` at `0x00446160` before two calls.
 
 The remaining DeviceDriver gap row, `PostQuitMessage`, is also mapped beyond

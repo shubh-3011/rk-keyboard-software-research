@@ -123,7 +123,11 @@ The other app-owned non-command handlers include paint, erase-background,
 mouse, private messages `0x040A`, `0x0477`, `0x046C`, `0x07EB`, and help or
 session-end messages. Their raw target and signature values are available in
 the CSV; a handler target alone does not identify a visible control or a
-keyboard operation.
+keyboard operation. One additional 4.06 `CScreenDlg` route is now traced:
+message `0x0477` reaches `0x0046DBF0`, whose value-one branch opens an image
+file picker and updates a local screen-editor list. The caller/control that
+posts it, its localized label, and the relation of that list item to the F4
+transfer-frame list remain unresolved; see the [screen UI follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
 
 ## Reproduction
 
