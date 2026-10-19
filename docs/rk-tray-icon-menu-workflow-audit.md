@@ -25,7 +25,7 @@ The callback at `0x00447D60` branches on the callback's mouse event value:
 | Event value | Static path | Result |
 | ---: | --- | --- |
 | `0x0203` (`WM_LBUTTONDBLCLK`) | Calls `0x00446770` directly. | Opens or foregrounds the main Configuration window. |
-| `0x0205` (`WM_RBUTTONUP`) | Creates a popup menu, iterates a 10-row text table at `0x00612B90` with stride `0x78`, appends those entries, then appends the two localized application actions and calls `TrackPopupMenu`. | Selection dispatches a `WM_COMMAND` to the tray window. The generated entries' exact labels and meaning remain unresolved. |
+| `0x0205` (`WM_RBUTTONUP`) | Creates a popup menu, iterates a 10-row text table at `0x00612B90` with stride `0x78`, appends those entries, then appends the two localized application actions and calls `TrackPopupMenu`. | The seven populated labels map to the configured languages and IDs `0x6A00`–`0x6A06`; see the [tray-language static audit](rk-tray-language-menu-static-audit.md). Their selection handlers and runtime effects remain unresolved. |
 
 The two localized command entries are recovered as follows:
 

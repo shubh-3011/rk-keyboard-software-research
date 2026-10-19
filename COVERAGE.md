@@ -159,6 +159,12 @@ model or runtime map.
   remain open. Addresses are specific to the 4.6 driver; see
   [`docs/rk-v4.6-windows-hook-callsite-audit.md`](docs/rk-v4.6-windows-hook-callsite-audit.md)
   and the separate [4.06 hook audit](docs/rk-406-windows-hook-callsite-audit.md).
+- A COM/OLE pass resolves the six `CoCreateInstance`/`CoGetClassObject`
+  callsites to host Startup-folder shortcut management, WASAPI loopback and
+  master-volume paths, Windows file dialogs, and a generic unresolved class-
+  factory helper. These are static callsite findings; the helper's concrete
+  class and runtime arguments remain open. See
+  [`docs/rk-v4.6-com-ole-activation-audit.md`](docs/rk-v4.6-com-ole-activation-audit.md).
 - A focused loader-API follow-up maps all three direct 4.6 `LoadLibraryA`
   sites and four `GetModuleHandleA` sites to their module/export strings,
   pointer consumers, and closest 4.06 counterparts. The callsite roles match
