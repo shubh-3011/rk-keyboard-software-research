@@ -42,11 +42,21 @@ version, connection mode, lighting variant, operating system, and driver type
 on the vendor's [official downloads page](https://en.rkgaming.com/download/)
 before drawing a compatibility conclusion.
 
+On 2026-10-19, the official downloads page still showed separate keyboard Web
+Driver and Hub Driver entries plus the product-specific Drive, Firmware, and
+QMK selectors. The Keyboard Hub Driver link still resolves to the same
+4.6-labeled installer recorded in this archive. The Web entry still excludes
+M75 HE, X87 HE, and RK68 HE and advertises Chrome, Edge, or Opera on Windows,
+macOS, and Linux. This is a current listing check, not a complete mapping of
+models to software or proof that other regional packages do not exist.
+
 ## Sources and method
 
-Checked on 2026-10-18 against RK's [official storefront keyboard navigation](https://rkgamingstore.com/collections/all),
+The original navigation and page snapshot was checked on 2026-10-18 against
+RK's [official storefront keyboard navigation](https://rkgamingstore.com/collections/all),
 [official driver downloads page](https://en.rkgaming.com/download/), and
-[official web app](https://drive.rkgaming.com/). The downloads page presents
+[official web app](https://drive.rkgaming.com/). The downloads page was
+rechecked on 2026-10-19. It presents
 distinct Web and Hub driver categories and a product-specific selection flow;
 the web app describes wired and 2.4 GHz receiver modes. The storefront
 navigation includes standard mechanical, Hall Effect, QMK/VIA, display/knob,

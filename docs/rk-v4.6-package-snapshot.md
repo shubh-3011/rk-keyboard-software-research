@@ -20,6 +20,12 @@ The installer was **not run**. The archive was statically extracted with
 `innoextract`; neither RK's application nor updater was launched. No device
 interface was opened and no keyboard command was sent.
 
+The official downloads page was rechecked on 2026-10-19. Its Keyboard Hub
+Driver link still points to this same dated installer; the page presents
+separate Web Driver and product-specific selectors alongside it. This confirms
+the scope of the current general Hub download, not that it is the only RK
+configuration software or that every model uses it.
+
 ## Derived inventory
 
 The extracted root contains 1,249 files totaling 104,009,969 bytes. This
