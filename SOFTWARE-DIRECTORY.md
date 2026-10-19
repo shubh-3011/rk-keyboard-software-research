@@ -25,11 +25,12 @@ current licensing and support details before reusing its code.
 ## How this archive fits
 
 The companion [RK software research archive](https://github.com/shubh-3011/rk-keyboard-software-research)
-documents one installed RK Keyboard Software 4.06 package. It includes the
-profile catalog, package hashes, resource and localization inventories,
-static API and device-path audits, reproducible scripts, and a source-built
-Windows research workbench. The workbench provides local profile editing; it
-is not a hardware-compatible clone of the vendor utility.
+documents the installed RK Keyboard Software 4.06 package and a separately
+extracted official 4.6 Hub Driver package. It includes their bounded profile
+catalogs, package hashes, resource and localization inventories, static API
+and device-path audits, reproducible scripts, and a source-built Windows
+research workbench. The workbench provides local profile editing; it is not a
+hardware-compatible clone of the vendor utility.
 
 The first project, [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio),
 is the user-facing web and Windows profile editor. This archive is the

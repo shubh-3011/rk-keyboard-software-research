@@ -156,6 +156,13 @@ model or runtime map.
   aliases `MenuCommand` and `MenuPopup`, its stop branch, and five code-level
   state producers; their visible triggers and runtime playback remain
   unresolved.
+- A supplemental all-import scan of the installed 4.06 main driver records
+  866 same-region register-indirect call candidates across 130 imports; 833
+  belong to import rows that already have a direct/thunk route. Each row keeps
+  the IAT load and transfer addresses. Linear-sweep decoding and taint tracking
+  still require CFG review, and `no_candidate_detected` does not imply unused.
+  See the [audit](docs/rk-406-register-indirect-call-audit.md) and
+  [candidate CSV](docs/rk-406-register-indirect-call-candidates.csv).
 - A cross-version static trace follows HID class discovery through interface
   path retrieval, `CreateFileW`, preparsed-data/capability queries, metadata
   storage, and `CloseHandle` in the installed 4.06 and extracted 4.6 drivers.
@@ -463,6 +470,14 @@ model or runtime map.
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),
   [field-boundary follow-up](docs/rk-406-brightness-handler-field-boundary.md),
   and [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
+- A separate 4.6 trace closes the G5 profile-default and serializer path:
+  `LightUI` display values, 24 `LedOpt` profile rows, `DefBri` defaults, and
+  `LightHW` output translation feed active per-mode state and dialog rendering;
+  G5 mask `0x02` can pack and write command `4`. Profile `020F` demonstrates
+  distinct UI values and output bytes. The brightness edit callback that
+  changes the row index and a specific UI action's live device target remain
+  unresolved. See
+  [`docs/rk-v4.6-brightness-profile-to-writer-follow-up.md`](docs/rk-v4.6-brightness-profile-to-writer-follow-up.md).
 - A focused `CLedDlg` follow-up resolves private messages `0x0481` and
   `0x0482` to two posted selection notifications, their per-position mapping
   record effects, and Apply signal mode `4`. A follow-up traces 132 position

@@ -6,6 +6,14 @@ This inventory lists statically imported DLL entrypoints, not proof that every e
 
 For static addresses of direct IAT calls and callers routed through import thunks, see [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv) contains 128 direct-IAT/import-thunk loader-call rows and 108 statically confirmed register-indirect `GetProcAddress` calls (236 rows total). Those entries include the previously unexpanded listed `GetProcAddress` IAT-reference blocks across `DeviceDriver.exe`, `Update.exe`, and `InitSetup.dll`; runtime branch execution, external callers, and some cached-pointer consumers remain unresolved. See the [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) for per-call evidence and limits.
 
+The direct/thunk cross-reference does not enumerate every register-indirect
+transfer. A separate hash-pinned supplement records 866 `mov register,[IAT]`
+to `call register` candidates across 130 import rows in the installed 4.06
+`DeviceDriver.exe`, including 833 candidates for imports already covered by a
+direct/thunk path. These are static candidates, not a complete call graph or
+runtime proof; see the [register-indirect call supplement](rk-406-register-indirect-call-audit.md)
+and its [row-level CSV](rk-406-register-indirect-call-candidates.csv).
+
 ## Binaries
 
 | Component | Relative path | SHA-256 | Size | Machine | Ordinary imports |
