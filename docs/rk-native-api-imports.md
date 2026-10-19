@@ -1,10 +1,10 @@
 # RK native API import inventory
 
-Generated from the installed RK Keyboard Software package by reading PE import tables. Per-binary counts below cover ordinary imports; delay imports are listed separately. No executable was launched and no keyboard interface was opened.
+Generated from the installed RK Keyboard Software package by reading PE import tables. Per-binary counts below cover ordinary imports; delay imports are listed separately. No executable was launched during this inventory pass. The separate live HID check is documented in [`rk-firmware-readback-audit.md`](rk-firmware-readback-audit.md).
 
 This inventory lists statically imported DLL entrypoints, not proof that every entrypoint is called at runtime. It does not cover APIs resolved dynamically with `GetProcAddress`, COM methods resolved from interface/vtable calls, calls made by Windows drivers, or behavior hidden behind indirect calls. The full application control-flow and every executed system call remain unproven.
 
-For static addresses of direct IAT calls and callers routed through import thunks, see [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv) contains direct-IAT/import-thunk `GetProcAddress`/`LoadLibrary*` rows plus seven source-tagged register-indirect `GetProcAddress` calls in the 4.06 main driver. Other loader-IAT references remain unexpanded; unresolved targets and dynamic module/pointer flow remain open.
+For static addresses of direct IAT calls and callers routed through import thunks, see [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv) contains 128 direct-IAT/import-thunk loader-call rows and 108 statically confirmed register-indirect `GetProcAddress` calls (236 rows total). Those entries include the previously unexpanded listed `GetProcAddress` IAT-reference blocks across `DeviceDriver.exe`, `Update.exe`, and `InitSetup.dll`; runtime branch execution, external callers, and some cached-pointer consumers remain unresolved. See the [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) for per-call evidence and limits.
 
 ## Binaries
 
