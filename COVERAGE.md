@@ -412,10 +412,15 @@ model or runtime map.
 - The main UI's model-specific LED XML path and generic fallback path are
   statically cross-referenced. A separate label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language
-  selector and the tray-menu Configuration/Exit command origins, while most
-  feature widget/command bindings remain open; see
+  selector and the tray-menu Configuration/Exit command origins. The tray
+  language menu's `0x6A00`–`0x6A06` IDs are statically traced to Win32
+  `WM_COMMAND` delivery to the `COemDrvDlg` owner, but no overlapping range or
+  language handler appears in the recovered MFC maps and no edge to the locale
+  loader/persistence path was found. Most feature widget/command bindings
+  remain open; see
   `docs/rk-ui-control-command-crosswalk.md` and
-  `docs/rk-tray-icon-menu-workflow-audit.md`.
+  `docs/rk-tray-icon-menu-workflow-audit.md` and
+  `docs/rk-tray-language-menu-static-audit.md`.
 - A general-settings follow-up separates profile values and the main Apply
   memory/event edge from host-local `lang.ini`, generic MFC INI/registry, and
   per-device `.dct` persistence. Reset/factory prompt strings are present, but

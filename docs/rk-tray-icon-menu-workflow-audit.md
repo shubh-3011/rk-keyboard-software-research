@@ -25,7 +25,7 @@ The callback at `0x00447D60` branches on the callback's mouse event value:
 | Event value | Static path | Result |
 | ---: | --- | --- |
 | `0x0203` (`WM_LBUTTONDBLCLK`) | Calls `0x00446770` directly. | Opens or foregrounds the main Configuration window. |
-| `0x0205` (`WM_RBUTTONUP`) | Creates a popup menu, iterates a 10-row text table at `0x00612B90` with stride `0x78`, appends those entries, then appends the two localized application actions and calls `TrackPopupMenu`. | The seven populated labels map to the configured languages and IDs `0x6A00`–`0x6A06`; see the [tray-language static audit](rk-tray-language-menu-static-audit.md). Their selection handlers and runtime effects remain unresolved. |
+| `0x0205` (`WM_RBUTTONUP`) | Creates a popup menu, iterates a 10-row text table at `0x00612B90` with stride `0x78`, appends those entries, then appends the two localized application actions and calls `TrackPopupMenu` with flags `2` and the `COemDrvDlg` owner HWND. | The seven populated labels map to language IDs `0x6A00`–`0x6A06`. Win32 delivers a selected ID as `WM_COMMAND` to the owner because neither `TPM_NONOTIFY` nor `TPM_RETURNCMD` is set; no matching handler or locale-change effect was recovered. See the [tray-language static audit](rk-tray-language-menu-static-audit.md). |
 
 The two localized command entries are recovered as follows:
 
@@ -56,6 +56,12 @@ sends `WM_CLOSE` to the dialog, but this pass does not establish when or
 whether the main process exits. Its persisted `.dct` data schemas and whether
 an in-flight family operation completes before the worker exits remain
 unresolved.
+
+The language menu's IDs `0x6A00`–`0x6A06` also reach the `COemDrvDlg` owner
+as `WM_COMMAND` notifications, but the recovered MFC maps contain no handler
+or command range for them. The connection to locale reload and `lang.ini`
+persistence remains unresolved; see the
+[tray-language dispatch audit](rk-tray-language-menu-static-audit.md).
 
 This finding does not bridge any General Settings label to its generated
 control or profile field. It also does not connect `tc_msg2`–`tc_msg6` reset

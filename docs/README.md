@@ -125,7 +125,7 @@
 - [Static dialog resources and selected updater control handlers](rk-dialog-resource-audit.md)
 - [Main UI label, control, handler, and action crosswalk](rk-ui-control-command-crosswalk.md)
 - [Tray icon callback, Configuration/Exit menu, and command handlers](rk-tray-icon-menu-workflow-audit.md)
-- [Tray language menu labels, locale suffixes, and command IDs (selection handler unresolved)](rk-tray-language-menu-static-audit.md)
+- [Tray language menu IDs, Win32 notification path, and unresolved handler](rk-tray-language-menu-static-audit.md)
 - [General settings, host-local persistence, Apply, and reset boundaries](rk-general-settings-ui-persistence-audit.md)
 - [Reset vtable routes, periodic system-parameter worker, and stop event](rk-reset-and-system-parameter-path-audit.md)
 - [Installer/uninstaller scripts](rk-installer-uninstaller-script-audit.md)

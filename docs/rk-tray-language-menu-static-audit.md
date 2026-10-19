@@ -4,8 +4,9 @@
 
 This audit follows the generated rows in the right-click tray menu of the
 installed RK 4.06 `DeviceDriver.exe`. It maps each populated row to the
-configured language label, locale directory, and command ID. It does not
-establish the command-selection handler or runtime effect.
+configured language label, locale directory, and command ID, then traces the
+static Windows/MFC dispatch boundary. It does not establish a handler or
+runtime language-change effect for those IDs.
 
 The installed artifacts are hash-pinned in
 [`rk-installed-package-manifest.csv`](rk-installed-package-manifest.csv) and
@@ -66,29 +67,59 @@ they are not keys looked up in `Text/en/text.xml`. The suffix is passed into
 the locale-loading path elsewhere in the executable, but that fact alone does
 not prove the tray command uses that path.
 
-## Selection handler: unresolved
+## Selection dispatch and handler gap
 
-The recovered `COemDrvDlg` message-map entries include tray commands
-`0x6400` and `0x6401`, but no direct entries for `0x6A00`–`0x6A06` appear in
-[`rk-mfc-message-map-entries.csv`](rk-mfc-message-map-entries.csv). A static
-scan of `DeviceDriver.exe` found the `0x6A00` base only in the menu-ID
-construction at `0x00447E2C`; it did not reveal a direct comparison or a
-recovered command handler for these IDs. The language-selection combo path
-(`0x00403270` → `0x004032D0` → `0x00403170`) separately reloads locale text
-and persists `OPT\LangIndex`, but no call edge from the tray callback to that
-path was established.
+At `0x00447EBB`, the tray callback calls the imported `TrackPopupMenu` with
+flags `2` (`TPM_RIGHTBUTTON`). Its owner-window argument is the value saved from
+`this+0x20` earlier in the callback; the callback itself is the
+`COemDrvDlg` target in the recovered message map. The call does not include
+`TPM_NONOTIFY` (`0x80`) or `TPM_RETURNCMD` (`0x100`), and the return value is
+not examined. Under the Win32 API contract, choosing an entry therefore
+delivers a `WM_COMMAND` to that owner window; the menu item ID becomes the
+command identifier. The subsequent `PostMessageW` at `0x00447ECF` posts
+`WM_NULL` to the same owner window after displaying the popup; it is not a
+consumer of the selected language ID. See Microsoft's
+[`TrackPopupMenu` documentation](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenu).
 
-Therefore the exact row-to-label-to-command-ID mapping is known, while the
-action taken after selecting a row remains unresolved. A dynamic MFC route,
-unrecovered handler, or another dispatch path has not been ruled out. Static
-presence also does not prove that the loader or tray path is reachable in a
-particular runtime state, nor establish observed UI behavior.
+This establishes the expected Win32 notification edge from a selected language
+row to the `COemDrvDlg` window. The subsequent MFC command-map search has no
+recovered match: the `COemDrvDlg` map contains command IDs `0x6400` and
+`0x6401`, not `0x6A00`–`0x6A06`; a range-overlap check across all 26 recovered
+MFC message-map arrays also found no `WM_COMMAND` entry spanning those IDs.
+Thus a `CCmdTarget`/MFC command-dispatch attempt is consistent with the
+owner's class and the framework map evidence, but no static map handler or
+`ON_COMMAND_RANGE`-style route for these menu IDs is established. The recovered
+map inventory is documented as an inventory of discovered arrays, not proof
+that every possible runtime dispatch route in the executable was found.
+
+The callback forms IDs as `0x6A00 + row_index` at `0x00447E2C` and does not
+inspect a selected ID after `TrackPopupMenu`. A direct relative-call scan of
+the executable found the locale loader `0x00403170` called from `0x004032D0`;
+no other direct caller was found. That
+caller is the separate language-combo path in `0x00403270`, which compares the
+notification's child HWND, reads the selected `LangIndex`, reloads locale
+strings, and persists the host preference. No call or recovered map edge from
+the tray callback to that loader/persistence path was found. This does not
+exclude an unrecognized indirect route or a missing map; the tray selection's
+final action remains unresolved.
+
+Therefore, the proven edge ends at Win32 delivery of `WM_COMMAND` to the
+`COemDrvDlg` owner. MFC command-map handling is expected by the class/framework
+structure, but no matching static handler or range entry is recovered and no
+locale reload or `lang.ini` write is linked to the tray command. Runtime
+selection behavior remains unobserved.
 
 ## Evidence references
 
 - Installed settings: `Cfg.ini`, `[OPT] Lang1`–`Lang7`; hash recorded above.
 - Loader pseudocode and global references: `_rk_analysis/reports/brightness-global-xrefs.txt`, around lines 3231–3255.
 - Tray callback: `DeviceDriver.exe` at `0x00447D60`–`0x00447EBA`.
+- Menu dispatch: owner HWND is sourced from `this+0x20`; `TrackPopupMenu` is
+  called at `0x00447EBB` with flags `2`; `PostMessageW` follows at `0x00447ECF`.
 - Table base: `0x00612B90`; row stride `0x78`; locale field offset `0x3C`.
-- Message map: `docs/rk-mfc-message-map-entries.csv`; the recovered `COemDrvDlg` rows include `0x6400` and `0x6401` only.
+- Message map: `docs/rk-mfc-message-map-entries.csv`; its recovered
+  `COemDrvDlg` command rows include `0x6400` and `0x6401` only. No recovered
+  command range overlaps `0x6A00`–`0x6A06`.
+- Locale loader call site: `0x004032D0` -> `0x00403170`, on the separate
+  language-combo event path.
 - Related workflow: [`rk-tray-icon-menu-workflow-audit.md`](rk-tray-icon-menu-workflow-audit.md).
