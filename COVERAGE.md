@@ -462,9 +462,11 @@ model or runtime map.
   `docs/rk-macro-format-and-path-audit.md` and
   `docs/rk-macro-capture-path-audit.md`.
 - The audio follow-up traces WASAPI loopback capture, 24 visualization bands,
-  profile/audio configuration fields, and a distinct RKKB music-data writer.
-  The capture-to-writer edge, UI controls, `audio.dct` schema, and equivalent
-  G5/3632 output remain unresolved; see
+  profile/audio configuration fields, a separate `Music_Theard` device worker,
+  its record layout, and `+0x40` dispatches to RKKB, G5, and nested 3632 output
+  methods. Static evidence still does not connect loopback samples to those
+  worker buffers; UI controls, `audio.dct` schema, and the G5/3632 payload
+  meanings remain unresolved. See
   `docs/rk-audio-reactive-path-audit.md`.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
