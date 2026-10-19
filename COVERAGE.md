@@ -56,6 +56,21 @@ For current blockers and the recommended reverse-engineering order, see the
   against the public deployment at that time; it does not confirm hardware
   behavior. See the [live recheck record](docs/rk-drive-live-recheck-2026-10-18.md).
 
+## Official keyboard selector metadata snapshot
+
+- A dated read-only capture of RK's public keyboard download selectors records
+  11 product-specific driver results, 118 firmware results across 51 model
+  choices, and 83 QMK results across 7 model choices. The S98 selector returns
+  eight firmware rows, all Tri mode/RGB with language-specific PIDs. The
+  456-row CSV expands platform-specific availability and preserves source API
+  URLs and listed artifact URLs.
+- This is selector metadata, not an acquired package set: none of the listed
+  product-specific artifacts were fetched or analyzed by this capture. The
+  current catalog does not enumerate retired, regional, or removed records.
+  See the [API/catalog audit](docs/rk-official-selector-api-catalog-audit-2026-10-19.md),
+  [dated CSV](docs/rk-official-download-selector-catalog-2026-10-19.csv), and
+  [snapshot-preserving collector](scripts/capture_rk_public_selector_catalog.py).
+
 ## Additional official 4.6 Windows Hub Driver snapshot
 
 - A separately downloaded official 4.6 package was extracted statically, not
