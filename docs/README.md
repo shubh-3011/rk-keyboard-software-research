@@ -41,6 +41,7 @@
 - [4.6 profile-to-class routes verified through vtables and RTTI](rk-v4.6-profile-family-rtti-audit.md)
 - [4.6 row-level RTTI-verified family map](rk-v4.6-profile-family-rtti-map.csv)
 - [4.6 `CDevG5KB` vtable, ApplySetting, and settings paths](rk-v4.6-cdevg5-settings-and-vtable-audit.md)
+- [4.6 G5 command-5 payload source trace](rk-v4.6-cdevg5-command05-payload-source-audit.md)
 - [4.6 brightness profile-to-G5-writer follow-up](rk-v4.6-brightness-profile-to-writer-follow-up.md)
 - [4.6 G5 29-slot method evidence map](rk-v4.6-cdevg5-vtable-map.csv)
 - [4.6 G5 command-`0x82` password-query read path](rk-v4.6-cdevg5-password-query-audit.md)

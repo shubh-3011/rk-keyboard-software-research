@@ -298,7 +298,11 @@ model or runtime map.
   worker `+0x44` dispatch, `ApplySetting` mask branches, and shared 65-byte
   feature-report writer. Both class audits leave UI triggers, payload meanings,
   full model support, and hardware acceptance open; the complete G5 protocol
-  map remains incomplete. A focused follow-up reclassifies G5 vtable `+0x20`
+  map remains incomplete. A focused command-5 trace proves that the 200-byte
+  write source is the same output buffer passed to the G5 key/macro builder,
+  while leaving the output structure and payload meaning unresolved; see the
+  [command-5 source audit](docs/rk-v4.6-cdevg5-command05-payload-source-audit.md).
+  A focused follow-up reclassifies G5 vtable `+0x20`
   as an inferred stored-path/handle availability probe: it delegates to a
   child object's matching slot or checks an object string with `CreateFileW`
   and an object handle with `HidD_GetAttributes`. The stored path meaning and
