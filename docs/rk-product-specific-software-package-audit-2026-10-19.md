@@ -315,9 +315,12 @@ then drains the queue every 30 ms through `mi-hid`. These are static paths, not
 observed I/O. Exact model data for other rows, complete UI-to-native edges,
 protocol fields, and native-addon behavior remain incomplete. No lighting/RGB
 command label was found in the inspected F99 enum and UI path; this does not
-establish that the addon or other RK software has no lighting support. An F99
-Mac DMG was downloaded and hashed, but only its outer container was identified;
-its APFS contents were not inspected on this Windows host.
+establish that the addon or other RK software has no lighting support. The
+official F99 Mac DMG has since received a separate static UDIF/APFS-block,
+Mach-O, and ASAR-carve pass. It confirms a universal Electron package with
+native HID symbols, but the APFS file paths, asset ownership, and complete
+Windows/macOS archive-member delta remain unresolved; see the
+[macOS findings report](rk-f99-macos-static-findings-2026-10-20.md).
 
 Selected source-byte anchors for this F99 pass:
 

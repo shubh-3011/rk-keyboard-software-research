@@ -7,7 +7,7 @@
 
 ## Coverage summary
 
-The selector returned **83 rows and 83 distinct artifact URLs**: 38 rows called “Json file” and 45 called “Source code.” The latter label groups two actual file formats: 38 ZIP source packages and seven `.hex` firmware images. The 38 ZIPs and 38 JSON files were downloaded from their listed official URLs and statically inventoried. The seven `.hex` files were not downloaded or analyzed in this pass; they remain assigned to the firmware-image workstream. Their listed URLs do not overlap the 118 firmware-selector result URLs in the same dated snapshot.
+The selector returned **83 rows and 83 distinct artifact URLs**: 38 rows called “Json file” and 45 called “Source code.” The latter label groups two actual file formats: 38 ZIP source packages and seven `.hex` firmware images. The 38 ZIPs and 38 JSON files were downloaded from their listed official URLs and statically inventoried in this QMK-source pass. The seven `.hex` files were acquired separately by the firmware-image workstream; their listed URLs do not overlap the 118 firmware-selector result URLs in the same dated snapshot.
 
 | Model choice | Rows | USB / Tri mode | JSON | ZIP source | HEX listed | Locale labels and raw codes captured in the `pid` field |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
@@ -26,14 +26,14 @@ The selector exposes a “Firmware download” QMK type, but the captured result
 
 ## Acquisition and hash-pinned artifacts
 
-The audit script fetched 76 listed `.zip`/`.json` URLs over HTTPS. The fetcher accepts only the official `en.rkgaming.com/media/files/` host/path and rejects redirects away from that host. It saved the 76 artifacts to an external local cache, not to this repository. It downloaded no `.hex` images. The CSV stores the listed URL, filename, byte length, SHA-256, static JSON summary or ZIP summary, acquisition state, and exact-JSON/source-archive matches. The ZIP member CSV records each member path, byte sizes, CRC32, SHA-256, and a non-execution classification.
+The QMK source audit script fetched 76 listed `.zip`/`.json` URLs over HTTPS. The fetcher accepts only the official `en.rkgaming.com/media/files/` host/path and rejects redirects away from that host. It saved the 76 artifacts to an external local cache, not to this repository. The separate firmware audit acquired the seven `.hex` images. The QMK source CSV stores the listed URL, filename, byte length, SHA-256, static JSON summary or ZIP summary, acquisition state, and exact-JSON/source-archive matches. The ZIP member CSV records each member path, byte sizes, CRC32, SHA-256, and a non-execution classification.
 
 | Artifact set | Listed | Obtained and inspected | Bytes | Distinct SHA-256 values |
 | --- | ---: | ---: | ---: | ---: |
 | JSON definition files | 38 | 38 (100%) | 550,941 | 19 |
 | ZIP source packages | 38 | 38 (100%) | 1,056,281 | 38 |
-| HEX images listed as source code | 7 | 0 (0%) | not measured | not computed |
-| **Total** | **83** | **76 (91.6%)** | **1,607,222 acquired** | **57 acquired hashes** |
+| HEX images listed as source code | 7 | 7 (100%) | 1,421,851 | 7 |
+| **Total** | **83** | **83 (100%)** | **3,029,073 acquired** | **64 acquired hashes** |
 
 All 38 JSON objects parse as JSON. Every JSON file’s SHA-256 exactly matches a `keyboard.json` member in one or more of the 38 ZIP packages. Thus the “Json file” selector records expose the declarative QMK keyboard definition also embedded in the source package; they are not separate compiled firmware files. The 38 selectors yield 19 unique JSON byte contents, because several locale result rows point to byte-identical definitions.
 
@@ -64,10 +64,10 @@ The `wls` code also detects USB/Bluetooth/2.4 GHz mode-switch input and coordina
 - **Selector metadata:** all 83 QMK rows and all 83 distinct URLs are in the dated catalog. Model, connection variant, raw locale/code labels, QMK type, and acquisition state are preserved row by row.
 - **JSON definitions:** 38/38 acquired, parsed, hashed, and compared against ZIP-embedded `keyboard.json`; 19 unique JSON byte contents.
 - **ZIP source packages:** 38/38 acquired and hashed; all 798 member records are inventoried and SHA-256 pinned. Source/build organization and the shared custom VIA/wireless/RGB hooks have been traced statically.
-- **HEX images:** 0/7 acquired in this QMK pass. They are left to the separate firmware-image audit, despite being labeled “Source code” in these QMK result rows.
-- **Still open:** the seven HEX payloads, deeper function-by-function comparison of all 38 board C/keymap variants, QMK-core and shared-linker behavior, exact generic VIA report encoding, built-image output, model/hardware revision compatibility, and runtime/device acceptance.
+- **HEX images:** 7/7 acquired and SHA-256 pinned by the separate firmware-image audit. A second static pass verifies all Intel HEX checksums and record framing, records their sparse flash address ranges, and compares shared-address bytes across all 21 image pairs. It does not disassemble or execute the images.
+- **Still open:** deeper function-by-function comparison of all 38 board C/keymap variants, QMK-core and shared-linker behavior, exact generic VIA report encoding, hardware-revision compatibility, and runtime/device acceptance.
 
-This is complete coverage of the dated selector’s metadata rows and 91.6% byte acquisition of its unique listed URLs. It is not a complete reverse engineering of every source statement, every upstream QMK revision, every RK model or historical/regional QMK package, or any connected-device behavior.
+This is complete coverage of the dated selector’s metadata rows and all 83 listed artifact URLs across its two acquisition passes. It is not a complete reverse engineering of every source statement, every upstream QMK revision, every RK model or historical/regional QMK package, or any connected-device behavior. The Intel HEX structural comparison is documented in [the separate static HEX report](rk-qmk-hex-static-comparison-2026-10-20.md) and its [validator](../scripts/audit_qmk_hex_records.py).
 
 ## Reproduction
 

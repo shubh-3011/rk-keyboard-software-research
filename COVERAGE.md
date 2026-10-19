@@ -69,15 +69,20 @@ For current blockers and the recommended reverse-engineering order, see the
   choices, and 83 QMK results across 7 model choices. The S98 selector returns
   eight firmware rows, all Tri mode/RGB with language-specific PIDs. The
   456-row CSV expands platform-specific availability and preserves source API
-  URLs and listed artifact URLs. A separate QMK source audit acquired all 38
-  JSON definitions and all 38 ZIP overlays (76/83 distinct URLs); seven HEX
-  selector rows remain in the firmware-image workstream. All eight S98 updater
-  packages have been downloaded and statically inventoried; this is one
-  firmware family, not all 118 firmware-selector artifacts.
+  URLs and listed artifact URLs. The firmware-image inventory has bytes and
+  SHA-256 records for 117/118 unique firmware URLs (the F99 `/0218` URL is a
+  404) and maps 349/354 selector rows; four rows remain unassociated. All 38
+  QMK JSON definitions and 38 ZIP overlays plus the separate seven HEX images
+  have been acquired (83/83 QMK URLs). The HEX files pass Intel HEX structure
+  and checksum validation and are compared by address overlap. All eight S98
+  updater packages have also received a deeper static audit. This still does
+  not close the other updater package call graphs or establish device behavior.
 - The selector capture is metadata only, but follow-up package acquisition has
   now covered four Windows product-specific packages: F99 AI RK Setup 3.2.2, R99 RK Driver,
   an RK918-labeled archive whose member is named RK919, and S108 GamingForceZ.
-  An F99 Mac DMG was downloaded but its APFS contents remain uninspected. See
+  The F99 Mac DMG now has a static UDIF/APFS-block/Mach-O/ASAR carve pass, but
+  APFS file paths, app assets, and the exact Windows/macOS archive diff remain
+  unresolved. See
   the [package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md)
   and [hash catalog](docs/rk-product-specific-software-package-catalog-2026-10-19.csv).
   The selector still does not enumerate retired, regional, or removed records.
@@ -89,8 +94,10 @@ For current blockers and the recommended reverse-engineering order, see the
   in the separately listed 38 ZIP source overlays; these are declarative
   layouts/build extensions, not a full QMK checkout or Windows configuration
   app. The 38 ZIPs and 38 JSON files are statically inventoried and hash-pinned;
-  seven `.hex` images remain unacquired. See the
-  [QMK source audit](docs/rk-qmk-selector-software-audit-2026-10-19.md).
+  seven `.hex` images are separately acquired and structurally validated. See
+  the [QMK source audit](docs/rk-qmk-selector-software-audit-2026-10-19.md),
+  [HEX comparison](docs/rk-qmk-hex-static-comparison-2026-10-20.md), and
+  [firmware selector inventory](docs/rk-firmware-selector-static-inventory-2026-10-19.md).
 
 ## Product-specific software package snapshots
 
@@ -117,7 +124,8 @@ For current blockers and the recommended reverse-engineering order, see the
   records. `background.js` is 2.84 MB and has `parse_status=partial`; the graph
   is incomplete. The full 298 MB Evidence remains outside the repository. This
   analysis does not establish absence of an Electron/native relationship from
-  zero-count summary fields. The F99 Mac DMG is outer-container-only here.
+  zero-count summary fields. The F99 macOS static pass has not recovered
+  APFS paths or asset ownership; see the separate [macOS findings](docs/rk-f99-macos-static-findings-2026-10-20.md).
 - Focused family traces now map representative paths without claiming full
   control-flow coverage: GamingForceZ lighting/profile resources through the
   shared plugin architecture to the Sonix feature-report wrapper; R99 app
