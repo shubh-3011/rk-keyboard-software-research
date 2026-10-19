@@ -69,7 +69,11 @@ model or runtime map.
   hash-pinned raw-byte search for the known callback names found no literal
   script identifiers; this does not rule out compiled or transformed code.
   See the [4.6 script-recovery audit](docs/rk-v4.6-inno-script-recovery-audit.md)
-  and [scanner](scripts/audit_rk46_inno_script_literals.py).
+  and [scanner](scripts/audit_rk46_inno_script_literals.py). A focused PE and
+  appended-overlay review records what local extractors and the IFPS parser
+  could and could not recover; no 4.6 callback body was exposed. This remains
+  an installer/uninstaller gap, not proof the setup has no script. See the
+  [overlay recovery follow-up](docs/rk-v4.6-inno-overlay-static-recovery-followup.md).
 - A normalized path/hash comparison with the installed 4.06 tree records
   743 identical, 50 changed, 455 added, and 17 absent application paths; see
   [`docs/rk-package-file-delta-v4.06-v4.6.md`](docs/rk-package-file-delta-v4.06-v4.6.md)
@@ -150,6 +154,15 @@ model or runtime map.
   compatibility, and runtime behavior remain unresolved.
   See the [Side LED audit](docs/rk-v4.6-side-led-static-audit.md) and its
   [message-map follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md).
+  A separate RTTI-backed `CLedDlg` map adds its 15 decoded entries, including
+  a 4.6-only timer row, and connects private position-selection messages
+  `0x0481`/`0x0482` to host-state mutations and conditional settings request
+  `4`. Static family branches include the G5 flag-`0x04` command-6 path, the
+  RKKB matrix-information path, and the nested 3632 selector-2 route; active
+  family, runtime dispatch and hardware acceptance remain unknown. See the
+  [map and selection-worker audit](docs/rk-v4.6-cleddlg-message-map-and-selection-worker-audit.md),
+  [row ledger](docs/rk-v4.6-cleddlg-message-map.csv), and
+  [decoder](scripts/audit_rk46_cleddlg_message_map.py).
   Other detailed native control-flow reports remain tied to the 4.06 binaries.
 - The 4.6-labeled package's `Update.exe`, `InitSetup.dll`, and `uninstall.dll`
   are byte-identical to their installed 4.06 counterparts. The added
@@ -254,6 +267,11 @@ model or runtime map.
   functions, and a gated settings signal. The visible control-to-sender link
   and keyboard acceptance remain open. See
   [`docs/rk-v4.6-ui-knob-localization-path-audit.md`](docs/rk-v4.6-ui-knob-localization-path-audit.md).
+  A follow-up confirms the conditional `CKeyDlg` message-`0x477` handler can
+  queue setting `2`, which reaches the G5 flag-2 command-4 serializer and
+  `HidD_SetFeature` path for the mapped G5 profiles. The visible sender, payload
+  semantics, runtime reachability, and device acceptance remain unresolved;
+  see the [knob-to-command-4 audit](docs/rk-v4.6-knob-signal-to-g5-command04-follow-up.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
   (`0xC8C8` bytes). The exact path base, MFC event association, and relation to
@@ -264,7 +282,13 @@ model or runtime map.
 - In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
-  these two files; the `.upf` remains unvalidated and is not a device dump.
+  these two files; the `.upf` remains unvalidated and is not a device dump. A
+  focused updater follow-up maps the conditional mode-3 HID preflight and
+  fallback, including fixed `0603:1021` and `0603:1020` selectors. The `.upf`
+  has a malformed declared A-section length, and the successful `1021` status
+  path to transfer remains open; a potential six-byte buffer versus advertised
+  feature-length mismatch is recorded as static risk only. See the
+  [mode-3 audit](docs/rk-v4.6-update-mode3-hid-preflight-audit.md).
 - A per-key XML comparison covers seven UI locales, generic and profile LED
   dictionaries, and profile side-light labels. It records added knob/screen
   strings and side-light resources, eight changed values, two malformed
