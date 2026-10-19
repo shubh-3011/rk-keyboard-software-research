@@ -55,8 +55,10 @@ nonzero store was found.
 the selected input path and a string at `0x005942AC` whose exact bytes are
 `r\0`. The returned stream is kept in local `EBX`; the parser makes reads
 through `FUN_0053652B` and closes that local stream through
-`FUN_00535F9A` at `0x0040AA3F`. This is the host package parser's input
-stream, not a firmware file opened for output.
+`FUN_00535F9A` at `0x0040AA3F`, `0x0040AFD3`, `0x0040B003`, `0x0040B033`,
+or `0x0040B08B`, depending on the parser path. These are package-input
+cleanup paths, not a firmware file opened for output. The complete direct
+stdio caller census is in the [file API call-graph reconciliation](rk-uart-file-api-callgraph-reconciliation.md).
 
 **Proven:** all three application-level calls to fwrite-like
 `FUN_00535EAC` are in the UART response handlers: `0x00408761` and

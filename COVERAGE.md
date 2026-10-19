@@ -517,7 +517,11 @@ model or runtime map.
   A separate whole-file reference scan found no encoded static pointer entries
   or UART stream initializer, and identified the only direct stdio opener as
   the updater package parser reading `.upf` input in mode `r`; see the
-  [file-open crosswalk](docs/rk-uart-file-open-path-crosswalk.md).
+  [file-open crosswalk](docs/rk-uart-file-open-path-crosswalk.md). A full
+  direct-call census adds all parser cleanup sites and separates the generic
+  `CreateFileW` delete-on-close path from the UART response sink; computed
+  callers and file-gate activation remain unresolved. See the
+  [call-graph reconciliation](docs/rk-uart-file-api-callgraph-reconciliation.md).
   The updater also has two six-byte feature reads in a post-transfer helper;
   they do not constitute a complete firmware read.
 - No complete read-only S98 firmware export is demonstrated across the
