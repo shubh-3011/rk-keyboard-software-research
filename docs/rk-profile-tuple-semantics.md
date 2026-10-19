@@ -70,10 +70,18 @@ interpretation. The profile initializer `FUN_004513B0` calls the shared
 destinations `0x0061720C`, `0x00617A4C`, and `0x0061828C`, respectively.
 `FUN_00450D70` formats `K%d` keys and reads up to 132 entries into the
 corresponding 0x840-byte tables. This proves those sections are parsed and
-stored. The separate `FUN_00450820` helper reads `[OPT]` `GaoshouKey%d` and
-`GaoshouKeyColor%d` values; it is not the `[FN1]`/`[FN2]` parser. How these
-stored tables populate four runtime layers or reach family-specific packets
-remains unresolved.
+stored. `FUN_0041D7E0` conditionally copies matching `[KEY]`, `[FN1]`, and
+`[FN2]` rows into layer-0, layer-1, and layer-2 state when the selected record
+has type 2 and subcode `0xFA` or `0xFB`. This shared map is passed to the
+RKKB worker's `+0x3C` method and supplies the four layers translated by
+`FUN_00413BF0` when that family route is selected. The general layer-
+construction path, the meaning of those subcodes, and the relationship
+between translated layers and the separate `01 F8`/`10 F8` regions remain
+unresolved. A full `objdump -d` text search found no direct consumer reference
+to the parsed `[TAP]` table at `0x0061828C`; computed and indirect uses remain
+possible. The separate `FUN_00450820` helper reads `[OPT]`
+`GaoshouKey%d` and `GaoshouKeyColor%d` values; it is not the `[FN1]`/`[FN2]`
+parser.
 
 `FUN_00411260` identifies runtime macro records by tag byte `+3 == 5` and
 reads a macro buffer ID at `+8`. This proves macro dispatch in the translated

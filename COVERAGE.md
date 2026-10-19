@@ -516,13 +516,15 @@ model or runtime map.
   `docs/rk-reset-and-system-parameter-path-audit.md`.
 - The installed mapping tuple corpus is exhaustively cataloged, with a
   confidence-ranked report separating visual rectangle coordinates from
-  candidate action and keycode meanings. The `[KEY]` parser now maps tuple
-  cells 1–10 into coordinate arrays and 16-byte action records, with cell 8
-  feeding the RKKB 132-slot lookup byte. Four translated layers are also
-  traced, but their construction from profile/Fn/UI state and the picker
-  commit path remain unresolved. The fixed `04 00` plus `0x780` write is a
-  macro-staging path in its recovered caller context, not a proven full
-  keymap transfer. See `docs/rk-keymap-ui-path-audit.md` and
+  candidate action and keycode meanings. The `[KEY]` parser maps tuple cells
+  1–10 into coordinate arrays and 16-byte action records; cell 8 feeds the
+  RKKB 132-slot lookup byte. A conditional type-2 `FA`/`FB` path copies
+  matching `[KEY]`, `[FN1]`, and `[FN2]` rows into the map's first three
+  layers, and the worker passes that map to the RKKB four-layer translator.
+  General profile/UI layer construction and the picker commit path remain
+  unresolved. The fixed `04 00` plus `0x780` write is macro staging in its
+  recovered caller context, not a proven full keymap transfer. See
+  `docs/rk-keymap-ui-path-audit.md` and
   `docs/rk-keymap-translation-audit.md`.
 - The macro audit maps the 834-byte `.mck` record, reversible byte rotation,
   raw concatenated `mac.dct` persistence, import/export branches, and three

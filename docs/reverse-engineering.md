@@ -600,7 +600,7 @@ The UI labels and static call paths support this more specific feature map:
 
 | Feature | Native operation path observed | Limits |
 | --- | --- | --- |
-| Keymaps and layers | Shared G5/3632 apply uses `FUN_00411260`, then G5 command `3` or 3632 command `1`. RKKB `FUN_00413BF0` invokes `FUN_00413B20` four times to translate four layers of 132 16-byte records into 132-DWORD layers. | The `[KEY]` parser maps cells 1–10 into coordinate arrays and base action records; cell 8 feeds the RKKB 132-slot lookup byte. Construction of the four runtime layers from profile/Fn/UI state, lookup-table contents, picker commit, and the relation of translated buffers to fixed `01 F8`/`10 F8` reports remain unresolved. The separate `04 00` plus `0x780` write is macro-staging context, not a proven complete keymap transfer. See the [keymap translation audit](rk-keymap-translation-audit.md) and [profile-to-UI path audit](rk-keymap-ui-path-audit.md). |
+| Keymaps and layers | Shared G5/3632 apply uses `FUN_00411260`, then G5 command `3` or 3632 command `1`. In the RKKB route, worker argument `0x0062B388` reaches `FUN_00413BF0`, which translates four layers of 132 16-byte records from that map object into 132-DWORD layers. A conditional type-2 `FA`/`FB` path copies matching `[KEY]`, `[FN1]`, and `[FN2]` rows into map layers 0–2. | General/default population of all four layers from profile/UI state, picker commit, table contents, and the relation between translated output and fixed `01 F8`/`10 F8` reports remain unresolved. The separate `04 00` plus `0x780` write is macro-staging context, not a proven complete keymap transfer. See the [keymap translation audit](rk-keymap-translation-audit.md) and [profile-to-UI path audit](rk-keymap-ui-path-audit.md). |
 | Macros | Apply-setting associates sequential macro-buffer IDs with mapped keys. `.mck` import/export uses a fixed 834-byte record and reversible byte rotation; profile-local `mac.dct` stores raw concatenated records. Dirty macro data reaches G5 command `5`, the 3632 path `FUN_0040DD60`, or an RKKB three-byte event compactor. A static follow-up ties four CMacroDlg custom messages to tree-control mouse/Delete actions and shows the row rebuild reading editor tree/list state. | The path that records physical keyboard input into editor rows, recorder start/stop route, and complete G5/3632/RKKB wire schemas remain unresolved. See the [macro format and path audit](rk-macro-format-and-path-audit.md) and [macro capture audit](rk-macro-capture-path-audit.md). |
 | Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes 24 visualization bands. A separate `Music_Theard` worker builds local records and dispatches slot `+0x40` to RKKB `FUN_00413340`, G5 `FUN_00410670`, or a nested 3632 target `FUN_0040E570`. | The capture-to-worker data edge, UI/settings routes, and G5/3632 payload schemas remain unresolved. These are static code paths; capture and device writes were not run. See the [audio-reactive path audit](rk-audio-reactive-path-audit.md). |
@@ -1223,10 +1223,11 @@ rows contain four layout coordinates followed by additional mapping values.
 The latter fields and the Fn rows are retained as raw integer tuples because
 their parser storage is known but the tuple-to-layer semantics have not been
 decoded. The profile initializer reads `[FN1]`, `[FN2]`, and `[TAP]` into
-separate 132-entry tables; their consumer and relation to the four translated
-runtime layers remain unresolved. `LayerNum` is not equivalent to
-the number of populated Fn sections: for example, profile `022F` declares
-`LayerNum=4` but has only an `[FN1]` section.
+separate 132-entry tables. A conditional type-2 `FA`/`FB` path copies matching
+`[KEY]`, `[FN1]`, and `[FN2]` rows into layer-0/1/2 state; complete layer
+construction and the meaning of those subcodes remain unresolved. `LayerNum`
+is not equivalent to the number of populated Fn sections: for example,
+profile `022F` declares `LayerNum=4` but has only an `[FN1]` section.
 
 The regenerated `models.json` uses schema version 3. A static comparison of
 the generated JSON against all 189 installed `KB.ini` files found no

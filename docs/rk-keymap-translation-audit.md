@@ -63,15 +63,23 @@ bound establish a 132-slot lookup/translation table rooted at `0x006169D0`;
 the precise initialization and model-specific contents of every table entry
 remain unresolved.
 
-The caller in `FUN_00413BF0` (`0x00413BF0`) invokes `FUN_00413B20` four times.
+The caller in `FUN_00413BF0` (`0x00413BF0`) invokes `FUN_00413B20` four
+times on the map object received from the worker.
 The source advances by `0x840` bytes and destination by `0x210` bytes each
 time. Thus the observed runtime shape is four layers of 132 16-byte input
 records, translated into four layers of 132 DWORD values. The complete
 translated output size is `4 * 0x210 = 0x840` bytes. The profile initializer
 also parses `[FN1]`, `[FN2]`, and `[TAP]` into separate 132-record tables via
 `FUN_00450D70`; see the [profile-to-UI audit](rk-keymap-ui-path-audit.md).
-Whether those tables or the `[KEY]` records populate the four source regions
-read here remains unresolved.
+`FUN_0041D7E0` conditionally copies matching `[KEY]`, `[FN1]`, and `[FN2]`
+records into layer-0, layer-1, and layer-2 regions of map global
+`0x0062B388` for a type-2 `FA`/`FB` special-record case. The worker passes
+that same map pointer to its virtual `+0x3C` call; when the receiver is
+`CDevRKKB`, the slot resolves to `FUN_00413BF0`, whose four translator calls
+read the four 0x840-byte-spaced layers from that argument. This establishes
+the conditional map-to-RKKB-translator path. How ordinary profile/UI data
+populates the map, what fills layer 3, and which active receiver is selected
+at runtime remain unresolved.
 
 The other family path, `FUN_00411260` (`0x00411260`), also loops over four
 layers and 132 16-byte records. For nonzero records it calls a virtual
@@ -142,16 +150,20 @@ is placed in the 0x780-byte block.
   the RKKB translator reads that byte as a bounded 0–131 output slot. See the
   [profile-to-UI path audit](rk-keymap-ui-path-audit.md). The purpose of the
   optional ninth and tenth cells remains unresolved.
-- **Partially resolved: `[FN1]`/`[FN2]` section storage.** `FUN_00450D70`
-  reads `K1`–`K132` from each section into separate 16-byte-record tables.
-  Their alternate-action interpretation remains high confidence from the
-  section/key names, but no recovered consumer connects a specific row such
-  as `FN1/K2` to one of the four translator inputs or the `10 F8` payload.
+- **Partially resolved: `[FN1]`/`[FN2]` section storage and one consumer.**
+  `FUN_00450D70` reads `K1`–`K132` from each section into separate
+  16-byte-record tables. In the `FA`/`FB` special-record branch,
+  `FUN_0041D7E0` copies the same key-indexed rows to map layer-1/layer-2
+  state for a narrow `FA`/`FB` case. That map is an input to the RKKB
+  four-layer translator under the RKKB vtable route. Their alternate-action
+  interpretation remains high confidence; ordinary row population and the
+  relation between translated layers and the `10 F8` payload are open.
 - **Partially resolved: profile tuple columns to runtime records.** The
   `[KEY]` parser's base action record and cell-8 slot-index path, plus the
-  `[FN1]`/`[FN2]`/`[TAP]` parser destinations, are mapped. Construction of the
-  four translated runtime layers from those parsed arrays and edited UI state
-  remains unresolved.
+  `[FN1]`/`[FN2]`/`[TAP]` parser destinations and one conditional
+  `[KEY]`/`[FN1]`/`[FN2]` copy path into map state are mapped. The map-to-RKKB
+  translator input path is also mapped. General construction of all four
+  runtime layers from profile arrays and edited UI state remains unresolved.
 - **Unresolved: full `0x780` payload schema.** The wrapper length and prefix
   are proven; caller context ties it to macro staging, while the error string
   says “SendKey”. No runtime capture is available, and this static audit does

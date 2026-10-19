@@ -41,7 +41,7 @@ For type `2`, the loader sets the record's first DWORD to `0x02000000`, stores t
 
 The parser validates all three index bytes `+4` through `+6` against the 132-slot bound. For the ordinary eight-cell row, it initially copies cell 8 into all three bytes; optional ninth/tenth cells override `+5`/`+6`. The exact purpose of those optional fields is not established.
 
-The parser also sets up a `0x2100`-byte four-layer-sized region, but the visible `[KEY]` loop writes the base 132-row region. RKKB apply `FUN_00413BF0` (`0x00413BF0`) calls the translator four times on input layers spaced `0x840` bytes apart. **Unresolved:** the constructor/copy path that populates those four runtime input layers from profile defaults and any edited UI state. The shared slot-index table does not, by itself, prove that the parser's action record is the translator's per-layer input record.
+The parser also sets up a `0x2100`-byte four-layer-sized region, but the visible `[KEY]` loop writes the base 132-row region. RKKB apply `FUN_00413BF0` (`0x00413BF0`) receives the map object as its first explicit argument and calls the translator four times on input layers spaced `0x840` bytes apart. The worker passes global `0x0062B388` as that argument at `0x00401295`–`0x004012A0`; the apply routine uses it as the source of its four runtime input layers. This closes the map-object-to-RKKB-translator edge for the conditional RKKB dispatch path, but not the source of every map row or the runtime identity of the selected receiver.
 
 ### `[FN1]`, `[FN2]`, and `[TAP]` profile parsing
 
@@ -51,15 +51,43 @@ parser with section names `FN1`, `FN2`, and `TAP`
 and destination tables `0x0061720C`, `0x00617A4C`, and `0x0061828C`.
 `FUN_00450D70` formats dynamic `K%d` keys and processes up to 132 entries;
 each destination spans `0x840` bytes at the same 16-byte record stride.
-This closes the earlier parser/storage gap: the Fn and tap profile sections
-are read into their own tables. It does not identify the semantic meaning of
-each tuple cell or prove how those tables populate the four layer records read
-by the translators or reach the `10 F8` output path.
+This closes the parser/storage gap: Fn and tap profile sections are read into
+their own tables. The consumer below links `[FN1]` and `[FN2]` to map layers
+for one conditional `FA`/`FB` case. Other tuple-cell meanings, general layer
+population, and the relationship to `10 F8` remain unresolved.
 
 The later `FUN_00450820` call is a separate helper. Its dynamic profile keys
 are `[OPT]` `GaoshouKey%d` and `GaoshouKeyColor%d`, not the `[FN1]` or `[FN2]`
 sections. Do not use that call as evidence for Fn-row parsing or layer
 population.
+
+**Partially proven consumer.** `FUN_0041D7E0` (`0x0041D7E0`), reached from
+`FUN_0041D6A0` at `0x0041D6B1`, uses the key index at the caller object offset
+`+0x1B38` and the active layer at `[0x0062B388]+0x34`. It checks the selected
+16-byte record for tag byte `+3 == 2` and subcode byte `+9 == 0xFA` or `0xFB`.
+On that branch, it copies the matching base `[KEY]` row from
+`0x006169CC + key*0x10` into map layer-0 at
+`[0x0062B388]+0x38+key*0x10`, the matching `[FN1]` row from
+`0x0061720C + key*0x10` into layer-1 at
+`[0x0062B388]+0x878+key*0x10`, and the matching `[FN2]` row from
+`0x00617A4C + key*0x10` into layer-2 at
+`[0x0062B388]+0x10B8+key*0x10`. These are direct four-DWORD (16-byte)
+copies. A related branch copies an incoming `FA`/`FB` type-2 record to the
+same three layer positions and sets map field `+0x30` to `7`.
+
+This proves a conditional profile-row-to-map path for this special-record
+case. The same map global is passed to the worker's virtual `+0x3C` method;
+when that receiver is `CDevRKKB`, the slot resolves to `FUN_00413BF0`, which
+translates four layers from the map argument. Thus the conditional row copy
+has a static path into the RKKB key-layer translator input. This does not
+establish that every profile's Fn rows are copied this way, decode the
+`FA`/`FB` meaning, prove that a particular UI event reached this receiver, or
+connect the four-layer output to the separate `01 F8`/`10 F8` buffers. `TAP`
+table `0x0061828C` is supplied to the profile parser, but a direct literal
+consumer was not found in the bounded `.text` reference scan; computed or
+indirect use remains open. A full `objdump -d` text search found the literal
+`0x0061828C` only at the parser's destination argument (`0x00452311`); this
+adds no consumer and does not rule out computed or indirect access.
 
 ## UI and event crosswalk
 
@@ -71,20 +99,20 @@ The main feature UI is built dynamically; static resources do not expose a compl
 | Key/function picker `Apply` | A separate generated control is built at `0x0041EC32`–`0x0041EC3F`, stored at `this+0x204`; the RTTI-backed `CKeyFunPickDlg` vtable slot `+0xF0` reaches handler `0x0041F810`. The handler checks the clicked HWND and updates local selection/dirty fields. | How this local picker state is copied into the four-layer map object or serialized later. No direct call to the settings signal helper or a device writer was found from this handler. |
 | Main window `Apply` | Another `tc_apply` control is built at `0x0040A3F8`–`0x0040A404`, stored at `this+0x1DD8`. Its handler reaches `0x0040AE1D`, updates an in-memory row via `0x0040B3B0`, and under the `ApplyNow` gate signals `FUN_00401080` with mask `1`. The semaphore worker later calls a virtual `+0x3C` method. | The actual receiver/profile at the virtual call and the concrete writer reached for this individual event. The picker Apply and main Apply must remain distinct despite the shared caption. |
 
-The main Apply's signal and family vtable targets are described in the [Apply worker audit](rk-settings-apply-worker-audit.md). If the receiver is RKKB, vtable slot `+0x3C` reaches `FUN_00413BF0`; if it is G5, the target is `FUN_00411B90`. This is a conditional static route, not proof that a specific click reached either writer.
+The main Apply's signal and family vtable targets are described in the [Apply worker audit](rk-settings-apply-worker-audit.md). If the receiver is RKKB, vtable slot `+0x3C` reaches `FUN_00413BF0` with map global `0x0062B388`; if it is G5, the target is `FUN_00411B90`. The class-specific map-to-translator edge is static, but this is not proof that a specific click reached either implementation.
 
 ## Serializer connection and family boundary
 
-**Proven statically.** For RKKB, the four-layer translator processes 132 records of 16 bytes per layer, calls action-specific translation, uses the parser-populated 132-slot mapping byte at `0x006169D0 + i*0x10`, and emits 132 DWORDs per layer. The family apply function also has separate LED, per-key color, macro-staging, matrix, and conditional Fn branches. The separate `04 00` + `0x780` transfer belongs to the observed macro-staging context; it is not established as the profile keymap block. See the [keymap translation audit](rk-keymap-translation-audit.md) and [serializer audit](rk-setting-serializer-audit.md).
+**Proven statically.** For RKKB, the worker passes map global `0x0062B388` to virtual slot `+0x3C`; `CDevRKKB` resolves that slot to `FUN_00413BF0`. That routine translates four 132-record, 16-byte-per-record layers from the map argument, calls action-specific translation, uses the parser-populated 132-slot mapping byte at `0x006169D0 + i*0x10`, and emits 132 DWORDs per layer. The conditional `[KEY]`/`[FN1]`/`[FN2]` copy described above writes records into this map structure, so its narrow `FA`/`FB` route reaches the RKKB translator inputs. The family apply function also has separate LED, per-key color, macro-staging, matrix, and conditional Fn branches. The separate `04 00` + `0x780` transfer belongs to the observed macro-staging context; the relationship between translated layers and the `01 F8`/`10 F8` regions remains unresolved. See the [keymap translation audit](rk-keymap-translation-audit.md) and [serializer audit](rk-setting-serializer-audit.md).
 
 **Proven statically, different family implementation.** G5/3632 applies also translate four 132-record layers through `FUN_00411260`, which calls a device-specific virtual translator at `+0x60`, rejects `-1` results and indices above `0x83`, and forms 132-DWORD layers. The G5 route uses command `3` for each selected layer; the 3632 route dispatches command `1`. No evidence here establishes that the RKKB global record parser, action translation table, or UI bridge is identical across these families. See the [profile-family coverage report](rk-profile-family-protocol-coverage.md).
 
 ## Explicit unresolved items
 
-- **`[FN1]` and `[FN2]` profile rows:** parser and destination tables are now mapped through `FUN_00450D70`; no recovered consumer maps a specific row to a layer record or writer. Tuple-cell meanings and the relationship between the per-section tables and the four runtime layers remain unresolved. `FUN_00450820` is a separate `[OPT]` Gaoshou-key/color reader, not the Fn parser.
+- **`[FN1]` and `[FN2]` profile rows:** parser and destination tables are mapped, and `FUN_0041D7E0` conditionally copies key-indexed rows into map layers 1 and 2 for the `FA`/`FB` special-record case. The same map object reaches the RKKB four-layer translator through its worker argument. General layer population, tuple-cell meanings, named UI control, and the relationship to the separate `10 F8` payload remain unresolved. `FUN_00450820` is a separate `[OPT]` Gaoshou-key/color reader, not the Fn parser.
 - **Mouse/key selection path:** no reliable mapping from a clicked rendered key to a `K<n>` record, popup choice, or `CKeyFunPickDlg` input field was recovered.
 - **Picker commit path:** the local dirty/selection update in `0x0041F810` is statically visible, but its later consumer is not linked to the runtime four-layer records.
-- **Layer population:** the four runtime layers consumed by the family translators are known, but their complete construction from `[KEY]`, `[FN1]`, `[FN2]`, and UI edits is not.
+- **Layer population:** the `FA`/`FB` helper copies `[KEY]`, `[FN1]`, and `[FN2]` rows into the first three map layers in one conditional path, and that map is statically passed to the RKKB four-layer translator. Complete construction of the four layers from profile defaults and UI edits is not recovered.
 - **All-model coverage:** this is one installed 4.06 binary and 189 local profiles. It cannot establish that all Royal Kludge models, revisions, or later software use the same parser or writer.
 - **Protocol semantics:** translated DWORD meanings and several type/action cases remain undecoded. No packet capture or hardware validation was performed.
 
