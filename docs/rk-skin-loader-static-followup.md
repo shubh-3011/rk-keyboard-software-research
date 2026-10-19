@@ -92,7 +92,9 @@ recorded 4.06/4.6 delta. A full ASCII and UTF-16 string scan of the pinned
 such pointer was identified in its code. The file itself remains an opaque
 520-byte blob with no recognized image signature. This provides no static
 consumer or format identification; it does not rule out an indirect or
-external-library consumer.
+external-library consumer. A package-wide PE and blob follow-up checks the
+other installed executables and common signatures in
+[`rk-mak-skn-package-scan-followup.md`](rk-mak-skn-package-scan-followup.md).
 
 Other string-pool entries such as `button_nr.png` and
 `icon18x18\exit_nr.png` do not have a direct code-pointer reference in the

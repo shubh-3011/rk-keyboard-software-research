@@ -142,6 +142,10 @@ and non-null for `GetFileInformationByHandleEx` and
 `SetFileInformationByHandle`; see the audit for method and limits. See the
 [dynamic API resolution audit](rk-dynamic-api-resolution-audit.md) for
 per-call evidence and caveats.
+The ten import rows that still lack a recovered invocation path were also
+checked for direct relative transfers and exact RVA references; that wider
+scan found no additional consumer and does not prove runtime unavailability.
+See the [relative-reference follow-up](rk-unresolved-native-api-relative-reference-followup.md).
 
 ## Native system-call boundary
 

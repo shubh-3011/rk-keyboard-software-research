@@ -119,4 +119,12 @@ The existing [`rk-file-manifest-delta-v4.06-v4.6.csv`](rk-file-manifest-delta-v4
 
 ## Limits and next static step
 
-This report verifies the installed skin payload’s metadata and narrows the 4.6 change set, but it does not reconstruct the `mak.skn` format or establish the complete skin-loader call graph. Individual asset-to-control bindings, image crop/alpha behavior at runtime, and the 4.6 payload’s independent on-disk verification remain open. The earlier [resource/localization audit](rk-resource-localization-audit.md) contains selected visual observations and the broader UI/resource context.
+This report verifies the installed skin payload’s metadata and narrows the 4.6
+change set, but it does not reconstruct the `mak.skn` format or establish the
+complete skin-loader call graph. Individual asset-to-control bindings, image
+crop/alpha behavior at runtime, and the 4.6 payload’s independent on-disk
+verification remain open. The earlier
+[resource/localization audit](rk-resource-localization-audit.md) contains
+selected visual observations and the broader UI/resource context. The
+package-wide PE and blob scan for `mak.skn` is documented in the
+[format/consumer follow-up](rk-mak-skn-package-scan-followup.md).

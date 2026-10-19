@@ -80,9 +80,12 @@ model or runtime map.
   Side LED images. A static loader trace confirms GDI+ file-loading paths for
   named backgrounds and control groups, model-art fallback behavior, and three
   `power_*` paths absent from both package manifests. It found no direct
-  `mak.skn` consumer; exact control bindings, indirect consumption, and the
-  format remain unresolved. See the [asset census](docs/rk-skin-asset-metadata-followup.md)
-  and [loader follow-up](docs/rk-skin-loader-static-followup.md).
+  `mak.skn` consumer. A package-wide scan of all five installed PEs and the
+  520-byte blob found no identifiable format signature or direct consumer;
+  indirect/runtime use remains possible. Exact control bindings and the
+  format remain unresolved. See the [asset census](docs/rk-skin-asset-metadata-followup.md),
+  [loader follow-up](docs/rk-skin-loader-static-followup.md), and
+  [package-wide scan](docs/rk-mak-skn-package-scan-followup.md).
 - The extracted package contains 265 named profile files and 140 unique
   layouts. The generated catalog and comparison report are
   [`models-4.6.json`](models-4.6.json) and
@@ -322,9 +325,12 @@ model or runtime map.
   fallback imports, but establishes no invocation and classifies none as
   unused. An instruction-level census maps the nine direct updater loader
   helper calls to wide descriptors and records zero exact pointer matches for
-  the ANSI descriptors; indirect/computed selection remains unresolved. See
+  the ANSI descriptors; indirect/computed selection remains unresolved. A
+  follow-up also checks relative calls/jumps and RVA encodings across all ten
+  rows, finding no new consumer; each remains unresolved dynamic/runtime. See
   `docs/rk-remaining-native-api-gap-deep-scan.md`,
   `docs/rk-update-ansi-loader-call-boundary-audit.md`, and
+  `docs/rk-unresolved-native-api-relative-reference-followup.md`, and
   `docs/rk-remaining-api-reference-scan.csv`.
   The `PostQuitMessage` wrapper path is tied to seven callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
@@ -423,7 +429,8 @@ model or runtime map.
   the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),
-  plus the [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
+  [field-boundary follow-up](docs/rk-406-brightness-handler-field-boundary.md),
+  and [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
 - A focused `CLedDlg` follow-up resolves private messages `0x0481` and
   `0x0482` to two posted selection notifications, their per-position mapping
   record effects, and Apply signal mode `4`. The child control identity,

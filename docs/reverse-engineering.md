@@ -105,7 +105,10 @@ or font. The [installed skin-asset census](rk-skin-asset-metadata-followup.md)
 adds dimensions and pixel modes for all 96 4.06 skin entries. A separate
 [loader trace](rk-skin-loader-static-followup.md) follows GDI+ image loads,
 profile-art fallback, and named but absent power images; `mak.skn` consumption
-and exact control bindings remain unresolved.
+and exact control bindings remain unresolved. The
+[package-wide `mak.skn` scan](rk-mak-skn-package-scan-followup.md) found no
+direct consumer or identifiable common file format across the five installed
+PEs; indirect or runtime use remains unresolved.
 
 The app's resource paths form this local data graph:
 
@@ -659,6 +662,13 @@ cell 4 can set runtime-record `+0x08` to 1 or 2. Cells 2–6 feed lighting
 dialog state and visibility updates. The full tuple meaning, exact control
 labels, and the callback that edits the remaining runtime-record fields are
 still unresolved.
+
+The [brightness handler field-boundary audit](rk-406-brightness-handler-field-boundary.md)
+traces private messages `0x0800` and `0x0801` through the UI state-copy helper.
+That helper updates several lighting-record fields but not the brightness
+index at `+0x04`; the report therefore does not connect this UI event to the
+family-specific writer, even though separate conditional serializer paths
+translate `DefBri`/`LightHW` values into protocol payloads.
 
 There is also a UI-value path: `FUN_00422220` at `0x00422220`, when its
 selector argument is `0x95`, formats the value at `0x00611854 + index` for a
