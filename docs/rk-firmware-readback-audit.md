@@ -281,6 +281,26 @@ The function-level trace does not establish a successful parse or explain
 this mismatch. The package must not be treated as a validated firmware image
 or as a recoverable backup. No attempt was made to run the parser against it.
 
+### Mode-3 section transform and length boundary
+
+A focused static trace follows the mode-3 parser calls into
+`FUN_004044B0`. It reads a four-byte local key and passes the same key pointer
+with the A, B, and C host buffers. The helper converts four-byte groups to
+big-endian words, calls a 32-round two-word transform, and serializes results
+back into the input buffer. The available evidence does not identify the
+transform's algorithm or the key's meaning.
+
+For this packaged sample, the A length's high bit makes the helper's signed
+loop counts negative and the allocation-size arithmetic produces request size
+`0xffffffff`; the allocator's response is unknown. B is 41,351 bytes, but the
+transform's complete-four-byte conversion/copy-back loops span 41,352 bytes,
+so the final group reaches one byte past B's declared length if execution gets
+there. The parser's section-allocation/read behavior and whether the malformed
+sample reaches the transform are unresolved. These are static boundary
+findings, not an observed crash, a valid firmware image, or evidence of a
+keyboard write. See the [section-transform audit](rk-upf-section-transform-and-length-boundary-audit.md)
+for the exact callsites, hashes, and disassembly ranges.
+
 ### Independent REA/Ghidra parser cross-check
 
 A read-only REA overview and function dossier were generated from an offline
