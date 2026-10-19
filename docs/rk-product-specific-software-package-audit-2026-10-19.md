@@ -98,9 +98,30 @@ bytes at `0x100027DC`, and retries up to three times; other callers send
 `0xF104` at `0x10002C4B` and `0xF004` at `0x10002CBB`. The helper's output
 routine prepends feature report ID zero, while input routines strip the
 report-ID byte before copying response data. A helper read call at
-`0x10002BD1` requests four bytes with a `0x7D0` (2,000 ms) timeout. Exact
-UI-slider-to-Writer method binding, command meanings, returned status
-semantics, and brightness value mapping remain unresolved.
+`0x10002BD1` requests four bytes with a `0x7D0` (2,000 ms) timeout.
+
+The lighting UI event map is partially traced in the shared
+`GamingKeyboardMain.dll` (SHA-256
+`d532a10daf97d4748819c2743736a039ae71c2ec668e2e8f0748ec9bd7b346c6`). Two
+aligned tables in `.data` (`0x1BC928`–`0x1BCA18` and duplicate
+`0x1BD5D8`–`0x1BD6C8`) map all 16 brightness-slider IDs to handler VA
+`0x10015610`, with flags `0x111`; the same handler is also assigned to the 16
+speed-slider IDs. It queries a widget identifier through `0x1001FC10`, then
+dispatches through generic callback helpers `0x10047F7F` / `0x10017FE0`; no
+Writer method or Sonix export is directly resolved in that handler. The ID
+parser scans for `_` and returns an index-like value, but the framework's
+string/result conventions and brightness conversion remain unresolved.
+
+Mode-related event rows also map `GK::ID_LIGHT_ModeList` to `0x10014E50`,
+`GK::ID_LIGHT_ModeLabel` to `0x10014C80`, and the light switch to `0x10014FC0`.
+The switch calls the mode-list handler, which resolves `GK::ID_LIGHT_ModeIndex`
+and updates UI state through indirect widget methods; the handler has no
+statically resolved Writer/Sonix call. `LightingUI.xml` declares the CWT UI
+listener's collaboration with both Profile and Writer, and its
+`CWTChainReactionTextEditOnChange` on `GK::ID_LIGHT_LightModeTrigger` controls
+UI visibility. Those links do not prove a commit or device write. Command
+meanings, returned status semantics, and brightness/mode serialization remain
+unresolved.
 
 ### R99 RK Driver package
 
@@ -216,9 +237,39 @@ The UI string resources name Remap, Performance, Advanced Keys, Macro, Light,
 Config, Aurora Linkage, eight FN layers, DKS, Mod Tap, Toggle Key, macro timing,
 lighting profiles, polling rates, Tachyon, Rapid Trigger, firmware update,
 and calibration. These are evidence that the package presents those labels;
-actual handlers, device-family gates, and hardware behavior are not yet
-recovered. Some layout XML files are malformed and are catalogued as such
-rather than silently normalized.
+some profile, database, and transport-worker paths are now mapped, but action
+ownership, device-family gates, exact wire payload mapping, and hardware
+behavior remain open. Some layout XML files are malformed and are catalogued
+as such rather than silently normalized.
+
+The R99 layout `R99.xml` (SHA-256
+`2186ebf64c00f079ec81e57c676f05487c33cf0efc7f972efde417fa11095424`; shared
+with `R99_Dongle.xml`) defines a 101-key grid with key codes, names, indices,
+light indices, and geometry. `default_light.xml` (SHA-256
+`bc079015102b5c5d6341e9f0e925c774353432f027acb3786d021850bd3412b9`) contains
+six presets with 105 per-key RGB entries each. The English language file
+labels Apply, Light, Light Mode, Brightness, Speed, Direction, and Firmware
+Update. The EXE contains SQLite schema/update strings for `t_light_data` at
+file offset `0x18D1E0` / VA `0x58E5E0`; fields include brightness, speed,
+direction, color, configuration, and status. An update routine at VA
+`0x408101` binds record fields before database execution. These prove profile
+and local state structure, not which values the keyboard receives.
+
+The CH375 worker at VA `0x41A9D0` opens through helper `0x41AE40`, sets
+exclusive access and timeout, then calls the previously mapped read/write
+helpers. Generic request routines at `0x41AF40` and `0x41AFE0` send DWORDs
+`0x281` and `0x283` with length 4 and read a two-byte response. A transfer
+helper at `0x41B040` handles request values `0x80` and `0x82` with an allocated
+`0xC8000`-byte buffer; a caller opens and reads a file before sending chunks.
+This transfer sequence is not tied to the visible Firmware Update label by a
+verified callback xref. No static edge in this pass joins `R99.xml`, the
+default RGB presets, or the Apply label to a specific CH375 payload.
+
+The outer `CH372DRV.EXE` (SHA-256
+`f3e7b77711fd97024146203c870c668607cad04bbd75d3dacb147ebcd21fd8ef`) is a
+WinRAR self-extracting wrapper with a RAR overlay at `0x18200` of length
+`273,288`; the actual driver install/API calls reside in the extracted
+`SETUP.EXE`, not the outer wrapper.
 
 ### F99 AI RK Setup package
 
@@ -240,13 +291,14 @@ were invoked. A focused static pass maps the Electron background entry to
 `app://./index.html`; its BrowserWindow enables Node integration and declares
 no preload script.
 
-The F99 model gate is a 68-row VID/PID allowlist. The four RK model IDs admitted
-under the package's RK build configuration are F99 AI, Air61, i20 AI, and N20
-AI, but only F99 has explicit matching PID rows in this table (`248A:8102`,
-`248C:8243`, and `248A:8243`). The other three models' precise HID routes are
-unresolved. A two-second scan filters HID usage and usage-page values, matches
-an allowlisted VID/PID, deduplicates paths, then opens the device through
-`mi-hid`. The host sends a random challenge and checks a 32- or 35-byte
+The F99 model gate is a 68-row VID/PID allowlist. Under the package's
+`CUSTOM_VALUE=14` RK build configuration, its legal model set is model IDs
+6000–6003: F99 AI, Air61, i20 AI, and N20 AI. Only F99 has explicit matching
+PID rows in the allowlist (`248A:8102`, `248C:8243`, and `248A:8243`). The
+other three models' precise HID routes are unresolved. A two-second scan
+filters HID usage and usage-page values, matches an allowlisted VID/PID,
+deduplicates paths, then opens the device through `mi-hid`. The host sends a
+random challenge and checks a 32- or 35-byte
 response; the heartbeat and verification state must both pass before the app
 reports a connected device. F99 maps internally to `RK756` and the
 `DEVICE_RK756` keyboard image. The inspected F99 package's model table and
@@ -280,6 +332,35 @@ Selected source-byte anchors for this F99 pass:
 Offsets are byte offsets in the named exact files, not runtime addresses. They
 are navigation anchors for the static code paths above, not proof those paths
 were executed.
+
+The native `mi-hid.node` addon is an x64 PE, 799,232 bytes, SHA-256
+`fe68309021c9640f16a2bbd550738cf8904b3d18a1cc3a4e8b2d22ec2a2d5ee4`. Its PE
+has 127 normal imports from `KERNEL32.dll` and 62 delay imports from `node.exe`.
+A linear sweep records 447 direct IAT call/tail-jump candidates, including
+`CreateFileW`, `WriteFile`, `ReadFile`, `DeviceIoControl`, overlapped I/O, and
+handle cleanup in the `hid_*` routines. The callsite ledger is a candidate
+list; framework/runtime reachability and all arguments are not fully resolved.
+
+The addon also contains UTF-16 module names `hid.dll` and `cfgmgr32.dll` and
+export-name strings for 13 HID APIs (`HidD_*` / `HidP_*`) and six Configuration
+Manager APIs (`CM_*`). Direct IAT calls to `LoadLibraryW` at RVA `0x1975B` and
+`0x19778`, followed by a sequence of `GetProcAddress` calls from RVA
+`0x1979C`, support dynamic resolution; the exact consumer of every resulting
+function pointer is not fully mapped. The dynamic-name ledger includes byte
+offsets. No decoded `syscall`, `sysenter`, or `int 0x2e` instruction was found
+in the executable-section linear sweep. Five raw `0F 05` byte pairs were
+recorded separately; none decodes as a syscall instruction. This result is
+limited to this addon and scan method, not APIs called inside Windows or other
+drivers.
+
+Reproducible native-addon ledgers and scanner:
+
+- [Normal and delay imports](rk-f99-native-hid-imports-2026-10-19.csv)
+- [Direct IAT call/tail-jump candidates](rk-f99-native-hid-callsite-candidates-2026-10-19.csv)
+- [Dynamic HID and Configuration Manager name strings](rk-f99-native-hid-dynamic-api-symbols-2026-10-19.csv)
+- [Decoded syscall instruction candidates](rk-f99-native-hid-syscall-candidates-2026-10-19.csv)
+- [Raw `0F 05` byte pairs, separately classified](rk-f99-native-hid-raw-0f05-candidates-2026-10-19.csv)
+- [Hash-pinned PE audit script](../scripts/audit_f99_native_hid.py)
 
 REA's CLI JavaScript application analysis completed as local Evidence
 `ev_83a56e1c6593964124f97cc1be87f0973e9d8370851c2cd5d02368b1fe6bb2d9`

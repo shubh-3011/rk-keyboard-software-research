@@ -103,6 +103,15 @@ For current blockers and the recommended reverse-engineering order, see the
   is incomplete. The full 298 MB Evidence remains outside the repository. This
   analysis does not establish absence of an Electron/native relationship from
   zero-count summary fields. The F99 Mac DMG is outer-container-only here.
+- Focused family traces now map representative paths without claiming full
+  control-flow coverage: GamingForceZ lighting/profile resources through the
+  shared plugin architecture to the Sonix feature-report wrapper; R99 app
+  discovery and sample requests through CH375, plus the archived 2023 driver's
+  IOCTL buffer and SetupAPI install paths; and F99's verified-device gate,
+  model image selection, generic DPI route, and OTA dispatch. Exact lighting
+  value mapping, R99 helper semantics/model gates, F99's remaining UI/native
+  edges, and device behavior remain open. Details are in the
+  [product-specific package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md).
 - A separate static audit covers all eight S98 Tri-mode RGB updater EXEs
   returned by the selector. It records each package hash/PID, compares their
   PE sections, imports, dialog resources, and code-scan candidates. Seven
