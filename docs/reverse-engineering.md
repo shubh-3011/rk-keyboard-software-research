@@ -906,9 +906,10 @@ points to base-map function `0x00479866` and the entries, a getter at
 vtable whose complete-object locator names the class. Its IDs include
 `0x4079`–`0x407E`, `0x4091`, and `0x4092`. Those handlers are framework
 customization UI and do not identify an RK keyboard feature. A full record
-parser now decodes all 26 unique recovered arrays from this owner evidence:
-291 entries, including 144 `WM_COMMAND` entries with different signatures and
-147 other messages. The earlier 112-row CSV remains the narrower
+parser now decodes 27 unique recovered arrays from the owner evidence plus a
+separately recovered `CLedDlg` non-command map: 305 entries, including
+144 `WM_COMMAND` entries with different signatures and 161 other messages.
+The earlier 112-row CSV remains the narrower
 signature-`0x39`, equal-ID subset. See the [MFC message-map audit](rk-mfc-message-map-audit.md)
 and its [normalized full-entry CSV](rk-mfc-message-map-entries.csv).
 Additional RTTI-backed app-owned map links are summarized here:
@@ -917,6 +918,7 @@ Additional RTTI-backed app-owned map links are summarized here:
 | --- | --- | --- | --- | --- |
 | `CMacroDlg` | `0x005CD558` / `0x0107`; `0x005CD570` / `0x0117` | `WM_COMMAND` code `0x0300` (edit change) | `0x0042B3B0`; `0x0042B530` | The first handler validates a numeric value against a global upper bound and resets invalid input; the second clamps a numeric value to 1–1,048,575. See details below; labels are unresolved. |
 | `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | Clamps the numeric value to 65,535 and stores it in dialog state at `this+0x114`; the visible control label is unresolved. |
+| `CLedDlg` | `0x005CD000` (`WM_PAINT`); `0x005CD030` (`0x0800`); `0x005CD048` (`0x0801`) | Window messages, not `WM_COMMAND` | `0x00421660`; `0x00422190`; `0x00422220` | Paint handler draws the “Light Brightness” label; the `0x0800` handler copies page state and can signal Apply; `0x0801` formats a `LightUI` value. Exact control senders and a writer edge remain unresolved. See the [full map audit](rk-mfc-message-map-audit.md). |
 | `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | Branch target returns zero through a shared epilogue; exact command purpose is unresolved. |
 | `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | One handler foregrounds or initializes/shows the dialog; the other closes named helper windows, may persist profile data, and signals the `SendSysParam` worker's event. See the [UI event and worker path audit](rk-ui-event-worker-path-audit.md). |
 
@@ -928,7 +930,7 @@ The full maps also establish the main application's system-message dispatch:
 | `CScreenDlg` | `0x005DA4E8` | `WM_TIMER` (`0x0113`) | `0x0046D570` | Timer `0x900` kills its timer, sets `this+0x10C`, and calls UI refresh `0x00475257`; the field's meaning is unknown. A separate helper arms this one-shot timer for 700 ms under a state condition; its initiating UI feature remains unresolved. |
 
 See the [full MFC message-map audit](rk-mfc-message-map-audit.md) for the
-other application-owned non-command entries and all 26 recovered arrays.
+other application-owned non-command entries and all 27 recovered arrays.
 
 Handler-level inspection refined the macro and screen edit behavior. `CMacroDlg`
 handler `0x0042B3B0` reads the integer child at `this+0x2FA0`, accepts values

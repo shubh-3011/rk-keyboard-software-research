@@ -391,8 +391,10 @@ model or runtime map.
   family-specific serializer bytes. All eight installed S98 profiles use
   `DefBri=5` and six-value UI/hardware lists. A focused callsite trace resolves
   the `tc_adv_str1` draw call to `USER32!DrawTextW` and `0x8134` as its layout
-  flags; this does not establish the visible control's event handler. Physical
-  brightness units and the widget-to-writer path remain unresolved. See the
+  flags. A recovered RTTI-backed `CLedDlg` message map identifies that
+  paint handler and its `0x0800`/`0x0801` handlers, but no control sender for
+  selector `0x95` is proven. Physical brightness units and the widget-to-writer
+  path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md).
 - The static Win32 dialog-template parser inventories all dialog resources in
@@ -466,9 +468,12 @@ model or runtime map.
   profile/audio configuration fields, a separate `Music_Theard` device worker,
   its record layout, and `+0x40` dispatches to RKKB, G5, and nested 3632 output
   methods. Static evidence still does not connect loopback samples to those
-  worker buffers; UI controls, `audio.dct` schema, and the G5/3632 payload
-  meanings remain unresolved. See
-  `docs/rk-audio-reactive-path-audit.md`.
+  worker buffers. The UI follow-up maps 20 audio labels and the inferred `0x1E`
+  page-state copy into capture-worker globals, then traces page entry/exit and
+  default-endpoint-change restart paths. Exact control bindings, `audio.dct`
+  schema, and G5/3632 payload meanings remain unresolved. See
+  `docs/rk-audio-reactive-path-audit.md` and
+  `docs/rk-audio-ui-control-followup.md`.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
   byte, acknowledgements, retries, and cancellation path. The 4.06 screen
@@ -483,7 +488,7 @@ model or runtime map.
   traced through register-indirect API calls and an RTTI-attributed
   `COemDrvDlg` `WM_DEVICECHANGE` message-map entry; runtime event delivery and
   device-to-profile selection remain unobserved.
-- All 26 recovered MFC message-map arrays are decoded into 291 raw entry rows
+- All 27 recovered MFC message-map arrays are decoded into 305 raw entry rows
   with message, signature, ID range, handler, and owner evidence. This is the
   recovered-array inventory, not a claim that every MFC map in the PE or every
   runtime dispatch path has been found; see

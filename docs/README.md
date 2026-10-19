@@ -74,6 +74,7 @@
 - [Macro file format, storage, and serializer paths](rk-macro-format-and-path-audit.md)
 - [Macro editor events, input hooks, and capture gaps](rk-macro-capture-path-audit.md)
 - [WASAPI audio-reactive capture and separate RKKB output path](rk-audio-reactive-path-audit.md)
+- [Audio UI labels, page-state bridge, and capture lifecycle](rk-audio-ui-control-followup.md)
 - [Lighting profile values, runtime records, and UI state](rk-lighting-profile-record-path-audit.md)
 - [Keyboard LED brightness UI handler and unresolved writer path](rk-lighting-brightness-ui-handler-audit.md)
 - [Profile-to-driver-family map](rk-profile-driver-family-map.csv)
@@ -140,7 +141,7 @@
 - [MFC command-map candidates](rk-mfc-command-map-candidates.csv)
 - [MFC message-map owner evidence](rk-mfc-map-owner-evidence.csv)
 - [Recovered MFC message-map audit](rk-mfc-message-map-audit.md)
-- [All entries from the 26 recovered MFC arrays](rk-mfc-message-map-entries.csv)
+- [All entries from the 27 recovered MFC arrays](rk-mfc-message-map-entries.csv)
 
 ## Package resources and localization
 

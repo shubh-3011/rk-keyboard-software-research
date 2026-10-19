@@ -1,4 +1,5 @@
 candidate_block_va,owner_class,map_descriptor_va,entries_base_va,get_message_map_getter_va,owner_vtable_va,complete_object_locator_va,alternate_owner_class,alternate_vtable_va,alternate_col_va,notes,type_descriptor_va,alternate_type_descriptor_va
+0x005CCFE8,CLedDlg,0x005CD150,0x005CCFE8,0x004215E0,0x005CD2F4,0x005E3DB0,,,,RTTI-backed CLedDlg vtable has GetRuntimeClass returning descriptor 0x005CCFCC and GetMessageMap returning descriptor 0x005CD150.,0x0060384C,
 0x005A01A8,CDialog,0x005A019C,0x005A01A8,0x00479866,0x005A002C,0x005DBF00,,,,RTTI-backed GetMessageMap accessor chain.,0x00602E38,
 0x005A1E18,CWinApp / CWinAppEx (ambiguous),0x005A1E10,0x005A1E18,0x0047F4AE,0x005A226C,0x005DC480,CWinAppEx,0x005A23DC,0x005DC4E0,Shared/inherited getter is present in both RTTI-backed vtables; concrete owner is not unique.,0x00603A5C,0x00603A74
 0x005A3A88,CMDIFrameWndEx,0x005A3858,0x005A3860,0x0048F73D,0x005A3654,0x005DD04C,,,,Shares message map with candidate block 0x005A3B30.,0x005FE190,

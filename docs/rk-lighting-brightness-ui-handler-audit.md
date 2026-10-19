@@ -54,17 +54,27 @@ byte at `0x00611854 + index` (`0x004222D1`) and formats it as text. This
 proves a `LightUI`-to-runtime-value-formatting path, but not which visible
 widget requests selector `0x95` or how a change to that value is committed.
 
-**Unresolved callback ownership.** A complete disassembly scan found no
-direct call or tail jump to `FUN_00422190`; `FUN_00422220` has one direct
-caller, `FUN_00422190`, which forwards its selector and index arguments. The
-two function addresses also occur as pointer words in a `.rdata` block:
-`0x005CD044` contains `0x00422190` beside words `0x0E` and `0x0801`, while
-`0x005CD05C` contains `0x00422220` beside `0x0E` and `0x0481`. These raw
-entries are a candidate registration structure only: the table format,
-consumer, owning class, and meaning of those ID-like values were not resolved.
-The current 26-array MFC message-map ledger has no matched array/owner for
-this block. It therefore does not establish a Light Brightness control to
-callback edge.
+**MFC ownership recovered; control sender still unresolved.** The MFC map
+descriptor at `0x005CD150` points to entries at `0x005CCFE8`; getter
+`0x004215E0` returns that descriptor from a vtable slot in the RTTI-backed
+`CLedDlg` vtable. Its complete-object locator at `0x005E3DB0` points to type
+descriptor `0x0060384C`, named `.?AVCLedDlg@@`; the same vtable's runtime-class
+getter returns the `CLedDlg` descriptor at `0x005CCFCC`. The base-map getter
+`0x00479866` matches the recovered `CDialog` map. Thus the earlier pointer
+block is a normal six-DWORD MFC message map, not an unresolved registration
+table.
+
+The map row at `0x005CD000` maps `WM_PAINT` to `FUN_00421660`, resolving the
+class and message-map route for drawing `tc_adv_str1`. Rows at `0x005CD030`
+and `0x005CD048` map private messages `0x0800` and `0x0801` to
+`FUN_00422190` and `FUN_00422220`. The numbers `0x0800` and `0x0801` are
+message IDs, not control IDs. The `0x0801` handler reads/format-selects
+`LightUI` when its selector is `0x95`, and `0x0800` calls that formatter
+before copying page state and potentially signaling the settings worker.
+These map edges do not identify which control sends the messages, prove that
+it requests selector `0x95`, or connect the visible brightness control to a
+specific device-family writer. See the [full MFC message-map audit](rk-mfc-message-map-audit.md)
+for the complete 14-row array and owner evidence.
 
 ### `tc_kbin10`–`tc_kbin12` brightness action labels
 
@@ -103,9 +113,10 @@ orchestrator `FUN_00411B90`. These are family-specific keymap routes. No
 static chain in this audit connects a particular `tc_kbin` profile tuple or
 visible action selection to either family writer.
 
-### Candidate general settings handler and apply worker
+### `CLedDlg` message handler and apply worker
 
-`FUN_00422190` calls `FUN_00422220` at `0x0042219F` and `FUN_00425440` at
+The map identifies `FUN_00422190` as handler for message `0x0800`. It calls
+`FUN_00422220` at `0x0042219F` and `FUN_00425440` at
 `0x004221A6`. Under the `0x00611794` guard it sends a `0x110A` message at
 `0x004221C4`, examines a linked structure (including a comparison with
 `0x1E`), and can call `FUN_00401080(2)` at `0x004221F7`. The helper signals
@@ -133,11 +144,11 @@ brightness effect.
 | Link | Status | Evidence and limit |
 | --- | --- | --- |
 | English labels `tc_adv_str1`, `tc_kbin10`–`tc_kbin12` | **Proven statically** | Installed English XML; exact file hash above. |
-| `tc_adv_str1` generated-string slot and draw call | **Proven statically** | Loader `0x00445660` stores the string at `0x0062B730`; `0x00421660` passes it through adapter vtable `0x0059F314`, slot `+0x68` -> `0x0047111A` -> `USER32!DrawTextW` at `0x00421BDD`. `0x8134` is the DrawTextW format mask. The surrounding widget/control ID remains unknown. |
+| `tc_adv_str1` generated-string slot, draw call, and page-map owner | **Proven statically** | Loader `0x00445660` stores the string at `0x0062B730`; `0x00421660` is the `CLedDlg` `WM_PAINT` handler and passes it through adapter vtable `0x0059F314`, slot `+0x68` -> `0x0047111A` -> `USER32!DrawTextW` at `0x00421BDD`. `0x8134` is the DrawTextW format mask. The exact child widget/control ID remains unknown. |
 | `LightUI` profile value to displayed text | **Proven statically** | `FUN_004513B0` populates `0x00611854`; `FUN_00422220` selector `0x95` reads it at `0x004222D1`. Caller-to-widget binding remains unknown. |
 | Brightness action code to localized action label | **Proven statically** | Type-9 mapper at `0x0044E3EF`, comparisons around `0x0044E4AC` and `0x0044E52A`–`0x0044E543`, action-string slots above. |
 | Type-9 mapping translator and matrix path | **Proven statically** | `FUN_00413410` → `FUN_00454C30`; `FUN_00413B20` maps 132 records. Specific `[FN1]`/`[FN2]` profile tuple to this runtime input remains unresolved. |
-| Candidate generated-settings change to mask-2 worker signal | **Proven statically as a function path; UI attribution unresolved** | `FUN_00422190` and `FUN_00401080(2)` call at `0x004221F7`; worker dispatch is indirect. The raw pointer-table occurrence at `0x005CD044` has no recovered owner/consumer and does not prove this is the brightness widget's handler. |
+| `CLedDlg` messages `0x0800`/`0x0801` | **Proven statically; control attribution unresolved** | RTTI-backed map rows at `0x005CD030`/`0x005CD048` target `FUN_00422190`/`FUN_00422220`; selector `0x95` reads `LightUI`; message `0x0800` may signal Apply mask 2. No sender with selector `0x95` or child-control binding was recovered. |
 | Profile `LightHW` values to keyboard LED serializer bytes | **Proven statically** | RKKB `FUN_00413BF0`; G5/3632 `FUN_00411900` and related writer path. UI trigger, active family, and physical units are unresolved. |
 | Complete `Light Brightness` control → event → field mutation → writer chain | **Unresolved** | No direct child HWND/control ID and callback link joins the generated `tc_adv_str1` construction, selector `0x95`, `FUN_00422190`, and a concrete device-family writer. |
 | Whether `tc_kbin10`–`tc_kbin12` are lighting-page buttons | **Unresolved; evidence points to remapping choices** | Their strings are selected by the type-9 function-action mapper. No lighting-page click handler was found. |
@@ -157,11 +168,11 @@ keymap flow, Apply worker, and serializers; installed English XML; and
 available export reports found the `LightUI` selector and its direct data
 edge, but no label-to-widget/event edge. The `tc_adv_str1` draw adapter and
 `0x8134` mask are now resolved from the constructor, vtable, wrapper, and IAT;
-the surrounding handler's owner and the unowned pointer table remain open.
-The relevant missing bridge is structural: the selector is an argument to a
-generic formatter, and the settings worker selects its writer through an
-unresolved runtime object. This audit therefore does not claim the entire
-brightness control path has been reverse engineered.
+the newly recovered MFC map ties the paint handler to `CLedDlg` and resolves
+the former pointer block as message-map entries. The exact control sender for
+selector `0x95` and the settings worker's runtime writer remain unknown. This
+audit therefore does not claim the entire brightness control path has been
+reverse engineered.
 
 ## Related audits
 

@@ -5,17 +5,19 @@ installed `DeviceDriver.exe` 4.06 image, SHA-256
 `C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`.
 It does not run the vendor software, open a HID handle, or send reports.
 
-The starting owner ledger has 30 candidate blocks. Several blocks share the
-same map descriptor and entry array, so the parser deduplicates those to 26
-unique arrays. Each record is six DWORDs (24 bytes): message, code, first ID,
-last ID, signature, and handler VA. Arrays end at an all-zero sentinel. The
-hash-pinned binary contains 291 non-sentinel entries across the 26 recovered
-arrays: 144 entries have message `0x0111` (`WM_COMMAND`) and 147 carry other
-message IDs. The normalized
+The initial owner ledger has 30 `WM_COMMAND`-derived candidate blocks. Several
+blocks share the same map descriptor and entry array, so those candidates
+deduplicate to 26 unique arrays. A separate RTTI-backed `CLedDlg` array
+was then recovered from its virtual `GetMessageMap` slot, bringing the ledger
+to 31 candidate blocks and 27 unique arrays. Each record is six DWORDs (24
+bytes): message, code, first ID, last ID, signature, and handler VA. Arrays
+end at an all-zero sentinel. The hash-pinned binary contains 305 non-sentinel
+entries across the 27 recovered arrays: 144 entries have message `0x0111`
+(`WM_COMMAND`) and 161 carry other message IDs. The normalized
 [`rk-mfc-message-map-entries.csv`](rk-mfc-message-map-entries.csv) preserves
 the raw fields and owner evidence for every decoded row.
 
-This is the complete inventory of the 26 recovered arrays, not proof that all
+This is the current inventory of the 27 recovered arrays, not proof that all
 MFC maps or runtime dispatch routes in the executable have been discovered.
 The earlier
 [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv)
@@ -25,14 +27,15 @@ command signatures/ranges, so the two CSV files answer different questions.
 
 ## RK application-owned arrays
 
-Four arrays are attributed by the RTTI-backed owner evidence to RK application
-classes. Together they contain 36 entries: six `WM_COMMAND` entries and 30
+Five arrays are attributed by the RTTI-backed owner evidence to RK application
+classes. Together they contain 50 entries: six `WM_COMMAND` entries and 44
 other messages.
 
 | Owner | Entries | `WM_COMMAND` | Other messages | Evidence |
 | --- | ---: | ---: | ---: | --- |
 | `CMacroDlg` | 13 | 2 | 11 | `0x005CD498`–`0x005CD5B8` |
 | `CScreenDlg` | 7 | 1 | 6 | `0x005DA458`–`0x005DA4E8` |
+| `CLedDlg` | 14 | 0 | 14 | `0x005CCFE8`–`0x005CD120` |
 | `COemDrvApp` | 1 | 1 | 0 | `0x005D4870` |
 | `COemDrvDlg` | 15 | 2 | 13 | `0x005D4B90`–`0x005D4CE0` |
 
@@ -40,6 +43,46 @@ The other recovered maps belong to MFC framework or generic classes. Their
 entries are included in the CSV but are not evidence of RK keyboard features.
 Two candidate blocks have inherited/shared-getter owner ambiguity, as recorded
 in [`rk-mfc-map-owner-evidence.csv`](rk-mfc-map-owner-evidence.csv).
+
+### `CLedDlg` message-map recovery
+
+The `CLedDlg` array was missed by the original `WM_COMMAND`-shaped scan
+because none of its 14 rows is a `WM_COMMAND`. Its six-DWORD entries begin at
+`0x005CCFE8` and end at the all-zero sentinel at `0x005CD138`. The map
+descriptor at `0x005CD150` contains base-map getter `0x00479866` and entries
+pointer `0x005CCFE8`. Getter `0x004215E0` returns that descriptor from the
+RTTI-backed `CLedDlg` vtable at `0x005CD2F4`; the same vtable's
+`GetRuntimeClass` slot `0x004210B0` returns runtime-class descriptor
+`0x005CCFCC`, whose name is `CLedDlg`. Its complete-object locator
+`0x005E3DB0` points to type descriptor `0x0060384C`, named
+`.?AVCLedDlg@@`. The base getter matches the separately recovered `CDialog`
+map getter and descriptor (`0x00479866` -> `0x005A019C`). This is a static
+owner chain; it does not observe MFC dispatch at runtime. A neighboring
+`CAudioClient` RTTI block is a separate vtable; it is not the owner of this
+map.
+
+| Message | Handler | Map row | Static note |
+| --- | --- | --- | --- |
+| `WM_ERASEBKGND` (`0x0014`) | `0x0046ACB0` | `0x005CCFE8` | Shared MFC default-handler path. |
+| `WM_PAINT` (`0x000F`) | `0x00421660` | `0x005CD000` | Paint routine that draws the localized `tc_adv_str1` “Light Brightness” string; see the [brightness UI audit](rk-lighting-brightness-ui-handler-audit.md). |
+| Private message `0x0477` | `0x00425570` | `0x005CD018` | Message name and sender are unresolved. |
+| Private message `0x0800` | `0x00422190` | `0x005CD030` | Calls formatter `0x00422220`, copies page state, and may signal the settings worker; no control sender is recovered. |
+| Private message `0x0801` | `0x00422220` | `0x005CD048` | Selector `0x95` reads the `LightUI` table; which widget requests it remains unresolved. |
+| Private message `0x0481` | `0x00422780` | `0x005CD060` | Message purpose and sender are unresolved. |
+| Private message `0x0482` | `0x00422640` | `0x005CD078` | Message purpose and sender are unresolved. |
+| Private message `0x05C7` | `0x0040C840` | `0x005CD090` | Message purpose and sender are unresolved. |
+| Private message `0x0594` | `0x00422430` | `0x005CD0A8` | Message purpose and sender are unresolved. |
+| Private message `0x08B3` | `0x004251E0` | `0x005CD0C0` | Message purpose and sender are unresolved. |
+| Private message `0x043E` | `0x0040C840` | `0x005CD0D8` | Shared handler; message purpose and sender are unresolved. |
+| Private message `0x0461` | `0x00422580` | `0x005CD0F0` | Message purpose and sender are unresolved. |
+| Private message `0x05D1` | `0x00422580` | `0x005CD108` | Shared handler; message purpose and sender are unresolved. |
+| `WM_LBUTTONDOWN` (`0x0201`) | `0x00403AD0` | `0x005CD120` | Signature `0x35`; hit-test behavior was not analyzed in this pass. |
+
+The `0x0800` and `0x0801` values above are message fields, not control IDs.
+This resolves the earlier ambiguous `.rdata` block: function pointers
+`0x00422190` and `0x00422220` are handlers in the `CLedDlg` map. Their map
+membership still does not prove that a particular brightness widget sends
+either message or that a UI change reaches a specific serializer.
 
 ## Device notifications and timer routes
 

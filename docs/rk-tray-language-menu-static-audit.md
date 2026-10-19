@@ -84,7 +84,7 @@ consumer of the selected language ID. See Microsoft's
 This establishes the expected Win32 notification edge from a selected language
 row to the `COemDrvDlg` window. The subsequent MFC command-map search has no
 recovered match: the `COemDrvDlg` map contains command IDs `0x6400` and
-`0x6401`, not `0x6A00`–`0x6A06`; a range-overlap check across all 26 recovered
+`0x6401`, not `0x6A00`–`0x6A06`; a range-overlap check across all 27 recovered
 MFC message-map arrays also found no `WM_COMMAND` entry spanning those IDs.
 Thus a `CCmdTarget`/MFC command-dispatch attempt is consistent with the
 owner's class and the framework map evidence, but no static map handler or

@@ -99,6 +99,7 @@ as confirmed.
 - [Macro file, persistence, and serializer audit](docs/rk-macro-format-and-path-audit.md)
 - [Macro editor and physical-input capture gap audit](docs/rk-macro-capture-path-audit.md)
 - [Audio-reactive capture and output-path audit](docs/rk-audio-reactive-path-audit.md)
+- [Audio UI page-state and capture lifecycle follow-up](docs/rk-audio-ui-control-followup.md)
 - [Lighting profile options to runtime records and UI](docs/rk-lighting-profile-record-path-audit.md)
 - [Keyboard LED brightness UI and unresolved apply path](docs/rk-lighting-brightness-ui-handler-audit.md)
 - [Profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
