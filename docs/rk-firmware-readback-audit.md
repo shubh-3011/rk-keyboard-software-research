@@ -126,7 +126,9 @@ The same live snapshot's `MI_01/COL_03` consumer collection (`000C:0001`,
 three-byte input report) also satisfies the generic consumer descriptor
 alternative in the installed 4.06 selector. Its `258A:0150` identity has no
 direct profile code in the installed catalog; 4.06 classifies it through a
-special wireless/receiver path whose later six-byte match remains unresolved.
+special wireless/receiver path. Its six-byte comparison is now statically
+traced from per-profile `OPT/Psd` bytes to a device-helper response, but this
+live snapshot does not establish a matching profile row or physical model.
 
 **HID capability-array snapshot (2026-10-19):** a second read-only probe,
 [probe_rk_hid_capabilities.ps1](../scripts/probe_rk_hid_capabilities.ps1),

@@ -87,9 +87,13 @@ Neither `models.json` (installed 4.06) nor `models-4.6.json` contains a direct
 profile code `0150`. In 4.06, however, `FUN_004474D0` classifies `258A:0150`
 as a special wireless/receiver ID, and profile `020F` (RK A70) declares that
 same pair as `PID_Wireless`. The special path skips the ordinary direct
-profile-ID loop and gates a later wireless scan. Its downstream six-byte
-comparison is not tied to loaded `Psd` data, so this identifies a receiver
-candidate route in the software, not the keyboard attached to the receiver.
+profile-ID loop and gates a later wireless scan. A focused static trace now
+shows `FUN_00447210` loading each candidate's `OPT/Psd` bytes into row offsets
+`+0x04..+0x09`, while `FUN_00415D20` obtains a six-byte result through
+`FUN_0040E210` and passes it to `FUN_00415900` for comparison. This closes the
+profile-signature source and comparison path in the binary, but does not
+establish a runtime row match or identify the keyboard attached to the
+receiver.
 
 ## What this does and does not establish
 
@@ -99,7 +103,8 @@ useful family-signature match between a live descriptor and a static software
 branch. The package catalog's six `258A:0150` wireless-ID profiles further
 show that the receiver VID/PID is shared among A70 and S104 entries. The
 installed 4.06 build also has a special wireless classification for this pair,
-but its later six-byte profile match remains unresolved.
+and its six-byte profile comparison is statically mapped. No runtime row match
+was observed.
 
 **Not proven:** that the 4.6 selector chose `CDev3632` for this device, that
 the installed 4.06 binary uses the same branch, or that the connected

@@ -102,6 +102,7 @@ as confirmed.
 - [Official RK Web, Hub, model-selected driver, firmware, and QMK/VIA distribution paths](docs/rk-official-driver-distribution-audit.md)
 - [Model profile and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
 - [Static profile-to-family and protocol coverage](docs/rk-profile-family-protocol-coverage.md)
+- [4.06 wireless profile `Psd` load and six-byte comparison dataflow](docs/rk-wireless-profile-psd-static-dataflow-audit.md)
 - [Confidence-ranked profile tuple semantics](docs/rk-profile-tuple-semantics.md)
 - [RKKB keymap tuple translation audit](docs/rk-keymap-translation-audit.md)
 - [Keymap profile-to-UI and serializer path audit](docs/rk-keymap-ui-path-audit.md)

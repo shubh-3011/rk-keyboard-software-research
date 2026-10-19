@@ -59,12 +59,17 @@ the meanings of the display-format and preview-related options are not all
 recovered from code.
 
 The `01B8` mode is distinguished in device discovery. When the selected row's
-`ShowScreen` byte is `2`, the keyboard path asks its device object for six PSD
-bytes and searches a secondary screen HID path. `FUN_0040F030` sends report ID
-`9` / command `0x82`, reads six bytes, and compares them against the profile
-PSD; its log messages call this a screen-device PSD match. This is an active
-feature-report transaction, not passive HID enumeration. It was inspected
-statically only.
+`ShowScreen` byte is `2`, the keyboard path asks its device object for six
+bytes, then searches a secondary screen HID path. The input bytes come from
+`FUN_0040F350`, which calls the active device object's vtable slot `+0x34`;
+for the 4.06 G5 object this resolves to `FUN_004103E0`. `FUN_0040F030` sends
+report ID `9` / command `0x82` to a candidate screen handle, reads six bytes,
+and compares them with that preceding keyboard response. The log calls this a
+screen-device PSD match, but this particular comparison is not shown using
+the keyboard profile's `KB.ini` `Psd` value. It is an active feature-report
+transaction, not passive HID enumeration, and was inspected statically only.
+The separate `FUN_00415D20` wireless/companion classifier does compare a
+device-helper response against six bytes loaded from profile `[OPT] Psd`.
 
 Only `Dev/01FA/KB.ini` contains `GifPID=0x0193`. The available profile-table
 initializer demonstrably loads `ShowScreen`, `Fw`, `DevTy`, and wireless IDs,

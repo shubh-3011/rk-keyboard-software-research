@@ -170,8 +170,11 @@ into 53 `Fw=1` and ten `Fw=2` profiles. The `Fw=2` profile IDs are `01DE`,
 `01D0`, `01CB`, `0215`, `0222`, `020C`, `0210`, `0225`, `01F4`, and `0207`;
 their names and raw fields are in the row-by-row map. Separately, the online
 wireless/companion path contains a conditional path that can construct
-`CDev3632` after descriptor and six-byte checks. The compared bytes' provenance
-is unresolved, so this does not prove a successful model-level `Psd` match.
+`CDev3632` after descriptor and six-byte checks. A focused trace now shows the
+six profile-table bytes are loaded from each candidate profile's `OPT/Psd`
+value and compared with a six-byte response obtained through the device
+helper. This establishes the static signature-to-comparison path, but not a
+successful match for a connected model or a complete runtime transport path.
 Thus the CSV's `static_handler` is not a complete model of the dynamic
 transport path.
 
@@ -200,30 +203,45 @@ special matching behavior, not proof that every receiver is an RK keyboard.
 incoming six bytes against row offsets `+0x04..+0x09` (instructions
 `0x00415995`–`0x004159C9`; the row pointer advances by `0x12` at
 `0x00415A4C`) before its conditional `CDev3632` construction path. In the
-analyzed binary, `FUN_00447210` (VA `0x00447210`) first clears `0x102C` bytes
-at `DAT_006102A0` (callsite `0x0044723F`), then loads VID, PID, `ShowScreen`,
-`Fw`, `DevTy`, `VID_Wireless`, and `PID_Wireless` from `KB.ini` at callsites
-`0x004472FC`, `0x0044736A`, `0x004473A7`, `0x004473E5`, `0x00447422`, and
-`0x00447460`, respectively; it does not load a `Psd` key.
-The static xrefs collected for this table show `FUN_00447210` as its initializer
-and direct writer, while `FUN_004156E0`, `FUN_00415900`, and `FUN_00447591`
-read it. This scan does not exclude writes through aliases or other indirect
-paths. Accordingly, the relationship between the compared row bytes and the
-`Psd` strings in `KB.ini` is unresolved; the available static evidence does not
-show those profile signatures being populated into the compared bytes. The
-full online transition sequence and hardware behavior also remain unresolved.
+analyzed 4.06 binary, `FUN_00447210` (VA `0x00447210`) first clears `0x102C`
+bytes at `DAT_006102A0` (callsite `0x0044723F`), then loads VID, PID,
+`ShowScreen`, `Fw`, `DevTy`, `VID_Wireless`, and `PID_Wireless` from `KB.ini`.
+For each profile it calls `FUN_00447110` at `0x00447477` with the `PID` and
+`EDI` pointing to row offset `+0x04`. That helper reads `[OPT] Psd` using
+`GetPrivateProfileStringW` (IAT `0x0059E3D8`, callsite `0x0044716F`), parses
+up to six hexadecimal bytes through `FUN_0044DC70` (`0x004471A8`), and writes
+them to row offsets `+0x04..+0x09` (`0x0044DD06`). The caller checks for a
+six-byte parse result. This closes the static provenance of the compared row
+bytes to the profile's `Psd` string.
 
-The profile catalog has 63 `Psd` values but only 58 unique normalized
-signatures. These are catalog facts, not proof that the binary loads the
-strings into the comparison table.
+The query-side path is also statically traceable: `FUN_00415D20` initializes
+a six-byte response buffer and calls device helper `FUN_0040E210` with
+arguments `(5, 6, buffer, 6, 2)` (`0x00415E4E`–`0x00415E71`). The helper
+builds a 20-byte packet with leading byte `0x13`, submits it through
+`WriteFile` (IAT `0x0059E468`) in `FUN_0040E0F0`, then reads a 20-byte reply
+through `ReadFile` (IAT `0x0059E46C`) in `FUN_0040DF80`, handling overlapped
+I/O. This traced helper path does not call `HidD_GetFeature` or
+`HidD_SetFeature`. On success, the six-byte result is passed to
+`FUN_00415900` (`0x00415EE4`). The adjacent log string is `GetPSD = %d`. The
+static control flow therefore compares profile `Psd` bytes with a response
+from an active write/read transaction. Static evidence does not establish
+the packet's runtime effect, the semantic meaning of `Psd`, which hardware is
+queried, or whether a connected device matched. The transaction was not run;
+the full online transition sequence and runtime behavior remain unresolved.
+See the address-level
+[wireless `Psd` dataflow audit](rk-wireless-profile-psd-static-dataflow-audit.md)
+for the row layout, bounded reference scan, and profile candidates.
+
+The profile catalog has 63 `Psd` values and 58 unique normalized comparison
+signatures; the 4.06 parser loads those profile values into the comparison
+table.
 Three signatures are shared across variants: `0A 00 00 00 00 06` (F75 wired
 and three-mode), `03 00 00 00 00 6E` (R65 RGB wired and non-wireless), and
-`0A 00 00 00 00 22` (four R98Pro regional/variant profiles). If populated as
-match keys, those values would not uniquely identify every model. The function
-walks rows in configured PID order, but the loader does not establish that
-these catalog signatures are the bytes it compares. The eight S98
-`Psd` values in the catalog are unique, though the table-loading caveat above
-means this does not validate the classifier against a physical keyboard.
+`0A 00 00 00 00 22` (four R98Pro regional/variant profiles). These collisions
+mean the signature does not uniquely identify every model. The function
+walks rows in configured PID order. The eight S98 `Psd` values in this catalog
+are unique within the catalog, but the static trace does not validate the
+classifier against a physical keyboard.
 
 The Ghidra listing gives this initial function-level map. The `FUN_` names
 are auto-generated names, not original RK symbols:
@@ -232,11 +250,14 @@ are auto-generated names, not original RK symbols:
 | --- | --- |
 | `FUN_004164b0` → `FUN_00416570` | Enumerate HID interfaces with SetupAPI, open an interface, collect attributes and report capabilities, then record descriptor metadata. |
 | `FUN_00447090` | Clear and repopulate the main device table by invoking HID enumeration. |
-| `FUN_00447210` | Zero `0x102C` bytes at `DAT_006102A0`, then load model VID/PID, `ShowScreen`, `Fw`, `DevTy`, and wireless IDs from per-model `KB.ini` files. It does not load `Psd` into this table. |
+| `FUN_00447210` | Zero `0x102C` bytes at `DAT_006102A0`, then load model VID/PID, `ShowScreen`, `Fw`, `DevTy`, wireless IDs, and call `FUN_00447110` to populate each row's six-byte `Psd` signature. |
+| `FUN_00447110` | Read `[OPT] Psd` from the per-profile `KB.ini`, parse up to six hexadecimal bytes with `FUN_0044DC70`, and write them to the caller's table row at `+0x04..+0x09`. |
 | `FUN_00447591` | Handle device-change paths, match IDs, and schedule follow-up device detection. |
 | `FUN_004155C0` | Match profile VID/PID and HID usage/report capabilities; route `Fw=0` profiles to RKKB and nonzero-`Fw` profiles to G5. |
 | `FUN_004474D0` | Classify known wireless IDs and profile wireless VID/PID pairs before the online/wireless scan. |
-| `FUN_00415900` | Compare wireless profile VID/PID, nonzero-`Fw`, and row bytes `+0x04..+0x09` before a possible 3632 construction. Their correlation with `KB.ini` `Psd` is unresolved because the table loader does not populate a `Psd` field; indirect writes are not excluded. |
+| `FUN_00415D20` | Ask device helper `FUN_0040E210` for a six-byte `GetPSD` response, then pass a successful response into `FUN_00415900`; the helper performs an active 20-byte `WriteFile`/`ReadFile` exchange, not a HID feature request. |
+| `FUN_0040E210` | Build a 20-byte request beginning with byte `0x13`, submit it through `FUN_0040E0F0`/`WriteFile`, then receive a 20-byte response through `FUN_0040DF80`/`ReadFile` with overlapped completion; the hardware effect is unresolved and this path was not run. |
+| `FUN_00415900` | Compare wireless profile VID/PID, nonzero-`Fw`, and the device-response bytes against each row's profile-loaded `Psd` bytes before conditional 3632 construction. Runtime transition and device identity remain unresolved. |
 | `FUN_0040f700` | G5 feature-report transport, 520-byte reports and 512-byte payload chunks. A read operation first sends a feature report, then calls `HidD_GetFeature`. |
 | `FUN_00412b10` | G5 screen/page transfer path with chunking, acknowledgements, an optional one-byte additive complement, retries, progress, and cancellation. |
 | `FUN_0040d7e0` | Separate 3632 transport with 20-byte packets and 14-byte data chunks plus checksum/retry handling. |
@@ -554,8 +575,9 @@ none was invoked during this audit.
 
 | Routine | Static behavior and evidence | Limits |
 | --- | --- | --- |
-| `FUN_0040f030` | Scans candidate screen-device descriptors, opens matching handles, sends report ID `9` / command `0x82`, reads six bytes, then compares them with the keyboard profile's six-byte `Psd`. Its log says “Found screen dev, read psd now.” | This is a descriptor-matching transaction, not a passive descriptor read. The data's origin and exact selection path remain open. |
-| `FUN_004103e0` | A helper logs `GetPassword failed`, uses command `0x82`, option `1`, and handles a caller-supplied response length in 512-byte chunks; each feature request is sent before response read and command matching. | The caller, exact payload meaning, and reason for the “password” label are not recovered. Keep this separate from screen-profile matching, which uses command `0x82` on report ID `9` to read six `Psd` bytes. |
+| `FUN_0040f030` | Scans candidate screen-device descriptors, opens matching handles, sends report ID `9` / command `0x82`, reads six bytes, then compares them with a six-byte buffer obtained from the keyboard immediately beforehand. Its log says “Found screen dev, read psd now.” | This is a descriptor-matching transaction, not a passive descriptor read. The code does not show this comparison using the profile-table `Psd` string. |
+| `FUN_0040f350` | Zeroes a six-byte buffer, calls the active device object's vtable slot `+0x34` (4.06 G5 target `FUN_004103e0`) to fill it, then passes it to `FUN_0040f030`. | The runtime device family and successful response are unobserved. This keyboard-response-to-screen-device comparison is separate from the wireless `FUN_00415D20`/`FUN_00415900` comparison against profile `[OPT] Psd`. |
+| `FUN_004103e0` | A helper logs `GetPassword failed`, uses command `0x82`, option `1`, and handles a caller-supplied response length in 512-byte chunks; each feature request is sent before response read and command matching. | The caller-visible buffer meaning and reason for the “password” label are not recovered. Its six-byte screen caller supplies keyboard response data to a separate screen-device comparison. |
 | `FUN_0040fd10` | `GetPower` command `0x87`; sends a one-report request for two bytes, validates response command `0x87`, then copies the bytes into separate DWORD outputs. | The meaning and units of the two bytes and the caller are unknown. |
 | instruction-aligned helper at `0x0040FF60` (older overlapping decompiler label `FUN_00410045`) | `GetRealData` command `0x88`; sends a request and copies caller-requested response bytes from chunks of up to 512 bytes. | The caller and returned-data semantics are unresolved. It is not evidence of firmware-memory access. See the [4.06 G5 vtable audit](rk-406-cdevg5-vtable-audit.md). |
 | `FUN_0040fad0` | LED configuration read: G5 command `0x84` requests 128 bytes; 3632 delegates command `0x44`. The G5 path sends a feature report before reading and validates trailing bytes `5A A5`. | This is a read-modify-write step in LED settings apply, not a passive probe. |
@@ -583,7 +605,7 @@ The UI labels and static call paths support this more specific feature map:
 | Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes 24 visualization bands. A separate `Music_Theard` worker builds local records and dispatches slot `+0x40` to RKKB `FUN_00413340`, G5 `FUN_00410670`, or a nested 3632 target `FUN_0040E570`. | The capture-to-worker data edge, UI/settings routes, and G5/3632 payload schemas remain unresolved. These are static code paths; capture and device writes were not run. See the [audio-reactive path audit](rk-audio-reactive-path-audit.md). |
 | RKKB lighting, key color, and Fn | `FUN_00413BF0` has static bit-`0x02` LED-data, bit-`0x04` per-key-color, and bit-`0x01` translation, macro-staging, matrix, and conditional Fn branches, all using `FUN_00413220`. | Command framing, translation bounds, and several prefixes/lengths are recovered. The `04 00` plus `0x780` block is built from macro staging in the observed caller context; its full schema, field meanings, global flag provenance, and UI/profile gates remain open. See the [keymap translation audit](rk-keymap-translation-audit.md) and [settings serializer audit](rk-setting-serializer-audit.md). |
-| Screen and GIFs | G5 screen parameters use command `0x0B`; GIF metadata command `0x0D` serializes flags/index, frame count, and delay into five bytes; command `0x0C` transfers page/frame data in up-to-512-byte subreports with an eight-byte header, optional additive-complement byte, page acknowledgements, retries, and cancellation checks. The UI decodes `screen.gif` frames into PNG cache files; in the hash-pinned 4.06 trace, NewPNG/NewGIF are save-as dialogs, while `FUN_0046D900` calls a cache-list builder that appends indexed source objects to `CScreenDlg+0xF4`. The recovered `0x0477` menu routes row zero through GDI+ bitmap creation and row one through an image picker; both update the local list rooted at `CScreenDlg+0xE4`. The transfer action uses the F4 list; its modal `WM_INITDIALOG` path starts a worker that converts frames and dispatches G5 slots `+0x4C`/`+0x50` to command `0x0C`/`0x0D` writers. | Static list identity and the cache-rebuild-to-list path are proven for the multi-item preparation and transfer branches. The profile/cache trigger and source-file enumeration that initializes F4 remain unresolved; neither E4 menu result is proven to become an F4 frame. The two menu labels remain unresolved. The NewPNG/NewGIF save-as results are not shown to populate F4. The `0x0B` schema, pixel format/layout, delay units, and physical display acceptance are unresolved. This is a static write path; no transfer was executed. See the [screen/GIF payload audit](rk-screen-gif-payload-audit.md), [image-conversion path audit](rk-screen-image-conversion-path-audit.md), and [4.06 UI-to-worker follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md). |
+| Screen and GIFs | G5 screen parameters use command `0x0B`; GIF metadata command `0x0D` serializes flags/index, frame count, and delay into five bytes; command `0x0C` transfers page/frame data in up-to-512-byte subreports with an eight-byte header, optional additive-complement byte, page acknowledgements, retries, and cancellation checks. The UI decodes `screen.gif` frames into PNG cache files; in the hash-pinned 4.06 trace, NewPNG/NewGIF are save-as dialogs, while `FUN_0046D900` calls a cache-list builder that appends indexed source objects to `CScreenDlg+0xF4`. The recovered `0x0477` menu routes row zero through GDI+ bitmap creation and row one through an image picker; both update the local list rooted at `CScreenDlg+0xE4`. Its English labels statically resolve to `tc_screen14` (“New”) and `tc_screen15` (“Import”). The bitmap dimensions load from the profile's `[OPT] siScreen` pair; the 4.06 catalog has 15 such values across four dimension pairs, with S98 entries using `320,172`. The transfer action uses F4; its modal `WM_INITDIALOG` starts a worker that converts frames and dispatches G5 slots `+0x4C`/`+0x50` to command `0x0C`/`0x0D` writers. | Static menu labels, dimension-source path, list identity, and cache-rebuild-to-list path are proven. Runtime dimensions depend on the selected profile and were not observed; neither E4 menu result is proven to become an F4 frame. NewPNG/NewGIF save-as results are not shown to populate F4. The profile/cache trigger and source-file enumeration that initializes F4 remain unresolved. The `0x0B` schema, delay units, and physical display acceptance are unresolved. This is a static write path; no transfer was executed. See the [screen/GIF payload audit](rk-screen-gif-payload-audit.md), [image-conversion path audit](rk-screen-image-conversion-path-audit.md), and [4.06 UI-to-worker follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md). |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
 | Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. UART states 7/11 contain a conditional response-to-file sink, but the file gate, stream setup, and runtime activation are unresolved. See the [updater/readback audit](rk-firmware-readback-audit.md). |
 

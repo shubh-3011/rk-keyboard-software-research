@@ -39,7 +39,9 @@ import button. Other recovered screen-dialog routes are `WM_LBUTTONDOWN` to
 `0x0477` to `0x0046DBF0`, and `WM_TIMER` to `0x0046D570`. A focused static
 follow-up traces the screen child through a two-row menu whose second row posts
 value one to the `CScreenDlg` handler, opening the file picker and updating a
-local screen-editor collection. The menu's localized label remains unknown.
+local screen-editor collection. Its English row labels now resolve through
+`tc_screen14` (“New”) and `tc_screen15` (“Import”); the selected object's
+relation to F4 remains open.
 See the raw
 [`CScreenDlg` map rows](rk-mfc-message-map-entries.csv).
 

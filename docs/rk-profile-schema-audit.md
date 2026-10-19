@@ -163,16 +163,15 @@ criteria.
 
 The analysis recovered a conditional wireless/companion path that can
 construct `CDev3632` after descriptor and six-byte comparison checks on a
-nonzero-`Fw` row. The compared bytes are not proven to come from the profile's
-`Psd`: `FUN_00447210` clears the `0x102C`-byte table at `DAT_006102A0` (callsite
-`0x0044723F`) and loads VID, PID, `ShowScreen`, `Fw`, `DevTy`, and wireless
-IDs, but no `Psd` field; `FUN_00415900` compares incoming bytes with row
-offsets `+0x04..+0x09` (instructions `0x00415995`–`0x004159C9`).
-The collected static xrefs identify `FUN_00447210` as the table initializer
-and direct writer, but do not exclude writes through aliases or other
-indirect paths. Treat `CDev3632` as a possible follow-on path, not as a proven
-model-level `Psd` match or an exclusive one-handler-per-model mapping. The
-meaning and provenance of `Psd`, the full transition sequence, and the
-behavior of each unclassified tuple column remain unresolved. No keyboard
-reports were captured to validate these paths; see the detailed table-path
-caveat in [the native reverse-engineering report](reverse-engineering.md).
+nonzero-`Fw` row. A focused static trace establishes the profile signature
+source: `FUN_00447210` calls `FUN_00447110`, which reads `[OPT] Psd`, parses up
+to six hexadecimal bytes through `FUN_0044DC70`, and stores them at row
+offsets `+0x04..+0x09`. `FUN_00415D20` obtains a six-byte result through
+`FUN_0040E210` and passes it to `FUN_00415900`, which compares it against
+eligible profile rows. This closes the static source-to-comparison path, but
+not the semantic meaning of `Psd`, the full transition sequence, actual
+runtime profile selection, or an exclusive one-handler-per-model mapping.
+The direct feature reads recorded elsewhere used report IDs `05` and `0A`;
+they are not evidence of a response to this specific helper call. The path
+was not validated against a connected keyboard, and unclassified tuple
+columns remain unresolved. See the [native reverse-engineering report](reverse-engineering.md).

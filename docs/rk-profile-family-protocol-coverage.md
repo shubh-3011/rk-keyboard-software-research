@@ -70,10 +70,13 @@ The binary has a separate `CDev3632` implementation and 20-byte transport.
 The recovered wireless classifier can bypass the ordinary direct-profile ID
 loop for recognized receiver IDs and enter a follow-on scan. A later candidate
 constructor requires descriptor checks plus profile-table values including
-nonzero `Fw`, wireless VID/PID, and a six-byte comparison. The table
-initializer loads profile VID, PID, `ShowScreen`, `Fw`, `DevTy`, and wireless
-IDs, but does not load the profile's `Psd` field into that table. The compared
-bytes' source and the complete transition sequence remain unresolved.
+nonzero `Fw`, wireless VID/PID, and a six-byte comparison. A focused static
+trace closes the signature dataflow: `FUN_00447210` calls `FUN_00447110`,
+which reads `[OPT] Psd`, parses up to six hexadecimal bytes, and stores them
+at row offsets `+0x04..+0x09`. `FUN_00415D20` obtains a six-byte result through
+`FUN_0040E210` and passes it to `FUN_00415900` for comparison against eligible
+rows. The meaning of `Psd`, actual runtime row selection, physical-device
+identity, and completion of the conditional transition remain unresolved.
 
 Seven registered rows have nonempty wireless VID/PID fields, all with
 nonzero `Fw`:
@@ -128,13 +131,18 @@ normalized strings. Three values are shared:
 | `03 00 00 00 00 6E` | `014A` RK-R65RGB; `0172` RK-R65RGB Wired Keyboard. |
 | `0A 00 00 00 00 22` | `0215` R98Pro DE; `0222` R98Pro FR; `020C` R98Pro; `0225` R98Pro. |
 
-Even if these bytes were used as match keys, those groups would not identify a
-single profile. More fundamentally, the recovered `CDev3632` candidate table
-loader does not populate `Psd`, so this audit cannot connect these catalog
-strings to the compared bytes. A separate screen-descriptor routine does send
-a feature report before reading six bytes and comparing with the profile's
-`Psd`; that is an active transaction, not passive identification. Neither
-path establishes a safe, universal model-identification query.
+These collisions mean a matching six-byte value would not uniquely identify
+every profile. The recovered wireless path statically loads these catalog
+`Psd` values into comparison rows and compares them with the result of a
+device-helper query. A separate screen-device routine obtains a six-byte
+keyboard response through G5 slot `+0x34`, sends a report to a candidate
+screen handle, and compares that response with the earlier keyboard bytes;
+it is not shown comparing against the profile `Psd` value. Both paths contain
+active device transactions, not passive identification. The wireless query
+uses a 20-byte `WriteFile` request followed by a 20-byte `ReadFile` response;
+the screen path has a separate report transaction. Neither path proves a
+runtime match or establishes a universal model-identification query. Neither
+transaction was executed.
 
 ## Claims this evidence supports
 

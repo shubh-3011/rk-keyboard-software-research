@@ -161,6 +161,16 @@ and a local screen-editor collection update. The list entry's decoded image
 representation and its exact relation to the `+0xE0` index structure and
 `+0xF4` frame list are not established by this path alone.
 
+The two menu rows have a static localization binding. `FUN_00441F20` builds
+`tc_screen%d` keys from the UTF-16 format string at `0x005D4858` and populates
+the localization slots beginning at `0x0062B8CC`; slot `0x0062B900` is
+`tc_screen14`, and `0x0062B904` is `tc_screen15`. `FUN_0046DB00` loads those
+slots for rows zero and one, then `FUN_00433440` copies each localized text
+object into its row at `+8` before `FUN_00433840` copies the row records into
+the `CMenuDlg` object. The English locale XML maps `tc_screen14` to “New” and
+`tc_screen15` to “Import”. These English labels are statically resolved; the
+runtime language and actual display were not observed.
+
 ## `0x0477` value-zero bitmap branch
 
 **Confirmed statically.** The same handler passes `wParam=0` to `0x0046D5B0`;
@@ -170,37 +180,61 @@ its comparison at `0x0046D5EB` branches to the bitmap-construction path at
 `GdipCreateBitmapFromScan0` through thunk `0x00589134` at `0x0046D7A6`.
 The pushed arguments are, in reverse order, an output pointer, null scan
 buffer, format value `0x0026200A`, zero stride, and the two globals. The
-globals reside in the zero-initialized `.data` tail; their runtime values are
-not established here. In the recovered stack order, `0x0061182C` is the first
-dimension argument and `0x00611830` is the second.
+Windows 10 SDK header `gdipluspixelformats.h` defines this exact value as
+`PixelFormat32bppARGB` (`10 | (32 << 8) | PixelFormatAlpha | PixelFormatGDI |
+PixelFormatCanonical`). The globals reside in the zero-initialized `.data`
+tail; their runtime values are not established here. Against the SDK's
+`GdipCreateBitmapFromScan0` signature, `0x0061182C` supplies width and
+`0x00611830` supplies height.
 
 The helper wraps the returned image pointer in a 16-byte heap record with
 vtable pointer `0x005A4E84`. It obtains a GDI+ graphics context through
 `GdipGetImageGraphicsContext` (`0x0058913A`), creates a solid-fill brush with
 argument `0xFF000000` through `GdipCreateSolidFill` (`0x0058911C`), and calls
-`GdipFillRectangleI` (`0x005891CA`). It then deletes the graphics context and
-brush and frees the temporary graphics wrapper. On the successful allocation
-branch, the image wrapper is appended to
-or inserted into the same local list rooted at `CScreenDlg+0xE4` used by the
-value-one selected-path object. The helper adjusts the selection fields,
-calls cache/list rebuild helper `0x0046D900`, and invalidates the two child
-windows as described above.
+`GdipFillRectangleI` (`0x005891CA`). The SDK declaration identifies the fill
+argument as ARGB, so the constant encodes opaque black. The FillRectangleI
+call's final height argument is loaded from a stack-local slot whose setup is
+not recovered in this branch; this does not prove that the resulting bitmap
+is uniformly black. The helper then deletes the graphics context and brush
+and frees the temporary graphics wrapper. On the successful allocation
+branch, the image wrapper is appended to or inserted into the same local list
+rooted at `CScreenDlg+0xE4` used by the value-one selected-path object. The
+helper adjusts the selection fields, calls cache/list rebuild helper
+`0x0046D900`, and invalidates the two child windows as described above.
 
 This establishes that menu row zero constructs a GDI+ bitmap object and
 updates the local screen-editor list, while row one opens an image picker and
-adds a selected-path object to that list. The numeric pixel-format value,
-fill geometry, runtime dimensions, and complete bitmap-to-frame conversion
-are not resolved by this callsite trace. `0x0046D900` rebuilds the separate
+adds a selected-path object to that list. The bitmap format is proven as
+32-bit ARGB. Its runtime dimensions, complete fill geometry, and complete
+bitmap-to-frame conversion remain unresolved. `0x0046D900` rebuilds the separate
 `+0xF4` frame list from indexed source objects, but this does not prove that
 the newly created bitmap or imported path object becomes a frame sent by the
-transfer worker. The behavior is consistent with localized labels such as
-“New” and “Import,” but no recovered text binding proves either label.
+transfer worker. The English row labels are statically bound as “New” and
+“Import” by the locale-key flow described above.
+
+The bitmap dimensions are loaded from profile configuration, rather than
+derived from a window or key layout. In `FUN_004513B0`, the program formats a
+per-profile `Dev\\%04X\\KB.ini` path, reads `[OPT] ShowScreen`, then reads the
+`[OPT] siScreen` value when `ShowScreen` is nonzero. Parser `0x0044DBA0` must
+return exactly two values before the function stores token zero to
+`0x0061182C` and token one to `0x00611830`. The bitmap constructor passes
+those globals as width and height. The initialized image has both globals
+zero in `.data`'s virtual tail, and this loader has no explicit reset on the
+skipped or invalid-value path; after a previous successful profile load, a
+later failed load could therefore leave the previous pair in place.
+
+The derived 4.06 catalog contains `siScreen` strings for 15 of 188 registered
+profiles: ten are `320,172`, three are `240,135`, one is `128,128`, and one is
+`240,240`. Its S98-labeled entries with this setting use `320,172`. These are
+profile-file values carried into `models.json`, not dimensions observed from
+the connected keyboard at runtime. Profiles without the key, invalid strings,
+or a skipped `ShowScreen` load do not establish a usable size.
 
 **Confirmed statically.** The `CScreenDlg` child-window path constructs a
 two-row menu, and selecting its second row posts `0x0477` with `wParam=1` to
 the screen dialog. That reaches the value-one open-file branch above. The
-visible label is not recovered, so the code does not prove that its text is
-the locale key `tc_screen15` (“Import”). No image decoder, geometry validation,
+second row is statically bound to locale key `tc_screen15` (“Import”) in the
+English locale. No image decoder, geometry validation,
 or direct selected-path-to-frame-pixel conversion is shown in the message
 handler. The separate cache builder's indexed source objects and F4 nodes
 remain a distinct statically recovered path; runtime behavior and keyboard
@@ -213,7 +247,7 @@ contain literal `PostMessageW` calls that push message `0x0477`:
 
 | Sender | Selected record and message parameters | Remaining edge |
 | --- | --- | --- |
-| `0x00433960` (call at `0x00433983`) | If `this+0x14D4 != -1`, uses that index with a `0x58`-byte stride from `this+0x88`; for the object created by the screen menu factory, this is row offset `+4`, copied from the row's second DWORD, and becomes `wParam`. `lParam` comes from `this+0x14D8`; target HWND is `this+0x74`. | Its `WM_LBUTTONUP` map entry and screen context-menu caller/factory are statically linked below. The menu labels remain unknown. |
+| `0x00433960` (call at `0x00433983`) | If `this+0x14D4 != -1`, uses that index with a `0x58`-byte stride from `this+0x88`; for the object created by the screen menu factory, this is row offset `+4`, copied from the row's second DWORD, and becomes `wParam`. `lParam` comes from `this+0x14D8`; target HWND is `this+0x74`. | Its `WM_LBUTTONUP` map entry and screen context-menu caller/factory are statically linked below. Row labels resolve to English `tc_screen14` (“New”) and `tc_screen15` (“Import”). |
 | `0x004345C0` (call at `0x004345E6`) | If `this+0x1324 != -1`, uses that index with a `0x58`-byte stride from `this+0x1F8`; the DWORD at that selected address becomes `wParam`. `lParam` comes from `this+0x1328`; target HWND is `this+0x1E8`. | No static reference ties this second sender object to the screen context menu. |
 
 Both functions pass their stored parent-window handle, selected row field, and
@@ -246,9 +280,9 @@ starting at `+0x84`, stores the parent HWND at `+0x74`, and stores the count at
 and posts it to the stored parent HWND. This closes the static route from the
 screen child, through the menu, to `CScreenDlg` message `0x0477`: row zero
 posts `wParam=0`, and row one posts `wParam=1`. The handler's value-one branch
-opens the image picker. The two menu labels and exact text shown to the user
-remain unresolved; the other sender at `0x004345C0` has not been tied to this
-menu.
+opens the image picker. The English labels resolve to `tc_screen14` (“New”)
+and `tc_screen15` (“Import”); the other sender at `0x004345C0` has not been
+tied to this menu.
 
 ## Boundary to the established transfer worker and writers
 
@@ -301,10 +335,10 @@ the modal's frame array. NewPNG/NewGIF are save-as routes. Separately, the
 open-file-dialog branch that inserts the selected path object into the local
 list rooted at `+0xE4` and calls the cache/list rebuild helper. The visible
 sender route is closed through the screen's two-row menu: its second row posts
-value one and opens the picker. The visible labels and relation between the
-imported path object and the F4 transfer-frame collection remain unresolved.
-A separate cache-rebuild helper also constructs F4 nodes from indexed source
-objects.
+value one and opens the picker. The English row labels resolve to “New” and
+“Import”; the relation between the imported path object and the F4
+transfer-frame collection remains unresolved. A separate cache-rebuild helper
+also constructs F4 nodes from indexed source objects.
 The transfer action
 gates on the device object's `+0x28` method and a nonempty frame list. Its
 `WM_INITDIALOG` route starts the frame worker, whose converted frame buffers

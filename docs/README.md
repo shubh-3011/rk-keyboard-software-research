@@ -73,6 +73,7 @@
 - [Installed manifest verifier](../scripts/verify_installed_manifest.py)
 - [Model profile and `KB.ini` audit](rk-profile-schema-audit.md)
 - [Profile-to-family and protocol coverage](rk-profile-family-protocol-coverage.md)
+- [4.06 wireless profile `Psd` load and six-byte comparison dataflow](rk-wireless-profile-psd-static-dataflow-audit.md)
 - [Keymap tuple translation and packet sizes](rk-keymap-translation-audit.md)
 - [Keymap profile parser, UI events, and serializer bridge](rk-keymap-ui-path-audit.md)
 - [Macro file format, storage, and serializer paths](rk-macro-format-and-path-audit.md)

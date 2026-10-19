@@ -554,10 +554,14 @@ model or runtime map.
   selected path object. Both update the local list at `+0xE4`, rebuild, and
   invalidate child views. A follow-up closes the `CScreenDlg` sender path: the
   screen's two-row menu stores values `0` and `1`, and its
-  `WM_MOUSEMOVE`/`WM_LBUTTONUP` handlers select and submit a row. The menu
-  labels and either object's relation to the F4
-  transfer-frame list remain unresolved; so do the profile cache trigger and
-  source-file enumeration. The transfer action copies F4
+  `WM_MOUSEMOVE`/`WM_LBUTTONUP` handlers select and submit a row. The English
+  labels resolve through locale keys `tc_screen14` (“New”) and
+  `tc_screen15` (“Import”). The value-zero bitmap dimensions load from the
+  profile's `[OPT] siScreen` pair; the 4.06 catalog contains 15 such values
+  across four dimension pairs, with S98 entries using `320,172`. Runtime
+  dimensions were not observed. Neither E4 result is proven to become an F4
+  transfer-frame item; the profile cache trigger and source-file enumeration
+  remain unresolved. The transfer action copies F4
   items to a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
   and `+0x50` calls resolve to G5 page and GIF writers when the active object
   uses the recovered G5 vtable. For the separate hash-pinned 4.6 image/GIF
@@ -658,7 +662,12 @@ model or runtime map.
   `Fw=3` M20 row is `258A:0208`; no runtime profile selection is established.
   The live consumer collection also satisfies the generic consumer descriptor
   branch in the installed 4.06 selector, but PID `0150` has no direct profile
-  row and its special wireless route's six-byte match is unresolved. See
+  row. The special wireless route statically loads profile `OPT/Psd` bytes and
+  compares them with a six-byte device-helper response. The query helper
+  submits a 20-byte packet with `WriteFile` and reads a 20-byte response with
+  `ReadFile`; this active transaction was not executed, so the attached
+  device's runtime profile match remains unresolved. See
+  `docs/rk-wireless-profile-psd-static-dataflow-audit.md` and
   `docs/rk-live-hid-selector-crosscheck-2026-10-19.md`. Three direct
   `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
   descriptor-declared 1032-byte feature read failed twice with Win32 error 31.
