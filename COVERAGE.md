@@ -134,6 +134,17 @@ For current blockers and the recommended reverse-engineering order, see the
   acceptance evidence. The [report](docs/rk-firmware-pe-family-static-audit-2026-10-20.md)
   and its [reproduction scanner](scripts/audit_rk_firmware_pe_families.py)
   distinguish exact findings from linear-sweep candidates.
+- A follow-up selected one hash-pinned representative from each of six
+  non-S98 native PE families and inventoried eight managed CLR images. Its
+  static scans retain 27,082 linear import-call candidates, 1,810 import
+  references reached by a bounded entrypoint walk, and 972 unresolved
+  indirect transfers. Fourteen reached calls use generic file/device-I/O
+  APIs; none is a reached HID, SetupAPI, WinUSB, or serial-specific call. These
+  are bounds on the selected artifacts and static walk, not proof of runtime
+  behavior or absence from other package components; CLR IL was not
+  decompiled. See the [call-path report](docs/rk-firmware-pe-call-path-static-audit-2026-10-20.md),
+  [six evidence ledgers](docs/rk-firmware-pe-entrypoint-import-reachability-2026-10-20.csv),
+  and [hash-pinned scanner](scripts/audit_rk_firmware_pe_call_paths.py).
 
 ## Product-specific software package snapshots
 

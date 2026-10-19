@@ -1,0 +1,973 @@
+package_sha256,filename,instruction_va,instruction_rva,section,instruction_bytes,disassembly,flow
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054B59D,0x0014B59D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054B653,0x0014B653,.text,ff 25 78 5a 59 00,jmp dword ptr [0x595a78],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00561978,0x00161978,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056197E,0x0016197E,.text,ff 55 f8,call dword ptr [ebp - 8],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0055C43D,0x0015C43D,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0055C443,0x0015C443,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0058440D,0x0018440D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00584421,0x00184421,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0058443C,0x0018443C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00560BA7,0x00160BA7,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00560BAD,0x00160BAD,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005619B9,0x001619B9,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005619BF,0x001619BF,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00551C9D,0x00151C9D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00584453,0x00184453,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00560CC2,0x00160CC2,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00560CC8,0x00160CC8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00569FCF,0x00169FCF,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00569FD5,0x00169FD5,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00551BAC,0x00151BAC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00569F4E,0x00169F4E,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00569F54,0x00169F54,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00551BE6,0x00151BE6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564E77,0x00164E77,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564E7D,0x00164E7D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427228,0x00027228,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004BD2B8,0x000BD2B8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004BD2DB,0x000BD2DB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00551C5D,0x00151C5D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00569F82,0x00169F82,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00569F88,0x00169F88,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564ED0,0x00164ED0,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564ED6,0x00164ED6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427191,0x00027191,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054FCE4,0x0014FCE4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041A28D,0x0001A28D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00426D51,0x00026D51,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004022F4,0x000022F4,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056519B,0x0016519B,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005651A1,0x001651A1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056A02C,0x0016A02C,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056A032,0x0016A032,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564F2C,0x00164F2C,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564F32,0x00164F32,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004067E2,0x000067E2,.text,ff 24 85 f8 67 40 00,jmp dword ptr [eax*4 + 0x4067f8],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416890,0x00016890,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042CE65,0x0002CE65,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042CE7C,0x0002CE7C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00406ADC,0x00006ADC,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004022C0,0x000022C0,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004022C7,0x000022C7,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0055255C,0x0015255C,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00552562,0x00152562,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042707B,0x0002707B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042702A,0x0002702A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041C84B,0x0001C84B,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0040906C,0x0000906C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0040204F,0x0000204F,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004135DF,0x000135DF,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004131E2,0x000131E2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00406B00,0x00006B00,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005614C2,0x001614C2,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005614C8,0x001614C8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056A38D,0x0016A38D,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056A393,0x0016A393,.text,ff 55 dc,call dword ptr [ebp - 0x24],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00402321,0x00002321,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0040232E,0x0000232E,.text,ff 12,call dword ptr [edx],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0040236B,0x0000236B,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00406DA6,0x00006DA6,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042B290,0x0002B290,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00409043,0x00009043,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00413546,0x00013546,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004134B7,0x000134B7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00413268,0x00013268,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056A3BB,0x0016A3BB,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056A3C1,0x0016A3C1,.text,ff 55 dc,call dword ptr [ebp - 0x24],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004023C0,0x000023C0,.text,ff 50 08,call dword ptr [eax + 8],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00463C7C,0x00063C7C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00463C8F,0x00063C8F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00463CC4,0x00063CC4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00408300,0x00008300,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004132B3,0x000132B3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004994C4,0x000994C4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00413226,0x00013226,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00428103,0x00028103,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00428134,0x00028134,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004783EA,0x000783EA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004026A1,0x000026A1,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054F8D8,0x0014F8D8,.text,ff 24 95 e0 f8 54 00,jmp dword ptr [edx*4 + 0x54f8e0],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054F825,0x0014F825,.text,ff 24 95 34 f8 54 00,jmp dword ptr [edx*4 + 0x54f834],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427EE1,0x00027EE1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427CF8,0x00027CF8,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054F0B8,0x0014F0B8,.text,ff 24 95 c0 f0 54 00,jmp dword ptr [edx*4 + 0x54f0c0],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054F005,0x0014F005,.text,ff 24 95 14 f0 54 00,jmp dword ptr [edx*4 + 0x54f014],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00478445,0x00078445,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042660E,0x0002660E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564FA0,0x00164FA0,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564FA6,0x00164FA6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0040853D,0x0000853D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427FA7,0x00027FA7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427F55,0x00027F55,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427D28,0x00027D28,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C51FD,0x000C51FD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00440344,0x00040344,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00478785,0x00078785,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004787B4,0x000787B4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00478580,0x00078580,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004785AE,0x000785AE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004785D8,0x000785D8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00478628,0x00078628,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00478539,0x00078539,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00440BA7,0x00040BA7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00440BC9,0x00040BC9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427C66,0x00027C66,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427C8A,0x00027C8A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427C16,0x00027C16,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00408566,0x00008566,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427D4B,0x00027D4B,.text,ff 56 54,call dword ptr [esi + 0x54],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427D6A,0x00027D6A,.text,ff 56 54,call dword ptr [esi + 0x54],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004279E8,0x000279E8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427A01,0x00027A01,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427A1E,0x00027A1E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C5235,0x000C5235,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C525C,0x000C525C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C528B,0x000C528B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041F31F,0x0001F31F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0044307D,0x0004307D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0043DB2A,0x0003DB2A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00424AEF,0x00024AEF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041FB43,0x0001FB43,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004086EA,0x000086EA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00406E2A,0x00006E2A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00565013,0x00165013,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00565019,0x00165019,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054F7F5,0x0014F7F5,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054EFD5,0x0014EFD5,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C4FBE,0x000C4FBE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C283A,0x000C283A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004403F5,0x000403F5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00447DC9,0x00047DC9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B8721,0x000B8721,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B6D62,0x000B6D62,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B6DE7,0x000B6DE7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0043A6F2,0x0003A6F2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004190AA,0x000190AA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C5061,0x000C5061,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C4FE8,0x000C4FE8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004256B2,0x000256B2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C52FB,0x000C52FB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041F37F,0x0001F37F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00417EFD,0x00017EFD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00424D47,0x00024D47,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004265AB,0x000265AB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B654E,0x000B654E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0048647F,0x0008647F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B729C,0x000B729C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041A478,0x0001A478,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041F95D,0x0001F95D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042685C,0x0002685C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00426874,0x00026874,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0046BD51,0x0006BD51,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0046BD6D,0x0006BD6D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00479E9F,0x00079E9F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004844AB,0x000844AB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B9042,0x000B9042,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B905D,0x000B905D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B907D,0x000B907D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B9095,0x000B9095,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0040753B,0x0000753B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0046BDC8,0x0006BDC8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B2958,0x000B2958,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00481704,0x00081704,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00481776,0x00081776,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00481790,0x00081790,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00481835,0x00081835,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0047BA17,0x0007BA17,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0047BA42,0x0007BA42,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00407572,0x00007572,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00407589,0x00007589,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00425739,0x00025739,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B32D8,0x000B32D8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004BB925,0x000BB925,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004BB93A,0x000BB93A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004555EC,0x000555EC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455607,0x00055607,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00482826,0x00082826,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00425659,0x00025659,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004252F4,0x000252F4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004569E6,0x000569E6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455A50,0x00055A50,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455B00,0x00055B00,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0045565E,0x0005565E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455699,0x00055699,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004556C0,0x000556C0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004556DF,0x000556DF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455709,0x00055709,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455749,0x00055749,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004557C3,0x000557C3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004077E9,0x000077E9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0043F4B5,0x0003F4B5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00456AF4,0x00056AF4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00456A3A,0x00056A3A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00456A50,0x00056A50,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0045587E,0x0005587E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0045589C,0x0005589C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004B8648,0x000B8648,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00543AD1,0x00143AD1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004CD7C9,0x000CD7C9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0044ACFD,0x0004ACFD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00424CAA,0x00024CAA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00482A77,0x00082A77,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0044AD2F,0x0004AD2F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004250D3,0x000250D3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0049F178,0x0009F178,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00481696,0x00081696,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042427A,0x0002427A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004CB69A,0x000CB69A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004CB6B7,0x000CB6B7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004CB6CC,0x000CB6CC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427650,0x00027650,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004276C3,0x000276C3,.text,ff 56 54,call dword ptr [esi + 0x54],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416C87,0x00016C87,.text,ff 56 0c,call dword ptr [esi + 0xc],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00543F8E,0x00143F8E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00424A87,0x00024A87,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004CB740,0x000CB740,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0046CE0A,0x0006CE0A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00427708,0x00027708,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054BB01,0x0014BB01,.text,ff 55 14,call dword ptr [ebp + 0x14],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054B985,0x0014B985,.text,ff 55 14,call dword ptr [ebp + 0x14],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416CB2,0x00016CB2,.text,ff 56 0c,call dword ptr [esi + 0xc],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004BEF06,0x000BEF06,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B82D,0x0001B82D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00543FDB,0x00143FDB,.text,ff 56 28,call dword ptr [esi + 0x28],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00544010,0x00144010,.text,ff 56 0c,call dword ptr [esi + 0xc],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00544034,0x00144034,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00544078,0x00144078,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041F148,0x0001F148,.text,ff 56 5c,call dword ptr [esi + 0x5c],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0046F910,0x0006F910,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0046F928,0x0006F928,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004210AA,0x000210AA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B85E,0x0001B85E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B95C,0x0001B95C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B980,0x0001B980,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00544156,0x00144156,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054413C,0x0014413C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005440DB,0x001440DB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E5DE6,0x000E5DE6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E5DFD,0x000E5DFD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004256FD,0x000256FD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00494500,0x00094500,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00494517,0x00094517,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0049453E,0x0009453E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004BF6B0,0x000BF6B0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004210FC,0x000210FC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B8F1,0x0001B8F1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041D5F0,0x0001D5F0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041D60A,0x0001D60A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B671,0x0001B671,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416E87,0x00016E87,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004255DE,0x000255DE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C06BC,0x000C06BC,.text,ff 24 85 d0 08 4c 00,jmp dword ptr [eax*4 + 0x4c08d0],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054B9EB,0x0014B9EB,.text,ff 55 14,call dword ptr [ebp + 0x14],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C038C,0x000C038C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C02E0,0x000C02E0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00421138,0x00021138,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004211D7,0x000211D7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B7B2,0x0001B7B2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416EAD,0x00016EAD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E5ED5,0x000E5ED5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00421221,0x00021221,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00421272,0x00021272,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041FECA,0x0001FECA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041B90F,0x0001B90F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416FAC,0x00016FAC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416FC7,0x00016FC7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00416FE3,0x00016FE3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E60F7,0x000E60F7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E613E,0x000E613E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E6156,0x000E6156,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E616D,0x000E616D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E6184,0x000E6184,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E5FDA,0x000E5FDA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C075B,0x000C075B,.text,ff 24 85 34 09 4c 00,jmp dword ptr [eax*4 + 0x4c0934],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041E07A,0x0001E07A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D8E8B,0x000D8E8B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D8EA6,0x000D8EA6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D7920,0x000D7920,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004295C6,0x000295C6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00421336,0x00021336,.text,ff 24 85 a4 18 42 00,jmp dword ptr [eax*4 + 0x4218a4],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00421853,0x00021853,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455C0E,0x00055C0E,.text,ff 56 14,call dword ptr [esi + 0x14],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455C38,0x00055C38,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455C82,0x00055C82,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E65E5,0x000E65E5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E65FD,0x000E65FD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E6618,0x000E6618,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E6632,0x000E6632,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E632F,0x000E632F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00421383,0x00021383,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00425108,0x00025108,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004252B3,0x000252B3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0055360D,0x0015360D,.text,ff 24 85 99 36 55 00,jmp dword ptr [eax*4 + 0x553699],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455CBD,0x00055CBD,.text,ff 56 10,call dword ptr [esi + 0x10],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455D11,0x00055D11,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455D48,0x00055D48,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004C0B43,0x000C0B43,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0043B153,0x0003B153,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041DB8C,0x0001DB8C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041DBD6,0x0001DBD6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00425275,0x00025275,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429152,0x00029152,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004293A9,0x000293A9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041BB06,0x0001BB06,.text,ff 24 85 3d bc 41 00,jmp dword ptr [eax*4 + 0x41bc3d],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0055078B,0x0015078B,.text,ff 24 9d 96 19 55 00,jmp dword ptr [ebx*4 + 0x551996],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455DA0,0x00055DA0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E63E0,0x000E63E0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E6402,0x000E6402,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E643C,0x000E643C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E645E,0x000E645E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004E63CA,0x000E63CA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042305A,0x0002305A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D7B40,0x000D7B40,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D7B64,0x000D7B64,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D7B8B,0x000D7B8B,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004291B9,0x000291B9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429340,0x00029340,.text,ff 56 38,call dword ptr [esi + 0x38],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429503,0x00029503,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005534E5,0x001534E5,.text,ff 24 85 7d 35 55 00,jmp dword ptr [eax*4 + 0x55357d],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455DE4,0x00055DE4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041FC79,0x0001FC79,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00547C64,0x00147C64,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004489C1,0x000489C1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004489F7,0x000489F7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004D7C69,0x000D7C69,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429232,0x00029232,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004295FB,0x000295FB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429610,0x00029610,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0042907E,0x0002907E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00455E8B,0x00055E8B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054B39A,0x0014B39A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00547CB1,0x00147CB1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448A2C,0x00048A2C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448A47,0x00048A47,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448A72,0x00048A72,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0043677F,0x0003677F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004367BB,0x000367BB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00424746,0x00024746,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004247A4,0x000247A4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004483DD,0x000483DD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004483F5,0x000483F5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448418,0x00048418,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429421,0x00029421,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0054B3F2,0x0014B3F2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00546E2E,0x00146E2E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00446C03,0x00046C03,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00429479,0x00029479,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0041845C,0x0001845C,.text,ff 24 85 da 84 41 00,jmp dword ptr [eax*4 + 0x4184da],entrypoint-rooted indirect jump target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448524,0x00048524,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0044856C,0x0004856C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448F3C,0x00048F3C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004484FF,0x000484FF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00446C1E,0x00046C1E,.text,ff 56 28,call dword ptr [esi + 0x28],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448FEE,0x00048FEE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00438FF1,0x00038FF1,.text,ff 55 e8,call dword ptr [ebp - 0x18],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00449028,0x00049028,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0044903D,0x0004903D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00449056,0x00049056,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00449089,0x00049089,.text,ff 56 1c,call dword ptr [esi + 0x1c],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00448FA7,0x00048FA7,.text,ff 56 28,call dword ptr [esi + 0x28],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00449110,0x00049110,.text,ff 56 1c,call dword ptr [esi + 0x1c],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00449196,0x00049196,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x004491A8,0x000491A8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056606C,0x0016606C,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00566072,0x00166072,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00566106,0x00166106,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0056610C,0x0016610C,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005661BE,0x001661BE,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005661C4,0x001661C4,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x0043D0BE,0x0003D0BE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005618BE,0x001618BE,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x005618C4,0x001618C4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564D5B,0x00164D5B,.text,ff 15 78 5a 59 00,call dword ptr [0x595a78],entrypoint-rooted indirect call target unresolved
+55ffc5d825784af480820cdfac131698fc55056a9770ddb0ebb693003a49d2f3,20260701134047_3582.exe,0x00564D61,0x00164D61,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528EC1,0x00128EC1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528ECE,0x00128ECE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528EDB,0x00128EDB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528EE8,0x00128EE8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528F53,0x00128F53,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528FBF,0x00128FBF,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528FF2,0x00128FF2,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x005289A3,0x001289A3,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525D28,0x00125D28,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525DE5,0x00125DE5,.text,ff 15 58 bd 57 00,call dword ptr [0x57bd58],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525E40,0x00125E40,.text,ff 15 d0 31 5e 00,call dword ptr [0x5e31d0],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x005289E7,0x001289E7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x005289FE,0x001289FE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528A00,0x00128A00,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528A62,0x00128A62,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528A79,0x00128A79,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528A7B,0x00128A7B,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528BBF,0x00128BBF,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528BCF,0x00128BCF,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525D56,0x00125D56,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528B53,0x00128B53,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528A3C,0x00128A3C,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528AB7,0x00128AB7,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B869,0x0012B869,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B876,0x0012B876,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B883,0x0012B883,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B890,0x0012B890,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B89D,0x0012B89D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B8B9,0x0012B8B9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B8C9,0x0012B8C9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B8DF,0x0012B8DF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0053DFB7,0x0013DFB7,.text,ff 90 90 00 00 00,call dword ptr [eax + 0x90],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0053DFC5,0x0013DFC5,.text,ff 50 50,call dword ptr [eax + 0x50],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0053DFD6,0x0013DFD6,.text,ff 50 60,call dword ptr [eax + 0x60],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0053DFDD,0x0013DFDD,.text,ff 50 68,call dword ptr [eax + 0x68],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525EDC,0x00125EDC,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522548,0x00122548,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535E1C,0x00135E1C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535E39,0x00135E39,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535E4E,0x00135E4E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535E63,0x00135E63,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535E7B,0x00135E7B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535EB9,0x00135EB9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535ECC,0x00135ECC,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x005293F0,0x001293F0,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052941A,0x0012941A,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x005206FF,0x001206FF,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525DB8,0x00125DB8,.text,ff d1,call ecx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00525D94,0x00125D94,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00460C80,0x00060C80,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00460C88,0x00060C88,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0053DFE6,0x0013DFE6,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528C77,0x00128C77,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00528CA6,0x00128CA6,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535EF5,0x00135EF5,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535F15,0x00135F15,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00535F36,0x00135F36,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052A022,0x0012A022,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522C43,0x00122C43,.text,ff 24 95 70 2d 52 00,jmp dword ptr [edx*4 + 0x522d70],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522ABC,0x00122ABC,.text,ff 24 95 d4 2b 52 00,jmp dword ptr [edx*4 + 0x522bd4],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00441B04,0x00041B04,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00443219,0x00043219,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0044322B,0x0004322B,.text,ff 90 44 01 00 00,call dword ptr [eax + 0x144],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00443258,0x00043258,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00443265,0x00043265,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522C69,0x00122C69,.text,ff 24 85 74 2c 52 00,jmp dword ptr [eax*4 + 0x522c74],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522C4E,0x00122C4E,.text,ff 24 8d 20 2d 52 00,jmp dword ptr [ecx*4 + 0x522d20],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522AD5,0x00122AD5,.text,ff 24 85 e8 2a 52 00,jmp dword ptr [eax*4 + 0x522ae8],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522AE4,0x00122AE4,.text,ff 24 8d 68 2b 52 00,jmp dword ptr [ecx*4 + 0x522b68],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004415B3,0x000415B3,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0043125A,0x0003125A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0043126C,0x0003126C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0043127E,0x0003127E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00431290,0x00031290,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00432B1B,0x00032B1B,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522C70,0x00122C70,.text,ff 24 8d 70 2d 52 00,jmp dword ptr [ecx*4 + 0x522d70],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00522ADC,0x00122ADC,.text,ff 24 8d e4 2b 52 00,jmp dword ptr [ecx*4 + 0x522be4],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00441492,0x00041492,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004414C1,0x000414C1,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004312A8,0x000312A8,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401200,0x00001200,.text,ff 24 8d 14 12 40 00,jmp dword ptr [ecx*4 + 0x401214],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401569,0x00001569,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x005297B0,0x001297B0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052980B,0x0012980B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00402EBE,0x00002EBE,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00402ED0,0x00002ED0,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004129CA,0x000129CA,.text,ff d2,call edx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0040389F,0x0000389F,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004038B1,0x000038B1,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00402FCD,0x00002FCD,.text,ff d2,call edx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00403FC6,0x00003FC6,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00402F4F,0x00002F4F,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00402F58,0x00002F58,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00403068,0x00003068,.text,ff d2,call edx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00402FF8,0x00002FF8,.text,ff d2,call edx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052ADA3,0x0012ADA3,.text,ff 24 95 d0 ae 52 00,jmp dword ptr [edx*4 + 0x52aed0],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052AC1C,0x0012AC1C,.text,ff 24 95 34 ad 52 00,jmp dword ptr [edx*4 + 0x52ad34],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401DB8,0x00001DB8,.text,ff d2,call edx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401DC7,0x00001DC7,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401E0A,0x00001E0A,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052ADC9,0x0012ADC9,.text,ff 24 85 d4 ad 52 00,jmp dword ptr [eax*4 + 0x52add4],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052ADAE,0x0012ADAE,.text,ff 24 8d 80 ae 52 00,jmp dword ptr [ecx*4 + 0x52ae80],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052AC35,0x0012AC35,.text,ff 24 85 48 ac 52 00,jmp dword ptr [eax*4 + 0x52ac48],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052AC44,0x0012AC44,.text,ff 24 8d c8 ac 52 00,jmp dword ptr [ecx*4 + 0x52acc8],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0042575E,0x0002575E,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052ADD0,0x0012ADD0,.text,ff 24 8d d0 ae 52 00,jmp dword ptr [ecx*4 + 0x52aed0],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052AC3C,0x0012AC3C,.text,ff 24 8d 44 ad 52 00,jmp dword ptr [ecx*4 + 0x52ad44],entrypoint-rooted indirect jump target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401E42,0x00001E42,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00520C22,0x00120C22,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004032A8,0x000032A8,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00403235,0x00003235,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00401161,0x00001161,.text,ff d2,call edx,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x004340A2,0x000340A2,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x00520CD8,0x00120CD8,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0043DA5A,0x0003DA5A,.text,ff 56 14,call dword ptr [esi + 0x14],entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B900,0x0012B900,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B90D,0x0012B90D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B91A,0x0012B91A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B927,0x0012B927,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B934,0x0012B934,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B950,0x0012B950,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B960,0x0012B960,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+1cdf9a58f7005f15f8af5b2e0dd405f905e531f1463c9c41362ba29f3feef0d8,20260701134023_7164.exe,0x0052B976,0x0012B976,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005347BB,0x001347BB,.text,ff 15 10 5f 58 00,call dword ptr [0x585f10],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00534817,0x00134817,.text,ff 15 e8 47 5c 00,call dword ptr [0x5c47e8],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00534924,0x00134924,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00534935,0x00134935,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053495E,0x0013495E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053496C,0x0013496C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053497A,0x0013497A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00534985,0x00134985,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00534894,0x00134894,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00549E65,0x00149E65,.text,ff 90 ac 00 00 00,call dword ptr [eax + 0xac],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00549E73,0x00149E73,.text,ff 50 50,call dword ptr [eax + 0x50],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00549E83,0x00149E83,.text,ff 50 60,call dword ptr [eax + 0x60],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00549E8A,0x00149E8A,.text,ff 50 68,call dword ptr [eax + 0x68],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00543FF0,0x00143FF0,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0054405D,0x0014405D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544071,0x00144071,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544085,0x00144085,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544099,0x00144099,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005440B1,0x001440B1,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00534747,0x00134747,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005384EE,0x001384EE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538501,0x00138501,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538514,0x00138514,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538527,0x00138527,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053853A,0x0013853A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053854D,0x0013854D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538560,0x00138560,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538573,0x00138573,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538586,0x00138586,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538599,0x00138599,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005385AC,0x001385AC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005385BF,0x001385BF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005385D2,0x001385D2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005385E5,0x001385E5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005385F8,0x001385F8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053860B,0x0013860B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053861E,0x0013861E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538631,0x00138631,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538644,0x00138644,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538657,0x00138657,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053866A,0x0013866A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053867D,0x0013867D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538690,0x00138690,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005386A3,0x001386A3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005386B6,0x001386B6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005386C9,0x001386C9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005386DC,0x001386DC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005386EF,0x001386EF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538702,0x00138702,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538715,0x00138715,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538728,0x00138728,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053873B,0x0013873B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053874E,0x0013874E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053847E,0x0013847E,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005383D7,0x001383D7,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538436,0x00138436,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005383F5,0x001383F5,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053833B,0x0013833B,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00545004,0x00145004,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535C37,0x00135C37,.text,ff 24 95 64 5d 53 00,jmp dword ptr [edx*4 + 0x535d64],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00441EEB,0x00041EEB,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00441EF3,0x00041EF3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00549E93,0x00149E93,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005384B9,0x001384B9,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0054410D,0x0014410D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544118,0x00144118,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544128,0x00144128,.text,ff d1,call ecx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0054413B,0x0014413B,.text,ff 55 e8,call dword ptr [ebp - 0x18],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535C5D,0x00135C5D,.text,ff 24 85 68 5c 53 00,jmp dword ptr [eax*4 + 0x535c68],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535C42,0x00135C42,.text,ff 24 8d 14 5d 53 00,jmp dword ptr [ecx*4 + 0x535d14],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535AB0,0x00135AB0,.text,ff 24 95 c8 5b 53 00,jmp dword ptr [edx*4 + 0x535bc8],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535AC9,0x00135AC9,.text,ff 24 85 dc 5a 53 00,jmp dword ptr [eax*4 + 0x535adc],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005348B8,0x001348B8,.text,ff d1,call ecx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053062E,0x0013062E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00530639,0x00130639,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041DFA8,0x0001DFA8,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041E694,0x0001E694,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041E6A6,0x0001E6A6,.text,ff 92 68 01 00 00,call dword ptr [edx + 0x168],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538953,0x00138953,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0054415D,0x0014415D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544163,0x00144163,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544175,0x00144175,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0054417C,0x0014417C,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544189,0x00144189,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00544197,0x00144197,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0053D4BD,0x0013D4BD,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535C64,0x00135C64,.text,ff 24 8d 64 5d 53 00,jmp dword ptr [ecx*4 + 0x535d64],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535AD8,0x00135AD8,.text,ff 24 8d 5c 5b 53 00,jmp dword ptr [ecx*4 + 0x535b5c],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535AD0,0x00135AD0,.text,ff 24 8d d8 5b 53 00,jmp dword ptr [ecx*4 + 0x535bd8],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00535A99,0x00135A99,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041DF13,0x0001DF13,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x005320F5,0x001320F5,.text,ff 50 20,call dword ptr [eax + 0x20],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041481D,0x0001481D,.text,ff 52 0c,call dword ptr [edx + 0xc],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538414,0x00138414,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041DB5D,0x0001DB5D,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004037A5,0x000037A5,.text,ff 52 04,call dword ptr [edx + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403857,0x00003857,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403162,0x00003162,.text,ff 24 85 78 31 40 00,jmp dword ptr [eax*4 + 0x403178],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040381F,0x0000381F,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004036FC,0x000036FC,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403462,0x00003462,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403469,0x00003469,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403498,0x00003498,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004034A5,0x000034A5,.text,ff 12,call dword ptr [edx],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004034EA,0x000034EA,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041DE20,0x0001DE20,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041DDDE,0x0001DDDE,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004065CB,0x000065CB,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004065DB,0x000065DB,.text,ff 62 10,jmp dword ptr [edx + 0x10],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413644,0x00013644,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413682,0x00013682,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403726,0x00003726,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00403520,0x00003520,.text,ff 50 08,call dword ptr [eax + 8],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040A26D,0x0000A26D,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004422CA,0x000422CA,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00406680,0x00006680,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413500,0x00013500,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413178,0x00013178,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413287,0x00013287,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004132B7,0x000132B7,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x004131AB,0x000131AB,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CD6D,0x0001CD6D,.text,ff 50 3c,call dword ptr [eax + 0x3c],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CD92,0x0001CD92,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CBAC,0x0001CBAC,.text,ff 50 38,call dword ptr [eax + 0x38],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CC04,0x0001CC04,.text,ff 50 38,call dword ptr [eax + 0x38],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C9FC,0x0001C9FC,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CC3B,0x0001CC3B,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CA1E,0x0001CA1E,.text,ff 50 3c,call dword ptr [eax + 0x3c],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C75E,0x0001C75E,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C76C,0x0001C76C,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C77D,0x0001C77D,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538D57,0x00138D57,.text,ff 24 95 84 8e 53 00,jmp dword ptr [edx*4 + 0x538e84],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C98C,0x0001C98C,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C9A1,0x0001C9A1,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041C951,0x0001C951,.text,ff 50 38,call dword ptr [eax + 0x38],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CA35,0x0001CA35,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041CA47,0x0001CA47,.text,ff 52 54,call dword ptr [edx + 0x54],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538D7D,0x00138D7D,.text,ff 24 85 88 8d 53 00,jmp dword ptr [eax*4 + 0x538d88],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538D62,0x00138D62,.text,ff 24 8d 34 8e 53 00,jmp dword ptr [ecx*4 + 0x538e34],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538BD0,0x00138BD0,.text,ff 24 95 e8 8c 53 00,jmp dword ptr [edx*4 + 0x538ce8],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538BE9,0x00138BE9,.text,ff 24 85 fc 8b 53 00,jmp dword ptr [eax*4 + 0x538bfc],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00402FFD,0x00002FFD,.text,ff 62 74,jmp dword ptr [edx + 0x74],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00415A99,0x00015A99,.text,ff 90 58 01 00 00,call dword ptr [eax + 0x158],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538D84,0x00138D84,.text,ff 24 8d 84 8e 53 00,jmp dword ptr [ecx*4 + 0x538e84],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538BF8,0x00138BF8,.text,ff 24 8d 7c 8c 53 00,jmp dword ptr [ecx*4 + 0x538c7c],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538BF0,0x00138BF0,.text,ff 24 8d f8 8c 53 00,jmp dword ptr [ecx*4 + 0x538cf8],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00538BB9,0x00138BB9,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00415AB6,0x00015AB6,.text,ff 50 14,call dword ptr [eax + 0x14],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00420C03,0x00020C03,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00420C0B,0x00020C0B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041F823,0x0001F823,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00415BB4,0x00015BB4,.text,ff 50 18,call dword ptr [eax + 0x18],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00415BC2,0x00015BC2,.text,ff 90 58 01 00 00,call dword ptr [eax + 0x158],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00415BD5,0x00015BD5,.text,ff 90 20 01 00 00,call dword ptr [eax + 0x120],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00545700,0x00145700,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413399,0x00013399,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041F28C,0x0001F28C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040DB5A,0x0000DB5A,.text,ff 56 08,call dword ptr [esi + 8],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040D426,0x0000D426,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040D444,0x0000D444,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040ECE3,0x0000ECE3,.text,ff 50 58,call dword ptr [eax + 0x58],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00413809,0x00013809,.text,ff 50 1c,call dword ptr [eax + 0x1c],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040D684,0x0000D684,.text,ff 50 60,call dword ptr [eax + 0x60],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040D6BE,0x0000D6BE,.text,ff 90 14 01 00 00,call dword ptr [eax + 0x114],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00412213,0x00012213,.text,ff 90 48 01 00 00,call dword ptr [eax + 0x148],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040BAF1,0x0000BAF1,.text,ff 60 78,jmp dword ptr [eax + 0x78],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040B59B,0x0000B59B,.text,ff 90 9c 00 00 00,call dword ptr [eax + 0x9c],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040BC2B,0x0000BC2B,.text,ff a0 a4 00 00 00,jmp dword ptr [eax + 0xa4],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040E87A,0x0000E87A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040E884,0x0000E884,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040E8CD,0x0000E8CD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040E8D4,0x0000E8D4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0041EAF6,0x0001EAF6,.text,ff 57 14,call dword ptr [edi + 0x14],entrypoint-rooted indirect call target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x0040BFB5,0x0000BFB5,.text,ff a0 9c 00 00 00,jmp dword ptr [eax + 0x9c],entrypoint-rooted indirect jump target unresolved
+13db96f029a307c59b1c630d17b0c90bfc787ab68d460ef0bf1a6229cf53abfd,20260701132640_1725.exe,0x00545776,0x00145776,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00552665,0x00152665,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0055271B,0x0015271B,.text,ff 25 9c 0a 5a 00,jmp dword ptr [0x5a0a9c],entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056834B,0x0016834B,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00568351,0x00168351,.text,ff 55 f8,call dword ptr [ebp - 8],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0055D757,0x0015D757,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0055D75D,0x0015D75D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0058EB0B,0x0018EB0B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0058EB1F,0x0018EB1F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0058EB3A,0x0018EB3A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00567555,0x00167555,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056755B,0x0016755B,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056838C,0x0016838C,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00568392,0x00168392,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005596FD,0x001596FD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0058EB51,0x0018EB51,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005676B4,0x001676B4,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005676BA,0x001676BA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00572518,0x00172518,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0057251E,0x0017251E,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0055960C,0x0015960C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00572497,0x00172497,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0057249D,0x0017249D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00559646,0x00159646,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056CED4,0x0016CED4,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056CEDA,0x0016CEDA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042DDCA,0x0002DDCA,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004C4A05,0x000C4A05,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004C4A28,0x000C4A28,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005596BD,0x001596BD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005724CB,0x001724CB,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005724D1,0x001724D1,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056CF2D,0x0016CF2D,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056CF33,0x0016CF33,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00559DDB,0x00159DDB,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00559DE1,0x00159DE1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042DD33,0x0002DD33,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00557744,0x00157744,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004211B5,0x000211B5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042D8F3,0x0002D8F3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00406F15,0x00006F15,.text,ff 52 04,call dword ptr [edx + 4],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00407334,0x00007334,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056D3A2,0x0016D3A2,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056D3A8,0x0016D3A8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00572573,0x00172573,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00572579,0x00172579,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00406DF2,0x00006DF2,.text,ff 24 85 08 6e 40 00,jmp dword ptr [eax*4 + 0x406e08],entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00433B92,0x00033B92,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00433BA9,0x00033BA9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00406E7C,0x00006E7C,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00407300,0x00007300,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00407307,0x00007307,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042DC1D,0x0002DC1D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042DBCC,0x0002DBCC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00410171,0x00010171,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0040708F,0x0000708F,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A7C1,0x0001A7C1,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A3C4,0x0001A3C4,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00406EA0,0x00006EA0,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00567E95,0x00167E95,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00567E9B,0x00167E9B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005728D4,0x001728D4,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x005728DA,0x001728DA,.text,ff 55 dc,call dword ptr [ebp - 0x24],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00407361,0x00007361,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0040736E,0x0000736E,.text,ff 12,call dword ptr [edx],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004073AB,0x000073AB,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0040DE8F,0x0000DE8F,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00410148,0x00010148,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A728,0x0001A728,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A699,0x0001A699,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A44A,0x0001A44A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00572902,0x00172902,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00572908,0x00172908,.text,ff 55 dc,call dword ptr [ebp - 0x24],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00407400,0x00007400,.text,ff 50 08,call dword ptr [eax + 8],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004CC034,0x000CC034,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0040F41F,0x0000F41F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A495,0x0001A495,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041A408,0x0001A408,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042ECA5,0x0002ECA5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042ECD6,0x0002ECD6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00424FAD,0x00024FAD,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004255C9,0x000255C9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004076A1,0x000076A1,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00557338,0x00157338,.text,ff 24 95 40 73 55 00,jmp dword ptr [edx*4 + 0x557340],entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00557285,0x00157285,.text,ff 24 95 94 72 55 00,jmp dword ptr [edx*4 + 0x557294],entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042EA83,0x0002EA83,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E89A,0x0002E89A,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00556928,0x00156928,.text,ff 24 95 30 69 55 00,jmp dword ptr [edx*4 + 0x556930],entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00556875,0x00156875,.text,ff 24 95 84 68 55 00,jmp dword ptr [edx*4 + 0x556884],entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056D19B,0x0016D19B,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056D1A1,0x0016D1A1,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042EB49,0x0002EB49,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042EAF7,0x0002EAF7,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E8CA,0x0002E8CA,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004BD03C,0x000BD03C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E808,0x0002E808,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E82C,0x0002E82C,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E7B8,0x0002E7B8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E8ED,0x0002E8ED,.text,ff 56 54,call dword ptr [esi + 0x54],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E90C,0x0002E90C,.text,ff 56 54,call dword ptr [esi + 0x54],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E58A,0x0002E58A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E5A3,0x0002E5A3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0042E5C0,0x0002E5C0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056D20E,0x0016D20E,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056D214,0x0016D214,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00557255,0x00157255,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x00556845,0x00156845,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0041FF86,0x0001FF86,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x004213A0,0x000213A0,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0040E62E,0x0000E62E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056CD4B,0x0016CD4B,.text,ff 15 9c 0a 5a 00,call dword ptr [0x5a0a9c],entrypoint-rooted indirect call target unresolved
+53447e088a42cc2050629b7fa97e71130a323d48c630abf4e5413b49ffd02186,20260604145847_7241.exe,0x0056CD51,0x0016CD51,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005347BE,0x001347BE,.text,ff 15 10 5f 58 00,call dword ptr [0x585f10],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053481A,0x0013481A,.text,ff 15 e8 47 5d 00,call dword ptr [0x5d47e8],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00534927,0x00134927,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00534938,0x00134938,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00534961,0x00134961,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053496F,0x0013496F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053497D,0x0013497D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00534988,0x00134988,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00534897,0x00134897,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00549E57,0x00149E57,.text,ff 90 ac 00 00 00,call dword ptr [eax + 0xac],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00549E65,0x00149E65,.text,ff 50 50,call dword ptr [eax + 0x50],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00549E75,0x00149E75,.text,ff 50 60,call dword ptr [eax + 0x60],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00549E7C,0x00149E7C,.text,ff 50 68,call dword ptr [eax + 0x68],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00543FF0,0x00143FF0,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0054405D,0x0014405D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544071,0x00144071,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544085,0x00144085,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544099,0x00144099,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005440B1,0x001440B1,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053474A,0x0013474A,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005384EE,0x001384EE,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538501,0x00138501,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538514,0x00138514,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538527,0x00138527,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053853A,0x0013853A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053854D,0x0013854D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538560,0x00138560,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538573,0x00138573,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538586,0x00138586,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538599,0x00138599,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005385AC,0x001385AC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005385BF,0x001385BF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005385D2,0x001385D2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005385E5,0x001385E5,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005385F8,0x001385F8,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053860B,0x0013860B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053861E,0x0013861E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538631,0x00138631,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538644,0x00138644,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538657,0x00138657,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053866A,0x0013866A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053867D,0x0013867D,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538690,0x00138690,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005386A3,0x001386A3,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005386B6,0x001386B6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005386C9,0x001386C9,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005386DC,0x001386DC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005386EF,0x001386EF,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538702,0x00138702,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538715,0x00138715,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538728,0x00138728,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053873B,0x0013873B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053874E,0x0013874E,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053847E,0x0013847E,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005383D7,0x001383D7,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538436,0x00138436,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005383F5,0x001383F5,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053833B,0x0013833B,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00545004,0x00145004,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535C37,0x00135C37,.text,ff 24 95 64 5d 53 00,jmp dword ptr [edx*4 + 0x535d64],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00442370,0x00042370,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00442378,0x00042378,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00549E85,0x00149E85,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005384B9,0x001384B9,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0054410D,0x0014410D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544118,0x00144118,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544128,0x00144128,.text,ff d1,call ecx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0054413B,0x0014413B,.text,ff 55 e8,call dword ptr [ebp - 0x18],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535C5D,0x00135C5D,.text,ff 24 85 68 5c 53 00,jmp dword ptr [eax*4 + 0x535c68],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535C42,0x00135C42,.text,ff 24 8d 14 5d 53 00,jmp dword ptr [ecx*4 + 0x535d14],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535AB0,0x00135AB0,.text,ff 24 95 c8 5b 53 00,jmp dword ptr [edx*4 + 0x535bc8],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535AC9,0x00135AC9,.text,ff 24 85 dc 5a 53 00,jmp dword ptr [eax*4 + 0x535adc],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x005348BB,0x001348BB,.text,ff d1,call ecx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00530634,0x00130634,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053063F,0x0013063F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041E0B5,0x0001E0B5,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041E823,0x0001E823,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041E835,0x0001E835,.text,ff 92 68 01 00 00,call dword ptr [edx + 0x168],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538953,0x00138953,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0054415D,0x0014415D,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544163,0x00144163,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544175,0x00144175,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0054417C,0x0014417C,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544189,0x00144189,.text,ff d3,call ebx,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00544197,0x00144197,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0053D4BD,0x0013D4BD,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535C64,0x00135C64,.text,ff 24 8d 64 5d 53 00,jmp dword ptr [ecx*4 + 0x535d64],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535AD8,0x00135AD8,.text,ff 24 8d 5c 5b 53 00,jmp dword ptr [ecx*4 + 0x535b5c],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535AD0,0x00135AD0,.text,ff 24 8d d8 5b 53 00,jmp dword ptr [ecx*4 + 0x535bd8],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00535A99,0x00135A99,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041E020,0x0001E020,.text,ff 55 08,call dword ptr [ebp + 8],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00532105,0x00132105,.text,ff 50 20,call dword ptr [eax + 0x20],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041483C,0x0001483C,.text,ff 52 0c,call dword ptr [edx + 0xc],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538414,0x00138414,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041DC68,0x0001DC68,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004037A5,0x000037A5,.text,ff 52 04,call dword ptr [edx + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403857,0x00003857,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403162,0x00003162,.text,ff 24 85 78 31 40 00,jmp dword ptr [eax*4 + 0x403178],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040381F,0x0000381F,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004036FC,0x000036FC,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403462,0x00003462,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403469,0x00003469,.text,ff 50 0c,call dword ptr [eax + 0xc],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403498,0x00003498,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004034A5,0x000034A5,.text,ff 12,call dword ptr [edx],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004034EA,0x000034EA,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041DF2B,0x0001DF2B,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041DEE9,0x0001DEE9,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004065CB,0x000065CB,.text,ff 50 10,call dword ptr [eax + 0x10],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004065DB,0x000065DB,.text,ff 62 10,jmp dword ptr [edx + 0x10],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041368E,0x0001368E,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004136CC,0x000136CC,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403726,0x00003726,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00403520,0x00003520,.text,ff 50 08,call dword ptr [eax + 8],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040A26D,0x0000A26D,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0044274F,0x0004274F,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00406680,0x00006680,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041354A,0x0001354A,.text,ff 10,call dword ptr [eax],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004131C2,0x000131C2,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004132D1,0x000132D1,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00413301,0x00013301,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004131F5,0x000131F5,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CEB1,0x0001CEB1,.text,ff 50 3c,call dword ptr [eax + 0x3c],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CED6,0x0001CED6,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CCF0,0x0001CCF0,.text,ff 50 38,call dword ptr [eax + 0x38],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CD48,0x0001CD48,.text,ff 50 38,call dword ptr [eax + 0x38],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CB40,0x0001CB40,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CD7F,0x0001CD7F,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CB62,0x0001CB62,.text,ff 50 3c,call dword ptr [eax + 0x3c],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538D57,0x00138D57,.text,ff 24 95 84 8e 53 00,jmp dword ptr [edx*4 + 0x538e84],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CAD0,0x0001CAD0,.text,ff 56 2c,call dword ptr [esi + 0x2c],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CAE5,0x0001CAE5,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CA95,0x0001CA95,.text,ff 50 38,call dword ptr [eax + 0x38],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CB79,0x0001CB79,.text,ff 50 54,call dword ptr [eax + 0x54],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041CB8B,0x0001CB8B,.text,ff 52 54,call dword ptr [edx + 0x54],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041C8A2,0x0001C8A2,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041C8B0,0x0001C8B0,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041C8C1,0x0001C8C1,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538D7D,0x00138D7D,.text,ff 24 85 88 8d 53 00,jmp dword ptr [eax*4 + 0x538d88],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538D62,0x00138D62,.text,ff 24 8d 34 8e 53 00,jmp dword ptr [ecx*4 + 0x538e34],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538BD0,0x00138BD0,.text,ff 24 95 e8 8c 53 00,jmp dword ptr [edx*4 + 0x538ce8],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538BE9,0x00138BE9,.text,ff 24 85 fc 8b 53 00,jmp dword ptr [eax*4 + 0x538bfc],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00402FFD,0x00002FFD,.text,ff 62 74,jmp dword ptr [edx + 0x74],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00415AB3,0x00015AB3,.text,ff 90 58 01 00 00,call dword ptr [eax + 0x158],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538D84,0x00138D84,.text,ff 24 8d 84 8e 53 00,jmp dword ptr [ecx*4 + 0x538e84],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538BF8,0x00138BF8,.text,ff 24 8d 7c 8c 53 00,jmp dword ptr [ecx*4 + 0x538c7c],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538BF0,0x00138BF0,.text,ff 24 8d f8 8c 53 00,jmp dword ptr [ecx*4 + 0x538cf8],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00538BB9,0x00138BB9,.text,ff e0,jmp eax,entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00415AD0,0x00015AD0,.text,ff 50 14,call dword ptr [eax + 0x14],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00420D92,0x00020D92,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00420D9A,0x00020D9A,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041F9B2,0x0001F9B2,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00415BCE,0x00015BCE,.text,ff 50 18,call dword ptr [eax + 0x18],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00415BDC,0x00015BDC,.text,ff 90 58 01 00 00,call dword ptr [eax + 0x158],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00415BEF,0x00015BEF,.text,ff 90 20 01 00 00,call dword ptr [eax + 0x120],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00545700,0x00145700,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x004133E3,0x000133E3,.text,ff d7,call edi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041F41B,0x0001F41B,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040DBBF,0x0000DBBF,.text,ff 56 08,call dword ptr [esi + 8],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040D48B,0x0000D48B,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040D4A9,0x0000D4A9,.text,ff 50 04,call dword ptr [eax + 4],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040ED45,0x0000ED45,.text,ff 50 58,call dword ptr [eax + 0x58],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00413853,0x00013853,.text,ff 50 1c,call dword ptr [eax + 0x1c],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040D6E9,0x0000D6E9,.text,ff 50 60,call dword ptr [eax + 0x60],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040D723,0x0000D723,.text,ff 90 14 01 00 00,call dword ptr [eax + 0x114],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041225D,0x0001225D,.text,ff 90 48 01 00 00,call dword ptr [eax + 0x148],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040BB2A,0x0000BB2A,.text,ff 60 78,jmp dword ptr [eax + 0x78],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040B5B7,0x0000B5B7,.text,ff 90 9c 00 00 00,call dword ptr [eax + 0x9c],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040BC64,0x0000BC64,.text,ff a0 a4 00 00 00,jmp dword ptr [eax + 0xa4],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040E8DC,0x0000E8DC,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040E8E6,0x0000E8E6,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040E92F,0x0000E92F,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040E936,0x0000E936,.text,ff d6,call esi,entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0041EC85,0x0001EC85,.text,ff 57 14,call dword ptr [edi + 0x14],entrypoint-rooted indirect call target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x0040BFEE,0x0000BFEE,.text,ff a0 9c 00 00 00,jmp dword ptr [eax + 0x9c],entrypoint-rooted indirect jump target unresolved
+556d738b446bc7f2f555976ea565d3aba7dec7fc1835adad342830b59f7773d5,20260701114713_5183.exe,0x00545776,0x00145776,.text,ff d0,call eax,entrypoint-rooted indirect call target unresolved
+1740933f173a3fd3958ffa99d60a3de0fc8b1df024ef37dc6c7dceb92a4e9a30,20260701133035_4658.exe,0x006E317E,0x002E317E,UPX1,ff 96 78 58 2e 00,call dword ptr [esi + 0x2e5878],entrypoint-rooted indirect call target unresolved
+1740933f173a3fd3958ffa99d60a3de0fc8b1df024ef37dc6c7dceb92a4e9a30,20260701133035_4658.exe,0x006E319C,0x002E319C,UPX1,ff 96 80 58 2e 00,call dword ptr [esi + 0x2e5880],entrypoint-rooted indirect call target unresolved
+1740933f173a3fd3958ffa99d60a3de0fc8b1df024ef37dc6c7dceb92a4e9a30,20260701133035_4658.exe,0x006E31AD,0x002E31AD,UPX1,ff 96 7c 58 2e 00,call dword ptr [esi + 0x2e587c],entrypoint-rooted indirect call target unresolved
+1740933f173a3fd3958ffa99d60a3de0fc8b1df024ef37dc6c7dceb92a4e9a30,20260701133035_4658.exe,0x006E31FB,0x002E31FB,UPX1,ff d5,call ebp,entrypoint-rooted indirect call target unresolved
+1740933f173a3fd3958ffa99d60a3de0fc8b1df024ef37dc6c7dceb92a4e9a30,20260701133035_4658.exe,0x006E3210,0x002E3210,UPX1,ff d5,call ebp,entrypoint-rooted indirect call target unresolved
