@@ -69,9 +69,11 @@ For current blockers and the recommended reverse-engineering order, see the
   choices, and 83 QMK results across 7 model choices. The S98 selector returns
   eight firmware rows, all Tri mode/RGB with language-specific PIDs. The
   456-row CSV expands platform-specific availability and preserves source API
-  URLs and listed artifact URLs. All eight S98 updater packages have now been
-  downloaded and statically inventoried; this is one firmware family, not all
-  118 firmware artifacts.
+  URLs and listed artifact URLs. A separate QMK source audit acquired all 38
+  JSON definitions and all 38 ZIP overlays (76/83 distinct URLs); seven HEX
+  selector rows remain in the firmware-image workstream. All eight S98 updater
+  packages have been downloaded and statically inventoried; this is one
+  firmware family, not all 118 firmware-selector artifacts.
 - The selector capture is metadata only, but follow-up package acquisition has
   now covered four Windows product-specific packages: F99 AI RK Setup 3.2.2, R99 RK Driver,
   an RK918-labeled archive whose member is named RK919, and S108 GamingForceZ.
@@ -82,6 +84,13 @@ For current blockers and the recommended reverse-engineering order, see the
   See the [API/catalog audit](docs/rk-official-selector-api-catalog-audit-2026-10-19.md),
   [dated CSV](docs/rk-official-download-selector-catalog-2026-10-19.csv), and
   [snapshot-preserving collector](scripts/capture_rk_public_selector_catalog.py).
+- The QMK selector reports 83 rows and 83 distinct artifact URLs across seven
+  model choices. Its 38 JSON definitions all match a `keyboard.json` embedded
+  in the separately listed 38 ZIP source overlays; these are declarative
+  layouts/build extensions, not a full QMK checkout or Windows configuration
+  app. The 38 ZIPs and 38 JSON files are statically inventoried and hash-pinned;
+  seven `.hex` images remain unacquired. See the
+  [QMK source audit](docs/rk-qmk-selector-software-audit-2026-10-19.md).
 
 ## Product-specific software package snapshots
 
