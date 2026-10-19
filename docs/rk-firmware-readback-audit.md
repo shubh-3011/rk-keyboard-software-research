@@ -396,6 +396,11 @@ behavior, and downstream persistence remain unresolved.
 The broader candidate screening also excludes signature-shaped point/layout
 methods where the same receiver is used at vtable slots beyond the G5 table;
 see the [focused `+0x70` caller audit](rk-v4.6-cdevg5-realdata-caller-audit.md).
+An expanded scan also checked three `+0x70` tail-call relays and short-window
+cached-pointer patterns. It found no statically attributable G5 caller,
+request length, or output-buffer-to-file path; the generic relays remain
+unresolved rather than excluded. See the
+[command-`0x88` callsite completeness follow-up](rk-v4.6-g5-command88-callsite-completeness-follow-up.md).
 
 The nearby G5 `+0x34` password-query method follows the same broad pattern for
 command `0x82`. Stack accounting at `0x00410E7E` likewise resolves its

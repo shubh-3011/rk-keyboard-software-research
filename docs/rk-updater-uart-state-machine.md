@@ -25,6 +25,17 @@ control `0x0413`; see the [progress-control audit](rk-updater-progress-control-a
 This identifies the UI consumer but does not prove that a particular UART
 state is reached from the `0x0419` command workflow.
 
+## Dispatcher bounds and default path
+
+At `0x00407E3B`, the handler loads `0x005C5F58`, decrements it, and performs
+an unsigned comparison against `0x0E` (`0x00407E3B`–`0x00407E44`). Values
+above that bound branch to the common epilogue at `0x00408039`; only states
+1–15 index the 15-entry table at `0x00408044` (`jmp [eax*4+0x00408044]` at
+`0x00407E4A`). Consequently, state 0 underflows to `0xFFFFFFFF` and takes the
+epilogue path without a state handler. Values greater than 15 take the same
+default path. This distinguishes the reset value 0 from a table-dispatched
+protocol state; it does not establish how any state is selected at runtime.
+
 ## State map
 
 | State | Table slot → dispatch target → body | Response check, transition, queue/request | File or memory effect; unresolved meaning |

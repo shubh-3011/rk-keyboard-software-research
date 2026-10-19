@@ -140,6 +140,13 @@ For current blockers and the recommended reverse-engineering order, see the
 - The 4.6 `DeviceDriver.exe` has a different SHA-256 from 4.06. Its import and
   binary changes are audited separately in
   [`docs/rk-v4.6-native-binary-delta-audit.md`](docs/rk-v4.6-native-binary-delta-audit.md).
+  A hash-pinned Capstone linear sweep of its `.text` section reports 570,401
+  decoded boundaries, 102,205 direct call/branch sites, 18,517 indirect
+  call/jump candidates, 10,970 return sites, and 313 undecoded bytes. Because
+  linear sweep also decodes embedded data and does not resolve indirect calls,
+  it is not a function map or complete CFG. See the
+  [linear-sweep report](docs/rk-v4.6-driver-linear-sweep-inventory.md) and
+  [reproduction script](scripts/audit_rk46_driver_linear_sweep.py).
   A follow-up checked all eight `0F 05`/`0F 34` byte candidates against
   instruction boundaries and adjacent indexed tables: none is a direct
   syscall/sysenter instruction in this PE. This static result does not cover
@@ -371,8 +378,11 @@ For current blockers and the recommended reverse-engineering order, see the
   A focused caller audit screens signature-compatible `+0x70` sites against
   same-receiver larger-interface slots and point-output use; none is
   attributable to G5. Vtable aliases and other dispatch encodings remain
-  unexcluded. See
-  [`docs/rk-v4.6-cdevg5-realdata-caller-audit.md`](docs/rk-v4.6-cdevg5-realdata-caller-audit.md).
+  unexcluded. An expanded reference scan adds three generic `+0x70` tail-call
+  relays; none is tied to a G5 object, and caller length, downstream consumer,
+  firmware range, and persistence remain unknown. See the
+  [`+0x70` caller audit](docs/rk-v4.6-cdevg5-realdata-caller-audit.md) and
+  [command-`0x88` callsite completeness follow-up](docs/rk-v4.6-g5-command88-callsite-completeness-follow-up.md).
   See the
   [RTTI route audit](docs/rk-v4.6-profile-family-rtti-audit.md),
   [row-level map](docs/rk-v4.6-profile-family-rtti-map.csv), and
@@ -755,7 +765,9 @@ For current blockers and the recommended reverse-engineering order, see the
   [`docs/rk-unins000-scrollbar-fallback-indexed-candidate.md`](docs/rk-unins000-scrollbar-fallback-indexed-candidate.md).
 - Every MFC control label and action, every profile tuple's meaning, all
   packet fields, or the protocol meaning and runtime reachability of the UART
-  command/response paths. The 15 updater dispatch slots are separately mapped.
+  command/response paths. All 15 updater dispatch slots are mapped; state 0
+  and values above 15 take the handler epilogue instead of a table slot. See
+  the [UART state map](docs/rk-updater-uart-state-machine.md).
   A focused trace now maps command `0x0419` through `.upf` parsing, mode
   selection, HID discovery, and update-worker dispatch; its downstream HID
   feature-write paths are statically visible. A progress follow-up maps all 14
@@ -800,9 +812,11 @@ For current blockers and the recommended reverse-engineering order, see the
   Their `Dev/01AF/Update.exe` and `.upf` files are byte-identical; the changed
   4.6 `DeviceDriver.exe` has separately traced G5 request/read paths that
   contain conditional copy code, and the six V4.6 `HidD_GetFeature` callsites
-  use the same handle as their paired `HidD_SetFeature` calls. No response
-  was observed from those G5 paths, and neither establishes a firmware file
-  export. A live HID open mapped seven collections on the attached
+  use the same handle as their paired `HidD_SetFeature` calls. The expanded
+  static caller scan found no attributable G5 `+0x70` callsite or complete
+  output-buffer-to-file path; generic tail-call relays remain unresolved.
+  Neither report establishes a firmware file export. A live HID open mapped
+  seven collections on the attached
   `258A:0150` device; the shared VID/PID appears on 46 registry profiles, so
   this still does not identify the device as an S98. Its accessible
   `FF02:0002` collection with 20-byte input/output reports matches the
