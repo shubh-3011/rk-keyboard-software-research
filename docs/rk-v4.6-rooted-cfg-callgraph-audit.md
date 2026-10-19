@@ -79,6 +79,28 @@ The machine-readable outputs preserve the seeded paths and their limitations:
 - [Basic-block candidates](rk-v4.6-rooted-cfg-blocks.csv)
 - [Tool/input identities, detailed counts, imported API names, and limitations](rk-v4.6-rooted-cfg-summary.json)
 
+## Rooted path from the dialog timer to HID enumeration
+
+The newly seeded graph also links one `COemDrvDlg` `WM_TIMER` handler to the
+existing HID-enumeration routine through decoded direct-call candidates:
+
+| Step | Address evidence | Static interpretation |
+| --- | --- | --- |
+| MFC message-map seed | Handler `0x00449F80`, map entry `0x005DD1F0`, message `0x0113` | `COemDrvDlg` timer handler, as recorded in `rk-v4.6-mfc-message-map-entries.csv`. |
+| Dialog to pool/enumerator setup | Call at `0x00449F9F` → `0x004497C0`; call at `0x004497D6` → `0x00417330` | Direct-call edges visited from the timer handler; `0x004497C0` is the table setup routine in the existing enumeration lifecycle audit. |
+| HID interface enumeration | `0x00417330` calls wrapper `0x00590A14` at `0x0041734C`, `SetupDiGetClassDevsW` at `0x0041735C`, and `SetupDiEnumDeviceInterfaces` at `0x00417380` and `0x004173AF`; it calls `0x004173F0` at `0x00417396` | The wrapper tail-jumps to `HID.DLL!HidD_GetHidGuid`; the enumerator iterates present interfaces and delegates each interface to the per-interface helper. |
+| Per-interface open and descriptor query | `0x004173F0` calls `CreateFileW` at `0x004174A1`/`0x004174B2`, `HidD_GetPreparsedData` at `0x004174CD`, `HidD_GetAttributes` at `0x004174DC`, and `HidP_GetCaps` at `0x004174EB` | The helper opens a matching path and queries descriptor metadata. Existing static analysis gives the access-mask and cleanup details; no interface was opened in this research. |
+
+This is a **static candidate path**, not evidence that a timer fired or that a
+keyboard was enumerated at runtime. The graph explores both sides of
+conditional branches without evaluating conditions. The 4.6
+`WM_DEVICECHANGE` handler `0x00449DF0` is a different root with four unresolved
+indirect calls; this pass found no resolved direct-call route from it to the
+enumerator, so that connection remains open. The per-interface helper's two
+register-indirect `SetupDiGetDeviceInterfaceDetailW` calls at `0x00417421` and
+`0x0041746F` are also still unresolved in this graph; their IAT load/use pattern
+is documented in the [cross-version enumeration lifecycle audit](rk-device-enumeration-handle-lifecycle-cross-version.md).
+
 ## Reproduction
 
 From the repository root, with Python 3, `pefile`, and Capstone 5.x available:
