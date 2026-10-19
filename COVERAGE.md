@@ -93,7 +93,14 @@ model or runtime map.
   calls made inside Windows or device-driver code. See
   [`docs/rk-v4.6-system-call-byte-audit.md`](docs/rk-v4.6-system-call-byte-audit.md)
   and its [candidate ledger](docs/rk-v4.6-syscall-byte-matches.csv).
-  Separate static follow-ups now map the 4.6 profile selector and the Side LED
+  The 4.6 selector and RTTI maps now reconcile all 265 configured profile
+  codes with no missing, extra, duplicate, or joined-field mismatch: 133 route
+  to `CDevRKKB`, 131 to `CDevG5KB`, and M20/Fw=3 (`0208`) to `CDev3632`.
+  Physical compatibility remains unvalidated for all 265 rows. The older
+  projected map is historical and superseded for M20; see the
+  [selector audit](docs/rk-v4.6-profile-selector-audit.md) and
+  [RTTI-backed family audit](docs/rk-v4.6-profile-family-rtti-audit.md).
+  Separate static follow-ups also map the Side LED
   configuration/UI/report-builder path, but this is still not a full
   function-level reanalysis. Side LED is enabled in profiles `02B4` and
   `0258`; only the first has side-light artwork/localization in this package.
@@ -126,6 +133,14 @@ model or runtime map.
   branch-spanning SetupAPI route is documented outside the conservative CSV
   heuristic. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md)
   and [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md).
+- A cross-version static trace follows HID class discovery through interface
+  path retrieval, `CreateFileW`, preparsed-data/capability queries, metadata
+  storage, and `CloseHandle` in the installed 4.06 and extracted 4.6 drivers.
+  Both use an 80-row pool and a data-controlled access mask; visible
+  `HidD_FreePreparsedData` calls occur only on the `HidP_GetCaps` failure edge,
+  leaving a static leak candidate on other exits. Runtime ownership and the
+  selector's nonzero case remain unresolved. See the
+  [enumeration lifecycle audit](docs/rk-device-enumeration-handle-lifecycle-cross-version.md).
 - A new 4.6 API follow-up traces `SendInput` to a gated 50-record UTF-16 text
   lookup and Unicode key-event batches, the added GDI+ property calls to an
   animated-image timer/frame path, and `GetPrivateProfileStringA` to `OPT` /

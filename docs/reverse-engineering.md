@@ -1280,6 +1280,13 @@ identify some models; shared receiver IDs remain ambiguous. Wireless profile
 matching now compares both VID and PID when the profile supplies both. The
 live feature-read result did not identify the attached model.
 
+The on-disk connection path is separately traced across 4.06 and 4.6 from
+SetupAPI enumeration through `CreateFileW`, HID capability extraction, and
+the 80-row profile-metadata pool. It also records a data-controlled requested-
+access branch and a candidate preparsed-data release gap; those are static
+paths, not observations from the live read-only probe. See the
+[cross-version enumeration lifecycle audit](rk-device-enumeration-handle-lifecycle-cross-version.md).
+
 ## Firmware readback assessment
 
 The current Windows PnP inventory includes a `0x258A:0x0150` USB composite

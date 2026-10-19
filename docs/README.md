@@ -86,6 +86,7 @@
 - [4.06 main-app Windows hook callsites](rk-406-windows-hook-callsite-audit.md)
 - [4.6 main-app Windows hook callsites](rk-v4.6-windows-hook-callsite-audit.md)
 - [IAT and thunk references](rk-native-api-xrefs.csv)
+- [4.06/4.6 HID enumeration, access-mask, and preparsed-data lifecycle crosswalk](rk-device-enumeration-handle-lifecycle-cross-version.md)
 - [Imports without a recovered direct/thunk call](rk-native-api-callsite-gaps.csv)
 - [Follow-up mapping of indirect import calls and callbacks](rk-native-api-indirect-call-audit.md)
 - [V4.6 registry child-enumeration and delete path](rk-v4.6-registry-subtree-delete-audit.md)
