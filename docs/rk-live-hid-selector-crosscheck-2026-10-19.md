@@ -63,7 +63,10 @@ are profile-declared receiver candidates; the shared receiver ID does not
 prove that the attached keyboard is any one of them. In the installed 4.06
 catalog, the only profile row with wireless ID `258A:0150` is `020F` RK A70.
 The version difference is further reason not to treat the receiver ID as a
-stable keyboard-model identifier.
+stable keyboard-model identifier. None of the eight S98-labeled rows in the
+4.06 catalog or twelve S98-labeled rows in the 4.6 catalog declares a
+`VID_Wireless`/`PID_Wireless` pair. That is a limit of these package profile
+records; it does not establish that S98 hardware lacks a wireless receiver.
 
 ## Installed 4.06 selector and receiver cross-check
 
