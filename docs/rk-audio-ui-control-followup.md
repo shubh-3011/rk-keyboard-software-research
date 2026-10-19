@@ -184,4 +184,3 @@ DSP, profile, and payload limits.
   `FUN_0043C780` or only a persisted/displayed host setting.
 - Trace capture ring/band writes into `Music_Theard`'s source arrays, or prove
   that the data paths are disconnected in the complete 4.06 image.
-
