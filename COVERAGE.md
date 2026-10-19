@@ -64,12 +64,43 @@ For current blockers and the recommended reverse-engineering order, see the
   eight firmware rows, all Tri mode/RGB with language-specific PIDs. The
   456-row CSV expands platform-specific availability and preserves source API
   URLs and listed artifact URLs.
-- This is selector metadata, not an acquired package set: none of the listed
-  product-specific artifacts were fetched or analyzed by this capture. The
-  current catalog does not enumerate retired, regional, or removed records.
+- The selector capture is metadata only, but follow-up package acquisition has
+  now covered four Windows product-specific packages: F99 AI RK Setup 3.2.2, R99 RK Driver,
+  an RK918-labeled archive whose member is named RK919, and S108 GamingForceZ.
+  An F99 Mac DMG was downloaded but its APFS contents remain uninspected. See
+  the [package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md)
+  and [hash catalog](docs/rk-product-specific-software-package-catalog-2026-10-19.csv).
+  The selector still does not enumerate retired, regional, or removed records.
   See the [API/catalog audit](docs/rk-official-selector-api-catalog-audit-2026-10-19.md),
   [dated CSV](docs/rk-official-download-selector-catalog-2026-10-19.csv), and
   [snapshot-preserving collector](scripts/capture_rk_public_selector_catalog.py).
+
+## Product-specific software package snapshots
+
+- Static package inventories show three different product-specific families:
+  the GamingForceZ NSIS application, the R99 Inno Setup `RK Driver`, and the
+  F99 AI Electron application with a native `mi-hid` addon. These have
+  different plugin/native boundaries and model data. The sample set is not a
+  universal protocol map or a full call-graph reconstruction; no package was
+  run. The [dated package catalog](docs/rk-product-specific-software-package-catalog-2026-10-19.csv)
+  records exact hashes and analysis status.
+- The R99 extracted tree's 215-file path/size/SHA-1 inventory is
+  [`docs/rk-r99-package-manifest-2026-10-19.csv`](docs/rk-r99-package-manifest-2026-10-19.csv).
+- A static PE API pass covers all seven R99 package PE files: 2,559 normal and
+  delay import rows, 4,110 direct imported-call/tail-jump candidates, and no
+  decoded `sysenter`/`int 0x2e` instructions in the scanned executable
+  sections. `RK Driver.exe` imports CH375 helper and HID/SetupAPI APIs; 30
+  `CH375DLL.DLL` calls use the same `0x223CDC` IOCTL value. Details and
+  row-level ledgers are linked from the
+  [R99 API boundary audit](docs/rk-r99-native-api-boundary-audit-2026-10-19.md).
+- The F99 ASAR has 4,569 entries and was passed through REA's JavaScript
+  application analyzer. Its local Evidence summary reports 3,814 relevant
+  files, 2,971 parsed JavaScript files, 2,738,930 AST nodes, 12,483 findings,
+  3 parser failures, 2,111 interrupted source analyses, and 75,336 `unknown_id`
+  records. `background.js` is 2.84 MB and has `parse_status=partial`; the graph
+  is incomplete. The full 298 MB Evidence remains outside the repository. This
+  analysis does not establish absence of an Electron/native relationship from
+  zero-count summary fields. The F99 Mac DMG is outer-container-only here.
 
 ## Additional official 4.6 Windows Hub Driver snapshot
 
