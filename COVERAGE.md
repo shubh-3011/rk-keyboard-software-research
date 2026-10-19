@@ -699,6 +699,12 @@ For current blockers and the recommended reverse-engineering order, see the
   recovered-array inventory, not a claim that every MFC map in the PE or every
   runtime dispatch path has been found; see
   `docs/rk-mfc-message-map-audit.md`.
+- The hash-pinned 4.6 `DeviceDriver.exe` scan identifies 145 structurally
+  validated accessor/table candidates and 1,214 entry rows; 144 candidates
+  have RTTI/vtable association evidence and one candidate's owner is
+  unresolved. The inventory includes statically linked MFC framework maps and
+  does not prove runtime dispatch or complete map coverage; see
+  `docs/rk-v4.6-mfc-message-map-inventory.md`.
 - A dated snapshot of RK's public storefront navigation records 43 listed
   variants across 33 model tokens and compares them with the installed
   profile names. The resulting candidates are not treated as compatible
