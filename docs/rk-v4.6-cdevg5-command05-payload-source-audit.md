@@ -39,9 +39,26 @@ The caller supplies operation `1`, selector/command `5`, a length of
 loaded from `[object+0x04]`. In `0x0040FFD0`, ECX is saved as the data source;
 the operation-1 branch copies up to `0x200` bytes from that pointer into its
 feature-report frame. Since `0xC8 <= 0x200`, this call copies the first
-200 bytes from the builder's output buffer. The helper calls the imported
+200 bytes from the builder's output buffer. The frame is zero-initialized to
+`0x208` bytes and has this statically recovered layout for this call:
+
+| Frame offset | Construction | Value in this command-5 call |
+| ---: | --- | --- |
+| `0x00` | Caller byte from `[object+0x2DC]` | Runtime field value unresolved |
+| `0x01` | Command argument | `0x05` |
+| `0x02` | Caller trailing argument | `0x00` |
+| `0x03` | Literal zero | `0x00` |
+| `0x04` | `ceil(length / 0x200)` | `0x01` |
+| `0x05` | Current byte offset plus one | `0x01` for the first chunk |
+| `0x06–0x07` | Current chunk length, little-endian | `C8 00` |
+| `0x08–0xCF` | Bytes copied from the source pointer | 200-byte prefix of the builder output |
+| `0xD0–0x207` | Zero-filled remainder of the frame | `0x138` zero bytes |
+
+The helper passes the complete `0x208`-byte frame to the imported
 `HidD_SetFeature` thunk at `0x0041014F`; that callsite is recorded in the
 hash-pinned [native API ledger](rk-v4.6-native-api-call-sites-reconciled.csv).
+The offsets above describe construction in this helper. They do not assign
+firmware meanings to the header bytes.
 
 This resolves the specific buffer-provenance question: the command-5 write
 uses a 200-byte prefix of one output buffer passed to `0x00411BA0`. It does
