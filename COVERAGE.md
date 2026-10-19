@@ -89,6 +89,16 @@ For current blockers and the recommended reverse-engineering order, see the
   See the [API/catalog audit](docs/rk-official-selector-api-catalog-audit-2026-10-19.md),
   [dated CSV](docs/rk-official-download-selector-catalog-2026-10-19.csv), and
   [snapshot-preserving collector](scripts/capture_rk_public_selector_catalog.py).
+  A route-by-route pass resolves all 19 platform rows from the 11 Driver
+  records: five package downloads and two Web roots, with seven OS rows that
+  have no URL. `drive2.rkgaming.com` is one shared web app for six models;
+  `rk.hubx.pro` is a separate RK68 HE route. Their HTML/JS/CSS assets are
+  hash-indexed, but UI call graphs and model-to-feature reachability remain
+  open. The `drive2` certificate was expired during capture; the `hubx`
+  snapshot bytes were initially fetched without TLS validation. See the
+  [Driver route audit](docs/rk-product-driver-selector-route-audit-2026-10-20.md),
+  its [row coverage](docs/rk-product-driver-selector-coverage-2026-10-20.csv),
+  and [asset ledger](docs/rk-product-driver-route-web-asset-ledger-2026-10-20.csv).
 - The QMK selector reports 83 rows and 83 distinct artifact URLs across seven
   model choices. Its 38 JSON definitions all match a `keyboard.json` embedded
   in the separately listed 38 ZIP source overlays; these are declarative
@@ -582,9 +592,13 @@ For current blockers and the recommended reverse-engineering order, see the
   `docs/rk-dynamic-api-resolution-audit.md`.
 - A hash-pinned V4.6 follow-up traces the indirect `RegEnumKeyExW` call into
   child-key name/open handling and a caller-path `RegDeleteKeyExW`/`RegDeleteKeyW`
-  helper. This places it in a deletion-related path, but does not prove correct
-  recursive traversal, the exact registry path, or runtime reachability; see
-  `docs/rk-v4.6-registry-subtree-delete-audit.md`.
+  helper. A later exact-image decode corrects the earlier non-recursion
+  conclusion: `0x004ACEF8` calls itself at `0x004ACF7A`, recursively processes
+  enumerated children, then deletes the parent. The concrete registry root/path,
+  UI route, and runtime reachability remain unresolved; see the
+  [original audit](docs/rk-v4.6-registry-subtree-delete-audit.md),
+  [correction](docs/rk-v4.6-registry-recursive-delete-followup-2026-10-20.md),
+  and [40-edge ledger](docs/rk-v4.6-registry-recursive-delete-edge-ledger-2026-10-20.csv).
 - A hash-pinned 4.06 follow-up resolves the main driver's `OLEACC.dll`
   delay-import descriptor, all three export names, and the shared
   `LoadLibraryA`/`GetProcAddress` helper's IAT patch and tail-dispatch path.
