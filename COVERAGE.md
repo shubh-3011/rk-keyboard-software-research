@@ -65,7 +65,11 @@ model or runtime map.
   findings remain baseline-only and do not establish the 4.6 install or
   uninstall flow. See the installer boundary section in the
   [package snapshot](docs/rk-v4.6-package-snapshot.md) and the
-  [4.06 script audit](docs/rk-installer-uninstaller-script-audit.md).
+  [4.06 script audit](docs/rk-installer-uninstaller-script-audit.md). A
+  hash-pinned raw-byte search for the known callback names found no literal
+  script identifiers; this does not rule out compiled or transformed code.
+  See the [4.6 script-recovery audit](docs/rk-v4.6-inno-script-recovery-audit.md)
+  and [scanner](scripts/audit_rk46_inno_script_literals.py).
 - A normalized path/hash comparison with the installed 4.06 tree records
   743 identical, 50 changed, 455 added, and 17 absent application paths; see
   [`docs/rk-package-file-delta-v4.06-v4.6.md`](docs/rk-package-file-delta-v4.06-v4.6.md)
@@ -147,6 +151,17 @@ model or runtime map.
   See the [Side LED audit](docs/rk-v4.6-side-led-static-audit.md) and its
   [message-map follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md).
   Other detailed native control-flow reports remain tied to the 4.06 binaries.
+- The 4.6-labeled package's `Update.exe`, `InitSetup.dll`, and `uninstall.dll`
+  are byte-identical to their installed 4.06 counterparts. The added
+  per-import crosswalk verifies all 724 PE import rows against the 4.06 IAT
+  ledger and carries forward 29 register-indirect callsites, three direct IAT
+  tail jumps, the `_adjust_fdiv` data reference, and two unresolved ANSI loader
+  imports. The helper syscall-like byte candidates also match 4.06 exactly;
+  none decodes as a direct syscall/sysenter instruction. The generated 4.6
+  uninstaller is absent from this extracted package, so its code is not
+  covered. See the [helper audit](docs/rk-v4.6-helper-native-api-audit.md),
+  [API/callsite ledger](docs/rk-v4.6-helper-api-callsite-crosswalk.csv), and
+  [generator](scripts/audit_rk46_helper_api_crosswalk.py).
 - A separate 4.6 screen/GIF trace maps the user-selected NewGIF path through
   shared frame-list fields, the 512-entry worker snapshot, the RGB565
   converter, G5 vtable methods for parameter/page transfer, and the
@@ -161,6 +176,14 @@ model or runtime map.
   Decoder details, visible control labels, runtime execution, and physical-
   model acceptance remain unverified. See
   [`docs/rk-v4.6-screen-gif-ui-transport-audit.md`](docs/rk-v4.6-screen-gif-ui-transport-audit.md).
+- A focused follow-up closes one screen-dialog child-event-to-worker edge:
+  the `CScreenDlg` child HWND at object offset `+0x1408` passes the dialog's
+  numeric `+0x114` state into the 512-entry frame snapshot and the already
+  traced screen worker. The mapped `EN_CHANGE` control ID `0x107` updates the
+  same state; editing alone is not shown to launch the worker. The event
+  source's visible label/ID, exact notification, delay units, runtime family,
+  and device acceptance remain unknown. See the
+  [focused edge audit](docs/rk-v4.6-screen-dialog-worker-edge.md).
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
   local macro-file references. A follow-up maps the prior 16 unresolved
