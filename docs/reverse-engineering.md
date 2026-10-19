@@ -322,7 +322,11 @@ shutdown path at `0x004AE9CC` calls `ExitWindowsEx` at `0x004AEA38` with
 `EWX_REBOOT`; caller `0x004F5BAC` exists, but runtime conditions determine
 whether a reboot is requested. The callback bodies are now statically
 disassembled, but the exact engine dispatch sequence and runtime effects were
-not executed or established.
+not executed or established. A separate follow-up resolves the uninstaller's
+three named-pipe calls to a message-framed Inno Setup 64-bit helper channel;
+the embedded AMD64 helper maps security-descriptor and type-library handlers.
+This is host-side installer IPC, not a keyboard path; see the
+[named-pipe helper audit](rk-unins000-named-pipe-helper-audit.md).
 
 The address-level IAT cross-reference CSV classifies these import entries and
 static executable-section references:

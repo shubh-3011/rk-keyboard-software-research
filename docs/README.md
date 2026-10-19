@@ -129,6 +129,7 @@
 - [General settings, host-local persistence, Apply, and reset boundaries](rk-general-settings-ui-persistence-audit.md)
 - [Reset vtable routes, periodic system-parameter worker, and stop event](rk-reset-and-system-parameter-path-audit.md)
 - [Installer/uninstaller scripts](rk-installer-uninstaller-script-audit.md)
+- [4.06 uninstaller named-pipe IPC with the Inno Setup 64-bit helper](rk-unins000-named-pipe-helper-audit.md)
 - [Host software-update downloads, helper launch, and setup gaps](rk-host-update-install-path-audit.md)
 - [Public product names compared with this package snapshot](rk-public-model-coverage-gaps.md)
 - [Dated storefront model-token inputs](rk-public-storefront-models.csv)

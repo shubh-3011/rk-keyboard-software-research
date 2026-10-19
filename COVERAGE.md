@@ -289,6 +289,13 @@ model or runtime map.
 - All ordinary and delay imports from the five installed PE files, their
   scanned IAT/thunk references, dynamic API loader candidates, and raw
   system-call byte matches are inventoried.
+- A hash-pinned 4.06 uninstaller follow-up resolves `CreateNamedPipeW`,
+  `SetNamedPipeHandleState`, and `TransactNamedPipe` to a message-framed
+  `InnoSetup64BitHelper` subprocess channel. It hash-identifies the embedded
+  AMD64 and IA-64 helper PE resources and maps the AMD64 ACL and type-library
+  handlers from their static code. Runtime execution remains unverified; the
+  parent/helper operation-2 reply-field mismatch is documented. See
+  [`docs/rk-unins000-named-pipe-helper-audit.md`](docs/rk-unins000-named-pipe-helper-audit.md).
 - A second static pass mapped 51 call/callback routes and one imported-data
   reference among the 62 imports that lacked direct/thunk call references;
   10 import rows still have no recovered invocation path and are classified
