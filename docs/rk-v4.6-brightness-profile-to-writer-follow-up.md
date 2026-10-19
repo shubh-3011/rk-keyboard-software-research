@@ -2,9 +2,9 @@
 
 ## Scope and evidence
 
-This report closes the profile-default and static serializer portions of the
-4.6 G5-family brightness path. It is based on the extracted
-`app/DeviceDriver.exe`, SHA-256
+This report maps the profile defaults, row-edit message handler, and static
+serializer portions of the 4.6 G5-family brightness path. It is based on the
+extracted `app/DeviceDriver.exe`, SHA-256
 `8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9`, plus
 the extracted profile catalog represented in `models-4.6.json`. Addresses
 below are virtual addresses in that exact driver. The binary was inspected
@@ -64,9 +64,37 @@ The mode-selection handler around `0x00424340` stores the selected mode index
 at active-object offset `+0x423C`, refreshes the row UI through
 `0x00426B30`, and can enqueue Apply masks `0x02` or `0x22` around
 `0x004243C1`–`0x00424415`. This links a mode selection to shared UI state and
-the deferred settings path. The reviewed instructions do not prove that this
-is the brightness editor's callback or that it writes the row's `+1`
-brightness index.
+the deferred settings path. It is distinct from the private-message row
+mutation path below; these mode-selection instructions do not write the
+active row's brightness-index byte.
+
+A separate 4.6 message-map entry closes the row-mutation edge. In the
+hash-pinned driver's `.rdata` table at `0x005D54C0`, entry `0x005D5508`
+contains private message `0x0800` and handler pointer `0x004240A0`. That
+handler refreshes selector display through `0x00424130`, calls row-update
+helper `0x00427530`, and on its continuing path conditionally queues Apply
+mask `0x02` at `0x00424102` when global `0x0062A234` permits it. That path
+then calls persistence helper `0x00460DA0`; other branches return early.
+
+`0x00427530` obtains the selected row index through `SendMessageW` with
+message `0x110A` and `wParam=9` (`0x00427542`–`0x00427577`). It addresses the
+row as `active+0x4238+36*index`, reads UI state through `0x004505F0` using
+dialog offsets `+0x106C` and `+0x1A6C`, and stores values to row offsets
+`+0x08` at `0x00427594` and `+0x09` at `0x0042759C`. It then copies values
+to row `+0x0C` at `0x004275A8` and `+0x28` at `0x004275B1`. For row zero, the
+`+0x09` store is active-object byte `+0x4241`, the brightness index read by
+`0x00426BE8` and translated through `LightUI` for display, then read by the G5
+packer at `0x004125C3`/`0x00412609` and translated through `LightHW` for
+output. This statically connects the message handler's row mutation to the
+existing serializer path.
+
+The only located generic sender for `0x0800`, helper `0x00450550`, uses its
+own `+0x9E0` selector field. I did not establish that sender instance's link
+to this dialog's `+0x1A6C` control or identify a direct child control ID. The
+visible label, semantics of the other row fields, active device target, and
+firmware acceptance remain unresolved. The `ApplyNow` gate also means the
+handler's row update does not by itself prove that every edit immediately
+queues a hardware write.
 
 The G5 packer at `0x00412470` reads each row's byte `+1` as an index into the
 `LightHW` table at `0x0062A578`, then writes the translated byte into the LED
@@ -95,12 +123,12 @@ accepted or applied the output.
 | Link | Status | Remaining limit |
 | --- | --- | --- |
 | `LightUI`, `LightHW`, `BriNum`, and `DefBri` profile loading/defaults | Proven statically | Runtime profile selection and malformed-profile behavior are not observed. |
-| Default value copied to 24 active rows | Proven statically | User edit callback and row selection are not identified. |
+| Default value copied to 24 active rows | Proven statically | Runtime profile and current row selection are not observed. |
 | `LightUI` to displayed values | Proven statically | Control identity and physical units are unresolved. |
-| `LedOpt1`–`LedOpt24` profile rows to active mode and dialog state | Proven statically | Tuple-cell semantics and the edit callback are unresolved. |
+| `LedOpt1`–`LedOpt24` profile rows to active mode and dialog state | Proven statically | Tuple-cell semantics and the exact `0x0800` sender remain unresolved. |
+| `0x0800` message to active-row brightness-index store | Proven statically | Visible control identity and message sender are unresolved. |
 | `LightHW` index to G5 output byte | Proven statically | Hardware brightness meaning and firmware acceptance are unresolved. |
-| G5 mask `0x02` to command-4 writer | Proven statically | Active object and runtime event reachability are unobserved. |
-| Brightness editor callback updates row byte `+1` | Unresolved | No complete child-control-to-field-mutation trace. |
+| G5 mask `0x02` to command-4 writer | Proven statically | Active object, handler-to-worker runtime reachability, and acceptance are unobserved. |
 | Specific click to live device write | Unresolved | No runtime execution or report capture. |
 
 ## Related audits

@@ -35,7 +35,7 @@ ran during install or uninstall.
 | `MyAfterInstall2` | Reads `ActiveLanguage`, selects a numeric value, expands `{localappdata}\RKKB\lang.ini`, and calls `SetIniInt` for section `OPT`, key `LangIndex`. | The calls, strings, and branch values are proven. Actual language selection and INI write are unverified. |
 | `CurUninstallStepChanged` | Immediately returns. | No callback-specific operation is present in either disassembly. |
 | `InitializeUninstallProgressForm` | Repeats the two title lookups, conditional `SendMessage(..., 16, 0, 0)` calls, and 1,000 ms sleeps. | Same static/runtime distinction as `InitializeSetup`. |
-| `!MAIN` | Immediately returns. | This is the bytecode entrypoint; the log does not by itself reveal how the Inno engine dispatches the exported callbacks. |
+| `!MAIN` | Immediately returns; neither payload has an intra-script call from this entrypoint to an exported callback. | The bytecode proves callback bodies and export markers, but not the Inno engine's event-dispatch table, callback reachability, or event order. |
 
 The import table declared by the script also includes `FindWindowByWindowName`,
 `SendMessage`, `Sleep`, `ActiveLanguage`, `ExpandConstant`, and `SetIniInt`.

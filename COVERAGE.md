@@ -481,11 +481,12 @@ model or runtime map.
   and [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
 - A separate 4.6 trace closes the G5 profile-default and serializer path:
   `LightUI` display values, 24 `LedOpt` profile rows, `DefBri` defaults, and
-  `LightHW` output translation feed active per-mode state and dialog rendering;
-  G5 mask `0x02` can pack and write command `4`. Profile `020F` demonstrates
-  distinct UI values and output bytes. The brightness edit callback that
-  changes the row index and a specific UI action's live device target remain
-  unresolved. See
+  `LightHW` output translation feed active per-mode state and dialog rendering.
+  A 4.6 private-message `0x0800` handler now traces selected-row updates into
+  the brightness-index byte consumed by the G5 packer, conditionally queues
+  Apply mask `0x02`, and persists state. Profile `020F` demonstrates distinct
+  UI values and output bytes. The visible child control that sends the message,
+  active live-device target, and firmware acceptance remain unresolved. See
   [`docs/rk-v4.6-brightness-profile-to-writer-follow-up.md`](docs/rk-v4.6-brightness-profile-to-writer-follow-up.md).
 - A focused `CLedDlg` follow-up resolves private messages `0x0481` and
   `0x0482` to two posted selection notifications, their per-position mapping

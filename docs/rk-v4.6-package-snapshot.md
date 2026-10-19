@@ -73,6 +73,11 @@ without installing or launching it. Its setup-data metadata identifies Inno
 Setup 5.3.3 Unicode and seven language entries (`en`, `sc`, `tw`, Korean,
 Japanese, Turkish, and Russian). The package listing includes
 `localappdata/RKKB/lang.ini`, also present in the extracted manifest above.
+That 18-byte file contains `[OPT]` with `LangIndex=0` (SHA-256
+`2F18E5BB2C1C90B88D00B8866049A1A710D07FC0E58A60E3E276EFFC0E399CB9`). The
+seven package languages match the language cases in the larger of the two
+4.06 script snapshots; this is a data/configuration correlation, not evidence
+that the 4.6 installer uses that same script.
 This metadata does not expose the full compiled PascalScript callback body or
 prove which setup callbacks the Inno engine dispatches.
 
