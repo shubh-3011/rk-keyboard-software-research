@@ -68,10 +68,14 @@ import-forwarding `jmp [IAT]` sites, and other absolute IAT references found
 in executable sections. Dynamically resolved API names and nearby literal
 strings are separately recorded in
 [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv). That inventory has
-128 statically identified `LoadLibrary*`/`GetProcAddress` callsites across the
-five PEs. These are static byte/address-level references, not a function-level
-call graph or a record of executed system calls. The import, IAT-reference,
-dynamic-loader, and raw system-call byte-scan inventories are reconciled in the
+128 direct-IAT/import-thunk `LoadLibrary*`/`GetProcAddress` rows across the
+four PEs that import these loader APIs. The dynamic-target CSV also contains
+seven manually confirmed register-indirect `GetProcAddress` calls in the
+4.06 `DeviceDriver.exe`, for 135 rows total. Other loader-IAT references
+remain unexpanded, so the CSV is not a complete register-indirect call graph.
+These are static byte/address-level references, not a record of executed
+system calls. The import, IAT-reference, dynamic-loader, and raw system-call
+byte-scan inventories are reconciled in the
 [system API crosswalk](rk-system-api-crosswalk.md).
 
 The static profile selector for every configured model is captured in
@@ -907,8 +911,8 @@ The full maps also establish the main application's system-message dispatch:
 
 | Owner | Map row | Message | Handler | Static path |
 | --- | --- | --- | --- | --- |
-| `COemDrvDlg` | `0x005D4C50` | `WM_DEVICECHANGE` (`0x0219`) | `0x00447580`, body at `0x00447591` | Processes arrival/removal branches, parses device paths, and schedules timers `0x844`/`0x845`; the `WM_TIMER` map row at `0x005D4C98` targets `0x00447710`. Runtime event delivery remains unobserved. |
-| `CScreenDlg` | `0x005DA4E8` | `WM_TIMER` (`0x0113`) | `0x0046D570` | Timer `0x900` kills its timer, sets `this+0x10C`, and calls UI refresh `0x00475257`; the field's meaning is unknown. |
+| `COemDrvDlg` | `0x005D4C50` | `WM_DEVICECHANGE` (`0x0219`) | `0x00447580`, body at `0x00447591` | Checks arrival/removal broadcasts, filters HID paths, parses `USB#VID_`/`PID_`, classifies IDs against supported-device/profile tables, logs `IN`/`OUT`, and schedules timers `0x844`/`0x845`; the `WM_TIMER` map row at `0x005D4C98` targets `0x00447710`. Later asynchronous effects and runtime event delivery remain unobserved. |
+| `CScreenDlg` | `0x005DA4E8` | `WM_TIMER` (`0x0113`) | `0x0046D570` | Timer `0x900` kills its timer, sets `this+0x10C`, and calls UI refresh `0x00475257`; the field's meaning is unknown. A separate helper arms this one-shot timer for 700 ms under a state condition; its initiating UI feature remains unresolved. |
 
 See the [full MFC message-map audit](rk-mfc-message-map-audit.md) for the
 other application-owned non-command entries and all 26 recovered arrays.
@@ -1093,10 +1097,13 @@ The saved Ghidra analysis of the main driver contains 13,735 procedures and
 imports, selected device-family strings, and selected data structures; they
 do not decompile all procedures. The PE import inventory is complete for the
 listed static import tables. Across the five analyzed binaries, the scan found
-128 `GetProcAddress`/`LoadLibrary*` callsites in four binaries: 47 in
-`DeviceDriver.exe`, 54 in `Update.exe`, four in `InitSetup.dll`, and 23 in
-`unins000.exe`. Twenty-two callsites have no nearby literal candidate. Many
-recoverable names are Windows/MFC compatibility APIs (for example transacted
+128 direct-IAT/import-thunk `GetProcAddress`/`LoadLibrary*` rows in four
+binaries: 47 in `DeviceDriver.exe`, 54 in `Update.exe`, four in
+`InitSetup.dll`, and 23 in `unins000.exe`. The ledger additionally records
+seven confirmed register-indirect `GetProcAddress` calls in the main driver,
+bringing it to 135 rows. Twenty-two original direct-IAT/import-thunk rows
+have no nearby literal candidate. Other IAT-reference locations are not all
+expanded into call rows. Many recoverable names are Windows/MFC compatibility APIs (for example transacted
 file/registry functions, DWM/theme helpers, and task dialogs), but candidate
 strings do not prove argument flow or execution. Some targets are not
 statically recoverable. COM vtable calls, other indirect calls, and exact

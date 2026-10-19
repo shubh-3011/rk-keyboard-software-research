@@ -205,9 +205,9 @@ model or runtime map.
   targeted trace maps `+0x34` command `0x82` and `+0x70` command `0x88` to
   conditional response-copy code. A stack audit of all six `HidD_GetFeature`
   calls confirms each uses the same handle as its paired `HidD_SetFeature`;
-  `+0x2DC` is a separate report byte. No hardware response was observed. No
-  caller is attributable to G5 `+0x70`, and its firmware meaning/range remain
-  unresolved. See
+  `+0x2DC` is a separate report byte. No response was observed from those G5
+  methods. No caller is attributable to G5 `+0x70`, and its firmware
+  meaning/range remain unresolved. See
   [`docs/rk-v4.6-hid-getfeature-argument-audit.md`](docs/rk-v4.6-hid-getfeature-argument-audit.md).
   A focused caller audit screens signature-compatible `+0x70` sites against
   same-receiver larger-interface slots and point-output use; none is
@@ -501,9 +501,17 @@ model or runtime map.
   Their `Dev/01AF/Update.exe` and `.upf` files are byte-identical; the changed
   4.6 `DeviceDriver.exe` has separately traced G5 request/read paths that
   contain conditional copy code, and the six V4.6 `HidD_GetFeature` callsites
-  use the same handle as their paired `HidD_SetFeature` calls. No hardware
-  response was observed, and neither G5 path establishes a firmware file
-  export. Whether an undiscovered indirect or model-specific path exists is
+  use the same handle as their paired `HidD_SetFeature` calls. No response
+  was observed from those G5 paths, and neither establishes a firmware file
+  export. A live HID open mapped seven collections on the attached
+  `258A:0150` device; the shared VID/PID appears on 46 registry profiles, so
+  this still does not identify the device as an S98. Three direct
+  `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
+  1032-byte feature read failed. No output report or `HidD_SetFeature` payload
+  was sent. The
+  updater's temporary `AFX`/delete-on-close serializer also has no direct
+  UART/HID receive caller. Whether an
+  undiscovered indirect or model-specific firmware export exists is
   unresolved; see `docs/rk-firmware-readback-audit.md`.
 
 These gaps are intentional status labels, not claims that the missing work is

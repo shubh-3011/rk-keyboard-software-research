@@ -8,12 +8,16 @@ connected RK S98 to a host file while leaving the keyboard unchanged? This is
 a static assessment of these two package snapshots, not a claim about every RK
 software or firmware revision.
 
-The evidence here is static. No RK executable or updater was launched, no
-keyboard HID interface was opened, no keyboard report or serial command was
-sent, and no bootloader mode was entered. Findings are marked **proven** when
+The binary findings here are static. A separately dated live check opened
+selected HID collections, queried descriptor metadata, and made three direct
+`HidD_GetFeature` requests. It sent no output report or `HidD_SetFeature`
+payload and read no input report. No RK executable or updater was launched,
+no serial command was sent, and no bootloader mode was entered. Findings are
+marked **proven** when
 the binary or installed files directly establish them, **inferred** when they
-follow from a traced data flow but are not validated at runtime, and
-**unresolved** where static evidence is incomplete.
+follow from a traced data flow but are
+not validated at runtime, and **unresolved** where static evidence is
+incomplete.
 
 ## Examined package
 
@@ -69,6 +73,54 @@ profile, while the eight S98 profile rows have direct PIDs `0174`, `01AF`,
 `01BF`, `0223`, `0224`, `022B`, `022F`, and `0230` and no installed
 `PID_Wireless` value. The USB `258A:0150` node therefore remains ambiguous and
 cannot be confidently assigned to the S98 or its Bluetooth LE nodes.
+
+**Current descriptor-only HID snapshot (2026-10-19):** after explicit user
+authorization to open the HID interface, a read-access handle was used only
+for `HidD_GetAttributes`, `HidD_GetPreparsedData`, and `HidP_GetCaps` on the
+present `258A:0150` collections. During this metadata pass, no input report
+was read and no output report or `HidD_SetFeature` payload was sent; the
+separate direct feature-read results are listed below. Seven of ten
+enumerated collections could be opened; Windows returned access denied for
+MI_00, MI_01/COL_05, and MI_01/COL_09. The accessible descriptor results were:
+
+| Interface collection | Usage page:usage | Input bytes | Output bytes | Feature bytes | Feature report IDs |
+| --- | --- | ---: | ---: | ---: | --- |
+| MI_01/COL_01 | `FF02:0002` | 20 | 20 | 0 | — |
+| MI_01/COL_02 | `0001:0080` | 2 | 0 | 0 | — |
+| MI_01/COL_03 | `000C:0001` | 3 | 0 | 0 | — |
+| MI_01/COL_04 | `FF02:0001` | 4 | 0 | 0 | — |
+| MI_01/COL_06 | `FF00:0001` | 0 | 0 | 6 | `05` |
+| MI_01/COL_07 | `FF00:0001` | 0 | 0 | 1032 | `06` |
+| MI_01/COL_08 | `FF01:0001` | 0 | 0 | 8 | `0A` |
+
+The opened device attributes report VID/PID `258A:0150` and version `0206`.
+Its product string was returned with garbled character decoding and is not
+used as identity evidence. The 4.6 public registry has 46 receiver profiles
+with this same VID/PID and `FF02:0002` usage, spanning S98 and other models;
+the connected hardware therefore still cannot be identified as S98 from this
+descriptor or VID/PID alone. This is a live interface/descriptor observation,
+not a report-level protocol trace. The Bluetooth PnP nodes named `RK-S98RGB`
+remain generic BLE records without a proven association to the USB receiver.
+
+**Direct feature-read attempt (2026-10-19):** using only the descriptor's
+feature report IDs and lengths, `HidD_GetFeature` was called once per
+accessible feature collection, with no preceding `HidD_SetFeature` request:
+
+| Interface collection | Requested report | Result | Returned bytes or error | SHA-256 of returned report |
+| --- | --- | --- | --- | --- |
+| MI_01/COL_06 | ID `05`, 6 bytes | Success | `06 A0 02 86 28 CB` | `0942459c22f269a1c5126070bbede7a6fb01bcdd2bf47f54e11e95346c1b2763` |
+| MI_01/COL_07 | ID `06`, 1032 bytes | Failure | Win32 error 31 (`ERROR_GEN_FAILURE`) | — |
+| MI_01/COL_08 | ID `0A`, 8 bytes | Success | `06 A0 02 86 28 CB 24 67` | `cda6d71acf4f56682512674c8846aa7786ab6d8b81181537f529f0f831182168` |
+
+The successful short responses share the same first six bytes even though
+their collections and requested report IDs differ. In both responses, byte 0
+is `06`, not the requested ID (`05` or `0A`); this mismatch is unresolved.
+The bytes' meaning and whether the values represent current device state, a
+generic response, or stale report data are also unresolved. The 1032-byte
+report that could be relevant to updater traffic did not return data on this
+direct request. This does not establish a firmware read or a complete
+firmware-copy path; each official software read
+path located so far first sends a feature request/write.
 
 ## `.upf` parser and host-to-device flow
 
@@ -287,6 +339,19 @@ pass received chunks to a stream-write wrapper. Its gate, file pointer setup,
 file name, and activation remain unresolved; this supersedes the earlier
 negative finding that no UART queue-to-file sink had been identified.
 
+### Updater temporary-file serializer follow-up
+
+The updater's `CreateFileW` call at `0x00480B1D` creates an `AFX`-prefixed
+temporary file with `CREATE_ALWAYS` and flags
+`FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE`. The handle is wrapped
+in an MFC `CFile`-like object and a `CArchive`-like serializer; the serializer
+then calls a supplied object's virtual method. Eighteen direct callers of
+this helper are in the OLE/document-object region (`0x004CF550` through
+`0x004D23A9`). No direct caller from the UART or HID receive handlers was
+found. This is evidence for generic object serialization into an ephemeral
+file, not a persistent firmware export path. Indirect COM/runtime behavior
+remains unresolved.
+
 ## Can the connected S98 firmware be copied without changing it?
 
 **Conclusion across the examined snapshots:** no complete, read-only S98
@@ -324,8 +389,13 @@ file-name setup, all indirect writes to the file gate, undocumented
 bootloader commands, and the exact protocol revision of the connected S98
 are not reconstructed. Static analysis cannot prove extraction is
 impossible, but it does not demonstrate a complete read-only backup workflow.
-The hardware constraint remains in force: do not test this uncertainty by
-opening HID, sending a report, running the updater, or entering a bootloader.
+The live metadata and direct feature reads documented above have not resolved
+this question: the only successful reads were eight bytes and six bytes, and
+the 1032-byte feature read failed. The official software's candidate
+firmware-relevant paths pair `HidD_GetFeature` with request writes through
+`HidD_SetFeature`; their command semantics and response data remain
+unvalidated on this receiver. No output report or `HidD_SetFeature` payload
+was sent, and no updater or bootloader operation is documented here.
 
 ## Evidence files
 

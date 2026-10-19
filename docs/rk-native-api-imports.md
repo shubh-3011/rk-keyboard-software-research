@@ -4,7 +4,7 @@ Generated from the installed RK Keyboard Software package by reading PE import t
 
 This inventory lists statically imported DLL entrypoints, not proof that every entrypoint is called at runtime. It does not cover APIs resolved dynamically with `GetProcAddress`, COM methods resolved from interface/vtable calls, calls made by Windows drivers, or behavior hidden behind indirect calls. The full application control-flow and every executed system call remain unproven.
 
-For static addresses of direct IAT calls and callers routed through import thunks, see [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). Statically visible `GetProcAddress`/`LoadLibrary*` callsites and nearby literal candidates are in [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv); unresolved targets and dynamic module/pointer flow remain open.
+For static addresses of direct IAT calls and callers routed through import thunks, see [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv) contains direct-IAT/import-thunk `GetProcAddress`/`LoadLibrary*` rows plus seven source-tagged register-indirect `GetProcAddress` calls in the 4.06 main driver. Other loader-IAT references remain unexpanded; unresolved targets and dynamic module/pointer flow remain open.
 
 ## Binaries
 

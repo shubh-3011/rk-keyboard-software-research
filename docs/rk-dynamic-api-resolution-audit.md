@@ -2,10 +2,13 @@
 
 ## Scope
 
-The installed PE inventory identifies 128 `LoadLibrary*` and
-`GetProcAddress` callsites across five binaries. This note records static
-reviews of the 47 driver, four installer-helper, 54 updater, and 23
-uninstaller sites in that inventory. It uses x86 disassembly only; none of
+The installed PE inventory records 128 direct-IAT or import-thunk
+`LoadLibrary*`/`GetProcAddress` call rows across four binaries. This note
+records static reviews of those 47 driver, four installer-helper, 54 updater,
+and 23 uninstaller rows, plus seven manually confirmed register-indirect
+`GetProcAddress` calls in the 4.06 driver. The combined CSV therefore has 135
+rows. This targeted addition does not enumerate every register-indirect
+reference to a loader IAT slot. The audit uses x86 disassembly only; none of
 the applications was executed and no device was contacted. The
 additional snapshots are `Update.exe` SHA-256
 `27894463B0DFE5BC3F5DC19D4D3351D9DFB692C402BF277BDE3889D37E4A206C` and
@@ -36,19 +39,63 @@ The `DllGetVersion` string at `0x005A55EC` is directly passed to
 enough to the `LoadLibraryW` callsite. The code does not prove which library
 is loaded by callers of `0x0055F001`.
 
+### Selected register-indirect `GetProcAddress` calls: USER32
+
+The 4.06 main-driver cross-reference row records an IAT operand reference at
+`0x004725DE` under `other_iat_reference_sites`; instruction decoding shows
+the `mov esi,[0x0059E3FC]` begins at `0x004725DC`. The IAT VA
+`0x0059E3FC` is `KERNEL32!GetProcAddress`. In the routine beginning at
+`0x004725A1`, the code calls `GetModuleHandleW` through IAT VA
+`0x0059E420` at `0x004725CC`, passing the UTF-16 `USER32` name at
+`0x0059F6E0`. It then calls through ESI with literal export-name pointers
+and stores each returned address in a global:
+
+| `GetProcAddress` call | Export-name VA / selected name | Result global | Static argument evidence |
+| --- | --- | --- | --- |
+| `0x004725E8` | `0x0059F6CC` / `GetSystemMetrics` | `0x00605798` | `push 0x0059F6CC`, `push EDI`, `call ESI` |
+| `0x004725FD` | `0x0059F6B8` / `MonitorFromWindow` | `0x0060579C` | `push 0x0059F6B8`, `push EDI`, `call ESI` |
+| `0x0047260E` | `0x0059F6A8` / `MonitorFromRect` | `0x006057A0` | `push 0x0059F6A8`, `push EDI`, `call ESI` |
+| `0x0047261F` | `0x0059F694` / `MonitorFromPoint` | `0x006057A4` | `push 0x0059F694`, `push EDI`, `call ESI` |
+| `0x00472630` | `0x0059F680` / `EnumDisplayMonitors` | `0x006057AC` | `push 0x0059F680`, `push EDI`, `call ESI` |
+| `0x00472641` | `0x0059F66C` / `EnumDisplayDevicesW` | `0x006057B0` | `push 0x0059F66C`, `push EDI`, `call ESI` |
+| `0x00472661` | Conditional `0x0059F65C` / `GetMonitorInfoW` or `0x0059F64C` / `GetMonitorInfoA` | `0x006057A8` | A prior global test selects one name; both paths join before `push EDI`, `call ESI` |
+
+These are seven statically decoded invocations of `GetProcAddress`, now
+represented as source-tagged rows in [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv).
+The address `0x004725DE` is the cross-reference's IAT-operand location, not
+the first call instruction; each added row uses the decoded `call ESI`
+address. Static flow confirms the module/name arguments and pointer stores,
+not execution, export availability, or later use of every cached pointer.
+
+Other `GetProcAddress` IAT loads in the 4.06 snapshots remain outside these
+new rows and are not resolved by this pass. The cross-reference lists the
+remaining `DeviceDriver.exe` operand locations `0x004332B9`, `0x0047EF7B`,
+`0x0047F88C`, `0x00482A9C`, `0x00488F64`, `0x0048A3E8`, `0x004BB18C`,
+`0x0057614E`, `0x0057644A`, and `0x00582162`; `Update.exe` locations
+`0x0041BA02`, `0x0041C21F`, `0x00424BF1`, and `0x0053D882`; and
+`InitSetup.dll` locations `0x10002B53`, `0x10002E4F`, and `0x10009462`.
+These are IAT-reference locations, not confirmed call instruction addresses.
+Their corresponding register-call sites, export-name arguments, and target
+consumers remain unresolved in this ledger. Some have separate partial
+discussion elsewhere, but this inventory does not convert them all into
+invocation rows or resolve every target. The full dynamic resolver call graph
+therefore remains open.
+
 ## What this resolves
 
-These seven sites are not simply unclassified `LoadLibrary`/`GetProcAddress`
-byte matches. The disassembly establishes the source of each parameter at the
-call boundary, handle caching/cleanup in several wrappers, and one named
-export call. It still does not recover every caller, runtime module string,
-export string, or whether each branch executes. Thus the empty-string count
-in the generated CSV remains unchanged as a scan result.
+The resolver paths traced in the sections below are not simply unclassified
+`LoadLibrary`/`GetProcAddress` byte matches. Their disassembly establishes
+parameter sources at call boundaries, handle caching/cleanup in several
+wrappers, and named export calls. It still does not recover every caller,
+runtime module string, export string, or whether each branch executes. Thus
+the 22 empty-string count for the original direct-IAT/import-thunk rows
+remains unchanged as a scan result.
 
 ### Additional driver callers and consumers
 
-The inventory contains 47 dynamic-loader callsites for this PE. A static
-review of all rows found these additional argument and pointer-use paths:
+The original direct-IAT/import-thunk inventory contains 47 dynamic-loader
+rows for this PE. A static review of those rows found these additional
+argument and pointer-use paths:
 
 - The ANSI loader wrapper at `0x00473B25` is reached through helper
   `0x00473AEC`. Callers load `hhctrl.ocx` (`0x00476AD1`) and
@@ -100,7 +147,8 @@ branch execution or calls made inside Windows libraries.
 
 ## Installer helper resolver paths
 
-`InitSetup.dll` has four dynamic-loader callsites. The installed snapshot hash
+The direct-IAT/import-thunk inventory has four `InitSetup.dll` dynamic-loader
+rows. The installed snapshot hash
 is `59DB7BFD9A92CC9A0998260807F17C536EC71159B727DF10D08B998BC94DE301`;
 the PE image base is `0x10000000`, and its sole named export is `SetupInit`
 at `0x10001080`.
@@ -374,8 +422,10 @@ direct read in the disassembly, and indirect/data-driven consumers remain
 possible. None of these callsite traces proves runtime reachability or
 Windows-version-specific export availability.
 
-These traces account for all 128 loader callsite rows in the installed
-inventory, but they do not prove every path executes. Runtime-supplied names,
+The original 128 direct-IAT/import-thunk rows are reviewed in this audit, and
+the focused driver sequence above adds seven confirmed register-indirect
+calls. The expanded CSV does not exhaust the other IAT-reference locations
+listed above, nor does it prove any path executes. Runtime-supplied names,
 some cached-pointer consumers, indirect control flow, and callers outside
 the inspected images remain unresolved. See the
 [system API crosswalk](rk-system-api-crosswalk.md) for aggregate scope and
