@@ -397,6 +397,12 @@ model or runtime map.
   path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md).
+- A focused `CLedDlg` follow-up resolves private messages `0x0481` and
+  `0x0482` to two posted selection notifications, their per-position mapping
+  record effects, and Apply signal mode `4`. The child control identity,
+  visible value semantics, and relationship to family-specific lighting
+  serializers remain unresolved. See
+  [key-position message trace](docs/rk-led-key-position-message-followup.md).
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
   cross-referenced to a statically recovered complete updater message map in

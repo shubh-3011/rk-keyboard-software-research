@@ -145,6 +145,7 @@ as confirmed.
 - [Tray icon Configuration/Exit workflow and command handlers](docs/rk-tray-icon-menu-workflow-audit.md)
 - [General settings UI and host-persistence audit](docs/rk-general-settings-ui-persistence-audit.md)
 - [Recovered MFC message-map arrays and system-message routes](docs/rk-mfc-message-map-audit.md)
+- [CLedDlg key-position mapping message follow-up](docs/rk-led-key-position-message-followup.md)
 - [HID enumeration and hot-plug notification audit](docs/rk-device-enumeration-notification-audit.md)
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
 - [Indirect API call and callback follow-up](docs/rk-native-api-indirect-call-audit.md)

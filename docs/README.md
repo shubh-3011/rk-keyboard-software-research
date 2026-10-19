@@ -142,6 +142,7 @@
 - [MFC command-map candidates](rk-mfc-command-map-candidates.csv)
 - [MFC message-map owner evidence](rk-mfc-map-owner-evidence.csv)
 - [Recovered MFC message-map audit](rk-mfc-message-map-audit.md)
+- [CLedDlg key-position mapping message follow-up](rk-led-key-position-message-followup.md)
 - [All entries from the 27 recovered MFC arrays](rk-mfc-message-map-entries.csv)
 
 ## Package resources and localization

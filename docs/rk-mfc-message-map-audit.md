@@ -68,8 +68,8 @@ map.
 | Private message `0x0477` | `0x00425570` | `0x005CD018` | Message name and sender are unresolved. |
 | Private message `0x0800` | `0x00422190` | `0x005CD030` | Calls formatter `0x00422220`, copies page state, and may signal the settings worker; no control sender is recovered. |
 | Private message `0x0801` | `0x00422220` | `0x005CD048` | Selector `0x95` reads the `LightUI` table; which widget requests it remains unresolved. |
-| Private message `0x0481` | `0x00422780` | `0x005CD060` | Message purpose and sender are unresolved. |
-| Private message `0x0482` | `0x00422640` | `0x005CD078` | Message purpose and sender are unresolved. |
+| Private message `0x0481` | `0x00422780` | `0x005CD060` | A position-selection producer posts it with `wParam` from `[ESI+0x80]`; handler toggles a per-position mapping record and signals Apply mode 4. Exact widget and value meaning remain unresolved. |
+| Private message `0x0482` | `0x00422640` | `0x005CD078` | A selection-list producer posts it with zero parameters; handler applies the current mapping value to eligible selected positions and signals Apply mode 4. Exact widget and value meaning remain unresolved. |
 | Private message `0x05C7` | `0x0040C840` | `0x005CD090` | Message purpose and sender are unresolved. |
 | Private message `0x0594` | `0x00422430` | `0x005CD0A8` | Message purpose and sender are unresolved. |
 | Private message `0x08B3` | `0x004251E0` | `0x005CD0C0` | Message purpose and sender are unresolved. |
@@ -83,6 +83,9 @@ This resolves the earlier ambiguous `.rdata` block: function pointers
 `0x00422190` and `0x00422220` are handlers in the `CLedDlg` map. Their map
 membership still does not prove that a particular brightness widget sends
 either message or that a UI change reaches a specific serializer.
+The producer and state effects for messages `0x0481` and `0x0482` are traced
+in the [key-position mapping follow-up](rk-led-key-position-message-followup.md);
+their exact visible controls and runtime parent-window identity remain open.
 
 ## Device notifications and timer routes
 
