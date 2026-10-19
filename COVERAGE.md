@@ -194,25 +194,27 @@ For current blockers and the recommended reverse-engineering order, see the
   provenance are in [`docs/rk-v4.6-package-snapshot.md`](docs/rk-v4.6-package-snapshot.md)
   and [`docs/rk-4.6-package-manifest.csv`](docs/rk-4.6-package-manifest.csv).
 - Static setup metadata identifies Inno Setup 5.3.3 Unicode and seven
-  languages, but does not expose the 4.6 compiled PascalScript callbacks.
-  The extracted payload has no generated uninstaller log; 4.06 callback
-  findings remain baseline-only and do not establish the 4.6 install or
-  uninstall flow. See the installer boundary section in the
-  [package snapshot](docs/rk-v4.6-package-snapshot.md) and the
-  [4.06 script audit](docs/rk-installer-uninstaller-script-audit.md). A
-  hash-pinned raw-byte search for the known callback names found no literal
-  script identifiers; this does not rule out compiled or transformed code.
-  See the [4.6 script-recovery audit](docs/rk-v4.6-inno-script-recovery-audit.md)
-  and [scanner](scripts/audit_rk46_inno_script_literals.py). A focused PE and
-  appended-overlay review records what local extractors and the IFPS parser
-  could and could not recover; no 4.6 callback body was exposed. This remains
-  an installer/uninstaller gap, not proof the setup has no script. See the
-  [overlay recovery follow-up](docs/rk-v4.6-inno-overlay-static-recovery-followup.md).
+  languages. A hash-pinned extraction and IFPS disassembly now recover six
+  exported callback bodies and reconstruct the installer action descriptor:
+  nine callback evidence rows and 1,271 action rows (including 1,249 file
+  entries and two `AfterInstall` associations). These establish callback
+  bodies and package metadata, not Inno dispatch order or runtime effects.
+  The extracted payload still lacks the generated `unins000.exe`/`.dat`.
+  See the [4.6 callback recovery](docs/rk-v4.6-inno-installer-callback-recovery-2026-10-20.md),
+  [callback ledger](docs/rk-v4.6-installer-callback-evidence-2026-10-20.csv),
+  [action ledger](docs/rk-v4.6-installer-action-evidence-2026-10-20.csv), and
+  [hash-pinned scanner](scripts/audit_rk46_installer_callbacks.py). Earlier
+  [script-recovery](docs/rk-v4.6-inno-script-recovery-audit.md) and
+  [overlay recovery](docs/rk-v4.6-inno-overlay-static-recovery-followup.md)
+  audits describe the extraction boundary; their failure to expose callbacks
+  has been superseded by this focused compiled-bytecode recovery.
 - A separate hash-pinned static pass inventories all 135 ordinary import rows
   and 281 decoded calls to the outer installer's IAT thunks. It finds one raw
   `0F 05` byte pair inside a `JMP` displacement and no recognized direct
-  syscall instruction in the executable sections. This does not recover the
-  Inno callbacks, setup sequence, overlay behavior, or runtime side effects.
+  syscall instruction in the executable sections. This callsite pass does not
+  prove branch reachability or API semantics; the setup callback bodies and
+  reconstructed action descriptor are covered in the separate static
+  recovery above. Neither pass establishes runtime side effects.
   See the [installer API boundary audit](docs/rk-v4.6-installer-native-api-boundary-audit.md),
   [callsite ledger](docs/rk-v4.6-installer-native-api-call-sites.csv), and
   [hash-pinned scanner](scripts/audit_rk46_installer_native_api.py).
