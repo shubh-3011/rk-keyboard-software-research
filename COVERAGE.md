@@ -172,10 +172,17 @@ For current blockers and the recommended reverse-engineering order, see the
   follow-up parses all eight CLR metadata images into 6,074 selected table
   rows, including 1,456 method-body headers, hashes six embedded resources per
   image, and records names and `#US` strings without treating them as live
-  calls. CLR IL is still not disassembled. These are bounds on the selected
-  artifacts and static analysis, not proof of runtime behavior or absence from
-  other package components. See the [native call-path report](docs/rk-firmware-pe-call-path-static-audit-2026-10-20.md),
+  calls. A linear IL decoder now covers all 1,456 method bodies (30,774
+  instructions), resolves 6,332 call-like references and 12,476 token
+  operands, and records zero decode or branch-boundary issues. It identifies
+  static extraction of the V0.0.5 helper and `libhidapi`/`libusb` resources to
+  a temporary directory, a `Process.Start` path, and WMI USB discovery with
+  VID/PID gates. It does not build a CFG or analyze the external helper/DLL
+  payloads. These are bounds on the selected artifacts and static analysis,
+  not proof of runtime behavior or absence from other package components. See
+  the [native call-path report](docs/rk-firmware-pe-call-path-static-audit-2026-10-20.md),
   [CLR metadata report](docs/rk-firmware-clr-metadata-static-audit-2026-10-20.md),
+  [CLR IL report](docs/rk-firmware-clr-il-static-audit-2026-10-20.md),
   [six evidence ledgers](docs/rk-firmware-pe-entrypoint-import-reachability-2026-10-20.csv),
   and [hash-pinned scanner](scripts/audit_rk_firmware_pe_call_paths.py).
 
