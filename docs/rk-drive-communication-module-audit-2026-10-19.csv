@@ -1,0 +1,7 @@
+bundle_url,bytes,sha256,worker_constructor_count_in_entry,known_message_strings_found
+https://drive.rkgaming.com/assets/communication-DV8bKwpo.js,610,9b77ecd0960c3e27a09f0c3dd122e8644c03140da18caf74291d5623c920adcc,38,start;stop;report;heartbeat
+https://drive.rkgaming.com/assets/dongleCommunication-CCLAqb0M.js,892,34a77cb93ae974ca7a412a4acbd4d124d0752d881440112f470844b06a7bfb6f,30,start;stop;report;finish;timeout
+https://drive.rkgaming.com/assets/mouseCommunication-CkhFGE6m.js,772,52bf0ce7a90cc9efe57d58505b92117c9a9f46a91952d73cbebb82b94086991d,6,start;stop;getReport;stopGet
+https://drive.rkgaming.com/assets/qiwangCommunication-CFWn-kHU.js,697,444fbf0dbcf57a79c9291357ce87ab8e18938d17eea589ffa94769214c057121,1,start;stop;report;heartbeat
+https://drive.rkgaming.com/assets/qiwangCommunicationAdaptive-CZXbJVQO.js,1103,9f44e3fbf24a9011c50902fd3429b1d2ef4fdd56f534f8d6a7e8e524a94a8052,2,start;report;configure;packet
+https://drive.rkgaming.com/assets/rongyuanCommunication-DZX36okp.js,538,1d9e6b399ac8464638723917db38c591254f0e9ea83e0ca9fec4c51d2317a648,1,start;stop;heartbeat;wait;run

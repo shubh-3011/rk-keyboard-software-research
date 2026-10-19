@@ -47,6 +47,12 @@ For current blockers and the recommended reverse-engineering order, see the
   [RK68 HE lighting UI/protocol crosswalk](docs/rk-drive-rk68-he-lighting-ui-protocol-crosswalk-2026-10-18.md),
   and [keymap/macro/display crosswalk](docs/rk-drive-keymap-macro-display-crosswalk-2026-10-18.md),
   plus the [mouse registry](docs/rk-drive-mouse-registry.csv).
+  A focused static pass now hash-checks all six communication-worker modules,
+  counts their 78 entry-bundle worker constructions, records the scheduler and
+  retry logic, and inventories direct WebHID API call candidates with source
+  offsets. This maps a shared browser-to-HID boundary; it does not close every
+  model's UI-to-packet path or any browser/OS-native calls. See the
+  [worker/WebHID audit](docs/rk-drive-communication-module-audit-2026-10-19.md).
   The lighting crosswalk maps feature gates, UI service calls, effect
   read/apply/readback/rollback, custom-main records, and grouped per-key RGB
   serialization in the hash-pinned entry bundle. It does not establish
