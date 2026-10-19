@@ -65,20 +65,47 @@ catalog, the only profile row with wireless ID `258A:0150` is `020F` RK A70.
 The version difference is further reason not to treat the receiver ID as a
 stable keyboard-model identifier.
 
+## Installed 4.06 selector and receiver cross-check
+
+The installed 4.06 selector at `0x004155C0` first compares the candidate
+profile VID/PID with enumerated HID attributes. Its descriptor alternatives
+then use `HIDP_CAPS` fields. For zero `Fw`, one vendor alternative is page
+`0xFF00`, usage `1`, and feature-report length `0x41`; the consumer alternative
+is page `0x000C`, usage `1`, input-report length `3`, with PID `0x49` excluded.
+For nonzero `Fw`, the vendor alternative is page `0xFF00`/usage `1` or page
+`0xFF02`/usage `1` or `2`, with feature-report length `0x208`; the consumer
+alternative is page `0x000C`, usage `1`, input-report length `3`. The live
+`MI_01/COL_03` tuple is exactly `000C:0001` with a three-byte input report, so
+it satisfies the consumer descriptor alternative for either profile family.
+This is still only a capability match; it does not override the VID/PID
+profile comparison.
+
+Neither `models.json` (installed 4.06) nor `models-4.6.json` contains a direct
+profile code `0150`. In 4.06, however, `FUN_004474D0` classifies `258A:0150`
+as a special wireless/receiver ID, and profile `020F` (RK A70) declares that
+same pair as `PID_Wireless`. The special path skips the ordinary direct
+profile-ID loop and gates a later wireless scan. Its downstream six-byte
+comparison is not tied to loaded `Psd` data, so this identifies a receiver
+candidate route in the software, not the keyboard attached to the receiver.
+
 ## What this does and does not establish
 
 **Proven comparison:** the currently exposed `258A:0150` interface has the
 same four HID capability values checked by the 4.6 `Fw=3` predicate. This is a
 useful family-signature match between a live descriptor and a static software
 branch. The package catalog's six `258A:0150` wireless-ID profiles further
-show that the receiver VID/PID is shared among A70 and S104 entries.
+show that the receiver VID/PID is shared among A70 and S104 entries. The
+installed 4.06 build also has a special wireless classification for this pair,
+but its later six-byte profile match remains unresolved.
 
 **Not proven:** that the 4.6 selector chose `CDev3632` for this device, that
 the installed 4.06 binary uses the same branch, or that the connected
 keyboard is an M20. The 4.6 catalog's sole direct `Fw=3` profile is M20
 `258A:0208`, while this USB interface reports PID `0150`. The selector also
 checks profile/device identity fields, and a separate wireless/receiver
-selection path is not closed by this descriptor match. The 4.6 registry has
+selection path is not closed by this descriptor match. The installed 4.06
+build's special path and `020F` A70 receiver declaration are only catalog/code
+evidence; they do not identify this connected keyboard. The 4.6 registry has
 multiple profiles associated with receiver identifiers, so `258A:0150` alone
 does not identify the keyboard behind the interface. The BLE nodes labeled
 `RK-S98RGB` remain in separate PnP containers from this USB device.

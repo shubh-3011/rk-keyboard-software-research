@@ -122,6 +122,11 @@ the sole direct `Fw=3` row is M20 `258A:0208`, not the observed PID `0150`, and
 no runtime selection was observed. This narrows the descriptor-family
 comparison without identifying the attached keyboard. See the
 [live selector cross-check](rk-live-hid-selector-crosscheck-2026-10-19.md).
+The same live snapshot's `MI_01/COL_03` consumer collection (`000C:0001`,
+three-byte input report) also satisfies the generic consumer descriptor
+alternative in the installed 4.06 selector. Its `258A:0150` identity has no
+direct profile code in the installed catalog; 4.06 classifies it through a
+special wireless/receiver path whose later six-byte match remains unresolved.
 
 **Cached BLE HID metadata (2026-10-19):** Windows has three present Bluetooth
 roots named `RK-S98RGB`; their BLE HID service children share their respective
