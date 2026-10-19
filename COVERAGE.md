@@ -159,10 +159,14 @@ For current blockers and the recommended reverse-engineering order, see the
   static scans retain 27,082 linear import-call candidates, 1,810 import
   references reached by a bounded entrypoint walk, and 972 unresolved
   indirect transfers. Fourteen reached calls use generic file/device-I/O
-  APIs; none is a reached HID, SetupAPI, WinUSB, or serial-specific call. These
-  are bounds on the selected artifacts and static walk, not proof of runtime
-  behavior or absence from other package components; CLR IL was not
-  decompiled. See the [call-path report](docs/rk-firmware-pe-call-path-static-audit-2026-10-20.md),
+  APIs; none is a reached HID, SetupAPI, WinUSB, or serial-specific call. A
+  follow-up parses all eight CLR metadata images into 6,074 selected table
+  rows, including 1,456 method-body headers, hashes six embedded resources per
+  image, and records names and `#US` strings without treating them as live
+  calls. CLR IL is still not disassembled. These are bounds on the selected
+  artifacts and static analysis, not proof of runtime behavior or absence from
+  other package components. See the [native call-path report](docs/rk-firmware-pe-call-path-static-audit-2026-10-20.md),
+  [CLR metadata report](docs/rk-firmware-clr-metadata-static-audit-2026-10-20.md),
   [six evidence ledgers](docs/rk-firmware-pe-entrypoint-import-reachability-2026-10-20.csv),
   and [hash-pinned scanner](scripts/audit_rk_firmware_pe_call_paths.py).
 
