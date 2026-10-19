@@ -65,12 +65,19 @@ visited by the selected recursive paths.
 | Unconditional-jump tail-call candidates | 147 |
 | Instruction addresses attributed to multiple roots | 402 |
 
-Among unresolved indirect calls, 1,632 use a register operand and 1,905 use a
-memory operand. Of the 123 unresolved indirect jumps, 9 use a register operand
-and 114 use a memory operand. Operand form does not establish whether a site
-is a virtual call, callback, table lookup, or another dispatch mechanism. The
-402 multiply attributed instruction addresses can reflect shared code or
-function-boundary ambiguity; the scanner does not decide between them.
+The generated scanner ledger labels 3,537 calls as unresolved before this
+manual follow-up. The four sites in `WM_DEVICECHANGE` are reclassified below,
+leaving 3,533 indirect-call candidates unresolved by the combined evidence.
+
+Before the manual follow-up, the raw call ledger had 1,632 register-operand and
+1,905 memory-operand unresolved calls. Reclassifying the two `ESI` calls to
+`SetTimer` and two absolute-global logger calls leaves 1,630 register-operand
+and 1,903 memory-operand indirect-call candidates unresolved. Of the 123
+unresolved indirect jumps, 9 use a register operand and 114 use a memory
+operand. Operand form does not establish whether a site is a virtual call,
+callback, table lookup, or another dispatch mechanism. The 402 multiply
+attributed instruction addresses can reflect shared code or function-boundary
+ambiguity; the scanner does not decide between them.
 
 The machine-readable outputs preserve the seeded paths and their limitations:
 
@@ -93,13 +100,34 @@ existing HID-enumeration routine through decoded direct-call candidates:
 
 This is a **static candidate path**, not evidence that a timer fired or that a
 keyboard was enumerated at runtime. The graph explores both sides of
-conditional branches without evaluating conditions. The 4.6
-`WM_DEVICECHANGE` handler `0x00449DF0` is a different root with four unresolved
-indirect calls; this pass found no resolved direct-call route from it to the
-enumerator, so that connection remains open. The per-interface helper's two
-register-indirect `SetupDiGetDeviceInterfaceDetailW` calls at `0x00417421` and
-`0x0041746F` are also still unresolved in this graph; their IAT load/use pattern
-is documented in the [cross-version enumeration lifecycle audit](rk-device-enumeration-handle-lifecycle-cross-version.md).
+conditional branches without evaluating conditions.
+
+### `WM_DEVICECHANGE` to the rescan timer
+
+The four indirect calls initially reported for the 4.6 `WM_DEVICECHANGE`
+handler `0x00449DF0` can be resolved from its local code and data references:
+
+| Callsite | Static target evidence | Interpretation |
+| --- | --- | --- |
+| `0x00449E84` and `0x00449F1E` | Both call `[0x0063BE2C]`. Initializer `0x0040D140` writes `0x0040D000` to that cell at `0x0040D18D`; on the non-2 selector branch it writes `0x0040D090` at `0x0040D23F`. The handler passes log strings including `OnDeviceChange: Device %04x_%04x %s` and `Device: path_string_to_id failed`. | Conditional logging callback; the callback value depends on the initialized selector at `0x0063BE28`. These calls are not HID transfers. |
+| `0x00449ED3` and `0x00449EEB` | `0x00449EB6` loads `ESI` from IAT VA `0x005A67D4`, which is `USER32.dll!SetTimer`; both indirect calls invoke that register value. | Resolved timer API calls. The first requests timer `0x844` at 2,000 ms and saves the return value at object offset `+0x120C`; the second requests timer `0x845` at 500 ms and saves the return at `+0x1210`. |
+
+The handler first filters the HID interface path using `StrStrIW` and the
+wide-string marker `pid&fa07`. For device-arrival/removal event values
+`0x8000`/`0x8004`, if its busy field at `+0x120C` is clear, it schedules those
+two timers; the removal branch also calls `0x0044A040`. The `WM_TIMER` handler
+`0x00449F80` compares its timer ID with the saved `+0x120C` value. For that
+rescan timer it calls table setup `0x004497C0`, which calls HID enumerator
+`0x00417330`; for timer `0x845` it calls the separate follow-up handler
+`0x00438150`. Thus the static call chain now connects a filtered
+`WM_DEVICECHANGE` notification to a delayed HID rescan, with all four indirect
+calls in the notification handler resolved. Branch conditions, timer success,
+Windows message delivery, and actual rescan results remain unobserved.
+
+The per-interface helper's two register-indirect
+`SetupDiGetDeviceInterfaceDetailW` calls at `0x00417421` and `0x0041746F` are
+still unresolved in this graph; their IAT load/use pattern is documented in the
+[cross-version enumeration lifecycle audit](rk-device-enumeration-handle-lifecycle-cross-version.md).
 
 ## Reproduction
 
@@ -123,13 +151,15 @@ PDB path, but no matching PDB was available in this workspace. The MFC scan is
 bounded to its accessor/table signature and does not prove complete MFC or
 runtime dispatch coverage.
 
-The principal unresolved remainder is 3,537 register/memory indirect-call
-sites, 123 register/memory indirect-jump sites, 147 possible tail transfers,
-and the 66.34% of `.text` raw bytes not visited from the selected roots. That
-unvisited portion is not evidence of dead code or unreachable behavior. Direct
-calls, IAT references, and explored branches are static candidates, not proof
-that a path runs in a particular process state. Import presence does not prove
-API success, device access, or keyboard effect.
+The principal unresolved remainder is 3,533 register/memory indirect-call
+candidates, 123 register/memory indirect-jump sites, 147 possible tail
+transfers, and the 66.34% of `.text` raw bytes not visited from the selected
+roots. The CSV and JSON outputs preserve the scanner's pre-follow-up raw count
+of 3,537 unresolved calls; this report reclassifies the four resolved handler
+sites. That unvisited portion is not evidence of dead code or unreachable
+behavior. Direct calls, IAT references, and explored branches are static
+candidates, not proof that a path runs in a particular process state. Import
+presence does not prove API success, device access, or keyboard effect.
 
 This report narrows the function/dispatch gap with reproducible root-seeded
 evidence; it does not close it or supersede the
