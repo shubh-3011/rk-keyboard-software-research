@@ -165,6 +165,11 @@ model or runtime map.
   factory helper. These are static callsite findings; the helper's concrete
   class and runtime arguments remain open. See
   [`docs/rk-v4.6-com-ole-activation-audit.md`](docs/rk-v4.6-com-ole-activation-audit.md).
+- A 4.06 host-integration follow-up traces the AutoRun-associated check event
+  to Startup-folder `.lnk` creation/deletion, including Shell Link COM calls,
+  executable path, icon path, and `-s` argument. Flag polarity, filename
+  resolution, and command-line meaning remain unresolved. See
+  [`docs/rk-v406-startup-shortcut-integration-audit.md`](docs/rk-v406-startup-shortcut-integration-audit.md).
 - A focused loader-API follow-up maps all three direct 4.6 `LoadLibraryA`
   sites and four `GetModuleHandleA` sites to their module/export strings,
   pointer consumers, and closest 4.06 counterparts. The callsite roles match
@@ -331,6 +336,12 @@ model or runtime map.
   common-dialog, and property-sheet helpers. The `DrawThemeParentBackground`
   wrapper still has no recovered in-image caller; no runtime branch is
   established. See `docs/rk-dynamic-api-consumer-gap-audit.md`.
+- A 4.06 language-loader follow-up traces `LoadLibraryW` into generated
+  locale-satellite DLL names, user/system UI-language candidates, the
+  `ntdll` resource-language fallback, and a special `LOC` candidate. The
+  higher-level dispatcher, chosen locale, and successful module load remain
+  unresolved. See
+  [`docs/rk-v406-language-satellite-loader-api-followup.md`](docs/rk-v406-language-satellite-loader-api-followup.md).
 - A new 4.06 G5 audit maps all 27 `CDevG5KB` vtable entries and follows the
   `+0x68` GetRealData wrapper into its request-write/response-read helper.
   Six nearby `+0x68` callsites are resolved to a local GDI adapter and
@@ -392,11 +403,14 @@ model or runtime map.
   `DefBri=5` and six-value UI/hardware lists. A focused callsite trace resolves
   the `tc_adv_str1` draw call to `USER32!DrawTextW` and `0x8134` as its layout
   flags. A recovered RTTI-backed `CLedDlg` message map identifies that
-  paint handler and its `0x0800`/`0x0801` handlers, but no control sender for
-  selector `0x95` is proven. Physical brightness units and the widget-to-writer
-  path remain unresolved. See the
+  paint handler and its `0x0800`/`0x0801` handlers. Four and five literal
+  `PostMessageW` sender sites are recovered for those messages, respectively;
+  whether their dynamic `lParam` fields contain selector `0x95` and which
+  child control sends them remain unresolved. Physical brightness units and
+  the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
-  and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md).
+  and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),
+  plus the [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
 - A focused `CLedDlg` follow-up resolves private messages `0x0481` and
   `0x0482` to two posted selection notifications, their per-position mapping
   record effects, and Apply signal mode `4`. The child control identity,

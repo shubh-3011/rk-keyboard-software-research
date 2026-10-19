@@ -162,6 +162,15 @@ three collections inaccessible in the earlier metadata pass again returned
 Win32 access denied. The raw direct `HidD_GetFeature` results and their
 limitations remain unchanged above.
 
+**Read-only interface recheck (2026-10-19):** after explicit user
+authorization to open the HID interface, the capability probe was run again
+against present `258A:0150` collections. It reproduced the same seven
+readable collections and three access-denied collections, including the
+`MI_01/COL_01` 20-byte input/output pair and feature IDs `05`, `06`, and `0A`.
+The run opened shared `GENERIC_READ` handles and queried preparsed descriptor
+capabilities only; it did not read key input, issue `HidD_GetFeature` or
+`HidD_SetFeature`, send an output report, or alter device state.
+
 **Cached BLE HID metadata (2026-10-19):** Windows has three present Bluetooth
 roots named `RK-S98RGB`; their BLE HID service children share their respective
 root containers. All three report `ConnectionStatus=Disconnected`. The USB

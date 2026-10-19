@@ -54,7 +54,8 @@ byte at `0x00611854 + index` (`0x004222D1`) and formats it as text. This
 proves a `LightUI`-to-runtime-value-formatting path, but not which visible
 widget requests selector `0x95` or how a change to that value is committed.
 
-**MFC ownership recovered; control sender still unresolved.** The MFC map
+**MFC ownership and literal message senders recovered; selector/control
+attribution still unresolved.** The MFC map
 descriptor at `0x005CD150` points to entries at `0x005CCFE8`; getter
 `0x004215E0` returns that descriptor from a vtable slot in the RTTI-backed
 `CLedDlg` vtable. Its complete-object locator at `0x005E3DB0` points to type
@@ -71,10 +72,14 @@ and `0x005CD048` map private messages `0x0800` and `0x0801` to
 message IDs, not control IDs. The `0x0801` handler reads/format-selects
 `LightUI` when its selector is `0x95`, and `0x0800` calls that formatter
 before copying page state and potentially signaling the settings worker.
-These map edges do not identify which control sends the messages, prove that
-it requests selector `0x95`, or connect the visible brightness control to a
-specific device-family writer. See the [full MFC message-map audit](rk-mfc-message-map-audit.md)
-for the complete 14-row array and owner evidence.
+Four literal `PostMessageW` send sites for `0x0801` and five for `0x0800` are
+now recovered. Their `lParam` sources are child-object fields `+0x54`,
+`+0x930`, or `+0x9E0`; static evidence does not establish that any contains
+selector `0x95`, nor which visible control owns each sender. This still leaves
+the brightness control-to-writer path open. See the
+[selector-message sender follow-up](rk-led-selector-message-sender-followup.md)
+and [full MFC message-map audit](rk-mfc-message-map-audit.md) for callsites,
+the complete 14-row array, and owner evidence.
 
 ### `tc_kbin10`–`tc_kbin12` brightness action labels
 
@@ -148,7 +153,7 @@ brightness effect.
 | `LightUI` profile value to displayed text | **Proven statically** | `FUN_004513B0` populates `0x00611854`; `FUN_00422220` selector `0x95` reads it at `0x004222D1`. Caller-to-widget binding remains unknown. |
 | Brightness action code to localized action label | **Proven statically** | Type-9 mapper at `0x0044E3EF`, comparisons around `0x0044E4AC` and `0x0044E52A`–`0x0044E543`, action-string slots above. |
 | Type-9 mapping translator and matrix path | **Proven statically** | `FUN_00413410` → `FUN_00454C30`; `FUN_00413B20` maps 132 records. Specific `[FN1]`/`[FN2]` profile tuple to this runtime input remains unresolved. |
-| `CLedDlg` messages `0x0800`/`0x0801` | **Proven statically; control attribution unresolved** | RTTI-backed map rows at `0x005CD030`/`0x005CD048` target `FUN_00422190`/`FUN_00422220`; selector `0x95` reads `LightUI`; message `0x0800` may signal Apply mask 2. No sender with selector `0x95` or child-control binding was recovered. |
+| `CLedDlg` messages `0x0800`/`0x0801` | **Proven statically; selector/control attribution unresolved** | RTTI-backed map rows at `0x005CD030`/`0x005CD048` target `FUN_00422190`/`FUN_00422220`; four and five literal `PostMessageW` sender sites respectively are traced. `lParam` sources are fields `+0x54`, `+0x930`, and `+0x9E0`; static field assignment to selector `0x95` and child-control binding remain unresolved. Message `0x0800` may signal Apply mask 2. |
 | Profile `LightHW` values to keyboard LED serializer bytes | **Proven statically** | RKKB `FUN_00413BF0`; G5/3632 `FUN_00411900` and related writer path. UI trigger, active family, and physical units are unresolved. |
 | Complete `Light Brightness` control → event → field mutation → writer chain | **Unresolved** | No direct child HWND/control ID and callback link joins the generated `tc_adv_str1` construction, selector `0x95`, `FUN_00422190`, and a concrete device-family writer. |
 | Whether `tc_kbin10`–`tc_kbin12` are lighting-page buttons | **Unresolved; evidence points to remapping choices** | Their strings are selected by the type-9 function-action mapper. No lighting-page click handler was found. |
@@ -169,10 +174,13 @@ available export reports found the `LightUI` selector and its direct data
 edge, but no label-to-widget/event edge. The `tc_adv_str1` draw adapter and
 `0x8134` mask are now resolved from the constructor, vtable, wrapper, and IAT;
 the newly recovered MFC map ties the paint handler to `CLedDlg` and resolves
-the former pointer block as message-map entries. The exact control sender for
-selector `0x95` and the settings worker's runtime writer remain unknown. This
-audit therefore does not claim the entire brightness control path has been
-reverse engineered.
+the former pointer block as message-map entries. A subsequent full-image
+literal-send search found four `PostMessageW` sites for message `0x0801` and
+five for `0x0800`; their dynamic `lParam` fields are documented in the
+[selector-message sender follow-up](rk-led-selector-message-sender-followup.md).
+The field-to-selector `0x95` assignment, exact child-control identity, and
+settings worker's runtime writer remain unknown. This audit therefore does
+not claim the entire brightness control path has been reverse engineered.
 
 ## Related audits
 

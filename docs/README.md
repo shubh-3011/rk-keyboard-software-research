@@ -143,6 +143,9 @@
 - [MFC message-map owner evidence](rk-mfc-map-owner-evidence.csv)
 - [Recovered MFC message-map audit](rk-mfc-message-map-audit.md)
 - [CLedDlg key-position mapping message follow-up](rk-led-key-position-message-followup.md)
+- [CLedDlg selector-message sender follow-up](rk-led-selector-message-sender-followup.md)
+- [4.06 language-module loader API follow-up](rk-v406-language-satellite-loader-api-followup.md)
+- [4.06 Startup shortcut integration audit](rk-v406-startup-shortcut-integration-audit.md)
 - [All entries from the 27 recovered MFC arrays](rk-mfc-message-map-entries.csv)
 
 ## Package resources and localization

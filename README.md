@@ -146,6 +146,9 @@ as confirmed.
 - [General settings UI and host-persistence audit](docs/rk-general-settings-ui-persistence-audit.md)
 - [Recovered MFC message-map arrays and system-message routes](docs/rk-mfc-message-map-audit.md)
 - [CLedDlg key-position mapping message follow-up](docs/rk-led-key-position-message-followup.md)
+- [CLedDlg selector-message sender follow-up](docs/rk-led-selector-message-sender-followup.md)
+- [4.06 language-module loader API follow-up](docs/rk-v406-language-satellite-loader-api-followup.md)
+- [4.06 Startup shortcut integration audit](docs/rk-v406-startup-shortcut-integration-audit.md)
 - [HID enumeration and hot-plug notification audit](docs/rk-device-enumeration-notification-audit.md)
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
 - [Indirect API call and callback follow-up](docs/rk-native-api-indirect-call-audit.md)
@@ -236,9 +239,14 @@ python scripts/verify_installed_manifest.py `
 
 ## Research boundary
 
-All findings are static. The RK application and updater were not launched;
-the keyboard HID interface was not opened; and no keyboard report, command,
-firmware write, or bootloader operation was performed. Static traces do
+Most findings are static. The RK application and updater were not launched.
+A separately dated live check opened shared read-access handles for the
+present `258A:0150` HID collections and decoded descriptors; another audit
+made three one-shot `HidD_GetFeature` read requests, detailed in the
+[firmware readback audit](docs/rk-firmware-readback-audit.md). No input report
+was read, and no output report, `HidD_SetFeature` payload, configuration or
+firmware write, or bootloader operation was sent. These live observations do
+not identify the physical keyboard or prove model selection. Static traces do
 identify code paths that can write to a keyboard if the vendor application
 runs them. They are documented as findings, not recommendations to replay.
 

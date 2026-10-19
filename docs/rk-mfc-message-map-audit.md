@@ -66,8 +66,8 @@ map.
 | `WM_ERASEBKGND` (`0x0014`) | `0x0046ACB0` | `0x005CCFE8` | Shared MFC default-handler path. |
 | `WM_PAINT` (`0x000F`) | `0x00421660` | `0x005CD000` | Paint routine that draws the localized `tc_adv_str1` “Light Brightness” string; see the [brightness UI audit](rk-lighting-brightness-ui-handler-audit.md). |
 | Private message `0x0477` | `0x00425570` | `0x005CD018` | Message name and sender are unresolved. |
-| Private message `0x0800` | `0x00422190` | `0x005CD030` | Calls formatter `0x00422220`, copies page state, and may signal the settings worker; no control sender is recovered. |
-| Private message `0x0801` | `0x00422220` | `0x005CD048` | Selector `0x95` reads the `LightUI` table; which widget requests it remains unresolved. |
+| Private message `0x0800` | `0x00422190` | `0x005CD030` | Calls formatter `0x00422220`, copies page state, and may signal the settings worker. Five literal `PostMessageW` send sites are recovered; the child control and `lParam` field meaning remain unresolved. |
+| Private message `0x0801` | `0x00422220` | `0x005CD048` | Selector `0x95` reads the `LightUI` table. Four literal `PostMessageW` send sites are recovered; no static assignment proves their dynamic `lParam` fields contain `0x95`, and the child control remains unresolved. |
 | Private message `0x0481` | `0x00422780` | `0x005CD060` | A position-selection producer posts it with `wParam` from `[ESI+0x80]`; handler toggles a per-position mapping record and signals Apply mode 4. Exact widget and value meaning remain unresolved. |
 | Private message `0x0482` | `0x00422640` | `0x005CD078` | A selection-list producer posts it with zero parameters; handler applies the current mapping value to eligible selected positions and signals Apply mode 4. Exact widget and value meaning remain unresolved. |
 | Private message `0x05C7` | `0x0040C840` | `0x005CD090` | Message purpose and sender are unresolved. |
@@ -80,9 +80,12 @@ map.
 
 The `0x0800` and `0x0801` values above are message fields, not control IDs.
 This resolves the earlier ambiguous `.rdata` block: function pointers
-`0x00422190` and `0x00422220` are handlers in the `CLedDlg` map. Their map
-membership still does not prove that a particular brightness widget sends
-either message or that a UI change reaches a specific serializer.
+`0x00422190` and `0x00422220` are handlers in the `CLedDlg` map. Their literal
+senders post through a parent-window wrapper; the likely `CLedDlg` parent
+relationship is inferred, and the runtime HWND identity is not observed.
+The dynamic sender `lParam` fields have not been tied to selector `0x95` or a
+particular brightness widget, nor does the route prove that a UI change
+reaches a specific serializer. See the [selector-message sender follow-up](rk-led-selector-message-sender-followup.md).
 The producer and state effects for messages `0x0481` and `0x0482` are traced
 in the [key-position mapping follow-up](rk-led-key-position-message-followup.md);
 their exact visible controls and runtime parent-window identity remain open.
