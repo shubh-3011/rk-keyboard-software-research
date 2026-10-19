@@ -63,7 +63,9 @@ For current blockers and the recommended reverse-engineering order, see the
   choices, and 83 QMK results across 7 model choices. The S98 selector returns
   eight firmware rows, all Tri mode/RGB with language-specific PIDs. The
   456-row CSV expands platform-specific availability and preserves source API
-  URLs and listed artifact URLs.
+  URLs and listed artifact URLs. All eight S98 updater packages have now been
+  downloaded and statically inventoried; this is one firmware family, not all
+  118 firmware artifacts.
 - The selector capture is metadata only, but follow-up package acquisition has
   now covered four Windows product-specific packages: F99 AI RK Setup 3.2.2, R99 RK Driver,
   an RK918-labeled archive whose member is named RK919, and S108 GamingForceZ.
@@ -101,6 +103,19 @@ For current blockers and the recommended reverse-engineering order, see the
   is incomplete. The full 298 MB Evidence remains outside the repository. This
   analysis does not establish absence of an Electron/native relationship from
   zero-count summary fields. The F99 Mac DMG is outer-container-only here.
+- A separate static audit covers all eight S98 Tri-mode RGB updater EXEs
+  returned by the selector. It records each package hash/PID, compares their
+  PE sections, imports, dialog resources, and code-scan candidates. Seven
+  builds share section hashes; Thai is a distinct build. The appended `SINO`
+  container and its four-byte trailer-key transform are mapped, but the
+  post-transform firmware format, complete UI-to-transfer graph, report
+  semantics, and device acceptance remain unresolved. The scanner found
+  4,848 import rows, 14,291 direct IAT call/tail-jump candidates, 3,523
+  register-indirect call/jump candidates, and no decoded direct-syscall
+  instruction candidates in two unique code builds. These are bounded static
+  scan results, not reachability or whole-suite coverage. See the
+  [S98 updater audit](docs/rk-s98-firmware-updater-static-audit-2026-10-19.md)
+  and its [reproduction script](scripts/audit_s98_firmware_packages.py).
 
 ## Additional official 4.6 Windows Hub Driver snapshot
 

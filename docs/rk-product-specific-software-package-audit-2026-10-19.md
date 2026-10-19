@@ -2,12 +2,13 @@
 
 ## Scope and method
 
-This report records four Windows packages selected from RK's current public
-keyboard catalog, plus the associated Mac package for F99 AI. The packages
-were downloaded to a research-only directory, hashed, and inspected with
-archive/PE parsers. Vendor installers and applications were not run. The
-package-level hashes, installer families, signatures, nested binaries, and
-analysis limits are listed in the accompanying
+This report records four Windows product-specific application packages
+selected from RK's current public keyboard catalog, the associated Mac package
+for F99 AI, and a separate eight-variant S98 firmware-updater family. The
+packages were downloaded to a research-only directory, hashed, and inspected
+with archive/PE parsers. Vendor installers, applications, and updaters were
+not run. The application package-level hashes, installer families,
+signatures, nested binaries, and analysis limits are listed in the accompanying
 [`package catalog`](rk-product-specific-software-package-catalog-2026-10-19.csv).
 The R99 extracted-file manifest is in
 [`rk-r99-package-manifest-2026-10-19.csv`](rk-r99-package-manifest-2026-10-19.csv).
@@ -53,6 +54,18 @@ RK918-labeled package has the same 394 paths. The NSIS overlay and model data
 are not byte-identical. A packaged BAT file contains a recursive
 `Everyone:F` ACL command, but it was not run; its actual installer reachability
 and effects are not established by this static pass.
+
+The `GamingKeyboardWriter.dll` is byte-identical in both packages
+(SHA-256 `8b716fa567e84791f77f94582ce8af648e4c3741bf70406b3135eb2129c695d2`).
+It dynamically loads `Bin\\GK\\SonixHidDll.dll` and resolves
+`FindDeviceWithID`, `HIDReportOut`, `HIDReportIn`, and `HIDReportIn2`. The newer
+RK918 package's GK helper enumerates three interface GUIDs; its older GM helper
+and both S108 helpers use `HidD_GetHidGuid`. The helper's output routine
+constructs feature reports with report ID 0 and Writer callers request 64-byte
+reports. Static callers contain words such as `0xE004`, `0xAB04`, `0xF104`,
+`0xF004`, `0x0204`, and `0x0504`, but their meanings and product mapping are
+unresolved. The detailed evidence is package-build-specific and does not
+establish successful device communication.
 
 ### R99 RK Driver package
 
@@ -103,10 +116,50 @@ Windows APIs including `CreateFileW`, `ReadFile`, `WriteFile`, and
 `DeviceIoControl` through the native HID addon. Static JS also names
 connectivity/device-info/settings, voice/audio, and OTA functions. The OTA
 symbols include start/open/firmware/complete stages and channels 0/1/2; none
-were invoked. The model-name mapping for the VID/PID table, protocol fields,
-and model feature gates remain incomplete. An F99 Mac DMG was downloaded and
-hashed, but only its outer container was identified; its APFS contents were
-not inspected on this Windows host.
+were invoked. A focused static pass maps the Electron background entry to
+`app://./index.html`; its BrowserWindow enables Node integration and declares
+no preload script.
+
+The F99 model gate is a 68-row VID/PID allowlist. The four RK model IDs admitted
+under the package's RK build configuration are F99 AI, Air61, i20 AI, and N20
+AI, but only F99 has explicit matching PID rows in this table (`248A:8102`,
+`248C:8243`, and `248A:8243`). The other three models' precise HID routes are
+unresolved. A two-second scan filters HID usage and usage-page values, matches
+an allowlisted VID/PID, deduplicates paths, then opens the device through
+`mi-hid`. The host sends a random challenge and checks a 32- or 35-byte
+response; the heartbeat and verification state must both pass before the app
+reports a connected device. F99 maps internally to `RK756` and the
+`DEVICE_RK756` keyboard image. The inspected F99 package's model table and
+keyboard list contain no S98 entry; that is package-scoped evidence, not proof
+of incompatibility with every shared HID path.
+
+The device card receives the main process's device-list event. Its generic DPI
+path maps from renderer IPC through the main process and manager to the HID
+class, but the F99 keyboard UI hides that control. The firmware-check dialog
+maps through IPC to a download and `startFwOta` call; no update was triggered.
+The write path allocates a 128-byte scratch buffer but queues reports at the
+computed variable length (Darwin/custom build 5 has a 64-byte special case),
+then drains the queue every 30 ms through `mi-hid`. These are static paths, not
+observed I/O. Exact model data for other rows, complete UI-to-native edges,
+protocol fields, and native-addon behavior remain incomplete. No lighting/RGB
+command label was found in the inspected F99 enum and UI path; this does not
+establish that the addon or other RK software has no lighting support. An F99
+Mac DMG was downloaded and hashed, but only its outer container was identified;
+its APFS contents were not inspected on this Windows host.
+
+Selected source-byte anchors for this F99 pass:
+
+| Path | Source artifact and SHA-256 | Byte offset(s) and evidence |
+| --- | --- | --- |
+| Model allowlist and two-second discovery | `selected/background.js`, `8db60b45ce93fc20f68950ebb97db0640d6384c3808b06e43c332d8ef4183277` | Byte offsets `2,236,364` (allowlist loader) and `2,243,880` (discovery/filter/open path) |
+| Verify/heartbeat gate | same `background.js` | Byte offsets `2,200,810` (heartbeat setup), `2,203,562` (verification response), and `2,205,791` (serial validation) |
+| DPI UI → HID | `resources/app.asar.unpacked/js/8224.10899a1c.js`, `cc82f6dadf8a639c2c38c3e9f15d76ca2fe4094f40e763d361f569907fab4408`; plus `background.js` | Byte offsets: device chunk `5,721`; background IPC `2,792,963`; manager `2,241,267`; command writer `2,192,667` |
+| Firmware query/update UI → OTA | device chunk above; `resources/app.asar.unpacked/js/app.7057a5da.js`, `b1a8ccb44b307a48eb10553d74107675fe2affb4370b3b940ea818e8d5acfacb`; plus `background.js` | Byte offsets: device chunk `5,439`; app dialog `27,003`; background query `2,792,850`; background OTA handler `2,793,352` |
+| Device-list event and card image selection | `selected/background.js`; device chunk above | Background forwards the device list at byte `2,832,401`; device card selects `DEVICE_RK756` at device chunk byte `9,309` |
+
+Offsets are byte offsets in the named exact files, not runtime addresses. They
+are navigation anchors for the static code paths above, not proof those paths
+were executed.
 
 REA's CLI JavaScript application analysis completed as local Evidence
 `ev_83a56e1c6593964124f97cc1be87f0973e9d8370851c2cd5d02368b1fe6bb2d9`
@@ -119,6 +172,22 @@ to result-budget limits. `background.js` is 2,835,093 bytes and marked
 The reported zeroes for recognized BrowserWindow/preload/native-addon
 relationships are therefore not absence proofs. The full 298 MB Evidence JSON
 is retained in `.research` and intentionally is not committed.
+
+### S98 Tri-mode RGB firmware-updater family
+
+The public selector currently returns eight language variants of the S98
+Tri-mode RGB updater. All are unsigned PE32 x86 files with a
+`requireAdministrator` manifest and an appended `5A A5 SINO` container tied to
+VID `0x258A` and language-specific PIDs. Seven builds share executable section
+hashes; the Thai variant is a distinct code build. Static disassembly maps the
+container parser, a 32-round XTEA-style block transform using a four-byte
+trailer key, selected HID feature-report construction/readback paths, and
+2,050-byte report buffers with up to 2,048-byte chunks. The transformed
+payload format, exact report meanings, full UI-to-transfer graph,
+retry/error lifecycle, and device acceptance remain open. No decoded firmware
+or updater binary is included. See the
+[S98 static audit](rk-s98-firmware-updater-static-audit-2026-10-19.md) and its
+linked ledgers.
 
 ## Cross-family interpretation
 
@@ -135,6 +204,10 @@ Their UI labels, file names, imports, model lists, and implementation
 boundaries differ. The packages cover only current selector results acquired
 for this audit; they do not represent every current, historic, regional, or
 retired RK model/package.
+
+The S98 updater is a separate firmware-tool family with eight regionalized
+package variants; it must not be conflated with the application protocols or
+treated as evidence that all S98 hardware revisions are supported.
 
 ## Remaining work before claiming whole-suite coverage
 
