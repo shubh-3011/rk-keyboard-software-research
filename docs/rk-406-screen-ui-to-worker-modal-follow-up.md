@@ -161,13 +161,59 @@ and a local screen-editor collection update. The list entry's decoded image
 representation and its exact relation to the `+0xE0` index structure and
 `+0xF4` frame list are not established by this path alone.
 
-**Not established.** The recovered code does not identify which visible
-control or other caller posts `0x0477` with value one, nor does it prove that
-this is the locale key `tc_screen15` (“Import”). No image decoder, geometry
-validation, or direct selected-path-to-frame-pixel conversion is shown in the
-message handler. The separate cache builder's indexed source objects and F4
-nodes remain a distinct statically recovered path; runtime behavior and
-keyboard acceptance were not observed.
+**Confirmed statically.** The `CScreenDlg` child-window path constructs a
+two-row menu, and selecting its second row posts `0x0477` with `wParam=1` to
+the screen dialog. That reaches the value-one open-file branch above. The
+visible label is not recovered, so the code does not prove that its text is
+the locale key `tc_screen15` (“Import”). No image decoder, geometry validation,
+or direct selected-path-to-frame-pixel conversion is shown in the message
+handler. The separate cache builder's indexed source objects and F4 nodes
+remain a distinct statically recovered path; runtime behavior and keyboard
+acceptance were not observed.
+
+## `0x0477` sender functions and screen context menu
+
+**Confirmed statically.** Two functions in the same hash-pinned 4.06 image
+contain literal `PostMessageW` calls that push message `0x0477`:
+
+| Sender | Selected record and message parameters | Remaining edge |
+| --- | --- | --- |
+| `0x00433960` (call at `0x00433983`) | If `this+0x14D4 != -1`, uses that index with a `0x58`-byte stride from `this+0x88`; for the object created by the screen menu factory, this is row offset `+4`, copied from the row's second DWORD, and becomes `wParam`. `lParam` comes from `this+0x14D8`; target HWND is `this+0x74`. | Its `WM_LBUTTONUP` map entry and screen context-menu caller/factory are statically linked below. The menu labels remain unknown. |
+| `0x004345C0` (call at `0x004345E6`) | If `this+0x1324 != -1`, uses that index with a `0x58`-byte stride from `this+0x1F8`; the DWORD at that selected address becomes `wParam`. `lParam` comes from `this+0x1328`; target HWND is `this+0x1E8`. | No static reference ties this second sender object to the screen context menu. |
+
+Both functions pass their stored parent-window handle, selected row field, and
+stored `lParam` to the `PostMessageW` IAT slot at `0x0059E738`, then refresh
+through `0x00475257`. The first function is an RTTI-backed `CMenuDlg` method:
+its constructor at `0x004337C0` writes vtable `0x005D20B4`, whose complete
+object locator `0x005E4018` references type descriptor `0x00603928`
+(`.?AVCMenuDlg@@`). Its map descriptor at `0x005D20A8` points to entries at
+`0x005D2018`; the row at `0x005D2078` maps `WM_LBUTTONUP` (`0x0202`, signature
+`0x35`) to `0x00433960`. The preceding row at `0x005D2060` maps
+`WM_MOUSEMOVE` (`0x0200`, signature `0x35`) to `0x004339A0`. That handler
+calls `USER32!PtInRect` through IAT slot `0x0059E7EC` at `0x004339C9` to test
+the 16-byte rectangles rooted at `this+0x11B4`, then writes the selected row
+index to `this+0x14D4`; button release submits that row.
+The other sender's class and runtime parent remain unresolved.
+
+The screen child-window dispatch at `0x0046D2A2` calls helper `0x0046DB00`
+when the child at `CScreenDlg+0x158C` matches, the state at `+0x10C` is zero,
+and the count at `+0xEC` is below global `0x00611834`. The caller passes the
+`CScreenDlg` object as the helper's parent argument. The helper creates two
+`0x58`-byte rows through `0x00433440`, passing `EDX=0xFF` and row indices
+`0`/`1`; the second stack argument is also `0`/`1` and is stored at row offset
+`+4`. The first DWORD `0xFF` is a row marker, not the posted value.
+
+Menu factory `0x00433680` passes the row count and source list to
+`0x00433840`. That routine copies each full `0x58`-byte row to the menu object
+starting at `+0x84`, stores the parent HWND at `+0x74`, and stores the count at
+`+0x80`. Sender `0x00433960` reads the selected row at
+`this+0x88 + index*0x58`, which is the copied row's second DWORD (`row+4`),
+and posts it to the stored parent HWND. This closes the static route from the
+screen child, through the menu, to `CScreenDlg` message `0x0477`: row zero
+posts `wParam=0`, and row one posts `wParam=1`. The handler's value-one branch
+opens the image picker. The two menu labels and exact text shown to the user
+remain unresolved; the other sender at `0x004345C0` has not been tied to this
+menu.
 
 ## Boundary to the established transfer worker and writers
 
@@ -219,9 +265,11 @@ the modal's frame array. NewPNG/NewGIF are save-as routes. Separately, the
 `CScreenDlg` message-map entry for private message `0x0477` reaches an
 open-file-dialog branch that inserts the selected path object into the local
 list rooted at `+0xE4` and calls the cache/list rebuild helper. The visible
-control/caller that posts the message and the relation between this new item
-and the F4 transfer-frame collection remain unresolved. A separate
-cache-rebuild helper also constructs F4 nodes from indexed source objects.
+sender route is closed through the screen's two-row menu: its second row posts
+value one and opens the picker. The visible labels and relation between the
+imported path object and the F4 transfer-frame collection remain unresolved.
+A separate cache-rebuild helper also constructs F4 nodes from indexed source
+objects.
 The transfer action
 gates on the device object's `+0x28` method and a nonempty frame list. Its
 `WM_INITDIALOG` route starts the frame worker, whose converted frame buffers

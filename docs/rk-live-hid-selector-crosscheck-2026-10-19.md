@@ -194,3 +194,10 @@ no data. The same pass repeated short IDs `05` and `0A`; both returned their
 previous byte-for-byte results. The probe opens collections with
 `GENERIC_READ` and calls only `HidD_GetFeature`; it has no report/device write
 API. The larger report remains inaccessible through this direct read attempt.
+
+A later descriptor-only verification on the same date opened the same seven
+collections with `GENERIC_READ` and again received access denied (`5`) for
+`MI_00`, `MI_01/COL_05`, and `MI_01/COL_09`. The returned attributes, strings,
+usages, report lengths, IDs, and parsed capabilities matched the inventory
+above. This verification did not read input reports or call
+`HidD_GetFeature`, `HidD_SetFeature`, `WriteFile`, or an output-report API.

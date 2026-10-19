@@ -550,10 +550,13 @@ model or runtime map.
   calls a builder that appends indexed source objects to F4. A focused follow-up
   now maps `CScreenDlg` message `0x0477` to a value-one branch that opens an
   image file picker, inserts the selected path object into the local list at
-  `+0xE4`, rebuilds, and invalidates child views. The visible control/caller
-  that posts the message, its localized label, and the selected object's
-  relation to the F4 transfer-frame list remain unresolved; so do the profile
-  cache trigger and source-file enumeration. The transfer action copies F4
+  `+0xE4`, rebuilds, and invalidates child views. A follow-up closes the
+  `CScreenDlg` sender path: the screen's two-row menu stores values `0` and `1`,
+  its `WM_MOUSEMOVE`/`WM_LBUTTONUP` handlers select and submit a row, and the
+  value-one row posts `0x0477` to the dialog, opening the image picker. The menu
+  labels and the selected object's relation to the F4
+  transfer-frame list remain unresolved; so do the profile cache trigger and
+  source-file enumeration. The transfer action copies F4
   items to a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
   and `+0x50` calls resolve to G5 page and GIF writers when the active object
   uses the recovered G5 vtable. For the separate hash-pinned 4.6 image/GIF

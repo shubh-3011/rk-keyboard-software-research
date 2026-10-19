@@ -44,9 +44,10 @@ The complete map owner chains and raw command candidates are in
 For `CScreenDlg`, the private-message map row at `0x005DA4B8` links message
 `0x0477` to handler `0x0046DBF0`. Its value-one branch opens an image file
 picker and inserts the selected path object into a local screen-editor list
-before rebuilding and invalidating views. This is a message-to-action link;
-the visible control or caller that posts `0x0477`, its exact locale key, and
-the selected object's relation to the F4 transfer-frame list remain unknown.
+before rebuilding and invalidating views. A separate static trace closes the
+sender route from a two-row screen menu: its second row posts value one to the
+parent `CScreenDlg`. The visible menu label/locale key and the selected
+object's relation to the F4 transfer-frame list remain unknown.
 See the [4.06 screen UI follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
 
 ## Inferred label-to-field matches
@@ -75,9 +76,10 @@ drag/zoom instruction, `tc_screen3` frame-limit prompt, `tc_screen4` preview,
 warning, `tc_screen14` New, `tc_screen15` Import, `tc_screen16` Playback
 interval, `tc_screen17` pause-first prompt, `tc_screen18` frames,
 `tc_screen19` USB-only transfer warning, and `tc_screen20`/`tc_screen21`
-Left/Right. The XML values do not map in the current evidence to screen
-control IDs or to the `0x0477` message branch; the branch's initiating control
-and label remain unidentified. The existing
+Left/Right. The XML values do not map in the current evidence to the two-row
+menu's visible controls or labels; the second row's value-one route to the
+`0x0477` image picker is proven, but its locale key remains unidentified. The
+existing
 [`rk-localization-key-matrix.csv`](rk-localization-key-matrix.csv) and
 [`rk-resource-localization-audit.md`](rk-resource-localization-audit.md)
 retain all seven locale variants and the complete key inventory.

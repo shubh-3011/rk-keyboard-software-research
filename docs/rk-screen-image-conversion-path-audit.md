@@ -37,9 +37,10 @@ stores the value at `this+0x114`. It is not evidence of a file-open or image
 import button. Other recovered screen-dialog routes are `WM_LBUTTONDOWN` to
 `0x0046DCC0`, private message `0x0800` to `0x0046B260`, private message
 `0x0477` to `0x0046DBF0`, and `WM_TIMER` to `0x0046D570`. A focused static
-follow-up traces the value-one `0x0477` branch into an open-file picker and a
-local screen-editor collection update; the posting control/caller and its
-localized label remain unknown. See the raw
+follow-up traces the screen child through a two-row menu whose second row posts
+value one to the `CScreenDlg` handler, opening the file picker and updating a
+local screen-editor collection. The menu's localized label remains unknown.
+See the raw
 [`CScreenDlg` map rows](rk-mfc-message-map-entries.csv).
 
 **Confirmed statically.** The installed package contains two profile GIFs:
@@ -141,9 +142,9 @@ Consequently, this snapshot does not establish:
 The earlier
 [`screen/GIF payload audit`](rk-screen-gif-payload-audit.md) documents the
 screen command fields, retry/ack behavior, and model profile gates. The 4.06
-follow-up establishes a static `0x0477` message-to-open-picker/list-update
+follow-up establishes a static screen-menu-to-`0x0477`-to-open-picker/list-update
 route, a separate cache-rebuild-to-F4-list path, and a modal-to-worker-to-G5
 page/GIF writer path for a populated frame list. It does not establish the
-visible control/caller that posts `0x0477`, the relationship of its selected
+visible label for the value-one menu row, the relationship of its selected
 path object to F4, the cache trigger, runtime profile selection, or physical
 display acceptance.
