@@ -241,8 +241,9 @@ python scripts/verify_installed_manifest.py `
 
 Most findings are static. The RK application and updater were not launched.
 A separately dated live check opened shared read-access handles for the
-present `258A:0150` HID collections and decoded descriptors; another audit
-made three one-shot `HidD_GetFeature` read requests, detailed in the
+present `258A:0150` HID collections and decoded descriptors; a separate audit
+made direct `HidD_GetFeature` reads and a later probe repeated two short
+feature reports, detailed in the
 [firmware readback audit](docs/rk-firmware-readback-audit.md). No input report
 was read, and no output report, `HidD_SetFeature` payload, configuration or
 firmware write, or bootloader operation was sent. These live observations do

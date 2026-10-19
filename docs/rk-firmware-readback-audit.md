@@ -209,6 +209,15 @@ accessible feature collection, with no preceding `HidD_SetFeature` request:
 | MI_01/COL_07 | ID `06`, 1032 bytes | Failure | Win32 error 31 (`ERROR_GEN_FAILURE`) | — |
 | MI_01/COL_08 | ID `0A`, 8 bytes | Success | `06 A0 02 86 28 CB 24 67` | `cda6d71acf4f56682512674c8846aa7786ab6d8b81181537f529f0f831182168` |
 
+The [read-only repeat probe](../scripts/probe_rk_hid_feature_reads.ps1)
+repeated only IDs `05` and `0A` three times each on 2026-10-19. All six
+requests succeeded and returned the same bytes and hashes as the initial
+reads. ID `06` was not repeated. This establishes repeatability within that
+probe run, but not whether the response is current state, a generic reply, or
+cached/stale data. The probe opens only the two descriptor-defined collections
+with shared `GENERIC_READ` handles and calls `HidD_GetFeature`; it contains no
+`HidD_SetFeature`, output-report, input-report, or device-control call.
+
 The successful short responses share the same first six bytes even though
 their collections and requested report IDs differ. In both responses, byte 0
 is `06`, not the requested ID (`05` or `0A`); this mismatch is unresolved.
