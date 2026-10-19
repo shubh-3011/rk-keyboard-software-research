@@ -433,10 +433,12 @@ model or runtime map.
   and [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
 - A focused `CLedDlg` follow-up resolves private messages `0x0481` and
   `0x0482` to two posted selection notifications, their per-position mapping
-  record effects, and Apply signal mode `4`. The child control identity,
-  visible value semantics, and relationship to family-specific lighting
-  serializers remain unresolved. See
-  [key-position message trace](docs/rk-led-key-position-message-followup.md).
+  record effects, and Apply signal mode `4`. A follow-up traces 132 position
+  values into the active profile color-group table and its conditional RKKB,
+  G5, or 3632 serializer paths. The child control identity, visible value
+  semantics, active runtime receiver, and device effect remain unresolved.
+  See the [key-position message trace](docs/rk-led-key-position-message-followup.md)
+  and [serializer follow-up](docs/rk-key-position-to-color-serializer-followup.md).
 - The static Win32 dialog-template parser inventories all dialog resources in
   the examined PEs and their declared controls; selected updater controls are
   cross-referenced to a statically recovered complete updater message map in
@@ -516,13 +518,17 @@ model or runtime map.
   `docs/rk-audio-ui-control-followup.md`.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
-  byte, acknowledgements, retries, and cancellation path. The 4.06 screen
-  audit's UI reachability and physical compatibility remain unresolved. For
-  the separate hash-pinned 4.6 image/GIF path, NewGIF frames reach the static
-  worker and G5 writer path, while the generic single-image preview has no
-  recovered direct pointer path into that frame list. Screen-parameter schema
-  and hardware acceptance remain open; see `docs/rk-screen-gif-payload-audit.md`,
-  `docs/rk-screen-image-conversion-path-audit.md`, and
+  byte, acknowledgements, retries, and cancellation path. The 4.06 UI trace
+  now maps child routes to PNG/GIF preparation and a modal transfer object;
+  its vtable contains the frame-worker setup method, but the modal-to-worker
+  dispatch and concrete worker-to-G5 writer edges remain unresolved. For the
+  separate hash-pinned 4.6 image/GIF path, NewGIF frames reach the static worker
+  and G5 writer path, while the generic single-image preview has no recovered
+  direct pointer path into that frame list. Screen-parameter schema and
+  hardware acceptance remain open; see
+  `docs/rk-screen-gif-payload-audit.md`,
+  `docs/rk-screen-image-conversion-path-audit.md`,
+  `docs/rk-406-screen-ui-to-worker-modal-follow-up.md`, and
   `docs/rk-v4.6-screen-gif-ui-transport-audit.md`.
 - Main-app HID enumeration and USB/HID interface notification filters are
   traced through register-indirect API calls and an RTTI-attributed
