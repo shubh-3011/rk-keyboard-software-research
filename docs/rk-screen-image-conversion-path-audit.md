@@ -104,8 +104,10 @@ NewGIF reads the existing `CScreenDlg+0xF4` frame list. Separately,
 `FUN_0046D900` calls builder `FUN_0046EAA0`, which obtains indexed source
 objects and appends nodes to F4. This establishes cache-rebuild-to-list
 population, but not the profile/cache trigger or the initial source-file
-enumeration. The `0x0477` message handler also contains an input-file route,
-but its selected path object has no established connection to these F4 nodes.
+enumeration. The `0x0477` menu's value-zero branch constructs a GDI+ bitmap,
+and its value-one branch opens an image picker; both update the local list
+rooted at `CScreenDlg+0xE4`. Neither list entry has an established connection
+to the F4 frame nodes, so neither is proven to reach the transfer worker.
 
 The separate local playback cache helpers `FUN_0046ACC0` and `FUN_0046ADC0`
 read/write `gif_delay.gcc` as a four-byte value. The value's units, accepted

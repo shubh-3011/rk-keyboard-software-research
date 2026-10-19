@@ -201,3 +201,21 @@ collections with `GENERIC_READ` and again received access denied (`5`) for
 usages, report lengths, IDs, and parsed capabilities matched the inventory
 above. This verification did not read input reports or call
 `HidD_GetFeature`, `HidD_SetFeature`, `WriteFile`, or an output-report API.
+
+## Fresh HID pass after the updated instruction
+
+On 2026-10-19, the capability probe was run once more after the user updated
+the instruction to permit opening the keyboard HID interface. It again opened
+seven of ten `258A:0150` collections with `GENERIC_READ`; Windows denied
+`MI_00`, `MI_01/COL_05`, and `MI_01/COL_09`. All report IDs, lengths, usages,
+and parsed capability rows matched the inventory above.
+
+The feature-read probe then ran with `-RepeatCount 1`, issuing one
+`HidD_GetFeature` request each for descriptor-declared IDs `05` and `0A`.
+Both succeeded and returned the same bytes and SHA-256 values as all previous
+successful attempts: `06 A0 02 86 28 CB` for ID `05`, and
+`06 A0 02 86 28 CB 24 67` for ID `0A`. The probe sends no feature write,
+output report, input report, or device-control request. These two fresh reads
+raise the recorded identical successful responses to ten per report ID; the
+field meanings and the first-byte/request-ID mismatch remain unresolved.
+This does not establish a firmware readback or identify the physical model.

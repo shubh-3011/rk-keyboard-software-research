@@ -230,6 +230,13 @@ were unchanged and ID `06` again failed with Win32 error 31. Across the
 recorded successful calls, IDs `05` and `0A` returned identical bytes. No
 input/output report or feature write was sent.
 
+After the user's updated instruction authorized opening the HID interface,
+one fresh `-RepeatCount 1` run issued one additional `HidD_GetFeature` call
+for each short report. Both succeeded with the same bytes and hashes, bringing
+the documented total to ten identical successful responses for each of IDs
+`05` and `0A`. This adds repeatability evidence only; it does not resolve the
+response semantics or establish a firmware image.
+
 The successful short responses share the same first six bytes even though
 their collections and requested report IDs differ. In both responses, byte 0
 is `06`, not the requested ID (`05` or `0A`); this mismatch is unresolved.

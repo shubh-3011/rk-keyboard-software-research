@@ -161,6 +161,41 @@ and a local screen-editor collection update. The list entry's decoded image
 representation and its exact relation to the `+0xE0` index structure and
 `+0xF4` frame list are not established by this path alone.
 
+## `0x0477` value-zero bitmap branch
+
+**Confirmed statically.** The same handler passes `wParam=0` to `0x0046D5B0`;
+its comparison at `0x0046D5EB` branches to the bitmap-construction path at
+`0x0046D768`. The helper obtains two runtime values from globals
+`0x0061182C` and `0x00611830`, then calls the GDI+ import
+`GdipCreateBitmapFromScan0` through thunk `0x00589134` at `0x0046D7A6`.
+The pushed arguments are, in reverse order, an output pointer, null scan
+buffer, format value `0x0026200A`, zero stride, and the two globals. The
+globals reside in the zero-initialized `.data` tail; their runtime values are
+not established here. In the recovered stack order, `0x0061182C` is the first
+dimension argument and `0x00611830` is the second.
+
+The helper wraps the returned image pointer in a 16-byte heap record with
+vtable pointer `0x005A4E84`. It obtains a GDI+ graphics context through
+`GdipGetImageGraphicsContext` (`0x0058913A`), creates a solid-fill brush with
+argument `0xFF000000` through `GdipCreateSolidFill` (`0x0058911C`), and calls
+`GdipFillRectangleI` (`0x005891CA`). It then deletes the graphics context and
+brush and frees the temporary graphics wrapper. On the successful allocation
+branch, the image wrapper is appended to
+or inserted into the same local list rooted at `CScreenDlg+0xE4` used by the
+value-one selected-path object. The helper adjusts the selection fields,
+calls cache/list rebuild helper `0x0046D900`, and invalidates the two child
+windows as described above.
+
+This establishes that menu row zero constructs a GDI+ bitmap object and
+updates the local screen-editor list, while row one opens an image picker and
+adds a selected-path object to that list. The numeric pixel-format value,
+fill geometry, runtime dimensions, and complete bitmap-to-frame conversion
+are not resolved by this callsite trace. `0x0046D900` rebuilds the separate
+`+0xF4` frame list from indexed source objects, but this does not prove that
+the newly created bitmap or imported path object becomes a frame sent by the
+transfer worker. The behavior is consistent with localized labels such as
+“New” and “Import,” but no recovered text binding proves either label.
+
 **Confirmed statically.** The `CScreenDlg` child-window path constructs a
 two-row menu, and selecting its second row posts `0x0477` with `wParam=1` to
 the screen dialog. That reaches the value-one open-file branch above. The

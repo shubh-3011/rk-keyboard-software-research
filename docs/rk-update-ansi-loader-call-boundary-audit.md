@@ -128,3 +128,32 @@ descriptors was recovered. Computed or indirect descriptor selection,
 runtime mutation, outside-image callers, and actual API execution remain
 unresolved; the imports are not classified as unused. The updater was not
 launched for this audit.
+
+## ANSI thunk reference closure (2026-10-19)
+
+A targeted whole-image scan of the same hash-matched file classified every
+literal pointer to the ANSI thunk entrypoints, then checked `.text` for direct
+relative `call`/`jmp` transfers to the thunk entries and their IAT-jump
+instructions. The only raw references to the two thunk entrypoints are the
+resolver-function fields in the four ANSI descriptor records:
+
+| Import | Thunk entry / IAT jump | Exact thunk-pointer field(s) found | Direct code transfer to thunk |
+|---|---|---|---|
+| `LoadLibraryA` | `0x0041743E` / `0x00417442` → IAT `0x005603FC` | `0x00562220` (raw file offset `0x161420`), `0x005645AC` (`0x1637AC`), `0x00584510` (`0x183710`) | None found in `.text` |
+| `GetModuleHandleA` | `0x004165AC` / `0x004165B0` → IAT `0x00560404` | `0x00561DD4` (raw file offset `0x160FD4`) | None found in `.text` |
+
+The shared resolver's only indirect module-resolver call is the instruction
+`call *(%eax)` at `0x00416586`; the descriptor pointer is loaded from its
+first argument and supplies both that function pointer and the module-name
+pointer. The complete `.text` direct-call census contains exactly the nine
+calls to resolver `0x00416570` listed above. All nine pass one of the W-form
+descriptor bases. The thunk-pointer fields above are data references, not
+additional caller sites. This closes the static in-image caller census for
+these descriptors: the recovered generic indirect call is reachable from
+those nine direct callers, whose literal arguments select only the W-form
+records.
+
+The check is still static. An exact pointer scan does not detect values
+constructed arithmetically, runtime writes, or calls originating outside the
+image, and disassembly does not demonstrate which calls execute. It therefore
+does not prove the ANSI imports are never used at runtime.

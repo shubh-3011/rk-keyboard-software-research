@@ -343,6 +343,7 @@ model or runtime map.
   rows, finding no new consumer; each remains unresolved dynamic/runtime. See
   `docs/rk-remaining-native-api-gap-deep-scan.md`,
   `docs/rk-update-ansi-loader-call-boundary-audit.md`, and
+  `docs/rk-unins000-scrollbar-fallback-import-thunk-audit.md`,
   `docs/rk-unresolved-native-api-relative-reference-followup.md`, and
   `docs/rk-remaining-api-reference-scan.csv`.
   Independent audits rechecked the installed ANSI-loader and uninstaller
@@ -548,13 +549,13 @@ model or runtime map.
   not input-file pickers: NewPNG reads from `CScreenDlg+0xE0`, while NewGIF
   traverses the existing `CScreenDlg+0xF4` list. Separately, cache regeneration
   calls a builder that appends indexed source objects to F4. A focused follow-up
-  now maps `CScreenDlg` message `0x0477` to a value-one branch that opens an
-  image file picker, inserts the selected path object into the local list at
-  `+0xE4`, rebuilds, and invalidates child views. A follow-up closes the
-  `CScreenDlg` sender path: the screen's two-row menu stores values `0` and `1`,
-  its `WM_MOUSEMOVE`/`WM_LBUTTONUP` handlers select and submit a row, and the
-  value-one row posts `0x0477` to the dialog, opening the image picker. The menu
-  labels and the selected object's relation to the F4
+  now maps `CScreenDlg` message `0x0477` to two branches: value zero creates a
+  GDI+ bitmap object, and value one opens an image picker and retains the
+  selected path object. Both update the local list at `+0xE4`, rebuild, and
+  invalidate child views. A follow-up closes the `CScreenDlg` sender path: the
+  screen's two-row menu stores values `0` and `1`, and its
+  `WM_MOUSEMOVE`/`WM_LBUTTONUP` handlers select and submit a row. The menu
+  labels and either object's relation to the F4
   transfer-frame list remain unresolved; so do the profile cache trigger and
   source-file enumeration. The transfer action copies F4
   items to a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
@@ -661,7 +662,7 @@ model or runtime map.
   `docs/rk-live-hid-selector-crosscheck-2026-10-19.md`. Three direct
   `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
   descriptor-declared 1032-byte feature read failed twice with Win32 error 31.
-  Across all recorded calls, the same short bytes were returned nine times per
+  Across all recorded calls, the same short bytes were returned ten times per
   report ID, with the first returned byte `06` for requested IDs `05` and
   `0A`; response semantics remain unresolved. No output report or `HidD_SetFeature`
   payload was sent. A cached BLE follow-up found
