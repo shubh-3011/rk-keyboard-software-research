@@ -73,13 +73,29 @@ also parses `[FN1]`, `[FN2]`, and `[TAP]` into separate 132-record tables via
 `FUN_00450D70`; see the [profile-to-UI audit](rk-keymap-ui-path-audit.md).
 `FUN_0041D7E0` conditionally copies matching `[KEY]`, `[FN1]`, and `[FN2]`
 records into layer-0, layer-1, and layer-2 regions of map global
-`0x0062B388` for a type-2 `FA`/`FB` special-record case. The worker passes
-that same map pointer to its virtual `+0x3C` call; when the receiver is
+`0x0062B388` for a type-2 `FA`/`FB` special-record case. In addition,
+`FUN_0041D6A0` commits a supplied 16-byte key record to the currently selected
+map layer, including the picker result reached after modal return `1` from
+`CKeyFunPickDlg`. `FUN_0041D520` updates the selected layer and calls
+`FUN_0041B870`, which conditionally fills unmatched macro-tagged rows from the
+corresponding `[KEY]`, `[FN1]`, `[FN2]`, or `[TAP]` profile table. The worker
+passes that same map pointer to its virtual `+0x3C` call; when the receiver is
 `CDevRKKB`, the slot resolves to `FUN_00413BF0`, whose four translator calls
 read the four 0x840-byte-spaced layers from that argument. This establishes
-the conditional map-to-RKKB-translator path. How ordinary profile/UI data
-populates the map, what fills layer 3, and which active receiver is selected
-at runtime remain unresolved.
+ordinary edit, picker commit, conditional profile-row fallback, and the
+map-to-RKKB-translator input paths. Complete initialization of every layer,
+the full semantics of the conditional `[TAP]` fallback, and which active
+receiver is selected at runtime remain unresolved.
+
+The 4.06 special updater is selected when profile-loaded global
+`0x00611760` is nonzero; its source is `[OPT] Fw`. The detailed
+`FUN_0041D7E0` trace distinguishes restoring the profile's first three
+layers from propagating an incoming type-2 `FA`/`FB` row to layers 0-2. It
+marks corresponding layer bits in `map+0x30` and then writes the incoming row
+to the selected layer unless the same-record early return applies. The
+code-level path is confirmed, while subcode semantics, physical-device
+correlation, and final helper behavior remain unresolved; see the
+[UI path audit](rk-keymap-ui-path-audit.md).
 
 The other family path, `FUN_00411260` (`0x00411260`), also loops over four
 layers and 132 16-byte records. For nonzero records it calls a virtual
@@ -150,20 +166,25 @@ is placed in the 0x780-byte block.
   the RKKB translator reads that byte as a bounded 0–131 output slot. See the
   [profile-to-UI path audit](rk-keymap-ui-path-audit.md). The purpose of the
   optional ninth and tenth cells remains unresolved.
-- **Partially resolved: `[FN1]`/`[FN2]` section storage and one consumer.**
+- **Partially resolved: `[FN1]`/`[FN2]`/`[TAP]` section storage and consumers.**
   `FUN_00450D70` reads `K1`–`K132` from each section into separate
-  16-byte-record tables. In the `FA`/`FB` special-record branch,
-  `FUN_0041D7E0` copies the same key-indexed rows to map layer-1/layer-2
-  state for a narrow `FA`/`FB` case. That map is an input to the RKKB
-  four-layer translator under the RKKB vtable route. Their alternate-action
-  interpretation remains high confidence; ordinary row population and the
-  relation between translated layers and the `10 F8` payload are open.
+  16-byte-record tables. `FUN_0041D7E0` copies key-indexed `[KEY]`/`[FN1]`/
+  `[FN2]` rows to layers 0–2 for a narrow `FA`/`FB` case. `FUN_0041B870`
+  conditionally copies `[KEY]`/`[FN1]`/`[FN2]`/`[TAP]` rows into unmatched
+  macro-tagged entries after a layer update. The general key-record updater
+  and picker path also commit to the selected map layer. The shared map reaches the RKKB
+  four-layer translator under the RKKB vtable route. Alternate-action
+  interpretation remains high confidence; complete initialization, full tap
+  semantics, and the relation between translated layers and the `10 F8`
+  payload are open.
 - **Partially resolved: profile tuple columns to runtime records.** The
-  `[KEY]` parser's base action record and cell-8 slot-index path, plus the
-  `[FN1]`/`[FN2]`/`[TAP]` parser destinations and one conditional
-  `[KEY]`/`[FN1]`/`[FN2]` copy path into map state are mapped. The map-to-RKKB
-  translator input path is also mapped. General construction of all four
-  runtime layers from profile arrays and edited UI state remains unresolved.
+  `[KEY]` parser's base action record and cell-8 slot-index path, the
+  `[FN1]`/`[FN2]`/`[TAP]` parser destinations, ordinary selected-layer edits,
+  picker-result commit, a conditional four-section fallback for unmatched
+  macro-tagged rows, and one conditional `[KEY]`/`[FN1]`/`[FN2]` copy path
+  are mapped. The map-to-RKKB translator input path is also mapped. Complete
+  initialization of all four runtime layers from profile defaults and edited
+  UI state remains unresolved.
 - **Unresolved: full `0x780` payload schema.** The wrapper length and prefix
   are proven; caller context ties it to macro staging, while the error string
   says “SendKey”. No runtime capture is available, and this static audit does

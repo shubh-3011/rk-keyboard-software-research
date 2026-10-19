@@ -43,12 +43,14 @@ The complete map owner chains and raw command candidates are in
 
 For `CScreenDlg`, the private-message map row at `0x005DA4B8` links message
 `0x0477` to handler `0x0046DBF0`. Its value-one branch opens an image file
-picker and inserts the selected path object into a local screen-editor list
-before rebuilding and invalidating views. A separate static trace closes the
-sender route from a two-row screen menu: its second row posts value one to the
-parent `CScreenDlg`. A follow-up traces row text slots to locale keys
-`tc_screen14` (“New”) and `tc_screen15` (“Import”) in English. The selected
-object's relation to the F4 transfer-frame list remains unknown.
+picker and inserts the selected path object into the linked-list wrapper based
+at `CScreenDlg+0xE4`, whose head is `+0xF4`, before invalidating views. Its
+call to `0x0046D900` rebuilds that same list only when the count gate equals
+`0x11`. A separate static trace closes the sender route from a two-row screen
+menu: its second row posts value one to the parent `CScreenDlg`. A follow-up
+traces row text slots to locale keys `tc_screen14` (“New”) and `tc_screen15`
+(“Import”) in English. The selected path object's successful conversion to a
+frame consumed by the transfer worker remains unresolved.
 See the [4.06 screen UI follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
 
 ## Inferred label-to-field matches

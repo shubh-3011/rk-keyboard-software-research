@@ -70,16 +70,27 @@ interpretation. The profile initializer `FUN_004513B0` calls the shared
 destinations `0x0061720C`, `0x00617A4C`, and `0x0061828C`, respectively.
 `FUN_00450D70` formats `K%d` keys and reads up to 132 entries into the
 corresponding 0x840-byte tables. This proves those sections are parsed and
-stored. `FUN_0041D7E0` conditionally copies matching `[KEY]`, `[FN1]`, and
-`[FN2]` rows into layer-0, layer-1, and layer-2 state when the selected record
-has type 2 and subcode `0xFA` or `0xFB`. This shared map is passed to the
+stored. `FUN_0041D6A0` routes to special updater `FUN_0041D7E0` when global
+`0x00611760` is nonzero; profile setup loads that value from `[OPT] Fw`. The
+special path can restore profile `[KEY]`/`[FN1]`/`[FN2]` rows or propagate an
+incoming type-2 `FA`/`FB` row across layers 0-2. It marks dirty-layer bits in
+`map+0x30` and then writes to the selected layer except on a same-record early
+return. The exact subcode meanings and physical-device correlation remain
+unknown. This shared map is passed to the
 RKKB worker's `+0x3C` method and supplies the four layers translated by
-`FUN_00413BF0` when that family route is selected. The general layer-
-construction path, the meaning of those subcodes, and the relationship
-between translated layers and the separate `01 F8`/`10 F8` regions remain
-unresolved. A full `objdump -d` text search found no direct consumer reference
-to the parsed `[TAP]` table at `0x0061828C`; computed and indirect uses remain
-possible. The separate `FUN_00450820` helper reads `[OPT]`
+`FUN_00413BF0` when that family route is selected. The ordinary key editor
+and `CKeyFunPickDlg` modal result also reach a shared updater that commits a
+16-byte record to the selected map layer. After a layer update,
+`FUN_0041B870` conditionally copies profile rows into map entries tagged as
+macros only when no matching macro record exists; its source address is
+computed from the selected layer and therefore traverses `[KEY]`, `[FN1]`,
+`[FN2]`, and `[TAP]` tables, including `0x0061828C` for layer 3. This is a
+conditional fallback consumer, not proof of complete default initialization
+or general tap semantics. The meaning of `FA`/`FB` and the relationship
+between translated layers and separate `01 F8`/`10 F8` regions remain
+unresolved. The earlier direct-literal scan found only the parser's explicit
+`[TAP]` destination; this computed row source is a separate consumer path.
+The separate `FUN_00450820` helper reads `[OPT]`
 `GaoshouKey%d` and `GaoshouKeyColor%d` values; it is not the `[FN1]`/`[FN2]`
 parser.
 
@@ -123,10 +134,13 @@ units or device behavior.
 Storage coverage is exhaustive for the installed profile corpus, and several
 important partial paths are now direct: `[KEY]` cells 1–10 populate coordinate
 arrays or base action-record fields; cell 8 supplies the RKKB slot byte;
-`LedOpt%d` values populate table/UI state and selected serializer fields; and
-specific `OPT` settings reach family serializers. The complete construction
-of four runtime layers from `[KEY]`, `[FN1]`, `[FN2]`, and UI edits remains
-unresolved. Full action enums, `LedOpt` meanings, `OPT` field semantics, and
-model-specific wire schemas are only partly decoded. No profile-field map
-proves physical behavior across all keyboards or firmware revisions.
+the general key-record updater and picker path commit to the active map layer;
+and a layer-switch helper conditionally falls back to each of the four profile sections for
+unmatched macro-tagged rows. `LedOpt%d` values populate table/UI state and
+selected serializer fields; specific `OPT` settings reach family serializers.
+The complete initialization of all four runtime layers from profile defaults
+and UI edits remains unresolved. Full action enums, tap behavior, `LedOpt`
+meanings, `OPT` field semantics, and model-specific wire schemas are only
+partly decoded. No profile-field map proves physical behavior across all
+keyboards or firmware revisions.
 

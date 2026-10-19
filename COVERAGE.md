@@ -121,9 +121,12 @@ model or runtime map.
   function-level reanalysis. Side LED is enabled in profiles `02B4` and
   `0258`; only the first has side-light artwork/localization in this package.
   A ten-entry MFC message map and state-record path into the report builder are
-  recovered; whether a given UI event schedules that builder remains open.
-  The report builder reaches a generic HID feature writer, but event meanings,
-  packet fields, model compatibility, and runtime behavior remain unresolved.
+  recovered. Four message-handler paths across five map entries also enqueue
+  settings request `2` to the family apply worker, including one inline queue
+  insertion. The exact active family and whether these callbacks schedule the
+  specific Side LED report builder remain open. The report builder reaches a
+  generic HID feature writer, but event meanings, packet fields, model
+  compatibility, and runtime behavior remain unresolved.
   See the [Side LED audit](docs/rk-v4.6-side-led-static-audit.md) and its
   [message-map follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md).
   Other detailed native control-flow reports remain tied to the 4.06 binaries.
@@ -149,6 +152,10 @@ model or runtime map.
   branch-spanning SetupAPI route is documented outside the conservative CSV
   heuristic. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md)
   and [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md).
+  A focused follow-up traces the 4.6 `PlaySoundW` worker states to embedded
+  aliases `MenuCommand` and `MenuPopup`, its stop branch, and five code-level
+  state producers; their visible triggers and runtime playback remain
+  unresolved.
 - A cross-version static trace follows HID class discovery through interface
   path retrieval, `CreateFileW`, preparsed-data/capability queries, metadata
   storage, and `CloseHandle` in the installed 4.06 and extracted 4.6 drivers.
@@ -518,11 +525,16 @@ model or runtime map.
   confidence-ranked report separating visual rectangle coordinates from
   candidate action and keycode meanings. The `[KEY]` parser maps tuple cells
   1–10 into coordinate arrays and 16-byte action records; cell 8 feeds the
-  RKKB 132-slot lookup byte. A conditional type-2 `FA`/`FB` path copies
-  matching `[KEY]`, `[FN1]`, and `[FN2]` rows into the map's first three
-  layers, and the worker passes that map to the RKKB four-layer translator.
-  General profile/UI layer construction and the picker commit path remain
-  unresolved. The fixed `04 00` plus `0x780` write is macro staging in its
+  RKKB 132-slot lookup byte. The profile-loaded `Fw` option selects the
+  special `FUN_0041D7E0` updater: narrow type-2 `FA`/`FB` cases can restore
+  profile `[KEY]`/`[FN1]`/`[FN2]` rows or propagate an incoming record across
+  layers 0-2, while setting the dirty-layer mask. The ordinary updater and
+  picker modal result commit to the selected map layer, and the worker passes
+  that map to the RKKB four-layer translator. A layer-switch helper
+  conditionally fills unmatched macro-tagged
+  rows from the corresponding `[KEY]`, `[FN1]`, `[FN2]`, or `[TAP]` profile
+  row. Full default initialization of all layers and complete tap behavior
+  remain unresolved. The fixed `04 00` plus `0x780` write is macro staging in its
   recovered caller context, not a proven full keymap transfer. See
   `docs/rk-keymap-ui-path-audit.md` and
   `docs/rk-keymap-translation-audit.md`.
@@ -548,22 +560,24 @@ model or runtime map.
   payload, and the frame/page transfer header, optional additive-complement
   byte, acknowledgements, retries, and cancellation path. The hash-pinned 4.06
   UI trace identifies NewPNG/NewGIF as save-as dialogs (`bOpenFileDialog=0`),
-  not input-file pickers: NewPNG reads from `CScreenDlg+0xE0`, while NewGIF
-  traverses the existing `CScreenDlg+0xF4` list. Separately, cache regeneration
-  calls a builder that appends indexed source objects to F4. A focused follow-up
-  now maps `CScreenDlg` message `0x0477` to two branches: value zero creates a
-  GDI+ bitmap object, and value one opens an image picker and retains the
-  selected path object. Both update the local list at `+0xE4`, rebuild, and
-  invalidate child views. A follow-up closes the `CScreenDlg` sender path: the
+  not input-file pickers: NewPNG requests index zero through a helper passed
+  `CScreenDlg+0xE0`, which reads the same list head at `+0xF4` that NewGIF
+  traverses directly. The list wrapper is based at `+0xE4` (count/head/tail at
+  `+0xEC/+0xF4/+0xF8`); cache regeneration conditionally rebuilds this same
+  list when its count is `0x11`. A focused follow-up maps `CScreenDlg` message
+  `0x0477` to two branches: value zero creates a GDI+ bitmap object and value
+  one opens an image picker; both insert into the same list and call the
+  count-gated rebuild helper, then invalidate child views. A follow-up closes the `CScreenDlg` sender path: the
   screen's two-row menu stores values `0` and `1`, and its
   `WM_MOUSEMOVE`/`WM_LBUTTONUP` handlers select and submit a row. The English
   labels resolve through locale keys `tc_screen14` (“New”) and
   `tc_screen15` (“Import”). The value-zero bitmap dimensions load from the
   profile's `[OPT] siScreen` pair; the 4.06 catalog contains 15 such values
   across four dimension pairs, with S98 entries using `320,172`. Runtime
-  dimensions were not observed. Neither E4 result is proven to become an F4
-  transfer-frame item; the profile cache trigger and source-file enumeration
-  remain unresolved. The transfer control `tc_screen12` is now bound to its
+  dimensions were not observed. Both `0x0477` menu branches insert into the
+  same list later snapshotted by transfer, but successful conversion of the
+  bitmap/path objects remains unresolved; the profile cache trigger and
+  source-file enumeration remain unresolved. The transfer control `tc_screen12` is now bound to its
   generated child and click handler; Chinese, Russian, and Korean labels
   clarify that it saves to the keyboard. The handler applies an unresolved
   global/device-vtable gate, then copies up to 512 F4 items to a modal object;

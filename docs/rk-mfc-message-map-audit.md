@@ -128,10 +128,12 @@ message `0x0477` reaches `0x0046DBF0`, whose value-one branch opens an image
 file picker and updates a local screen-editor list. The child-window route
 through `0x0046DB00` builds two menu rows with values `0` and `1`; sender
 `0x00433960` posts the selected row value to the parent `CScreenDlg`, closing
-the value-one path to the image picker. The labels and relation of that list
-item to the F4 transfer-frame list remain unresolved; a second literal sender
-at `0x004345C0` is not tied to this menu. See the [screen UI
-follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
+the value-one path to the image picker. The inserted item is in the same
+linked-list wrapper whose head is `CScreenDlg+0xF4`. The handler calls the
+rebuild helper, which rebuilds that list only when its count equals `0x11`;
+successful conversion of an inserted path object to a frame remains unresolved.
+A second literal sender at `0x004345C0` is not tied to this menu. See the
+[screen UI follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
 
 ## Reproduction
 

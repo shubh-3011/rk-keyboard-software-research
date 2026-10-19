@@ -61,7 +61,47 @@ are `[OPT]` `GaoshouKey%d` and `GaoshouKeyColor%d`, not the `[FN1]` or `[FN2]`
 sections. Do not use that call as evidence for Fn-row parsing or layer
 population.
 
-**Partially proven consumer.** `FUN_0041D7E0` (`0x0041D7E0`), reached from
+### Per-key map updater and picker commit
+
+**Proven statically for this 4.06 image.** `FUN_0041D6A0` is a general
+per-key map-row updater. When global `0x00611760` is zero, it obtains the selected key index
+from the caller object's `+0x1B38`, validates the map pointer and nonnegative
+index, and writes the supplied 16-byte record into the selected layer at
+`map+0x38+((map[+0x34]*0x84+keyIndex)*0x10)`. Before copying, it replaces the
+record's byte `+4` from the base `[KEY]` mapping-slot table at
+`0x006169D0+keyIndex*0x10`. It marks map field `+0x30` dirty, refreshes the
+associated UI, and conditionally signals worker helper `0x00401080` with mask
+`1` when global `0x00611794` is set. The flag names and the semantics of the
+last helper remain unresolved. When `0x00611760` is nonzero, this updater
+instead routes to the previously documented narrower `FUN_0041D7E0` path.
+
+The picker commit caller is also recovered. The parent at `0x0041BDA2`
+constructs a `CKeyFunPickDlg`, calls its modal helper at `0x0041BDCB`, and
+continues only for modal result `1`. It copies four dialog result DWORDs from
+the caller's stack locals into a 16-byte record, destroys the dialog, then
+passes that record to `FUN_0041D6A0` at `0x0041BF4D`. In the picker, the
+generated Apply child is stored at `this+0x204`; the handler at `0x0041F810`
+recognizes that child and its action path ends the dialog with result `1` via
+the dialog vtable. This proves a static picker-Apply-to-local-map-commit
+route. It does not prove which rendered keyboard key initiated the picker,
+which concrete receiver later applies the data, or that a device accepted it.
+
+### Layer selection and conditional profile fallback
+
+**Proven statically.** `FUN_0041D520` stores the selected layer number in
+`map+0x34`, then calls `FUN_0041B870`. That helper iterates the profile key
+count for the selected layer. For map rows tagged `+3 == 5`, it searches the
+macro collection for a matching identifier; only when no match is found does
+it copy the corresponding profile row from
+`0x006169CC+layer*0x840+keyIndex*0x10` into the map layer at
+`map+0x38+layer*0x840+keyIndex*0x10`. The source progression is `[KEY]`,
+`[FN1]`, `[FN2]`, and `[TAP]` for layer indices 0–3. This closes a computed,
+conditional `[TAP]` table consumer that was not visible in a direct literal
+reference scan. It is a fallback for unmatched macro-tagged rows during
+layer selection, not proof that the helper initializes every row or fully
+implements tap behavior.
+
+**Special-record consumer, profile gate, and limits.** `FUN_0041D7E0` (`0x0041D7E0`), reached from
 `FUN_0041D6A0` at `0x0041D6B1`, uses the key index at the caller object offset
 `+0x1B38` and the active layer at `[0x0062B388]+0x34`. It checks the selected
 16-byte record for tag byte `+3 == 2` and subcode byte `+9 == 0xFA` or `0xFB`.
@@ -89,6 +129,37 @@ indirect use remains open. A full `objdump -d` text search found the literal
 `0x0061828C` only at the parser's destination argument (`0x00452311`); this
 adds no consumer and does not rule out computed or indirect access.
 
+The branch selector is global `0x00611760`; profile initialization at
+`FUN_004513B0` loads it from `[OPT] Fw` through `GetPrivateProfileIntW` (call
+`0x00451419`, store `0x00451426`; key `0x005D4F7C`, section `0x005C7FC0`).
+This proves a profile option selects the branch, not that the option
+identifies the connected physical keyboard.
+
+The focused `FUN_0041D7E0` audit distinguishes two special-record effects. If
+the existing key row has tag `+3 == 2` and subcode `+9` equal to `0xFA` or
+`0xFB`, the routine restores the profile's `[KEY]`/`[FN1]`/`[FN2]` rows for
+that key into layers 0, 1, and 2 from `0x006169CC`, `0x0061720C`, and
+`0x00617A4C`, then sets `map+0x30` to `7`. If the incoming row has tag
+`+3 == 2`, byte `+8 == 0`, and subcode `+9` equal to `0xFA` or `0xFB`, it
+copies that incoming 16-byte row into the same three layers and sets the
+field to `7`. A same-special-record match on type and bytes `+8/+9` returns
+before mutation. On the common path, the routine writes the input record to
+the selected layer and ORs `1 << layer` into `map+0x30`; layer 3 can therefore
+produce dirty mask `0x0F` after the special mask. It derives a UI-change flag,
+refreshes the UI, conditionally signals `FUN_00401080` with mask `1` when
+`0x00611794` is nonzero, then calls `FUN_0045ABF0` with global `0x0061175C`.
+The bit operations indicate a dirty-layer mask, but the final helper's
+purpose and the globals' names remain unresolved.
+
+A second caller at `0x0041DB48` comes from `FUN_0041DA30`. It scans a table at
+`this+0x1118` and builds a type-2 row from an index and flags before calling
+`FUN_0041D6A0`; its visible control identity is unresolved. The selected
+layer fallback in `FUN_0041B870` also supplies a computed `[TAP]` row source
+for layer 3. The earlier literal-reference scan did not find the `TAP` table
+address directly in that consumer; this computed path closes one conditional
+consumer without establishing ordinary layer initialization or general tap
+semantics.
+
 ## UI and event crosswalk
 
 The main feature UI is built dynamically; static resources do not expose a complete set of remapping control IDs. The [UI control crosswalk](rk-ui-control-command-crosswalk.md) and [localization audit](rk-resource-localization-audit.md) establish these specific edges:
@@ -96,7 +167,7 @@ The main feature UI is built dynamically; static resources do not expose a compl
 | UI surface/event | Proven static edge | What remains open |
 | --- | --- | --- |
 | Profile key layout | The profile loader writes the first four cells into per-key coordinate arrays and builds the action records described above. The profile schema identifies these four cells as rectangle coordinates. | Which exact paint/hit-test function reads these arrays, how it maps a mouse selection to `K<n>`, and the generated key control/HWND IDs. |
-| Key/function picker `Apply` | A separate generated control is built at `0x0041EC32`–`0x0041EC3F`, stored at `this+0x204`; the RTTI-backed `CKeyFunPickDlg` vtable slot `+0xF0` reaches handler `0x0041F810`. The handler checks the clicked HWND and updates local selection/dirty fields. | How this local picker state is copied into the four-layer map object or serialized later. No direct call to the settings signal helper or a device writer was found from this handler. |
+| Key/function picker `Apply` | A generated control at `this+0x204` is handled by `0x0041F810`; its action ends the dialog with modal result `1`. The parent waits for that result, copies four local result DWORDs into a 16-byte record, then calls `FUN_0041D6A0` at `0x0041BF4D`, which commits to the currently selected map layer when global `0x00611760` is zero, or routes through `FUN_0041D7E0` otherwise. | The rendered-key-to-picker input route, semantics of the two global gates, and the later concrete receiver/writer for this individual event. |
 | Main window `Apply` | Another `tc_apply` control is built at `0x0040A3F8`–`0x0040A404`, stored at `this+0x1DD8`. Its handler reaches `0x0040AE1D`, updates an in-memory row via `0x0040B3B0`, and under the `ApplyNow` gate signals `FUN_00401080` with mask `1`. The semaphore worker later calls a virtual `+0x3C` method. | The actual receiver/profile at the virtual call and the concrete writer reached for this individual event. The picker Apply and main Apply must remain distinct despite the shared caption. |
 
 The main Apply's signal and family vtable targets are described in the [Apply worker audit](rk-settings-apply-worker-audit.md). If the receiver is RKKB, vtable slot `+0x3C` reaches `FUN_00413BF0` with map global `0x0062B388`; if it is G5, the target is `FUN_00411B90`. The class-specific map-to-translator edge is static, but this is not proof that a specific click reached either implementation.
@@ -109,10 +180,10 @@ The main Apply's signal and family vtable targets are described in the [Apply wo
 
 ## Explicit unresolved items
 
-- **`[FN1]` and `[FN2]` profile rows:** parser and destination tables are mapped, and `FUN_0041D7E0` conditionally copies key-indexed rows into map layers 1 and 2 for the `FA`/`FB` special-record case. The same map object reaches the RKKB four-layer translator through its worker argument. General layer population, tuple-cell meanings, named UI control, and the relationship to the separate `10 F8` payload remain unresolved. `FUN_00450820` is a separate `[OPT]` Gaoshou-key/color reader, not the Fn parser.
+- **`[FN1]`, `[FN2]`, and `[TAP]` profile rows:** parser destinations are mapped. `FUN_0041D7E0` conditionally copies key-indexed rows into layers 0–2 for the `FA`/`FB` special-record case; `FUN_0041B870` separately copies profile rows for layers 0–3 into unmatched macro-tagged rows on layer selection. This proves a conditional `[TAP]` consumer, but not ordinary initialization or full tap semantics. The relation to the separate `10 F8` payload remains unresolved. `FUN_00450820` is a separate `[OPT]` Gaoshou-key/color reader, not the Fn parser.
 - **Mouse/key selection path:** no reliable mapping from a clicked rendered key to a `K<n>` record, popup choice, or `CKeyFunPickDlg` input field was recovered.
-- **Picker commit path:** the local dirty/selection update in `0x0041F810` is statically visible, but its later consumer is not linked to the runtime four-layer records.
-- **Layer population:** the `FA`/`FB` helper copies `[KEY]`, `[FN1]`, and `[FN2]` rows into the first three map layers in one conditional path, and that map is statically passed to the RKKB four-layer translator. Complete construction of the four layers from profile defaults and UI edits is not recovered.
+- **Picker commit path:** modal result `1` is statically linked from the picker Apply handler through its parent into `FUN_0041D6A0`. The rendered-key-to-picker input route and concrete device receiver for a later Apply remain open.
+- **Layer population:** the general updater and picker commit to the currently selected in-memory layer; layer selection has a conditional four-section fallback for unmatched macro-tagged rows, and the `FA`/`FB` path copies `[KEY]`/`[FN1]`/`[FN2]` rows. Complete initial/default construction of every layer and full `[TAP]` behavior are not recovered.
 - **All-model coverage:** this is one installed 4.06 binary and 189 local profiles. It cannot establish that all Royal Kludge models, revisions, or later software use the same parser or writer.
 - **Protocol semantics:** translated DWORD meanings and several type/action cases remain undecoded. No packet capture or hardware validation was performed.
 

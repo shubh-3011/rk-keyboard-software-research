@@ -87,6 +87,39 @@ closes the file handle after processing the list. This is host-local
 profile-state persistence; the runtime base path and the file-record schema
 are unresolved.
 
+## Message-map handlers to the deferred settings worker
+
+The message-map table also closes part of the UI-callback-to-worker gap. Four
+handler paths, across five message-map entries, converge on settings request
+value `2` after updating Side LED dialog or shared selection state:
+
+| Handler | Message-map entry | State work before enqueue | Request route |
+| --- | --- | --- | --- |
+| `0x0045DC40` | `WM_USER+0x0400` (`0x0800`) | Calls `0x0045DC90` with message parameters, then `0x0045F660` to rebuild shared state from the controls. | If `[OPT] ApplyNow` is nonzero, pushes `2` to `0x00401100` at `0x0045DC67`; then calls `0x00460DA0`. |
+| `0x0045DDC0` | `WM_USER+0x0194` (`0x0594`) | Updates global/control state, sends message `0x110A` with `wParam=9`, resolves the result against the dialog list, stores the resulting value at candidate device offset `+0x5D90`, and calls `0x0045F350`. | If `[OPT] ApplyNow` is nonzero, pushes `2` to `0x00401100` at `0x0045DE57`; then calls `0x00460DA0`. |
+| `0x0045DE80` | `WM_USER+0x003E` (`0x043E`) | Iterates seven child controls and updates their selection state, processes a pending child value when present, resolves message `0x110A`, then calls `0x0045F660`. | Inserts value `2` directly through `0x0043E6C0` at `0x0045DF36`, then releases the worker semaphore at `0x0045DF45`. This is an inline producer, not one of the 24 direct calls to `0x00401100`. |
+| `0x0045DFA0` | `WM_USER+0x0061` (`0x0461`) and `WM_USER+0x01D1` (`0x05D1`) | Stores the passed value in the first child control, invalidates that control, resolves message `0x110A`, then calls `0x0045F660`. | If `[OPT] ApplyNow` is nonzero, pushes `2` to `0x00401100` at `0x0045E000`; then calls `0x00460DA0`. |
+
+The inline route uses the same queue global `0x006356D8`, queue insertion
+helper `0x0043E6C0`, and semaphore global `0x006356C4` as the `0x00401100`
+wrapper. After signaling, that handler checks active-device global
+`0x00647320` and follows a separate virtual slot `+0x28` path. This does not
+identify that slot's semantic name or prove it is the same device object as
+the `+0x5D90` object used by the dialog's selection update.
+
+The worker at `0x00401290` drains the queued DWORD and, for an active device
+that passes its connection checks, dispatches the request through virtual
+slot `+0x44`. The verified G5 table resolves that slot to
+`CDevG5KB::ApplySetting` at `0x004127B0`; its `nFlag & 0x02` branch reads and
+transforms a 128-byte LED/profile block before a command-4 writer call (see
+the [G5 settings audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md)). This
+establishes a static Side LED-dialog-message → request value `2` → family-
+virtual-apply path, conditional on the option and worker checks. It does not
+prove the runtime active family, that `nFlag=2` means Side LED on every family,
+that report builder `0x00412060` is invoked by these handlers, or that a
+keyboard receives or accepts the resulting report. The dialog-state pointer
+`0x00647328` and worker active-device pointer `0x00647320` remain distinct.
+
 No direct call from the candidate Side LED callbacks to `0x00412060` was
 found in the inspected call bodies. The report-builder route is consequently
 a data-flow connection through shared device-object state; whether a UI
@@ -104,6 +137,10 @@ callback remains unresolved.
   addresses listed above.
 - Multiple executable targets update the Side LED dialog's control-derived
   state and converge on `0x0045F660`.
+- The four handler paths listed above (five message-map entries, because
+  `0x0045DFA0` handles two) request deferred settings value `2` through the
+  shared worker queue (three through `0x00401100`, one through the
+  queue-insert/semaphore sequence inline).
 - The UI state record family rooted at device-object offset `+0x5D90` is also
   consumed by report builder `0x00412060` when `ShowSideLED` is enabled.
 - Candidate callbacks that invoke `0x00460DA0` also persist a local

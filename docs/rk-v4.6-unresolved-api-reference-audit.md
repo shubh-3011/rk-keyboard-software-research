@@ -78,9 +78,24 @@ runtime reachability remain unresolved. See the focused
 [registry path audit](rk-v4.6-registry-subtree-delete-audit.md).
 
 `PlaySoundW` is loaded into `ESI` at `0x005155BD` and called at
-`0x005155E4` and `0x00515603` along branches in the same routine. This supports
-two possible sound-playback calls in code; the trigger, sound identities, and
-runtime reachability remain unresolved.
+`0x005155E4` and `0x00515603` in worker `0x005155B4`. The worker reads state
+from global `0x00609D4C`: state 1 passes the embedded alias `MenuCommand`,
+state 2 passes `MenuPopup`, and state -1 calls `PlaySoundW(NULL, NULL, 0x40)`
+before the worker exits. Both play calls pass a null module, the selected
+alias, and flags `0x12002`. After playback it resets the state to zero and
+polls it every 5 ms through imported `Sleep` until another state or stop
+request is observed.
+
+Manager `0x0051560C` starts the worker callback through helper `0x0057552B`,
+which reaches imported `CreateThread` at `0x0057559F`; the manager uses
+global `0x00609D4C` and thread-handle global `0x0061E524`. Five direct
+manager callsites submit sound states: `0x004A1437` submits 1,
+`0x004E6709` and `0x004E7BD9` submit 2, `0x004E9D61` submits 1, and
+`0x00508D99` submits 2. These are code-level state producers, not proof that
+any UI action ran. The visible action for each producer, alias resolution,
+runtime playback, and worker reachability remain unresolved. The artifact is
+the 4.6-labeled `DeviceDriver.exe`, SHA-256
+`8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9`.
 
 ## Conclusion and limits
 

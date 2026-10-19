@@ -88,8 +88,10 @@ object offset `+0x64` and traverses a linked list at `+0x6C`. The `NewPNG` and
   `0x005DA900`–`0x005DA934`). The dialog object is constructed at
   `0x0046F681`; the caller passes mode `0` at `0x0046F67B`. On a successful
   modal result (`0x0046F695`–`0x0046F6A1`), it reads the selected path through
-  `0x0047C4C1` (`0x0046F6AB`) and accesses item zero from the separate
-  `CScreenDlg+0xE0` collection (`0x0046F6B0`–`0x0046F6BD`).
+  `0x0047C4C1` (`0x0046F6AB`) and requests item zero through helper
+  `0x00466BC0`, passed the alternate base `CScreenDlg+0xE0`
+  (`0x0046F6B0`–`0x0046F6BD`). That helper reads the shared list head at
+  `CScreenDlg+0xF4`.
 - For other positive counts, it selects a `.gif` filter and embedded title
   `NewGIF` (`0x0046F718`–`0x0046F779`; strings at
   `0x005DA940`–`0x005DA974`). The dialog object is constructed at
@@ -108,29 +110,30 @@ field at `0x0047C463`–`0x0047C47B`: mode zero calls the save-dialog route
 present destination paths. This establishes a save-as boundary, but the
 complete file serialization after path retrieval is not resolved here.
 
-The NewPNG branch reads an item from the separate `CScreenDlg+0xE0`
-collection; the NewGIF branch processes the already-present `CScreenDlg+0xF4`
-list. The dispatcher passes `EBX = this+0x88` to `0x0046F610` at
-`0x0046D46D`–`0x0046D473`; within that helper, the item count at `EBX+0x64`
-is the screen-dialog count at `this+0xEC`, and the list head at `EBX+0x6C`
-is `this+0xF4`. In the transfer-button branch, `0x0046D3DE` checks the same
-`this+0xEC` count and `0x0046D400`–`0x0046D429` walks `this+0xF4`, copying
-each node's first pointer into the modal object's frame array. The NewGIF
-branch at `0x0046F7DF`–`0x0046F85D` also walks `EBX+0x6C` and calls
-`0x00467E50` with each node's first pointer. This establishes that the
-multi-item NewGIF route and transfer route use the same
-`CScreenDlg+0xF4` collection, but not that its selected destination path
-inserts items there.
+The `CScreenDlg+0xE4` field is the base of the linked-list wrapper: its count,
+head, and tail fields are at `+0x08`, `+0x10`, and `+0x14`, corresponding to
+dialog offsets `+0xEC`, `+0xF4`, and `+0xF8`. NewPNG passes an alternate base,
+`CScreenDlg+0xE0`, and index zero to helper `0x00466BC0` at
+`0x0046F6B0`–`0x0046F6BD`; the helper reads its head at `base+0x14`, which is
+the same `CScreenDlg+0xF4` head, then follows nodes through their `+4` links.
+NewGIF directly traverses that head through `EBX+0x6C` at
+`0x0046F7DF`–`0x0046F85D`. The transfer-button branch checks count
+`this+0xEC` and walks head `this+0xF4`, copying each node's first pointer into
+the modal object's frame array. These are access paths to the same linked
+nodes; `+0xE0` is not evidence of a separate collection.
 
-A separate cache-rebuild route is visible: `0x0046D900` calls list builder
-`0x0046EAA0` (`0x0046DA50`–`0x0046DA57`); the builder obtains indexed source
-objects through `0x00454D90` (`0x0046EADC`–`0x0046EAE2`) and appends 12-byte
-doubly linked nodes to `CScreenDlg+0xF4` (`0x0046EB50`–`0x0046EB7F`). This
-links cache regeneration to list construction, not to a NewPNG/NewGIF result.
-The trigger and exact source-file enumeration that repopulate the cache/list
-for a selected profile and the converted image buffer's required pixel layout
-remain unresolved. A separate open-file route through `CScreenDlg` message
-`0x0477` is documented below; its relation to the F4 frame list remains open.
+A cache/list rebuild route is visible: `0x0046D900` compares the current
+count at `this+0xEC` with `0x11`; when unequal, it skips the rebuild path.
+When equal, it clears the list at `this+0xE4`, enumerates up to 512 indexed
+source objects through `0x00454D90`, and calls builder `0x0046EAA0`
+(`0x0046DA50`–`0x0046DA57`), which appends 12-byte doubly linked nodes to
+head `this+0xF4` (`0x0046EB50`–`0x0046EB7F`). The builder therefore repopulates
+the same list, not a separate collection. The profile/cache trigger and exact
+source-file enumeration remain unresolved. A `0x0477` insertion calls this
+helper after adding a node: it remains on the count-mismatch path, while a
+count of `0x11` clears and reconstructs the list from indexed sources.
+Whether an imported object is among those sources is unresolved, as is the
+converted image buffer's required pixel layout.
 The 4.06 profile GIF-to-PNG cache path documented in
 [`rk-screen-image-conversion-path-audit.md`](rk-screen-image-conversion-path-audit.md)
 is a separate local-file route in the available evidence.
@@ -149,17 +152,17 @@ On the `IDOK` path, `0x0046D680`–`0x0046D6E9` obtains the selected path and
 filename through the dialog helpers, and `0x0046D737` retains the resulting
 path object for the following collection update.
 
-The handler then inserts that object into the list rooted at
-`CScreenDlg+0xE4`: with a nonempty list, `0x0046D877`–`0x0046D883` calls
-indexed insertion helper `0x0043E810`; with an empty list,
+The handler then inserts that object into the linked-list wrapper based at
+`CScreenDlg+0xE4`, whose head field is `+0xF4`: with a nonempty list,
+`0x0046D877`–`0x0046D883` calls indexed insertion helper `0x0043E810`; with an empty list,
 `0x0046D88B`–`0x0046D892` calls append helper `0x0043E7B0`. It adjusts the
 selected-index fields at `+0x110` and `+0x358` when the existing item count
-requires it, calls cache/list rebuild helper `0x0046D900`, and invalidates
+requires it, calls conditional list-rebuild helper `0x0046D900`, and invalidates
 child windows stored at `+0xA8` and `+0x16C`. This closes a static path from
 the `0x0477` message handler's value-one branch through an open-image dialog
-and a local screen-editor collection update. The list entry's decoded image
-representation and its exact relation to the `+0xE0` index structure and
-`+0xF4` frame list are not established by this path alone.
+and insertion into the linked list whose head field is `CScreenDlg+0xF4`.
+The list entry's decoded image representation and its successful conversion
+by the frame worker are not established by this path alone.
 
 The two menu rows have a static localization binding. `FUN_00441F20` builds
 `tc_screen%d` keys from the UTF-16 format string at `0x005D4858` and populates
@@ -188,7 +191,7 @@ meaning of the global and virtual gate is unresolved; this code does not by
 itself establish wireless mode, connection readiness, or model eligibility.
 
 The success path requires a positive count at `this+0xEC`, copies up to 512
-nodes from the F4 collection at `this+0xF4` into a modal snapshot, and invokes
+nodes from the linked-list wrapper's head at `this+0xF4` into a modal snapshot, and invokes
 the modal route at `0x00479A27`. Its `WM_INITDIALOG` calls `FUN_00466820`,
 which starts worker `FUN_00466450`. For an object using the recovered G5
 vtable, that worker reaches the existing slot `+0x4C` command-`0x0C` frame
@@ -223,19 +226,21 @@ call's final height argument is loaded from a stack-local slot whose setup is
 not recovered in this branch; this does not prove that the resulting bitmap
 is uniformly black. The helper then deletes the graphics context and brush
 and frees the temporary graphics wrapper. On the successful allocation
-branch, the image wrapper is appended to or inserted into the same local list
-rooted at `CScreenDlg+0xE4` used by the value-one selected-path object. The
-helper adjusts the selection fields, calls cache/list rebuild helper
-`0x0046D900`, and invalidates the two child windows as described above.
+branch, the image wrapper is appended to or inserted into the same linked
+list whose wrapper is based at `CScreenDlg+0xE4` and whose head is `+0xF4`,
+also used by the value-one selected-path object. The helper adjusts the
+selection fields, calls conditional list-rebuild helper `0x0046D900`, and
+invalidates the two child windows as described above.
 
 This establishes that menu row zero constructs a GDI+ bitmap object and
 updates the local screen-editor list, while row one opens an image picker and
 adds a selected-path object to that list. The bitmap format is proven as
 32-bit ARGB. Its runtime dimensions, complete fill geometry, and complete
-bitmap-to-frame conversion remain unresolved. `0x0046D900` rebuilds the separate
-`+0xF4` frame list from indexed source objects, but this does not prove that
-the newly created bitmap or imported path object becomes a frame sent by the
-transfer worker. The English row labels are statically bound as “New” and
+bitmap-to-frame conversion remain unresolved. `0x0046D900` conditionally
+rebuilds the same linked list from indexed source objects when the count gate
+matches; that path can clear newly inserted menu items, and it does not prove
+that a created bitmap or imported path object is successfully converted by
+the transfer worker. The English row labels are statically bound as “New” and
 “Import” by the locale-key flow described above.
 
 The bitmap dimensions are loaded from profile configuration, rather than
@@ -262,9 +267,8 @@ the screen dialog. That reaches the value-one open-file branch above. The
 second row is statically bound to locale key `tc_screen15` (“Import”) in the
 English locale. No image decoder, geometry validation,
 or direct selected-path-to-frame-pixel conversion is shown in the message
-handler. The separate cache builder's indexed source objects and F4 nodes
-remain a distinct statically recovered path; runtime behavior and keyboard
-acceptance were not observed.
+handler. The conditional cache builder uses the same linked-list wrapper and
+head field; runtime behavior and keyboard acceptance were not observed.
 
 ## `0x0477` sender functions and screen context menu
 
@@ -338,12 +342,12 @@ not call the adjacent G5 `+0x48` screen-parameter slot (`0x00410230`, command
 
 The exact UI meaning of the copied numeric field, frame-value mapping into
 command `0x0D`/`0x0C` arguments, and when the cache/list is initialized for a
-selected profile remain unresolved. The NewPNG/NewGIF save-as result is not
-shown to populate `CScreenDlg+0xF4`; the separate one-image PNG branch is not
-shown to reach the multi-frame worker. The `0x0477` value-one route proves an
-open-file selection and an update to the screen editor's local item list, but
-does not prove that this selected file becomes a frame node in F4 or reaches
-the transfer worker.
+selected profile remain unresolved. NewPNG/NewGIF are save-as paths and are
+not shown to invoke the transfer worker. The `0x0477` value-one route inserts
+the selected-path object into the same linked list whose head is `+0xF4`, then
+calls the count-gated rebuild helper. The transfer action can snapshot that
+list when its count is positive, but the imported object's conversion and
+successful use as a frame remain unresolved.
 
 The available click-handler block reads no `ShowScreen` field directly. It
 has a positive frame-count condition and calls the device object's virtual
@@ -355,22 +359,23 @@ specific UI action uses that field as its gate.
 ## Bounded conclusion
 
 The 4.06 screen editor has a concrete child-window route that processes the
-same `CScreenDlg+0xF4` item collection later copied by the transfer action into
-the modal's frame array. NewPNG/NewGIF are save-as routes. Separately, the
+linked list based at `CScreenDlg+0xE4`, with head field `+0xF4`, and copies it
+into the transfer modal's frame array. NewPNG/NewGIF are save-as routes;
+NewPNG and NewGIF access the same list through different paths. The
 `CScreenDlg` message-map entry for private message `0x0477` reaches an
-open-file-dialog branch that inserts the selected path object into the local
-list rooted at `+0xE4` and calls the cache/list rebuild helper. The visible
-sender route is closed through the screen's two-row menu: its second row posts
-value one and opens the picker. The English row labels resolve to “New” and
-“Import”; the relation between the imported path object and the F4
-transfer-frame collection remains unresolved. A separate cache-rebuild helper
-also constructs F4 nodes from indexed source objects.
+open-file-dialog branch that inserts the selected-path object into this list
+and calls the count-gated cache/list rebuild helper. The visible sender route
+is closed through the screen's two-row menu: its second row posts value one
+and opens the picker. The English row labels resolve to “New” and “Import”.
+The transfer action can snapshot a positive-count list, but successful
+conversion of the imported path object remains unresolved. The cache builder
+also constructs nodes in this same list from indexed source objects.
 The transfer action
 gates on the device object's `+0x28` method and a nonempty frame list. Its
 `WM_INITDIALOG` route starts the frame worker, whose converted frame buffers
 and GIF metadata reach the statically mapped G5 command `0x0C` and `0x0D`
 writers. This is a static write
 path, not proof that the connected keyboard selected that family or accepted
-any payload. Cache/list initialization for a selected profile, relation of the
-`0x0477`-inserted item to F4, exact pixel layout, physical-device
+any payload. The count-gated cache/list initialization for a selected profile,
+successful conversion of `0x0477`-inserted items, exact pixel layout, physical-device
 compatibility, and runtime outcome remain unresolved.
