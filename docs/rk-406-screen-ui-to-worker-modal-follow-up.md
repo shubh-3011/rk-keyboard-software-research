@@ -74,24 +74,42 @@ progress/modal path: the object contains the copied frame pointer array and
 progress-related state. The visible label and exact dialog resource/control
 identity are not established by this trace.
 
-## Candidate image and GIF preparation route
+## NewPNG/NewGIF save-as route and frame-list boundary
 
 **Confirmed statically.** A separate `CScreenDlg` dispatch branch compares the
 incoming child handle with the child object at `this+0xC74` and directly calls
 `0x0046F610` (`0x0046D45C`–`0x0046D478`). That routine reads an item count at
-object offset `+0x64` and traverses a linked list at `+0x6C`.
+object offset `+0x64` and traverses a linked list at `+0x6C`. The `NewPNG` and
+`NewGIF` strings are dialog titles; these branches use save dialogs in this
+4.06 image, not an input-file picker.
 
 - For a count of one, the routine selects a `.png` filter and the embedded
   UTF-16 title `NewPNG` (`0x0046F659`–`0x0046F6B0`; strings at
-  `0x005DA900`–`0x005DA934`) and processes the single listed image object.
+  `0x005DA900`–`0x005DA934`). The dialog object is constructed at
+  `0x0046F681`; the caller passes mode `0` at `0x0046F67B`. On a successful
+  modal result (`0x0046F695`–`0x0046F6A1`), it reads the selected path through
+  `0x0047C4C1` (`0x0046F6AB`) and accesses item zero from the separate
+  `CScreenDlg+0xE0` collection (`0x0046F6B0`–`0x0046F6BD`).
 - For other positive counts, it selects a `.gif` filter and embedded title
   `NewGIF` (`0x0046F718`–`0x0046F779`; strings at
-  `0x005DA940`–`0x005DA974`), then iterates the image-object list. Each item
-  is passed through frame-processing helper `0x00467E50`; the routine calls
-  finalizers `0x00467F90` and `0x00467D40` (`0x0046F7D5`–`0x0046F884`).
+  `0x005DA940`–`0x005DA974`). The dialog object is constructed at
+  `0x0046F732`; the caller passes mode `0` at `0x0046F729`. On a successful
+  modal result (`0x0046F749`–`0x0046F750`), it obtains the selected path
+  through `0x0047C4C1` (`0x0046F762`), then iterates the existing
+  `CScreenDlg+0xF4` list. Each node is passed through frame-processing helper
+  `0x00467E50`; the routine calls finalizers `0x00467F90` and `0x00467D40`
+  (`0x0046F7D5`–`0x0046F884`).
 
-This proves a screen-editor child route that prepares PNG/GIF image objects.
-The image-preparation and transfer routes can be tied to the same screen-dialog
+The dialog object's constructor at `0x0047BB31` stores its first argument at
+`this+0x88` (`0x0047BC08`–`0x0047BC11`). Its modal routine branches on this
+field at `0x0047C463`–`0x0047C47B`: mode zero calls the save-dialog route
+`0x0047B9C2` → `0x0047B8FB` (`GetSaveFileNameW`); the other branch calls
+`0x0047B9A6` → `0x0047B821` (`GetOpenFileNameW`). Thus both NewPNG and NewGIF
+present destination paths. This establishes a save-as boundary, but the
+complete file serialization after path retrieval is not resolved here.
+
+The NewPNG branch reads an item from the separate `CScreenDlg+0xE0`
+collection; the NewGIF branch processes the already-present `CScreenDlg+0xF4`
 list. The dispatcher passes `EBX = this+0x88` to `0x0046F610` at
 `0x0046D46D`–`0x0046D473`; within that helper, the item count at `EBX+0x64`
 is the screen-dialog count at `this+0xEC`, and the list head at `EBX+0x6C`
@@ -100,13 +118,21 @@ is `this+0xF4`. In the transfer-button branch, `0x0046D3DE` checks the same
 each node's first pointer into the modal object's frame array. The NewGIF
 branch at `0x0046F7DF`–`0x0046F85D` also walks `EBX+0x6C` and calls
 `0x00467E50` with each node's first pointer. This establishes that the
-multi-item preparation path and the modal transfer path use the same
-`CScreenDlg+0xF4` collection. It does not establish when or how file-picker
-selections populate that collection, or that the converted image buffer uses
-the keyboard's required pixel layout. The 4.06 profile GIF-to-PNG cache path
-documented in
+multi-item NewGIF route and transfer route use the same
+`CScreenDlg+0xF4` collection, but not that its selected destination path
+inserts items there.
+
+A separate cache-rebuild route is visible: `0x0046D900` calls list builder
+`0x0046EAA0` (`0x0046DA50`–`0x0046DA57`); the builder obtains indexed source
+objects through `0x00454D90` (`0x0046EADC`–`0x0046EAE2`) and appends 12-byte
+doubly linked nodes to `CScreenDlg+0xF4` (`0x0046EB50`–`0x0046EB7F`). This
+links cache regeneration to list construction, not to a NewPNG/NewGIF result.
+The trigger and exact source-file enumeration that repopulate the cache/list
+for a selected profile, any distinct import action, and the converted image
+buffer's required pixel layout remain unresolved. The 4.06 profile GIF-to-PNG
+cache path documented in
 [`rk-screen-image-conversion-path-audit.md`](rk-screen-image-conversion-path-audit.md)
-also remains a separate local-file path in the evidence available here.
+is a separate local-file route in the available evidence.
 
 ## Boundary to the established transfer worker and writers
 
@@ -135,9 +161,10 @@ not call the adjacent G5 `+0x48` screen-parameter slot (`0x00410230`, command
 `0x0B`) in this path; its UI caller remains unresolved.
 
 The exact UI meaning of the copied numeric field, frame-value mapping into
-command `0x0D`/`0x0C` arguments, and how picker selections populate the shared
-list remain unresolved. The separate one-image PNG branch is not shown to
-reach the multi-frame worker.
+command `0x0D`/`0x0C` arguments, and when the cache/list is initialized for a
+selected profile remain unresolved. The NewPNG/NewGIF save-as result is not
+shown to populate `CScreenDlg+0xF4`; the separate one-image PNG branch is not
+shown to reach the multi-frame worker.
 
 The available click-handler block reads no `ShowScreen` field directly. It
 has a positive frame-count condition and calls the device object's virtual
@@ -150,10 +177,15 @@ specific UI action uses that field as its gate.
 
 The 4.06 screen editor has a concrete child-window route that processes the
 same `CScreenDlg+0xF4` item collection later copied by the transfer action into
-the modal's frame array. The transfer action gates on the device object's
-`+0x28` method and a nonempty frame list. Its `WM_INITDIALOG` route starts the
-frame worker, whose converted frame buffers and GIF metadata reach the
-statically mapped G5 command `0x0C` and `0x0D` writers. This is a static write
+the modal's frame array. NewPNG/NewGIF are save-as routes, while a separate
+cache-rebuild helper constructs F4 nodes from indexed source objects. The
+available evidence does not identify the profile/cache trigger or a distinct
+user import route that first populates the frame list. The transfer action
+gates on the device object's `+0x28` method and a nonempty frame list. Its
+`WM_INITDIALOG` route starts the frame worker, whose converted frame buffers
+and GIF metadata reach the statically mapped G5 command `0x0C` and `0x0D`
+writers. This is a static write
 path, not proof that the connected keyboard selected that family or accepted
-any payload. Picker-list population, exact pixel layout, physical-device
-compatibility, and runtime outcome remain unresolved.
+any payload. Cache/list initialization for a selected profile, any distinct
+image-import route, exact pixel layout, physical-device compatibility, and
+runtime outcome remain unresolved.

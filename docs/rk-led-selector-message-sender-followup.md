@@ -48,9 +48,25 @@ signal Apply mode `2` under its guards.
 
 This ties the `0x0801` sender families to the selector-message route, but the
 sender's `lParam` values are loaded from child-object fields `+0x54`,
-`+0x930`, and `+0x9E0`. No static assignment or constructor path in this pass
-proves any field contains `0x95`. The `wParam` values are likewise dynamic
-values or caller arguments; no specific widget-to-index mapping is recovered.
+`+0x930`, and `+0x9E0`. A constructor path now proves that `+0x9E0` is
+initialized to selector `0x95` for one LightUI-based control construction:
+
+- At `0x00423630`, code scans the `LightUI` byte table at `0x00611854` and
+  retains a selected index in `EBX`.
+- The call at `0x004236D9` passes object pointer `EDI+0x1A6C` as argument 3,
+  the selected index as argument 5, literal `0x95` as argument 6, and the
+  `bar_nr.png` string as argument 7 to helper `0x00450140`.
+- Helper `0x00450140` loads argument 3 into `ESI` at `0x0045018B` and argument
+  6 into `EDX` at `0x004503EB`, then stores `EDX` to `[ESI+0x9E0]` at
+  `0x0045040B`.
+- Sender functions `0x0044DA80` and `0x0044DAC0` load their own `[this+0x9E0]`
+  field into `lParam` before posting `0x0800` and `0x0801`, respectively.
+
+This proves the selector assignment to field `+0x9E0` on that construction
+path and the matching sender-field offset. It does not prove that one of those
+sender methods is invoked on that constructed instance at runtime. The
+`wParam` values remain dynamic or caller arguments, and a specific
+widget-to-index mapping is unresolved.
 
 ## Limits
 
@@ -59,8 +75,9 @@ values or caller arguments; no specific widget-to-index mapping is recovered.
   search.
 - The owning `CLedDlg` relationship is inferred from the parent-window path
   and matching map IDs; it is not runtime evidence.
-- Which field, if any, supplies selector `0x95`, which child control initiates
-  the posts, and what visible label it represents remain unresolved.
+- Whether the initialized `+0x9E0` value is later overwritten, which child
+  control initiates the posts, and what visible label it represents remain
+  unresolved.
 - The message path does not prove a brightness adjustment, a family-specific
   serializer selection, or any physical keyboard effect.
 

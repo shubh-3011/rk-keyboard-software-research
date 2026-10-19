@@ -46,9 +46,11 @@ boundary check. The complete slot ledger, including the raw pointer bytes and
 evidence scope for every row, is in
 [`rk-406-cdevg5-vtable-map.csv`](rk-406-cdevg5-vtable-map.csv).
 
-Do not transfer these slot indices to the V4.6 build. The separate
-[V4.6 G5 audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md) uses a different
-PE, vtable address point, table length, and method layout.
+The version boundary matters for the read-copy method: installed 4.06 has
+`GetRealData` at `CDevG5KB +0x68` (`0x00410700`), while the separate V4.6
+build has it at `+0x70` (`0x00411030`). The V4.6 audit uses a different PE,
+vtable address point, table length, and method layout; do not transfer its
+slot indices or caller scan to this installed 4.06 image.
 
 ## Command `0x88`: GetRealData request and response
 
@@ -142,6 +144,63 @@ This leaves the command-`0x88` caller unresolved. It does not prove the method
 is never invoked: a runtime-polymorphic call through an escaped device pointer
 remains possible. The helper's returned bytes, selector fields, downstream
 consumer, and any firmware-file relationship are still unknown.
+
+### Expanded decoded-callsite sweep
+
+I repeated the caller scan against the installed
+`C:\Program Files (x86)\RK Keyboard Software\DeviceDriver.exe` on disk. Its
+SHA-256 is
+`C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`, matching
+the image hash recorded above. This was a read-only GNU `objdump -d -Mintel`
+scan; the executable was not run.
+
+The vtable bytes at `0x005CBA2C` contain 27 entries, ending at slot `+0x68`.
+The next slot, `+0x70`, is outside this table. In the decoded `.text`, there
+are no direct calls to wrapper `0x00410700`; helper `0x0040FF60` has one
+direct call, from `0x00410718`. A raw-pointer occurrence scan finds the
+wrapper address at its vtable entry `0x005CBA94`; the two code references to
+vtable address `0x005CBA2C` are the constructor stores at `0x0040ECE3` and
+`0x0040EE09`.
+
+The broad operand sweep found 60 decoded `call [register+0x68]` instructions
+and two `jmp [register+0x68]` tail dispatches. A separate loose pattern pass
+found 83 cases where code loads `[register+0x68]` into a register and calls
+that register within the next three decoded instructions. These counts are
+candidate dispatch shapes, not a count of proven `CDevG5KB` calls: `+0x68` is
+common across unrelated interfaces, and the register-mediated pattern also
+admits ordinary data/function-pointer loads. The six calls at `0x00401E92` through
+`0x0040217A` and the adapter call at `0x004051AC` are separately resolved
+above; none uses the G5 vtable.
+
+Three two-argument sites looked superficially compatible with a buffer and
+length. All pass a 16-byte rectangle and zero as the second argument:
+
+| Call instruction | Static argument and subsequent-use evidence |
+| --- | --- |
+| `0x00475808` | Passes `&RECT` at `[ebp-0x20]` and `edi=0`; the return feeds the geometry helper at `0x00473357`. |
+| `0x0048CD57` | Passes `&RECT` at `[ebp-0x14]` and zero; the routine continues with window/rectangle geometry calculations. |
+| `0x0048EA3D` | Passes `&RECT` at `[ebp-0x10]` and zero to an object stored at parent offset `+0x418`; the rectangle is derived from parent/child layout offsets. |
+
+At these sites the second stack argument is zero, matching a zero requested
+length if interpreted using the G5 wrapper ABI. The G5 helper rejects
+non-positive lengths before constructing its command-`0x88` request, so these
+calls cannot establish a byte read even under that hypothetical dispatch.
+Their receivers are not statically identified as `CDevG5KB`; the geometry
+data flow further argues against treating them as firmware-read callers.
+Other scanned `+0x68` sites have different observed argument shapes or
+status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.
+
+The helper's scoped persistence result is unchanged: it copies conditional
+response bytes into caller memory, and its body has no file-open or file-write
+sink. Because no caller is attributable to this method, the scan cannot trace
+its buffer to any downstream file API. Thus a full firmware export is not
+statically established. An untraced runtime alias or dynamically selected
+receiver remains possible, so this negative result is limited to the decoded
+static evidence above.
+
+For the distinct V4.6 `+0x70` path and its separate caller search, see the
+[V4.6 G5 caller audit](rk-v4.6-cdevg5-realdata-caller-audit.md) and
+[V4.6 G5 vtable audit](rk-v4.6-cdevg5-settings-and-vtable-audit.md).
 
 ## Remaining gaps and related evidence
 

@@ -87,35 +87,43 @@ The binary exposes separate G5 screen writers:
 | --- | --- | --- |
 | `FUN_00410230` | Command `0x0B`; sends the caller's screen-parameter bytes. | No byte schema or direct UI/image-conversion caller was recovered. |
 | `FUN_00412890` | Command `0x0D`; constructs five GIF-parameter bytes: flags/index, 16-bit frame count, and 16-bit delay. | The available export does not show whether the frame count or delay comes from GIF metadata, the four-byte `gif_delay.gcc` cache, or an editor control. |
-| `FUN_00412F20` → `FUN_00412B10` | Wrapper and command `0x0C` page/frame transfer; serializes up to 512 caller bytes per subreport. | A 4.06 screen worker passes the `FUN_004661A0` conversion buffer through the G5 `+0x4C` slot to this writer. The source list's relation to the separately prepared PNG/GIF picker objects and the exact frame-header argument remain unresolved. |
+| `FUN_00412F20` → `FUN_00412B10` | Wrapper and command `0x0C` page/frame transfer; serializes up to 512 caller bytes per subreport. | A 4.06 screen worker passes the `FUN_004661A0` conversion buffer through the G5 `+0x4C` slot to this writer. NewPNG/NewGIF are save-as routes; the separate frame-list cache builder is known, but its profile/cache trigger and relation to any user import action remain unresolved. The exact frame-header argument is also unresolved. |
 
 The G5 dispatch block near `0x005CBA50` contains adjacent entries for screen
 parameters (`0x005CBA74`), page transfer (`0x005CBA78`), and GIF parameters
 (`0x005CBA7C`). The worker's virtual calls at `+0x4C`/`+0x50` resolve to the
 page-transfer and GIF-parameter entries for the recovered G5 vtable, closing
 that static buffer-to-writer edge. The worker does not call the adjacent
-screen-parameter (`+0x48`) entry. The UI route from selected PNG/GIF picker
-objects to the frame list remains **unresolved**; see the linked 4.06 follow-up.
+screen-parameter (`+0x48`) entry. The linked 4.06 follow-up corrects the
+NewPNG/NewGIF interpretation: both are save-as dialogs (`bOpenFileDialog=0`),
+not input-file pickers. NewPNG reads a single item from `CScreenDlg+0xE0`;
+NewGIF reads the existing `CScreenDlg+0xF4` frame list. Separately,
+`FUN_0046D900` calls builder `FUN_0046EAA0`, which obtains indexed source
+objects and appends nodes to F4. This establishes cache-rebuild-to-list
+population, but not the profile/cache trigger, the initial source-file
+enumeration, or a distinct user import route.
 
 The separate local playback cache helpers `FUN_0046ACC0` and `FUN_0046ADC0`
 read/write `gif_delay.gcc` as a four-byte value. The value's units, accepted
 range, and direct relation to `nGifDelay` in `FUN_00412890` are unresolved.
 
-## UI/import boundary and remaining gaps
+## UI/export boundary and remaining gaps
 
 The main feature UI is built dynamically. Its parsed static dialog resources
-do not supply the screen editor's visible file-selection controls or IDs. The
-localization catalog includes `tc_screen*` labels, but no exact label-to-child
-binding is recovered. The only screen-dialog `WM_COMMAND` row currently tied
-to a control is the numeric `EN_CHANGE` route above. Consequently, this
-snapshot does not establish:
+do not supply the screen editor's visible controls or IDs. The localization
+catalog includes `tc_screen*` labels, but no exact label-to-child binding is
+recovered. The only screen-dialog `WM_COMMAND` row currently tied to a control
+is the numeric `EN_CHANGE` route above. In the 4.06 NewPNG/NewGIF branch,
+`bOpenFileDialog=0` selects `GetSaveFileNameW`; selected paths are destinations.
+Consequently, this snapshot does not establish:
 
-- a browse/open handler, selected-file path, extension filter, or whether
-  users can replace the bundled `Dev/<PID>/screen.gif`;
-- when and how file-picker selections populate the screen-dialog item list.
-  The linked 4.06 follow-up proves that the multi-item preparation route and
-  transfer route both read `CScreenDlg+0xF4`; it does not prove which dialog
-  result or event inserts each item;
+- a user-facing import handler or selected-input path that replaces the
+  bundled `Dev/<PID>/screen.gif`; the NewPNG/NewGIF paths are save-as routes;
+- when and how the profile/cache source files are enumerated and used to
+  initialize `CScreenDlg+0xF4`, or whether a separate import action exists.
+  The linked 4.06 follow-up proves that `FUN_0046D900` calls builder
+  `FUN_0046EAA0`, which appends nodes to F4 from indexed source objects. It
+  does not identify the trigger or prove a save-dialog result inserts items;
 - the image dimension validation, crop/scale/rotate/padding rules, color
   depth, channel order, palette, quantization, dithering, or tile layout;
 - how the worker's frame value maps to command `0x0C` header byte 3, and the
@@ -129,6 +137,7 @@ snapshot does not establish:
 The earlier
 [`screen/GIF payload audit`](rk-screen-gif-payload-audit.md) documents the
 screen command fields, retry/ack behavior, and model profile gates. The 4.06
-follow-up now establishes a static modal-to-worker-to-G5 page/GIF writer path
-for a populated frame list. It does not establish which visible picker action
-populates that list, runtime profile selection, or physical display acceptance.
+follow-up now establishes a static cache-rebuild-to-F4-list path and a
+modal-to-worker-to-G5 page/GIF writer path for a populated frame list. It does
+not establish the cache trigger, an initial user import route, runtime profile
+selection, or physical display acceptance.

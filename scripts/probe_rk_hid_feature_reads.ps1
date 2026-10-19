@@ -1,6 +1,7 @@
 param(
     [ValidateRange(1, 10)]
     [int]$RepeatCount = 3,
+    [switch]$IncludeLargeFeatureReport,
     [ValidatePattern('^[0-9A-Fa-f]{4}$')]
     [string]$VendorId = '258A',
     [ValidatePattern('^[0-9A-Fa-f]{4}$')]
@@ -9,9 +10,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# This probe opens only the explicitly selected vendor-defined feature
-# collections with GENERIC_READ. It calls HidD_GetFeature for descriptor-
-# documented report IDs 0x05 and 0x0A; it contains no report/device write API.
+# This probe opens only selected vendor-defined feature collections with
+# GENERIC_READ. By default it reads short reports 0x05 and 0x0A. The optional
+# switch also reads descriptor-declared report 0x06 (1032 bytes). There are no
+# SetFeature, output-report, input-report, or device-control calls.
 $source = @'
 using System;
 using System.Collections.Generic;
@@ -116,7 +118,8 @@ public static class RkReadOnlyFeatureProbe
         }
     }
 
-    public static Row[] Enumerate(string vendorId, string productId, int repeatCount)
+    public static Row[] Enumerate(string vendorId, string productId, int repeatCount,
+        bool includeLargeFeatureReport)
     {
         Guid hidGuid;
         HidD_GetHidGuid(out hidGuid);
@@ -159,6 +162,8 @@ public static class RkReadOnlyFeatureProbe
                     byte reportId;
                     int reportBytes;
                     if (collection == "COL06") { reportId = 0x05; reportBytes = 6; }
+                    else if (collection == "COL07" && includeLargeFeatureReport)
+                    { reportId = 0x06; reportBytes = 1032; }
                     else if (collection == "COL08") { reportId = 0x0A; reportBytes = 8; }
                     else continue;
 
@@ -191,6 +196,7 @@ if (-not ('RkReadOnlyFeatureProbe' -as [type])) {
     Add-Type -TypeDefinition $source -Language CSharp
 }
 
-[RkReadOnlyFeatureProbe]::Enumerate($VendorId, $ProductId, $RepeatCount) |
+[RkReadOnlyFeatureProbe]::Enumerate($VendorId, $ProductId, $RepeatCount,
+    [bool]$IncludeLargeFeatureReport) |
     Sort-Object Interface, Attempt |
     Format-List Interface, ReportId, Attempt, Result, DataHex, Sha256

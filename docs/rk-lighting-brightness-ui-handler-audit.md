@@ -13,8 +13,9 @@ Addresses below are VAs in that exact executable.
 
 The binary was inspected offline with GNU `objdump` and the existing Ghidra
 exports in the adjacent `_rk_analysis/reports` directory. The application and
-updater were not launched; no HID, GATT, serial, or other device interface was
-opened, and no report or command was sent. The sidecar exports are local
+updater were not launched. A separate later read-only HID probe is documented
+in the [live selector cross-check](rk-live-hid-selector-crosscheck-2026-10-19.md);
+no output report or feature write was sent. The sidecar exports are local
 analysis artifacts and are not included in this repository.
 
 **Proven statically** means there is a direct data, call, string-table, or
@@ -74,9 +75,14 @@ message IDs, not control IDs. The `0x0801` handler reads/format-selects
 before copying page state and potentially signaling the settings worker.
 Four literal `PostMessageW` send sites for `0x0801` and five for `0x0800` are
 now recovered. Their `lParam` sources are child-object fields `+0x54`,
-`+0x930`, or `+0x9E0`; static evidence does not establish that any contains
-selector `0x95`, nor which visible control owns each sender. This still leaves
-the brightness control-to-writer path open. See the
+`+0x930`, or `+0x9E0`. A constructor path through `0x004236D9` to
+`0x00450140` passes a `LightUI`-selected index, literal selector `0x95`, and
+`bar_nr.png`; the helper stores the literal in the passed object's `+0x9E0`
+field, which the `0x0800`/`0x0801` sender pair also reads as `lParam`. This
+proves selector initialization for that construction path, but not that the
+same instance reaches those senders at runtime or which visible control owns
+it. The `+0x54` and `+0x930` fields remain unassigned in the reviewed paths,
+and the brightness control-to-writer path is still open. See the
 [selector-message sender follow-up](rk-led-selector-message-sender-followup.md)
 and [full MFC message-map audit](rk-mfc-message-map-audit.md) for callsites,
 the complete 14-row array, and owner evidence.

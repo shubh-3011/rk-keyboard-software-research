@@ -199,31 +199,36 @@ BLE interface path for either candidate VID/PID, so no BLE HID handle was
 opened. These are cached Windows observations, not a live GATT session or
 proof of a firmware-read path.
 
-**Direct feature-read attempt (2026-10-19):** using only the descriptor's
-feature report IDs and lengths, `HidD_GetFeature` was called once per
-accessible feature collection, with no preceding `HidD_SetFeature` request:
+**Direct feature-read attempts (2026-10-19):** using only descriptor-declared
+feature report IDs and lengths, `HidD_GetFeature` was called on each accessible
+feature collection with no preceding `HidD_SetFeature` request. The ID `06`
+request was repeated once after the user authorized broader HID access:
 
 | Interface collection | Requested report | Result | Returned bytes or error | SHA-256 of returned report |
 | --- | --- | --- | --- | --- |
 | MI_01/COL_06 | ID `05`, 6 bytes | Success | `06 A0 02 86 28 CB` | `0942459c22f269a1c5126070bbede7a6fb01bcdd2bf47f54e11e95346c1b2763` |
-| MI_01/COL_07 | ID `06`, 1032 bytes | Failure | Win32 error 31 (`ERROR_GEN_FAILURE`) | — |
+| MI_01/COL_07 | ID `06`, 1032 bytes | Failure (2 attempts) | Win32 error 31 (`ERROR_GEN_FAILURE`) both times | — |
 | MI_01/COL_08 | ID `0A`, 8 bytes | Success | `06 A0 02 86 28 CB 24 67` | `cda6d71acf4f56682512674c8846aa7786ab6d8b81181537f529f0f831182168` |
 
 The [read-only repeat probe](../scripts/probe_rk_hid_feature_reads.ps1)
 repeated only IDs `05` and `0A` three times each on 2026-10-19. All six
 requests succeeded and returned the same bytes and hashes as the initial
-reads. ID `06` was not repeated. This establishes repeatability within that
-probe run, but not whether the response is current state, a generic reply, or
-cached/stale data. The probe opens only the two descriptor-defined collections
-with shared `GENERIC_READ` handles and calls `HidD_GetFeature`; it contains no
-`HidD_SetFeature`, output-report, input-report, or device-control call.
+reads. The second ID `06` attempt used the probe's opt-in
+`-IncludeLargeFeatureReport` switch with `-RepeatCount 1`; it again failed with
+Win32 error 31 and returned no data. The probe uses shared `GENERIC_READ`
+handles and `HidD_GetFeature`; it contains no `HidD_SetFeature`, output-report,
+input-report, or device-control call. Repeatability of the short responses
+does not establish whether they are current state, a generic reply, or
+cached/stale data.
 
 **Additional live recheck (2026-10-19):** after the capability/metadata
 recheck, the same probe was run once with `-RepeatCount 1` and again with
 `-RepeatCount 3`. This adds four successful calls each for IDs `05` and `0A`;
-every returned report matched the table above byte for byte. Across the two
-recorded feature-read passes, each ID has eight successful, identical short
-responses. This pass did not retry the 1032-byte ID `06` request.
+every returned report matched the table above byte for byte. A later one-shot
+pass repeated those two short reads and retried ID `06`; the short responses
+were unchanged and ID `06` again failed with Win32 error 31. Across the
+recorded successful calls, IDs `05` and `0A` returned identical bytes. No
+input/output report or feature write was sent.
 
 The successful short responses share the same first six bytes even though
 their collections and requested report IDs differ. In both responses, byte 0

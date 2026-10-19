@@ -69,7 +69,7 @@ The `nFlag` argument controls these paths inside `0x004127B0`:
 
 | Flag/path | Confirmed static route | Status and open meaning |
 | --- | --- | --- |
-| `0x01` | Calls the `SendWeb:`-labelled key/action builder at `0x00411BA0` (`0x004129C6`), then sends its buffer through `0x00410C90` as operation `1`, command `0x12` (`0x00412939`). It also walks 132 key positions and sends per-layer blocks through `0x00410290`, operation `1`, command `3`, with a layer/option value. The macro-tag path serializes records through `0x00412060` and calls the generic writer with operation `1`, command `5` at `0x00412DAC`. | The branch, loop bounds, helper calls, and command values are proven. The `SendWeb` strings at `0x005D3450` and `0x005D1EB8` are diagnostic labels, not proof of a user-facing feature name. Key/action and macro field meanings, layer UI origin, and firmware interpretation remain unresolved. |
+| `0x01` | Sends a `SendWeb:`-labelled buffer through `0x00410C90` as operation `1`, command `0x12` (`0x00412939`). It then calls `0x00411BA0` (`0x004129C6`) to build translated key records and a macro table, and walks 132 key positions to send per-layer blocks through `0x00410290`, operation `1`, command `3`. The same method has a separate generic-writer call at `0x00412DAC` with operation `1`, command `5`, and length `0xC8`; its buffer provenance is not linked to the macro table. | The calls and command values are proven. The output-to-writer relationship for the macro table is unresolved; do not attribute the command-5 call to that output. The `SendWeb` strings at `0x005D3450` and `0x005D1EB8` are diagnostic labels, not proof of a user-facing feature name. Key/action and macro field meanings, layer UI origin, and firmware interpretation remain unresolved. |
 | `0x02` | Reads a 128-byte LED/profile block using virtual `+0x3C` (`0x00412EB7`), checks trailing bytes `5A A5` (`0x00412EE0`–`0x00412EEA`), transforms the buffer via `0x00412110` or `0x00412470`, then calls `0x00410340` to send operation `1`, command `4`, length `0x80`. Error text includes `SetLED failed` at `0x005D1E04`. | Proven as an active read-modify-write path. LED fields, units, profile labels and the initiating control are unresolved. |
 | `0x20` | Packs RGB-index data from the object/configuration region around `+0x2154`, with firmware-dependent record construction, then calls `0x00410AE0`. That helper selects G5 operation `1`, command `10`; a nested `CDev3632` branch uses selector `9`. G5 failure text is `SetLedRgbTab error` at `0x005D36D4`. | G5 transport route and separate nested-family branch are proven. RGB channel order, table index meaning, selected-profile guard semantics and model availability are unresolved. |
 | `0x04` with a selected-profile guard, or `0x10` | Reads color-group state, maps group/key entries into RGB triples, and writes command `6`, operation `1` through the generic G5 writer. A nested `CDev3632` route calls selector `2` through `0x0040DF10`. Per-group diagnostics begin at `0x005D3720`. | Group iteration, transport branches and packed RGB structure are proven. Group names, channel interpretation, and the meaning of the two flag conditions remain unresolved. |
@@ -78,6 +78,40 @@ The `nFlag` argument controls these paths inside `0x004127B0`:
 The inspected `ApplySetting` body does not show a direct `0x08` branch. That
 observation is scoped to this body and does not establish that no other G5
 method or caller can handle a value containing that bit.
+
+### Macro table builder and serializer handoff
+
+`FUN_00411BA0` is the V4.6 G5 key/macro-table builder reached from the
+`nFlag & 1` route at `0x004129C6`. For tag-5 key records (`record[+3] == 5`),
+it searches the macro list rooted at `0x00619DB4`, matching the key record's
+DWORD at `+8` against the macro record's DWORD at `+4` (`0x00411DC2`–
+`0x00411DE1`). It assigns or reuses a temporary ordinal in macro-record
+`+0x64`, places `ordinal - 1` in the mapped key DWORD's high byte, and clears
+the temporary ordinals during cleanup (`0x00411E4C`–`0x00411E9A`,
+`0x00411EE0`–`0x00411EEC`, and `0x0041202C`–`0x00412045`).
+
+For each unique matched macro, the builder dispatches through the active
+device-family vtable slot `+0x6C` (`0x00411EAD`–`0x00411EBB`). In the G5
+table that slot targets `FUN_00411840`; it reads the event stream from macro
+record `+0x6A` in eight-byte rows and returns the serialized length. The
+builder records WORD offset/length pairs, concatenates the serialized blobs,
+checks the resulting extent, and copies the pair table and blob bytes into
+caller-provided output buffers (`0x00411F75`–`0x00412024`). This establishes
+the macro serializer handoff and its buffer construction, but not which later
+device write consumes those outputs. In particular, `0x00412DAC` is a
+separate operation-1/command-5 call with a `0xC8`-byte buffer; the current
+static trace does not prove that this buffer is the macro table or its event
+blob. The per-layer command-3 path is present, but the macro-table-to-writer
+link remains unresolved.
+
+The serializer at `0x00411840` walks event codes until a zero WORD and maps
+recorded event classes through lookup/jump tables. One case emits four bytes
+from the event row's DWORD at `+4` (clamped to `0xFFFFF`), WORD at `+2`, and
+class-specific markers (`0x00411902`–`0x00411946`). This documents one
+serialization case only; the complete row schema and device meaning remain
+unknown. For the host-side `.mck` and `mac.dct` persistence formats and the
+separate RKKB/G5/3632 serializer findings, see the
+[macro format and path audit](rk-macro-format-and-path-audit.md).
 
 The vtable also exposes separate G5 methods for command-`0x0B` screen
 parameters (`+0x50`), the command-`0x0C` page/GIF transfer wrapper (`+0x54`),

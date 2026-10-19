@@ -185,3 +185,12 @@ stable under this request, but do not identify their fields or prove they
 represent current settings. In both results the first returned byte is `06`,
 not the requested report ID; that mismatch and the shared six-byte prefix
 remain unresolved. No model identity or firmware readback is established.
+
+After the user authorized opening the HID interface, a later one-shot run
+used the probe's opt-in `-IncludeLargeFeatureReport` switch to retry the
+descriptor-declared `MI_01/COL_07` feature report ID `06` (1032 bytes). The
+request again failed with Win32 error `31` (`ERROR_GEN_FAILURE`) and returned
+no data. The same pass repeated short IDs `05` and `0A`; both returned their
+previous byte-for-byte results. The probe opens collections with
+`GENERIC_READ` and calls only `HidD_GetFeature`; it has no report/device write
+API. The larger report remains inaccessible through this direct read attempt.

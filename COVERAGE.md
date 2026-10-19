@@ -440,8 +440,9 @@ model or runtime map.
   the `tc_adv_str1` draw call to `USER32!DrawTextW` and `0x8134` as its layout
   flags. A recovered RTTI-backed `CLedDlg` message map identifies that
   paint handler and its `0x0800`/`0x0801` handlers. Four and five literal
-  `PostMessageW` sender sites are recovered for those messages, respectively;
-  whether their dynamic `lParam` fields contain selector `0x95` and which
+  `PostMessageW` sender sites are recovered for those messages, respectively.
+  One LightUI-based construction path stores selector `0x95` in the `+0x9E0`
+  field later used by its sender pair; runtime sender association and which
   child control sends them remain unresolved. Physical brightness units and
   the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
@@ -536,17 +537,19 @@ model or runtime map.
   `docs/rk-audio-ui-control-followup.md`.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
-  byte, acknowledgements, retries, and cancellation path. The 4.06 UI trace
-  maps child routes to PNG/GIF preparation and a modal transfer object. The
-  modal's `WM_INITDIALOG` dispatch starts the frame worker, whose `+0x4C` and
-  `+0x50` calls resolve to G5 page and GIF writers when the active object uses
-  the recovered G5 vtable. Disassembly arithmetic proves that multi-item
-  preparation and transfer traverse the same `CScreenDlg+0xF4` collection;
-  the event that adds picker selections to it remains unresolved. For the separate hash-pinned 4.6
-  image/GIF path, NewGIF frames reach the static worker and G5 writer path,
-  while the generic single-image preview has no recovered direct pointer path
-  into that frame list. Screen-parameter schema and hardware acceptance remain
-  open; see
+  byte, acknowledgements, retries, and cancellation path. The hash-pinned 4.06
+  UI trace identifies NewPNG/NewGIF as save-as dialogs (`bOpenFileDialog=0`),
+  not input-file pickers: NewPNG reads from `CScreenDlg+0xE0`, while NewGIF
+  traverses the existing `CScreenDlg+0xF4` list. Separately, cache regeneration
+  calls a builder that appends indexed source objects to F4. The trigger and
+  source-file enumeration that initialize the cache/list, and any distinct
+  user import route, remain unresolved. The transfer action copies F4 items to
+  a modal object; its `WM_INITDIALOG` starts the frame worker, whose `+0x4C`
+  and `+0x50` calls resolve to G5 page and GIF writers when the active object
+  uses the recovered G5 vtable. For the separate hash-pinned 4.6 image/GIF
+  path, NewGIF frames reach the static worker and G5 writer path, while the
+  generic single-image preview has no recovered direct pointer path into that
+  frame list. Screen-parameter schema and hardware acceptance remain open; see
   `docs/rk-screen-gif-payload-audit.md`,
   `docs/rk-screen-image-conversion-path-audit.md`,
   `docs/rk-406-screen-ui-to-worker-modal-follow-up.md`, and
@@ -644,10 +647,11 @@ model or runtime map.
   row and its special wireless route's six-byte match is unresolved. See
   `docs/rk-live-hid-selector-crosscheck-2026-10-19.md`. Three direct
   `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
-  1032-byte feature read failed. A later authorized recheck returned the same
-  short bytes four times per report ID, with the first returned byte `06` for
-  requested IDs `05` and `0A`; response semantics remain unresolved. No output
-  report or `HidD_SetFeature` payload was sent. A cached BLE follow-up found
+  descriptor-declared 1032-byte feature read failed twice with Win32 error 31.
+  Across all recorded calls, the same short bytes were returned nine times per
+  report ID, with the first returned byte `06` for requested IDs `05` and
+  `0A`; response semantics remain unresolved. No output report or `HidD_SetFeature`
+  payload was sent. A cached BLE follow-up found
   three disconnected `RK-S98RGB` nodes
   in separate PnP containers from the USB device; HID characteristic access
   was denied, and no GATT values were read or written. See

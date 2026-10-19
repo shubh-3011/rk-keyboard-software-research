@@ -83,9 +83,12 @@ This resolves the earlier ambiguous `.rdata` block: function pointers
 `0x00422190` and `0x00422220` are handlers in the `CLedDlg` map. Their literal
 senders post through a parent-window wrapper; the likely `CLedDlg` parent
 relationship is inferred, and the runtime HWND identity is not observed.
-The dynamic sender `lParam` fields have not been tied to selector `0x95` or a
-particular brightness widget, nor does the route prove that a UI change
-reaches a specific serializer. See the [selector-message sender follow-up](rk-led-selector-message-sender-followup.md).
+One construction path stores selector `0x95` at child-object offset `+0x9E0`,
+and the `0x0800`/`0x0801` senders read that offset for `lParam`; see the
+[selector-message sender follow-up](rk-led-selector-message-sender-followup.md).
+The association between that constructed instance and a runtime sender call,
+the particular brightness widget, and any path from a UI change to a specific
+serializer remain unresolved.
 The producer and state effects for messages `0x0481` and `0x0482` are traced
 in the [key-position mapping follow-up](rk-led-key-position-message-followup.md);
 their exact visible controls and runtime parent-window identity remain open.
