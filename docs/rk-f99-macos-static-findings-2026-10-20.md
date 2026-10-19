@@ -37,28 +37,28 @@ file that is deleted when the script exits.
   The symbol ledger includes `IOHIDManagerCreate`,
   `IOHIDManagerSetDeviceMatching`, `IOHIDManagerCopyDevices`,
   `IOHIDDeviceOpen`, `IOHIDDeviceGetReport`, and `IOHIDDeviceSetReport`.
-- A valid ASAR header was carved at APFS physical offset `23,875,584`; its JSON
-  begins at `23,875,600`, is 247,336 bytes, and describes 4,565 leaf entries.
-  Its package metadata says `name=RK`, `version=3.2.2`, and
-  `main=background.js`. The metadata includes `node_modules/mi-hid` and
-  x64/arm64 Darwin `node-napi-v4.node` prebuild entries. This supports an
-  Electron app with a native HID addon. The APFS pathname of this ASAR and the
-  pathname of the Mach-O bundle candidate were not recovered, so the mapping
-  between those members and physical Mach-O candidates is strong but not
-  directly proven.
-- The carved ASAR byte range fingerprint is
+- A valid ASAR header was carved at APFS physical offset `23,875,584`; the
+  Pickle lengths validate JSON at `23,875,600` (247,336 bytes) and payload at
+  `24,122,936`. Its 4,547 nonempty payload ranges exactly cover 29,969,882
+  bytes, with no gaps or overlaps. The resulting 30,217,234-byte candidate
+  span has SHA-256
   `a6b3783602040407932e95e9237cbabb774690bad515d51c21fd59c9f74279db`.
-  It is not a pathname-level APFS file hash.
+  Its metadata says `name=RK`, `version=3.2.2`, and `main=background.js`, and
+  includes `node_modules/mi-hid` Darwin x64/arm64 `node-napi-v4.node` prebuild
+  entries. The ASAR and Mach-O bundle candidate APFS pathnames remain
+  unresolved; the native-addon mapping is supported by matching architecture
+  and imports but is not directly proven by path records.
 
 ## Difference from the Windows package
 
-The previously inspected Windows `app.asar` is 30,252,260 bytes with SHA-256
-`38ebbf1416050d9ab36eee4910ec86130a0919b69334ec3751378f7f00ff2bdf`. The
-carved macOS ASAR span is estimated at 30,217,234 bytes and has a different
-fingerprint. The available count is 4,565 macOS leaf entries versus 4,569 in
-the Windows archive. Therefore the packaged archives are not byte-identical.
-An exact added/removed/changed member list was not generated, so this pass does
-not characterize the full platform-specific asset or behavior delta.
+The Windows `app.asar` is 30,252,260 bytes with SHA-256
+`38ebbf1416050d9ab36eee4910ec86130a0919b69334ec3751378f7f00ff2bdf`. Its
+parsed payload ranges also have no gaps or overlaps. Comparing actual member
+bytes gives 4,362 identical hashes, 186 raw-hash differences (185 of those
+become byte-identical after CRLF-to-LF normalization), 17 unpacked entries
+compared by metadata only, and 4 Windows-only entries. The only non-newline-
+normalized common file difference is `background.js`. The focused comparison
+report and full path/hash ledger are listed below.
 
 ## Reproducible evidence files
 
@@ -77,10 +77,13 @@ library only. It generated:
   counts.
 - `rk-f99-macos-mach-o-undefined-symbols-2026-10-19.csv` — 9,297 undefined
   external-symbol records.
+- [ASAR comparison report](rk-f99-asar-cross-platform-diff-2026-10-20.md) and
+  [member hash CSV](rk-f99-macos-vs-windows-asar-members-2026-10-20.csv) —
+  validated payload spans and the complete member-by-member comparison.
 
-The ASAR observation above is a static carve recorded from this investigation;
-the current script does not emit an ASAR-member manifest or an exact
-Windows/macOS member diff.
+The comparison is reproducible with `scripts/compare_rk_f99_asar_members.py`.
+It hashes ASAR member bytes in memory and does not write extracted vendor
+files.
 
 ## Coverage limits and open questions
 

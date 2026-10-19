@@ -80,10 +80,14 @@ For current blockers and the recommended reverse-engineering order, see the
 - The selector capture is metadata only, but follow-up package acquisition has
   now covered four Windows product-specific packages: F99 AI RK Setup 3.2.2, R99 RK Driver,
   an RK918-labeled archive whose member is named RK919, and S108 GamingForceZ.
-  The F99 Mac DMG now has a static UDIF/APFS-block/Mach-O/ASAR carve pass, but
-  APFS file paths, app assets, and the exact Windows/macOS archive diff remain
-  unresolved. See
-  the [package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md)
+  The F99 Mac DMG now has a static UDIF/APFS-block/Mach-O/ASAR carve pass. The
+  carved ASAR is validated and compared member-by-member with Windows: 4,362
+  raw hashes match, 185 additional matches are CRLF/LF-only, and one common
+  `background.js` member remains different. APFS path attribution, app assets,
+  and the behavior of that remaining delta are unresolved. See the
+  [ASAR comparison](docs/rk-f99-asar-cross-platform-diff-2026-10-20.md),
+  [member ledger](docs/rk-f99-macos-vs-windows-asar-members-2026-10-20.csv),
+  the [package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md),
   and [hash catalog](docs/rk-product-specific-software-package-catalog-2026-10-19.csv).
   The selector still does not enumerate retired, regional, or removed records.
   See the [API/catalog audit](docs/rk-official-selector-api-catalog-audit-2026-10-19.md),
@@ -134,8 +138,10 @@ For current blockers and the recommended reverse-engineering order, see the
   records. `background.js` is 2.84 MB and has `parse_status=partial`; the graph
   is incomplete. The full 298 MB Evidence remains outside the repository. This
   analysis does not establish absence of an Electron/native relationship from
-  zero-count summary fields. The F99 macOS static pass has not recovered
-  APFS paths or asset ownership; see the separate [macOS findings](docs/rk-f99-macos-static-findings-2026-10-20.md).
+  zero-count summary fields. The F99 macOS pass validates the carved ASAR and
+  compares member hashes, but APFS paths and asset ownership remain open; see
+  the separate [macOS findings](docs/rk-f99-macos-static-findings-2026-10-20.md)
+  and [cross-platform ASAR comparison](docs/rk-f99-asar-cross-platform-diff-2026-10-20.md).
 - Focused family traces now map representative paths without claiming full
   control-flow coverage: GamingForceZ lighting/profile resources through the
   shared plugin architecture to the Sonix feature-report wrapper; R99 app
