@@ -115,6 +115,13 @@ the connected hardware therefore still cannot be identified as S98 from this
 descriptor or VID/PID alone. This is a live interface/descriptor observation,
 not a report-level protocol trace. The Bluetooth PnP nodes named `RK-S98RGB`
 remain generic BLE records without a proven association to the USB receiver.
+The accessible `MI_01/COL_01` tuple (`FF02:0002`, 20-byte input and output
+reports) also satisfies the descriptor portion of the extracted 4.6 driver's
+`Fw=3` selector. The selector additionally depends on profile/device identity;
+the sole direct `Fw=3` row is M20 `258A:0208`, not the observed PID `0150`, and
+no runtime selection was observed. This narrows the descriptor-family
+comparison without identifying the attached keyboard. See the
+[live selector cross-check](rk-live-hid-selector-crosscheck-2026-10-19.md).
 
 **Cached BLE HID metadata (2026-10-19):** Windows has three present Bluetooth
 roots named `RK-S98RGB`; their BLE HID service children share their respective

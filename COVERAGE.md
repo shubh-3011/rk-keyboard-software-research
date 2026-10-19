@@ -547,7 +547,11 @@ model or runtime map.
   was observed from those G5 paths, and neither establishes a firmware file
   export. A live HID open mapped seven collections on the attached
   `258A:0150` device; the shared VID/PID appears on 46 registry profiles, so
-  this still does not identify the device as an S98. Three direct
+  this still does not identify the device as an S98. Its accessible
+  `FF02:0002` collection with 20-byte input/output reports matches the
+  descriptor half of the extracted 4.6 `Fw=3` selector, but the sole direct
+  `Fw=3` M20 row is `258A:0208`; no runtime profile selection is established.
+  See `docs/rk-live-hid-selector-crosscheck-2026-10-19.md`. Three direct
   `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
   1032-byte feature read failed. No output report or `HidD_SetFeature` payload
   was sent. A cached BLE follow-up found three disconnected `RK-S98RGB` nodes

@@ -32,6 +32,7 @@
 - [4.06/4.6 profile IDs cross-referenced with the RK Drive model registry](rk-package-drive-model-evidence-matrix-2026-10-18.md)
 - [Historical 4.06-rule projection for 4.6 profiles (superseded by the RTTI map)](rk-profile-driver-family-map-v4.6-projected.csv)
 - [4.6 driver profile selector and Fw=3 path](rk-v4.6-profile-selector-audit.md)
+- [Live 258A:0150 descriptor cross-check against the 4.6 selector](rk-live-hid-selector-crosscheck-2026-10-19.md)
 - [4.6 row-level selector map](rk-v4.6-profile-selector-map.csv)
 - [4.6 profile-to-class routes verified through vtables and RTTI](rk-v4.6-profile-family-rtti-audit.md)
 - [4.6 row-level RTTI-verified family map](rk-v4.6-profile-family-rtti-map.csv)

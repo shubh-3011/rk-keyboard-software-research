@@ -104,10 +104,14 @@ HID capability records, applies three selector cases (`Fw=0`, `Fw=3`, other
 nonzero), and dispatches those cases through three distinct constructor
 addresses. The one `Fw=3` catalog row is `0208` / M20 / `258A:0208`.
 
-**Not established:** that a physical M20 exists in a given revision, reports
-the required `0xFF02`/usage-2/`0x14` descriptor fields, is successfully detected
-by this path, or can execute any specific setting operation. No keyboard was
-connected or queried. The report does not analyze downstream `Fw=3` protocol
-semantics, device-event success, runtime branches, firmware revision checks,
-other package components, or all keyboard models/releases outside this one
-extracted package.
+**Not established:** that a physical M20 exists in a given revision, is
+successfully selected by this path, or can execute any specific setting
+operation. This selector audit was performed offline; a later live descriptor
+cross-check found one accessible `258A:0150` collection that matches the
+four-value capability predicate, but its PID differs from the sole direct
+`Fw=3` M20 profile and no selection was observed. See the
+[live HID cross-check](rk-live-hid-selector-crosscheck-2026-10-19.md). The
+report does not analyze downstream `Fw=3` protocol semantics, device-event
+success, runtime branches, firmware revision checks, other package
+components, or all keyboard models/releases outside this one extracted
+package.
