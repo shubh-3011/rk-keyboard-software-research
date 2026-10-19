@@ -74,6 +74,15 @@ model or runtime map.
   [group CSV](docs/rk-resource-group-inventory-v4.6.csv),
   [per-profile asset CSV](docs/rk-model-resource-asset-inventory-v4.6.csv),
   and [generator/verifier](scripts/audit_rk46_resource_inventory.py).
+- The installed 4.06 `skins/` directory has a file-by-file metadata census of
+  96 assets, including image dimensions, formats, and modes. The full installed
+  manifest was rechecked with no mismatches; the recorded 4.6 delta adds two
+  Side LED images. A static loader trace confirms GDI+ file-loading paths for
+  named backgrounds and control groups, model-art fallback behavior, and three
+  `power_*` paths absent from both package manifests. It found no direct
+  `mak.skn` consumer; exact control bindings, indirect consumption, and the
+  format remain unresolved. See the [asset census](docs/rk-skin-asset-metadata-followup.md)
+  and [loader follow-up](docs/rk-skin-loader-static-followup.md).
 - The extracted package contains 265 named profile files and 140 unique
   layouts. The generated catalog and comparison report are
   [`models-4.6.json`](models-4.6.json) and
@@ -93,6 +102,10 @@ model or runtime map.
   calls made inside Windows or device-driver code. See
   [`docs/rk-v4.6-system-call-byte-audit.md`](docs/rk-v4.6-system-call-byte-audit.md)
   and its [candidate ledger](docs/rk-v4.6-syscall-byte-matches.csv).
+  A separate instruction-boundary pass classifies all 18 raw syscall-byte
+  candidates across the five installed 4.06 PEs: two are table data and the
+  other 16 are parts of ordinary instruction encodings. See the
+  [4.06 boundary audit](docs/rk-406-system-call-byte-audit.md).
   The 4.6 selector and RTTI maps now reconcile all 265 configured profile
   codes with no missing, extra, duplicate, or joined-field mismatch: 133 route
   to `CDevRKKB`, 131 to `CDevG5KB`, and M20/Fw=3 (`0208`) to `CDev3632`.
@@ -605,7 +618,13 @@ model or runtime map.
   `AFX`/delete-on-close serializer also has no direct
   UART/HID receive caller. Whether an
   undiscovered indirect or model-specific firmware export exists is
-  unresolved; see `docs/rk-firmware-readback-audit.md`.
+  unresolved; see `docs/rk-firmware-readback-audit.md`. A separate static
+  audit enumerates the identified 4.06/4.6 `HidD_GetFeature` calls and their
+  preceding feature-request flows, including updater indirect calls, then
+  checks traced response buffers for firmware-file sinks. It finds no
+  complete export in those paths but leaves unresolved callers and indirect
+  consumers open; see
+  [`docs/rk-hid-read-request-and-firmware-sink-audit.md`](docs/rk-hid-read-request-and-firmware-sink-audit.md).
 
 These gaps are intentional status labels, not claims that the missing work is
 impossible. New package snapshots and independently supported findings should

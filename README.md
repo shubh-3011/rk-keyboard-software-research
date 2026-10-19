@@ -90,6 +90,12 @@ as confirmed.
 ## Start here
 
 - [Main static reverse-engineering report](docs/reverse-engineering.md)
+- [Coverage status and unresolved subsystems](COVERAGE.md)
+- [Installed 4.06 skin assets and 4.6 delta](docs/rk-skin-asset-metadata-followup.md)
+- [How the 4.06 app loads its skin and profile art](docs/rk-skin-loader-static-followup.md)
+- [HID feature-read request paths and firmware sink assessment](docs/rk-hid-read-request-and-firmware-sink-audit.md)
+- [4.06 native system-call candidate boundary audit](docs/rk-406-system-call-byte-audit.md)
+- [Uninstaller conditional `SetLastError` call](docs/rk-unins000-third-e8-candidate-audit.md)
 - [Official RK Web, Hub, model-selected driver, firmware, and QMK/VIA distribution paths](docs/rk-official-driver-distribution-audit.md)
 - [Model profile and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
 - [Static profile-to-family and protocol coverage](docs/rk-profile-family-protocol-coverage.md)

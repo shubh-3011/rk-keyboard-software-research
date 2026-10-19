@@ -79,7 +79,8 @@ the initial driver block and 101 in 17 other IAT-reference blocks across
 Those listed references are expanded into calls, but this is not a complete
 resolver graph or a record of executed code. The import, IAT-reference,
 dynamic-loader, and raw system-call byte-scan inventories are reconciled in the
-[system API crosswalk](rk-system-api-crosswalk.md).
+[system API crosswalk](rk-system-api-crosswalk.md), with a focused
+[4.06 syscall-byte boundary audit](rk-406-system-call-byte-audit.md).
 
 The static profile selector for every configured model is captured in
 [`rk-profile-driver-family-map.csv`](rk-profile-driver-family-map.csv). It
@@ -100,7 +101,11 @@ Static PE dialog-template controls are inventoried separately in the
 expose the full runtime-generated MFC interface.
 The manifest covers all remaining assets, but this static pass has not
 assigned a semantic meaning to every individual image, animation frame, skin,
-or font.
+or font. The [installed skin-asset census](rk-skin-asset-metadata-followup.md)
+adds dimensions and pixel modes for all 96 4.06 skin entries. A separate
+[loader trace](rk-skin-loader-static-followup.md) follows GDI+ image loads,
+profile-art fallback, and named but absent power images; `mak.skn` consumption
+and exact control bindings remain unresolved.
 
 The app's resource paths form this local data graph:
 
@@ -1347,7 +1352,10 @@ remains unchanged.
 
 The dedicated [updater and firmware readback audit](rk-firmware-readback-audit.md)
 records the parser fields, traced HID verification buffers, conditional UART
-response-to-file sink, and the limits of this finding.
+response-to-file sink, and the limits of this finding. The companion
+[feature-read request and sink audit](rk-hid-read-request-and-firmware-sink-audit.md)
+maps identified `HidD_GetFeature` calls to preceding request writes and checks
+the traced response buffers for firmware-file sinks.
 
 The [profile catalog and schema audit](rk-profile-schema-audit.md) covers all
 189 installed `KB.ini` files, the exact tuple coverage of `models.json`,

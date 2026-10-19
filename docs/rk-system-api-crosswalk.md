@@ -57,8 +57,8 @@ invocation totals or runtime frequencies.
 | `Dev/01AF/Update.exe` | 618 | 7,391 | 55 | 53 | 590 | 606 | 12 |
 | `InitSetup.dll` | 76 | 148 | 1 | 2 | 27 | 74 | 2 |
 | `uninstall.dll` | 30 | 21 | 10 | 12 | 6 | 27 | 3 |
-| `unins000.exe` | 519 | 0 | 536 | 2,698 | 0 | 506 | 13 |
-| **Total** | **1,918** | **13,913** | **707** | **3,366** | **1,476** | **1,856** | **62** |
+| `unins000.exe` | 519 | 0 | 536 | 2,699 | 0 | 506 | 13 |
+| **Total** | **1,918** | **13,913** | **707** | **3,367** | **1,476** | **1,856** | **62** |
 
 The import-entry coverage counts are derived from the per-row address lists:
 an entry is in the left call-reference column if the row has at least one
@@ -97,12 +97,14 @@ Per-API addresses and the exact unresolved list are in the
 
 For `unins000.exe`, the raw executable-section `E8` scan finds candidates at
 `0x0044B2BC`, `0x004A9CE7`, and `0x004F4D04` whose computed targets are known
-import thunks. The first two byte sequences lie within UTF-16 string data. The
-third is in an embedded data-like region and has not been validated against a
-function boundary or control-flow path. These three candidates are therefore
-reported as unresolved byte patterns, not additional confirmed calls. The
-2,698 address count in the cross-reference CSV is the recovered instruction
-reference count.
+import thunks. The first two byte sequences lie within UTF-16 string data. A
+boundary-aware follow-up identifies `0x004F4D04` as a real call to the
+`SetLastError` import thunk from an exception action block. A one-record scope
+table reaches it through `RtlUnwind` when the matching exception type is
+dispatched; the ordinary path skips the block. Runtime occurrence and the
+type descriptor's identity remain unresolved. The call was added to the
+cross-reference ledger, bringing its recovered relative-call-to-thunk count
+to 2,699. See the [uninstaller candidate audit](rk-unins000-third-e8-candidate-audit.md).
 
 ## Dynamic loader callsites
 
@@ -172,6 +174,9 @@ are listed in
 [`rk-native-syscall-byte-matches.csv`](rk-native-syscall-byte-matches.csv).
 Every row is labeled as a raw byte-pattern match; none is promoted to a system
 call without instruction-boundary and reachability evidence.
+The follow-up [4.06 instruction-boundary audit](rk-406-system-call-byte-audit.md)
+classifies all 18 candidates in these five images: two are embedded table
+data, and the other 16 lie inside ordinary instruction encodings.
 
 ## Evidence status and remaining work
 
@@ -186,12 +191,14 @@ call without instruction-boundary and reachability evidence.
   indirect/COM-vtable and callback targets, remaining caller-fed values and
   argument-to-returned-pointer links across the 236 target-ledger rows,
   complete consumers for every resolved function pointer,
-  the third uninstaller raw `E8`
-  candidate, exact runtime branches, and any native system calls occurring
+  the matching type and runtime occurrence of the uninstaller `SetLastError`
+  exception action, exact runtime branches, and any native system calls occurring
   inside Windows or device drivers. Runtime tracing must remain separate from
-  this offline inventory and must not touch the keyboard or updater.
+  this offline inventory. This report contains no updater launch or keyboard
+  write; separately authorized read-only interface observations are recorded
+  in the [firmware readback audit](rk-firmware-readback-audit.md).
 
-The detailed feature-specific HID and firmware observations remain in
-[`reverse-engineering.md`](reverse-engineering.md); this crosswalk does not
-change the hardware safety conclusion or establish a full-firmware readback
-path.
+The feature-read request relationships and file-sink assessment are detailed
+in the [HID read/sink audit](rk-hid-read-request-and-firmware-sink-audit.md).
+Neither static analysis nor the separately recorded read-only observations
+demonstrate a complete firmware export path.
