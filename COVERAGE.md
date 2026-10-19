@@ -389,8 +389,10 @@ model or runtime map.
 - A targeted profile trace maps `[OPT] DefBri`, `LightUI`, and `LightHW` into
   the runtime brightness selector, a UI value-display helper, and
   family-specific serializer bytes. All eight installed S98 profiles use
-  `DefBri=5` and six-value UI/hardware lists; physical brightness units and
-  the visible control's command handler remain unresolved. See the
+  `DefBri=5` and six-value UI/hardware lists. A focused callsite trace resolves
+  the `tc_adv_str1` draw call to `USER32!DrawTextW` and `0x8134` as its layout
+  flags; this does not establish the visible control's event handler. Physical
+  brightness units and the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md).
 - The static Win32 dialog-template parser inventories all dialog resources in

@@ -33,11 +33,18 @@ index 1, resolves the localized entry through `FUN_00441AB0`, and stores
 successive pointers beginning at `0x0062B730` through `FUN_00405700`. Thus the
 first generated-string slot at `0x0062B730` is the `tc_adv_str1` string.
 
-At `0x00421BC2`, code loads the pointer at `0x0062B730`, then passes that
-string and the numeric value `0x8134` to a virtual method (`0x00421BDC` call).
-This is evidence that the first `tc_adv_str` string participates in runtime
-UI construction. It does **not** prove that `0x8134` is a child control ID,
-identify the widget type, or establish a callback for the resulting widget.
+At `0x00421BC2`, code loads the pointer at `0x0062B730`. The indirect call at
+`0x00421BDD` resolves statically to text drawing: `FUN_0047105C` at
+`0x004216CB` initializes a local adapter with vtable `0x0059F314`; the caller
+loads slot `+0x68`, whose entry at `0x0059F37C` targets `0x0047111A`. That
+wrapper forwards the text pointer, the preceding DWORD used as its character
+count, a local rectangle, and `0x8134` through IAT `0x0059E6B8` to
+`USER32!DrawTextW`. The flags are
+`DT_VCENTER | DT_WORDBREAK | DT_SINGLELINE | DT_NOCLIP | DT_END_ELLIPSIS`.
+Thus the localized `tc_adv_str1` string reaches a runtime text-drawing call;
+`0x8134` is not a child control ID or device selector. This resolves the
+callee and argument meaning, but not the identity of the surrounding visible
+control or its event handler.
 
 `FUN_004513B0` at `0x004513B0` reads `[OPT] LightUI`, parses it into the byte
 table at `0x00611854`, and separately parses `[OPT] LightHW` into
@@ -46,6 +53,18 @@ table at `0x00611854`, and separately parses `[OPT] LightHW` into
 byte at `0x00611854 + index` (`0x004222D1`) and formats it as text. This
 proves a `LightUI`-to-runtime-value-formatting path, but not which visible
 widget requests selector `0x95` or how a change to that value is committed.
+
+**Unresolved callback ownership.** A complete disassembly scan found no
+direct call or tail jump to `FUN_00422190`; `FUN_00422220` has one direct
+caller, `FUN_00422190`, which forwards its selector and index arguments. The
+two function addresses also occur as pointer words in a `.rdata` block:
+`0x005CD044` contains `0x00422190` beside words `0x0E` and `0x0801`, while
+`0x005CD05C` contains `0x00422220` beside `0x0E` and `0x0481`. These raw
+entries are a candidate registration structure only: the table format,
+consumer, owning class, and meaning of those ID-like values were not resolved.
+The current 26-array MFC message-map ledger has no matched array/owner for
+this block. It therefore does not establish a Light Brightness control to
+callback edge.
 
 ### `tc_kbin10`–`tc_kbin12` brightness action labels
 
@@ -114,11 +133,11 @@ brightness effect.
 | Link | Status | Evidence and limit |
 | --- | --- | --- |
 | English labels `tc_adv_str1`, `tc_kbin10`–`tc_kbin12` | **Proven statically** | Installed English XML; exact file hash above. |
-| `tc_adv_str1` generated-string slot | **Proven statically** | Loader `0x00445660` starts at index 1 and stores from `0x0062B730`; runtime-construction code uses that slot at `0x00421BC2`. The widget/control ID is unknown. |
+| `tc_adv_str1` generated-string slot and draw call | **Proven statically** | Loader `0x00445660` stores the string at `0x0062B730`; `0x00421660` passes it through adapter vtable `0x0059F314`, slot `+0x68` -> `0x0047111A` -> `USER32!DrawTextW` at `0x00421BDD`. `0x8134` is the DrawTextW format mask. The surrounding widget/control ID remains unknown. |
 | `LightUI` profile value to displayed text | **Proven statically** | `FUN_004513B0` populates `0x00611854`; `FUN_00422220` selector `0x95` reads it at `0x004222D1`. Caller-to-widget binding remains unknown. |
 | Brightness action code to localized action label | **Proven statically** | Type-9 mapper at `0x0044E3EF`, comparisons around `0x0044E4AC` and `0x0044E52A`–`0x0044E543`, action-string slots above. |
 | Type-9 mapping translator and matrix path | **Proven statically** | `FUN_00413410` → `FUN_00454C30`; `FUN_00413B20` maps 132 records. Specific `[FN1]`/`[FN2]` profile tuple to this runtime input remains unresolved. |
-| General generated-settings change to mask-2 worker signal | **Proven statically** | `FUN_00422190` and `FUN_00401080(2)` call at `0x004221F7`; worker dispatch is indirect. This is not proven to be the brightness widget's handler. |
+| Candidate generated-settings change to mask-2 worker signal | **Proven statically as a function path; UI attribution unresolved** | `FUN_00422190` and `FUN_00401080(2)` call at `0x004221F7`; worker dispatch is indirect. The raw pointer-table occurrence at `0x005CD044` has no recovered owner/consumer and does not prove this is the brightness widget's handler. |
 | Profile `LightHW` values to keyboard LED serializer bytes | **Proven statically** | RKKB `FUN_00413BF0`; G5/3632 `FUN_00411900` and related writer path. UI trigger, active family, and physical units are unresolved. |
 | Complete `Light Brightness` control → event → field mutation → writer chain | **Unresolved** | No direct child HWND/control ID and callback link joins the generated `tc_adv_str1` construction, selector `0x95`, `FUN_00422190`, and a concrete device-family writer. |
 | Whether `tc_kbin10`–`tc_kbin12` are lighting-page buttons | **Unresolved; evidence points to remapping choices** | Their strings are selected by the type-9 function-action mapper. No lighting-page click handler was found. |
@@ -130,14 +149,16 @@ The focused check used the existing `_rk_analysis/reports/brightness-global-xref
 `lighting-control-trace.txt`, and `device-targeted-functions.txt`; the current
 local reports on UI control crosswalk, profile-to-record lighting data,
 keymap flow, Apply worker, and serializers; installed English XML; and
-`objdump -d` ranges covering `0x00421B80`–`0x00422230`,
+`objdump -d` ranges covering `0x00421660`–`0x00422230`,
 `0x00445640`–`0x00445950`, `0x0044E3D0`–`0x0044E570`,
 `0x00413400`–`0x00413610`, `0x00413B20`–`0x00413BE7`,
 `0x00413BF0`–`0x00413D20`, `0x00411900`–`0x00411B90`, and
 `0x00454C30` onward. Searches for the label keys and action literals in the
 available export reports found the `LightUI` selector and its direct data
-edge, but no label-to-widget/event edge. The relevant missing bridge is
-structural: the UI is largely generated, the selector is an argument to a
+edge, but no label-to-widget/event edge. The `tc_adv_str1` draw adapter and
+`0x8134` mask are now resolved from the constructor, vtable, wrapper, and IAT;
+the surrounding handler's owner and the unowned pointer table remain open.
+The relevant missing bridge is structural: the selector is an argument to a
 generic formatter, and the settings worker selects its writer through an
 unresolved runtime object. This audit therefore does not claim the entire
 brightness control path has been reverse engineered.

@@ -659,10 +659,16 @@ There is also a UI-value path: `FUN_00422220` at `0x00422220`, when its
 selector argument is `0x95`, formats the value at `0x00611854 + index` for a
 runtime control. This supports use of `LightUI` as a displayed value list;
 the selector has not been tied to a particular visible widget or command
-handler. English `Text/en/text.xml` labels `tc_adv_str1` “Light Brightness”
-and `tc_kbin10`, `tc_kbin11`, and `tc_kbin12` are “Brightness +”, “Brightness -”,
-and “Brightness Loop”. The XML confirms those localized labels, but the
-native control IDs and event handlers for those labels remain unresolved.
+handler. The separate `tc_adv_str1` label is statically drawn through a local
+GDI adapter: vtable `0x0059F314` slot `+0x68` resolves to
+`USER32!DrawTextW`, and argument `0x8134` is its layout mask, not a device or
+control ID. The main brightness audit records that edge and an unowned
+`.rdata` pointer table containing `FUN_00422190`/`FUN_00422220`; no table
+consumer or class owner has been proved. English `Text/en/text.xml` labels
+`tc_adv_str1` “Light Brightness” and `tc_kbin10`, `tc_kbin11`, and `tc_kbin12`
+“Brightness +”, “Brightness -”, and “Brightness Loop”. The native control IDs,
+event handlers, and connection from `LightUI` formatting to a keyboard writer
+remain unresolved.
 
 ### Keymap and macro mapping details
 
