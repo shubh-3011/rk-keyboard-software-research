@@ -103,6 +103,17 @@ For current blockers and the recommended reverse-engineering order, see the
   [Driver route audit](docs/rk-product-driver-selector-route-audit-2026-10-20.md),
   its [row coverage](docs/rk-product-driver-selector-coverage-2026-10-20.csv),
   and [asset ledger](docs/rk-product-driver-route-web-asset-ledger-2026-10-20.csv).
+  A hash-verified `drive2` call-path follow-up ties the connect button to the
+  WebHID chooser/open/listener service and traces its 17 packet-builder calls
+  before the page changes routes. The service sends 64-byte chunks through
+  `sendReport(0, ...)`; this is static code evidence only, and no HID request
+  or report was performed. Its reconnect path also persists hard-coded
+  `keyboardInfo` VID/PID values that are not used in the subsequent collection
+  match. Packet semantics, the 27 chooser PIDs' model mapping, and the main
+  device page's feature graphs remain open. See the
+  [connection audit](docs/rk-drive2-webhid-connection-path-audit-2026-10-20.md),
+  [offset ledger](docs/rk-drive2-connection-path-evidence-2026-10-20.csv), and
+  [scanner](scripts/audit_rk_drive2_connection_path.py).
 - The QMK selector reports 83 rows and 83 distinct artifact URLs across seven
   model choices. Its 38 JSON definitions all match a `keyboard.json` embedded
   in the separately listed 38 ZIP source overlays; these are declarative
@@ -112,6 +123,17 @@ For current blockers and the recommended reverse-engineering order, see the
   the [QMK source audit](docs/rk-qmk-selector-software-audit-2026-10-19.md),
   [HEX comparison](docs/rk-qmk-hex-static-comparison-2026-10-20.md), and
   [firmware selector inventory](docs/rk-firmware-selector-static-inventory-2026-10-19.md).
+- A static PE-family pass covers all 117 acquired firmware-selector files and
+  114 distinct whole-file hashes; 99 PE hashes reduce to 16 executable-section
+  byte profiles. Two profiles match S98 updater code, spanning 80 PE hashes
+  (74 and 6), but their model-specific payloads and PIDs differ. The pass also
+  records 81 SINO overlays (72 selector-PID matches, five mismatches, and four
+  rows without comparable selector PIDs), 4,377 representative API-import
+  rows, 6,805 resource leaves, and 506 unvalidated x86 `cmp` candidates. This
+  is package-family/metadata work, not per-family call-graph or firmware
+  acceptance evidence. The [report](docs/rk-firmware-pe-family-static-audit-2026-10-20.md)
+  and its [reproduction scanner](scripts/audit_rk_firmware_pe_families.py)
+  distinguish exact findings from linear-sweep candidates.
 
 ## Product-specific software package snapshots
 
