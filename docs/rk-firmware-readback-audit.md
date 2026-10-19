@@ -83,6 +83,14 @@ separate direct feature-read results are listed below. Seven of ten
 enumerated collections could be opened; Windows returned access denied for
 MI_00, MI_01/COL_05, and MI_01/COL_09. The accessible descriptor results were:
 
+The metadata pass was repeated with the repository's
+[read-only HID metadata probe](../scripts/probe_rk_hid_metadata.ps1). It
+requests `GENERIC_READ` only, and imports no report-read, report-write, or
+device-control API. The rerun reproduced the same seven successful
+collections, three Win32 access-denied results, VID/PID/revision, and report
+lengths shown here. Its C# `Marshal.WriteInt32` call initializes the local
+SetupAPI interface-detail structure; it does not write to the keyboard.
+
 | Interface collection | Usage page:usage | Input bytes | Output bytes | Feature bytes | Feature report IDs |
 | --- | --- | ---: | ---: | ---: | --- |
 | MI_01/COL_01 | `FF02:0002` | 20 | 20 | 0 | — |
