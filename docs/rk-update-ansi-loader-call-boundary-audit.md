@@ -106,3 +106,25 @@ to an instruction-level callsite and descriptor census, but does not close
 either import row. The updated cross-reference discussion is in the [deep
 scan](rk-remaining-native-api-gap-deep-scan.md); the broader unresolved-import
 ledger remains in the [remaining native API path audit](rk-remaining-native-api-path-audit.md).
+
+## Independent binary re-audit (2026-10-19)
+
+An independent whole-image scan and disassembly rechecked the installed
+`Update.exe` at SHA-256
+`27894463b0dfe5bc3f5dc19d4d3351d9dfb692c402bf277bde3889d37e4a206c`
+(2,109,952 bytes), matching the package snapshot. The `LoadLibraryA` and
+`GetModuleHandleA` IAT slots each have one thunk reference, and no direct
+relative call or jump to either ANSI thunk was found. The ANSI thunk pointers
+appear only as descriptor fields; the four ANSI descriptor-base addresses
+have no exact little-endian pointer references elsewhere in the image.
+
+The full `.text` scan found the same nine direct calls to resolver
+`0x00416570` listed above. Every recovered call passes one of the four W-form
+descriptor bases: six use Kernel32-W, and one each use Comctl32-W,
+Comdlg32-W, and property-sheet Comctl32-W. The corresponding four W descriptor
+bases have 6, 1, 1, and 1 exact pointer occurrences. This strengthens the
+static conclusion that no in-image direct call path selecting the ANSI
+descriptors was recovered. Computed or indirect descriptor selection,
+runtime mutation, outside-image callers, and actual API execution remain
+unresolved; the imports are not classified as unused. The updater was not
+launched for this audit.

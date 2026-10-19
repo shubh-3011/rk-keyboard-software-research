@@ -294,8 +294,10 @@ model or runtime map.
 
 - All 810 files in the examined installation are represented by path, byte
   size, and SHA-256 in `docs/rk-installed-package-manifest.csv`. On
-  2026-10-18, the installed tree was rechecked: 810/810 paths, sizes, and
-  hashes matched using `scripts/verify_installed_manifest.py`.
+  2026-10-19, `scripts/verify_installed_manifest.py` confirmed 810/810 paths,
+  sizes, and hashes, with no missing/extra paths, mismatches, or unsafe
+  manifest rows. An independent file classification also matched all 14
+  resource-group counts and byte totals.
 - All 188 named `DevName` profile rows and all 189 installed `KB.ini` files
   are inventoried. The extra `01C7` profile has no `DevName` record and stays
   explicitly unregistered.
@@ -343,6 +345,10 @@ model or runtime map.
   `docs/rk-update-ansi-loader-call-boundary-audit.md`, and
   `docs/rk-unresolved-native-api-relative-reference-followup.md`, and
   `docs/rk-remaining-api-reference-scan.csv`.
+  Independent audits rechecked the installed ANSI-loader and uninstaller
+  images: all nine updater resolver calls still pass wide descriptors, and
+  each of the eight uninstaller fallback globals appears only in two resolver
+  stores, with no consumer recovered.
   The `PostQuitMessage` wrapper path is tied to seven callers.
 - All 128 dynamic-loader callsites in the five installed PE snapshots are
   inventoried and statically reviewed across the driver, installer helper,
@@ -534,8 +540,9 @@ model or runtime map.
   maps child routes to PNG/GIF preparation and a modal transfer object. The
   modal's `WM_INITDIALOG` dispatch starts the frame worker, whose `+0x4C` and
   `+0x50` calls resolve to G5 page and GIF writers when the active object uses
-  the recovered G5 vtable. The picker/preparation objects' connection to the
-  modal frame list remains unresolved. For the separate hash-pinned 4.6
+  the recovered G5 vtable. Disassembly arithmetic proves that multi-item
+  preparation and transfer traverse the same `CScreenDlg+0xF4` collection;
+  the event that adds picker selections to it remains unresolved. For the separate hash-pinned 4.6
   image/GIF path, NewGIF frames reach the static worker and G5 writer path,
   while the generic single-image preview has no recovered direct pointer path
   into that frame list. Screen-parameter schema and hardware acceptance remain
@@ -637,8 +644,11 @@ model or runtime map.
   row and its special wireless route's six-byte match is unresolved. See
   `docs/rk-live-hid-selector-crosscheck-2026-10-19.md`. Three direct
   `HidD_GetFeature` requests returned two short reports (6 and 8 bytes); the
-  1032-byte feature read failed. No output report or `HidD_SetFeature` payload
-  was sent. A cached BLE follow-up found three disconnected `RK-S98RGB` nodes
+  1032-byte feature read failed. A later authorized recheck returned the same
+  short bytes four times per report ID, with the first returned byte `06` for
+  requested IDs `05` and `0A`; response semantics remain unresolved. No output
+  report or `HidD_SetFeature` payload was sent. A cached BLE follow-up found
+  three disconnected `RK-S98RGB` nodes
   in separate PnP containers from the USB device; HID characteristic access
   was denied, and no GATT values were read or written. See
   `docs/rk-firmware-readback-audit.md`. The updater's temporary

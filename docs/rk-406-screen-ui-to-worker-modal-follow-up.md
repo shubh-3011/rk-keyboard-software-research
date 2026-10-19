@@ -91,9 +91,20 @@ object offset `+0x64` and traverses a linked list at `+0x6C`.
   finalizers `0x00467F90` and `0x00467D40` (`0x0046F7D5`–`0x0046F884`).
 
 This proves a screen-editor child route that prepares PNG/GIF image objects.
-It does not prove that these objects are the same pointers later copied from
-`CScreenDlg+0xF4`, nor that the generated objects become the raw bytes sent to
-the keyboard. The 4.06 profile GIF-to-PNG cache path documented in
+The image-preparation and transfer routes can be tied to the same screen-dialog
+list. The dispatcher passes `EBX = this+0x88` to `0x0046F610` at
+`0x0046D46D`–`0x0046D473`; within that helper, the item count at `EBX+0x64`
+is the screen-dialog count at `this+0xEC`, and the list head at `EBX+0x6C`
+is `this+0xF4`. In the transfer-button branch, `0x0046D3DE` checks the same
+`this+0xEC` count and `0x0046D400`–`0x0046D429` walks `this+0xF4`, copying
+each node's first pointer into the modal object's frame array. The NewGIF
+branch at `0x0046F7DF`–`0x0046F85D` also walks `EBX+0x6C` and calls
+`0x00467E50` with each node's first pointer. This establishes that the
+multi-item preparation path and the modal transfer path use the same
+`CScreenDlg+0xF4` collection. It does not establish when or how file-picker
+selections populate that collection, or that the converted image buffer uses
+the keyboard's required pixel layout. The 4.06 profile GIF-to-PNG cache path
+documented in
 [`rk-screen-image-conversion-path-audit.md`](rk-screen-image-conversion-path-audit.md)
 also remains a separate local-file path in the evidence available here.
 
@@ -123,9 +134,10 @@ acceptance, and visible transfer success were not observed. The worker does
 not call the adjacent G5 `+0x48` screen-parameter slot (`0x00410230`, command
 `0x0B`) in this path; its UI caller remains unresolved.
 
-The exact UI meaning of the copied numeric field and frame-value mapping into
-command `0x0D`/`0x0C` arguments remain unresolved. The separate one-image PNG
-branch is not shown to reach the multi-frame worker.
+The exact UI meaning of the copied numeric field, frame-value mapping into
+command `0x0D`/`0x0C` arguments, and how picker selections populate the shared
+list remain unresolved. The separate one-image PNG branch is not shown to
+reach the multi-frame worker.
 
 The available click-handler block reads no `ShowScreen` field directly. It
 has a positive frame-count condition and calls the device object's virtual
@@ -136,11 +148,12 @@ specific UI action uses that field as its gate.
 
 ## Bounded conclusion
 
-The 4.06 screen editor has a concrete child-window route that prepares PNG/GIF
-objects and a second route that gates on the device object's `+0x28` method
-and a nonempty frame list. It copies up to 512 frame pointers into a dialog
-object; its `WM_INITDIALOG` route starts the frame worker, whose converted
-frame buffers and GIF metadata reach the statically mapped G5 command `0x0C`
-and `0x0D` writers. This is a static write path, not proof that the connected
-keyboard selected that family or accepted any payload. Physical-device
-compatibility and runtime outcome remain unresolved.
+The 4.06 screen editor has a concrete child-window route that processes the
+same `CScreenDlg+0xF4` item collection later copied by the transfer action into
+the modal's frame array. The transfer action gates on the device object's
+`+0x28` method and a nonempty frame list. Its `WM_INITDIALOG` route starts the
+frame worker, whose converted frame buffers and GIF metadata reach the
+statically mapped G5 command `0x0C` and `0x0D` writers. This is a static write
+path, not proof that the connected keyboard selected that family or accepted
+any payload. Picker-list population, exact pixel layout, physical-device
+compatibility, and runtime outcome remain unresolved.

@@ -6,6 +6,18 @@ This is a static audit of the installed package at `C:\Program Files (x86)\RK Ke
 
 The snapshot has **810 files (78,070,176 bytes)**. The existing [package manifest](rk-installed-package-manifest.csv) gives the exact path, byte size, and SHA-256 for every file. The new [resource-group inventory](rk-resource-group-inventory.csv) partitions all 810 files into 14 non-overlapping groups; the [per-profile inventory](rk-model-resource-asset-inventory.csv) records assets for every one of the 189 `Dev/*/KB.ini` profiles. The localization tables below are supported by the [XML file inventory](rk-localization-file-inventory.csv) and [key-level locale matrix](rk-localization-key-matrix.csv); the matrix compares values without republishing the full translated text.
 
+**Installed-tree revalidation (2026-10-19):**
+`scripts/verify_installed_manifest.py` matched all 810 manifest paths, sizes,
+and hashes to the installed directory, with zero missing paths, extras,
+mismatches, or unsafe manifest rows. An independent path classification
+matched all 14 resource-group counts and byte totals. The per-profile asset
+inventory had no discrepancies; all 188 `Cfg.ini` registrations had a
+`KB.ini`, with `Dev/01C7/KB.ini` the one unregistered profile. The 22 XML
+files and their hashes matched the manifest. The 362-row locale key matrix's
+presence and equality flags matched the installed XML; the Japanese raw XML
+has a tag mismatch at line 266, so its comparison used an in-memory-only
+repair. No installed file was changed during this check.
+
 Confidence labels distinguish direct package evidence from interpretation:
 
 - **High**: file path, bytes, XML/INI fields, image metadata, or an observed string directly supports the statement.

@@ -112,9 +112,10 @@ snapshot does not establish:
 
 - a browse/open handler, selected-file path, extension filter, or whether
   users can replace the bundled `Dev/<PID>/screen.gif`;
-- whether the selected PNG/GIF picker objects become the frame list used by
-  worker start `0x00466820`; the modal `WM_INITDIALOG` to worker-start edge is
-  recovered in the linked 4.06 follow-up;
+- when and how file-picker selections populate the screen-dialog item list.
+  The linked 4.06 follow-up proves that the multi-item preparation route and
+  transfer route both read `CScreenDlg+0xF4`; it does not prove which dialog
+  result or event inserts each item;
 - the image dimension validation, crop/scale/rotate/padding rules, color
   depth, channel order, palette, quantization, dithering, or tile layout;
 - how the worker's frame value maps to command `0x0C` header byte 3, and the

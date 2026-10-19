@@ -79,6 +79,20 @@ consumer has been established. Computed aliases, callback handoffs, and
 external consumers remain unresolved. The eight imports are therefore
 unresolved rather than unused.
 
+**Independent installed-binary re-audit (2026-10-19):** the live
+`C:\Program Files (x86)\RK Keyboard Software\unins000.exe` is 1,316,301
+bytes with SHA-256
+`b4ca28b192d5a50307d2b28f3323b58b39cb51edd6682e75706cac2dd69a4a14`, matching
+the pinned 4.06 snapshot. A full raw-file address scan plus `objdump -d` and
+`objdump -D` found exactly two raw references to each global
+`0x0050209C`–`0x005020B8`, both resolver stores, and one raw hit per fallback
+thunk address, each loaded only as the fallback value in that resolver.
+Each thunk then tail-jumps through its corresponding USER32 IAT slot. The
+suspected `0x0044B2C0` use remains a misaligned decode in the relative call at
+`0x0044B2BC`; the next instruction boundary is `0x0044B2C1`. No additional
+in-image consumer or invocation path was found. Runtime use, computed aliases,
+and external consumers remain unresolved. The uninstaller was not executed.
+
 ## Status and limits
 
 The scan adds pointer-level evidence but closes none of the ten unresolved

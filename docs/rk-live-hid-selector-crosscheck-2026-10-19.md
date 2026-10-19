@@ -149,3 +149,39 @@ show the values currently stored in the keyboard, the commands the RK driver
 sends, or which profile the RK application would select. The three feature
 layouts are descriptor declarations, not evidence of a complete firmware
 readback path.
+
+## Live HID follow-up after updated authorization
+
+On 2026-10-19, the descriptor and metadata probes were run again against the
+present USB composite device. Windows reports VID/PID `258A:0150`, revision
+`0206`, and generic USB/HID child names. The USB parent and the ten `MI_00` /
+`MI_01/COL_nn` interface paths share one PnP container; the three disconnected
+BLE roots named `RK-S98RGB` remain in other containers, so the current USB
+identity still cannot identify the keyboard model. The manufacturer string
+is `SINOWEALTH`; the product string is rendered as `慇業杮䬠` by the existing
+probe, and the serial-number query returns Win32 error `87`. Neither string
+provides a usable model name.
+
+`probe_rk_hid_capabilities.ps1` again opened seven of ten interface paths with
+shared `GENERIC_READ` handles. `MI_00`, `MI_01/COL_05`, and `MI_01/COL_09`
+returned access denied (`5`). The parsed report IDs, lengths, and usages
+matched the earlier inventory above. The metadata and capability probes did
+not call `ReadFile`, `WriteFile`, `HidD_GetFeature`, or `HidD_SetFeature`.
+
+The feature-read probe was then run with `-RepeatCount 1` and again with
+`-RepeatCount 3`. Across these two runs, each of the two supported requests
+below succeeded four times and returned an identical report on every call:
+
+| Collection | Requested report | Calls | Returned bytes | SHA-256 |
+| --- | --- | ---: | --- | --- |
+| `MI_01/COL_06` | ID `05`, 6 bytes | 4/4 success | `06 A0 02 86 28 CB` | `0942459c22f269a1c5126070bbede7a6fb01bcdd2bf47f54e11e95346c1b2763` |
+| `MI_01/COL_08` | ID `0A`, 8 bytes | 4/4 success | `06 A0 02 86 28 CB 24 67` | `cda6d71acf4f56682512674c8846aa7786ab6d8b81181537f529f0f831182168` |
+
+These calls use `HidD_GetFeature` on descriptor-declared feature IDs and
+lengths. The probe contains no `HidD_SetFeature`, output-report, input-report,
+or device-control call. No write report was issued in this follow-up. The
+repeat results strengthen the observation that the two short responses are
+stable under this request, but do not identify their fields or prove they
+represent current settings. In both results the first returned byte is `06`,
+not the requested report ID; that mismatch and the shared six-byte prefix
+remain unresolved. No model identity or firmware readback is established.

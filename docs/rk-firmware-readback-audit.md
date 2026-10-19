@@ -218,6 +218,13 @@ cached/stale data. The probe opens only the two descriptor-defined collections
 with shared `GENERIC_READ` handles and calls `HidD_GetFeature`; it contains no
 `HidD_SetFeature`, output-report, input-report, or device-control call.
 
+**Additional live recheck (2026-10-19):** after the capability/metadata
+recheck, the same probe was run once with `-RepeatCount 1` and again with
+`-RepeatCount 3`. This adds four successful calls each for IDs `05` and `0A`;
+every returned report matched the table above byte for byte. Across the two
+recorded feature-read passes, each ID has eight successful, identical short
+responses. This pass did not retry the 1032-byte ID `06` request.
+
 The successful short responses share the same first six bytes even though
 their collections and requested report IDs differ. In both responses, byte 0
 is `06`, not the requested ID (`05` or `0A`); this mismatch is unresolved.
