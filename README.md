@@ -164,6 +164,10 @@ as confirmed.
 - [Indirect API call and callback follow-up](docs/rk-native-api-indirect-call-audit.md)
 - [Remaining unresolved native API invocation paths](docs/rk-remaining-native-api-path-audit.md)
 - [Deep scan of remaining 4.06 API reference gaps](docs/rk-remaining-native-api-gap-deep-scan.md)
+- [4.06 DeviceDriver 32-row import-gap revalidation](docs/rk-406-native-api-gap-revalidation-follow-up.md)
+- [4.06 DeviceDriver import-gap machine-readable evidence](docs/rk-406-native-api-gap-revalidation.csv)
+- [Installer-helper five-row import-gap reconciliation](docs/rk-installer-helper-no-direct-call-import-followup.md)
+- [Updater 12-row native import-gap reconciliation](docs/rk-updater-native-import-gap-reconciliation.md)
 - [Remaining API reference scan evidence](docs/rk-remaining-api-reference-scan.csv)
 - [Dynamic API resolution paths](docs/rk-dynamic-api-resolution-audit.md)
 - [Dynamic API export and cached-pointer consumer follow-up](docs/rk-dynamic-api-consumer-gap-audit.md)
@@ -251,8 +255,10 @@ python scripts/verify_installed_manifest.py `
 ## Research boundary
 
 Most findings are static. The RK application and updater were not launched.
-A separately dated live check opened shared read-access handles for the
-present `258A:0150` HID collections and decoded descriptors; a separate audit
+A read-only live check opened shared read-access handles for the present
+`258A:0150` HID collections and decoded their collection/report descriptors;
+an additional inventory mapped ten paths (seven opened, three access-denied)
+and descriptor report IDs without reading report payloads. A separate audit
 made direct `HidD_GetFeature` reads and a later probe repeated two short
 feature reports, detailed in the
 [firmware readback audit](docs/rk-firmware-readback-audit.md). No input report

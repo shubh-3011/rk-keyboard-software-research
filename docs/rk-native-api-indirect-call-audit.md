@@ -20,20 +20,20 @@ No RK executable or updater was run. No keyboard HID interface, serial port, fir
 
 ## Coverage summary
 
-Of the 62 gap rows, 52 are mapped: 51 function-call or callback targets and one imported data reference. Ten rows remain unresolved. Four additional imported-API paths were recovered as conditional tail-jumps through their IAT entries; they do not change the count of 106 register-indirect call instructions. A separate `DeviceDriver.exe` `PostQuitMessage` wrapper is now mapped through its callers and unconditional IAT tail-jump.
+Of the 62 gap rows, 52 are mapped: 51 function-call or callback targets and one imported data reference. Ten rows remain unresolved. Four additional imported-API paths were recovered as conditional tail-jumps through their IAT entries; they do not change the count of register-indirect call instructions. A separate `DeviceDriver.exe` `PostQuitMessage` wrapper is now mapped through its callers and unconditional IAT tail-jump. A later 4.06 revalidation found three register-indirect call instructions omitted from the original DeviceDriver list; the corrected total is 109 across the five binaries.
 
 | Binary | Gap rows | Mapped call/callback rows | Mapped data rows | Unresolved rows | Register-indirect call sites |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `DeviceDriver.exe` | 32 | 32 | 0 | 0 | 77 |
+| `DeviceDriver.exe` | 32 | 32 | 0 | 0 | 80 |
 | `Update.exe` | 12 | 10 | 0 | 2 | 16 |
 | `InitSetup.dll` | 2 | 2 | 0 | 0 | 3 |
 | `uninstall.dll` | 3 | 2 | 1 | 0 | 10 |
 | `unins000.exe` | 13 | 5 | 0 | 8 | 0 |
-| **Total** | **62** | **51** | **1** | **10** | **106** |
+| **Total** | **62** | **51** | **1** | **10** | **109** |
 
 The mapped transfers break down as follows:
 
-- **106 register-indirect API calls:** 77 in `DeviceDriver.exe`, 16 in `Update.exe`, 3 in `InitSetup.dll`, and 10 in `uninstall.dll`.
+- **109 register-indirect API calls:** 80 in `DeviceDriver.exe`, 16 in `Update.exe`, 3 in `InitSetup.dll`, and 10 in `uninstall.dll`. The 4.06 [gap revalidation follow-up](rk-406-native-api-gap-revalidation-follow-up.md) identifies three call instructions omitted from the earlier DeviceDriver list.
 - **9 exception-helper calls through global function pointers:** six calls to `RaiseException` and three to `RtlUnwind` in `unins000.exe`.
 - **One indirect tail-jump** through the `RaiseException` global function pointer.
 - **One DeviceDriver import tail-jump wrapper:** `PostQuitMessage` at
@@ -64,7 +64,7 @@ The compact address lists below are instruction addresses in the corresponding x
 | `GetProfileIntW` | `0x0050DADB`, `0x0050DAED`, `0x0055D07B`, `0x0055D08A`, `0x0055D099` |
 | `SetErrorMode` | `0x00487AF9`, `0x00487B01` |
 | `GlobalGetAtomNameW` | `0x004B593D`, `0x004B5962` |
-| `ConvertDefaultLocale` | `0x0047F8D8`, `0x0047F8E6`, `0x0047F9A0`, `0x0047F9A9` |
+| `ConvertDefaultLocale` | `0x0047F8D8`, `0x0047F8E6`, `0x0047F92E`, `0x0047F937`, `0x0047F9A0`, `0x0047F9A9` |
 | `RegisterDeviceNotificationW` | `0x00447019`, `0x00447060` |
 | `UnregisterDeviceNotification` | `0x00446167`, `0x00446170` |
 | `DeleteMenu` | `0x0049CE2F`, `0x0049CE3B`, `0x0049CE47`, `0x004E52AB`, `0x004E52B7`, `0x004E52DF`, `0x004FDBBF`, `0x004FDBCB`, `0x004FDBD7`, `0x004FDBE3`, `0x004FDC0C` |
@@ -84,7 +84,7 @@ The compact address lists below are instruction addresses in the corresponding x
 | `SaveDC` | `0x00470C3E`, `0x00470C4B` |
 | `LPtoDP` | `0x0055272D`, `0x00552745`, `0x0055275D` |
 | `EnumFontFamiliesW` | `0x00489F36`, `0x00489F61` |
-| `RemoveFontResourceW` | `0x00454A86`, `0x00454AB3`, `0x00454AE0` |
+| `RemoveFontResourceW` | `0x00454A86`, `0x00454AB3`, `0x00454AE0`, `0x00454B0D` |
 | `RegEnumKeyExW` | `0x004A59A3` |
 | `DragQueryFileW` | `0x004B57EE`, `0x004B5821` |
 | `SHAppBarMessage` | `0x00488955`, `0x00488975`, `0x00488991`, `0x004889B1` |

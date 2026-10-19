@@ -583,7 +583,7 @@ The UI labels and static call paths support this more specific feature map:
 | Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes 24 visualization bands. A separate `Music_Theard` worker builds local records and dispatches slot `+0x40` to RKKB `FUN_00413340`, G5 `FUN_00410670`, or a nested 3632 target `FUN_0040E570`. | The capture-to-worker data edge, UI/settings routes, and G5/3632 payload schemas remain unresolved. These are static code paths; capture and device writes were not run. See the [audio-reactive path audit](rk-audio-reactive-path-audit.md). |
 | RKKB lighting, key color, and Fn | `FUN_00413BF0` has static bit-`0x02` LED-data, bit-`0x04` per-key-color, and bit-`0x01` translation, macro-staging, matrix, and conditional Fn branches, all using `FUN_00413220`. | Command framing, translation bounds, and several prefixes/lengths are recovered. The `04 00` plus `0x780` block is built from macro staging in the observed caller context; its full schema, field meanings, global flag provenance, and UI/profile gates remain open. See the [keymap translation audit](rk-keymap-translation-audit.md) and [settings serializer audit](rk-setting-serializer-audit.md). |
-| Screen and GIFs | G5 screen parameters use command `0x0B`; GIF metadata command `0x0D` serializes flags/index, frame count, and delay into five bytes; command `0x0C` transfers page/frame data in up-to-512-byte subreports with an eight-byte header, optional additive-complement byte, page acknowledgements, retries, and cancellation checks. The UI decodes `screen.gif` frames into PNG cache files; 4.06 child routes also prepare PNG/GIF objects and open a modal object containing up to 512 frame pointers. | The `0x0B` schema and pixel format/layout are unresolved. The 4.06 modal class vtable includes the frame-worker setup method, but no modal dispatch to it is recovered; worker virtual targets are not connected to the G5 writers in this trace. Delay units and physical display acceptance remain unresolved. See the [screen/GIF payload audit](rk-screen-gif-payload-audit.md), [image-conversion path audit](rk-screen-image-conversion-path-audit.md), and [4.06 UI-to-worker follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md). |
+| Screen and GIFs | G5 screen parameters use command `0x0B`; GIF metadata command `0x0D` serializes flags/index, frame count, and delay into five bytes; command `0x0C` transfers page/frame data in up-to-512-byte subreports with an eight-byte header, optional additive-complement byte, page acknowledgements, retries, and cancellation checks. The UI decodes `screen.gif` frames into PNG cache files; the 4.06 modal `WM_INITDIALOG` path starts a worker that converts frame images and dispatches G5 slots `+0x4C`/`+0x50` to command `0x0C`/`0x0D` writers. | The picker/preparation objects' connection to the modal frame list remains unresolved. The `0x0B` schema, pixel format/layout, delay units, and physical display acceptance are unresolved. This is a static write path; no transfer was executed. See the [screen/GIF payload audit](rk-screen-gif-payload-audit.md), [image-conversion path audit](rk-screen-image-conversion-path-audit.md), and [4.06 UI-to-worker follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md). |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
 | Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer and also has an event-driven UART receive/state path. | MFU section-B/C paths perform bounded readback comparisons after writes. UART states 7/11 contain a conditional response-to-file sink, but the file gate, stream setup, and runtime activation are unresolved. See the [updater/readback audit](rk-firmware-readback-audit.md). |
 
@@ -830,9 +830,10 @@ compares byte 5 in checksum mode. Cancellation, progress, and outer page
 retry paths are also present; the invalid-page-ACK loop has no visible retry
 bound. A call at `0x00466820` starts worker `0x00466450`, which converts frame
 images through `0x004661A0`, calls object virtual slots `+0x4C`/`+0x50`, and
-supplies progress callback `0x004663C0`. The concrete bridge from those slots
-to the driver methods is not recovered. These are screen-write paths and were
-not executed.
+supplies progress callback `0x004663C0`. The `WM_INITDIALOG` call chain and
+conditional G5 vtable mapping resolve this worker to the G5 page/frame writer
+(`+0x4C`, command `0x0C`) and GIF metadata writer (`+0x50`, command `0x0D`).
+These are static screen-write paths and were not executed.
 
 RGB-table updates use a buffer sized `(profile-count + 1) * 0x15` bytes and
 the G5 command `10` or 3632 command `9`. `FUN_0040cd70` is only an optional
@@ -1306,7 +1307,12 @@ installed profiles list `0x0150` as a receiver ID for at least one model, and
 public S98 inventories also report `0x258A:0x0150`; this ID alone cannot prove
 which model is connected. The shared VID/PID occurs in 46 profile records.
 See the [firmware readback audit](rk-firmware-readback-audit.md) for access
-results and the [S98 HID inventory example](https://gist.github.com/andrewbt/10e59b562963200c80017babd2434947).
+results and the [S98 HID inventory example](https://gist.github.com/andrewbt/10e59b562963200c80017babd2434947). A later descriptor-only pass opened
+seven of ten enumerated HID collection paths with shared read-only handles,
+then parsed the input, output, and feature report IDs and field widths from
+Windows preparsed data; three paths returned access denied. It did not read
+report payloads or send a device report. See the
+[live selector cross-check](rk-live-hid-selector-crosscheck-2026-10-19.md).
 
 A 2026-10-19 cached BLE follow-up found three disconnected Windows nodes
 named `RK-S98RGB`, each in a distinct PnP container from the USB device and

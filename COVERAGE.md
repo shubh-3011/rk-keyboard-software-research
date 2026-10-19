@@ -310,6 +310,17 @@ model or runtime map.
 - All ordinary and delay imports from the five installed PE files, their
   scanned IAT/thunk references, dynamic API loader candidates, and raw
   system-call byte matches are inventoried.
+- Follow-up revalidations reconcile the no-direct-call import rows for the
+  DeviceDriver, Update, InitSetup, and uninstall binaries. The DeviceDriver
+  total is 80 register-indirect import calls plus two IAT tail-jump wrappers;
+  three missed call instructions are listed with the hash-pinned 32-row
+  evidence table. The installer helper's five rows resolve to four
+  register-indirect APIs and one imported-data read. The updater's 12 rows
+  resolve to seven register-indirect APIs, three tail-jump wrappers, and two
+  unresolved ANSI loader imports. Runtime execution remains unobserved. See
+  `docs/rk-406-native-api-gap-revalidation-follow-up.md`,
+  `docs/rk-installer-helper-no-direct-call-import-followup.md`, and
+  `docs/rk-updater-native-import-gap-reconciliation.md`.
 - A hash-pinned 4.06 uninstaller follow-up resolves `CreateNamedPipeW`,
   `SetNamedPipeHandleState`, and `TransactNamedPipe` to a message-framed
   `InnoSetup64BitHelper` subprocess channel. It hash-identifies the embedded
@@ -459,7 +470,8 @@ model or runtime map.
   opened with read-only handles for descriptor inspection. A follow-up parses
   input/output/feature button and value capability arrays, documenting report
   IDs, usage ranges, and field widths without reading an input report or
-  issuing an output or feature write. The 19-entry `FF02:0002` descriptor and
+  issuing an output or feature write. The complete inventory covers ten paths
+  (seven opened, three access-denied). The 19-field `FF02:0002` descriptor and
   three feature layouts still do not identify protocol commands, current
   settings, or the physical keyboard model. See
   `docs/rk-firmware-readback-audit.md` and
@@ -519,13 +531,15 @@ model or runtime map.
 - The screen audit maps G5 screen parameters, a five-byte GIF-parameter
   payload, and the frame/page transfer header, optional additive-complement
   byte, acknowledgements, retries, and cancellation path. The 4.06 UI trace
-  now maps child routes to PNG/GIF preparation and a modal transfer object;
-  its vtable contains the frame-worker setup method, but the modal-to-worker
-  dispatch and concrete worker-to-G5 writer edges remain unresolved. For the
-  separate hash-pinned 4.6 image/GIF path, NewGIF frames reach the static worker
-  and G5 writer path, while the generic single-image preview has no recovered
-  direct pointer path into that frame list. Screen-parameter schema and
-  hardware acceptance remain open; see
+  maps child routes to PNG/GIF preparation and a modal transfer object. The
+  modal's `WM_INITDIALOG` dispatch starts the frame worker, whose `+0x4C` and
+  `+0x50` calls resolve to G5 page and GIF writers when the active object uses
+  the recovered G5 vtable. The picker/preparation objects' connection to the
+  modal frame list remains unresolved. For the separate hash-pinned 4.6
+  image/GIF path, NewGIF frames reach the static worker and G5 writer path,
+  while the generic single-image preview has no recovered direct pointer path
+  into that frame list. Screen-parameter schema and hardware acceptance remain
+  open; see
   `docs/rk-screen-gif-payload-audit.md`,
   `docs/rk-screen-image-conversion-path-audit.md`,
   `docs/rk-406-screen-ui-to-worker-modal-follow-up.md`, and

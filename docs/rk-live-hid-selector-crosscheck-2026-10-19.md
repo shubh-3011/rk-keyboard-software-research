@@ -116,3 +116,36 @@ does not identify the keyboard behind the interface. The BLE nodes labeled
 This result does not establish firmware data, a readback command, or a way to
 copy firmware. For the current firmware-readback evidence and limits, see the
 [readback audit](rk-firmware-readback-audit.md).
+
+## Expanded live collection and report-descriptor inventory
+
+A later read-only pass on the same date reopened the present `258A:0150`
+collections using `GENERIC_READ` and parsed Windows' preparsed HID data with
+`HidP_GetCaps`, `HidP_GetButtonCaps`, and `HidP_GetValueCaps`. It did not call
+`ReadFile`, `WriteFile`, `HidD_GetFeature`, or `HidD_SetFeature`. Seven of ten
+collection paths opened; `MI_00`, `MI_01/COL_05`, and `MI_01/COL_09` returned
+Win32 access denied (`5`). The table reports descriptor metadata only; report
+payloads and current keyboard settings were not read.
+
+| Collection | Usage page / usage | Input / output / feature bytes | Descriptor report fields |
+| --- | --- | ---: | --- |
+| `MI_00` | unavailable | unavailable | open denied (`5`) |
+| `MI_01/COL_01` | `FF02:0002` | `20 / 20 / 0` | Input and output report ID `13`; each exposes 19 button fields |
+| `MI_01/COL_02` | `0001:0080` | `2 / 0 / 0` | Input report ID `01`; button usages `0081–0083` |
+| `MI_01/COL_03` | `000C:0001` | `3 / 0 / 0` | Input report ID `02`; consumer usage range `0000–02FF` |
+| `MI_01/COL_04` | `FF02:0001` | `4 / 0 / 0` | Input report ID `03`; three 8-bit values at usage `FF02:002F` |
+| `MI_01/COL_05` | unavailable | unavailable | open denied (`5`) |
+| `MI_01/COL_06` | `FF00:0001` | `0 / 0 / 6` | Feature report ID `05`; descriptor has usage range `0000–0004` |
+| `MI_01/COL_07` | `FF00:0001` | `0 / 0 / 1032` | Feature report ID `06`; descriptor has usage range `0001–0002` |
+| `MI_01/COL_08` | `FF01:0001` | `0 / 0 / 8` | Feature report ID `0A`; descriptor has usage range `0001–0002` |
+| `MI_01/COL_09` | unavailable | unavailable | open denied (`5`) |
+
+The HID product string returned non-printable text under the probe's basic
+Unicode rendering, so it is not used as a model label. The manufacturer string
+reported `SINOWEALTH`; the device still identifies only as the shared USB
+`258A:0150` VID/PID and revision `0206`. These additional descriptor fields
+show which report IDs and sizes the USB HID descriptor declares. They do not
+show the values currently stored in the keyboard, the commands the RK driver
+sends, or which profile the RK application would select. The three feature
+layouts are descriptor declarations, not evidence of a complete firmware
+readback path.

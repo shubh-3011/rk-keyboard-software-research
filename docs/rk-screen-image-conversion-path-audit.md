@@ -74,8 +74,10 @@ in the existing native trace: callsite `0x00466820` starts worker
 uses object virtual slots `+0x4C` and `+0x50`, and supplies progress callback
 `FUN_004663C0`. `GdipBitmapGetPixel` callsite `0x0046626F` lies in the
 `FUN_004661A0` conversion helper. This establishes a local image-to-frame
-conversion and an abstract worker interface, but not the concrete vtable
-targets or the initiating UI command.
+conversion and an abstract worker interface. A later hash-pinned follow-up
+resolves the initiating `WM_INITDIALOG` path and the G5 `+0x4C` page-writer and
+`+0x50` GIF-writer targets; see the
+[4.06 screen UI-to-worker trace](rk-406-screen-ui-to-worker-modal-follow-up.md).
 
 ## Relation to the recovered screen serializers
 
@@ -85,15 +87,15 @@ The binary exposes separate G5 screen writers:
 | --- | --- | --- |
 | `FUN_00410230` | Command `0x0B`; sends the caller's screen-parameter bytes. | No byte schema or direct UI/image-conversion caller was recovered. |
 | `FUN_00412890` | Command `0x0D`; constructs five GIF-parameter bytes: flags/index, 16-bit frame count, and 16-bit delay. | The available export does not show whether the frame count or delay comes from GIF metadata, the four-byte `gif_delay.gcc` cache, or an editor control. |
-| `FUN_00412F20` → `FUN_00412B10` | Wrapper and command `0x0C` page/frame transfer; serializes up to 512 caller bytes per subreport. | The frame data pointer is supplied by a caller, but no recovered direct edge connects it to `screen_img%d.png`, `FUN_004661A0`, or `FUN_00466450`. |
+| `FUN_00412F20` → `FUN_00412B10` | Wrapper and command `0x0C` page/frame transfer; serializes up to 512 caller bytes per subreport. | A 4.06 screen worker passes the `FUN_004661A0` conversion buffer through the G5 `+0x4C` slot to this writer. The source list's relation to the separately prepared PNG/GIF picker objects and the exact frame-header argument remain unresolved. |
 
 The G5 dispatch block near `0x005CBA50` contains adjacent entries for screen
 parameters (`0x005CBA74`), page transfer (`0x005CBA78`), and GIF parameters
-(`0x005CBA7C`). The worker's virtual calls at `+0x4C`/`+0x50` could be an
-abstraction boundary for these operations, but the concrete slot targets and
-mapping to these dispatch entries are **unresolved**. Do not treat the
-adjacency of image and serializer code, matching method names, or shared
-screen-dialog ownership as proof of an end-to-end upload path.
+(`0x005CBA7C`). The worker's virtual calls at `+0x4C`/`+0x50` resolve to the
+page-transfer and GIF-parameter entries for the recovered G5 vtable, closing
+that static buffer-to-writer edge. The worker does not call the adjacent
+screen-parameter (`+0x48`) entry. The UI route from selected PNG/GIF picker
+objects to the frame list remains **unresolved**; see the linked 4.06 follow-up.
 
 The separate local playback cache helpers `FUN_0046ACC0` and `FUN_0046ADC0`
 read/write `gif_delay.gcc` as a four-byte value. The value's units, accepted
@@ -110,23 +112,22 @@ snapshot does not establish:
 
 - a browse/open handler, selected-file path, extension filter, or whether
   users can replace the bundled `Dev/<PID>/screen.gif`;
-- the caller(s) of `FUN_0046C9F0`, `FUN_0046D900`, or worker start
-  `0x00466820`, and the UI command or message that reaches them;
+- whether the selected PNG/GIF picker objects become the frame list used by
+  worker start `0x00466820`; the modal `WM_INITDIALOG` to worker-start edge is
+  recovered in the linked 4.06 follow-up;
 - the image dimension validation, crop/scale/rotate/padding rules, color
   depth, channel order, palette, quantization, dithering, or tile layout;
-- whether `FUN_004661A0` emits the exact bytes passed to
-  `FUN_00412F20`/`FUN_00412B10`, or how the worker's frame value maps to
-  command `0x0C` header byte 3;
+- how the worker's frame value maps to command `0x0C` header byte 3, and the
+  exact pixel/color layout produced by `FUN_004661A0`;
 - whether generated frame PNGs are a mandatory staging format or only a UI
   preview/cache;
 - the relation between GIF frame-count metadata, profile `MaxScreenFrame`,
   `gif_delay.gcc`, `DrawFrameTime`, and the values passed to command `0x0D`;
-- the concrete virtual methods for worker slots `+0x4C`/`+0x50`, cancellation
-  behavior through the screen dialog, and the exact progress-to-UI route.
+- the exact progress-to-UI route and runtime cancellation outcome.
 
 The earlier
 [`screen/GIF payload audit`](rk-screen-gif-payload-audit.md) documents the
-screen command fields, retry/ack behavior, and model profile gates. Those are
-static serializer facts; this audit finds no code evidence that a particular
-visible import control reaches them. The UI crosswalk likewise marks the
-screen editor's control-to-writer bridge unresolved.
+screen command fields, retry/ack behavior, and model profile gates. The 4.06
+follow-up now establishes a static modal-to-worker-to-G5 page/GIF writer path
+for a populated frame list. It does not establish which visible picker action
+populates that list, runtime profile selection, or physical display acceptance.

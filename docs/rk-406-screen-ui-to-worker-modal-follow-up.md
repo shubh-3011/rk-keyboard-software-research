@@ -52,14 +52,22 @@ but that semantic label is inferred from context. It then:
 4. Calls `0x00479A27` with the initialized object (`0x0046D43A`–`0x0046D441`),
    then destroys the object with `0x00465F50` (`0x0046D44A`–`0x0046D455`).
 
-**Confirmed statically.** The vtable installed by the constructor contains
-`0x00479A27` at offset `+0x14C` and `0x00466820` at offset `+0x150`
-(`0x005D9B98` and `0x005D9B9C` respectively). The former is the method called
-by the screen-editor dispatcher; the latter is the worker setup routine that
-starts callback `0x00466450`. Thus the modal object class exposes the worker
-setup method in its vtable. The related code logs `CBurnScreenDlg: user
-cancel` (`0x005D9A00`), which supports—but does not alone prove—the class-name
-association.
+**Confirmed statically.** The constructor installs vtable `0x005D9A4C`. It
+contains `0x00479A27` at offset `+0x14C` and `0x00466820` at offset `+0x150`
+(`0x005D9B98` and `0x005D9B9C` respectively). The screen-editor dispatcher
+calls `0x00479A27`; that method reaches `0x0047986C`, which calls the imported
+`CreateDialogIndirectParamW` at `0x0047997F` with dialog procedure
+`0x00479318`. The API callsite is independently recorded in the native API
+[cross-reference](rk-native-api-xrefs.csv).
+
+The dialog procedure checks for `WM_INITDIALOG` (`0x0110`) at `0x0047931D`.
+It resolves the window to an MFC `CDialog` object through `0x00475329` and
+`0x004848BC`, then invokes that object's vtable slot `+0x150` at
+`0x00479343`. For the constructed screen modal, that slot is `0x00466820`.
+Therefore the recovered create-dialog initialization path dispatches to the
+worker setup routine; this is stronger than vtable membership alone. The
+related code logs `CBurnScreenDlg: user cancel` (`0x005D9A00`), consistent
+with the screen-transfer dialog role.
 
 **Inferred.** The stack object and call to `0x00479A27` form the screen burn
 progress/modal path: the object contains the copied frame pointer array and
@@ -91,29 +99,33 @@ also remains a separate local-file path in the evidence available here.
 
 ## Boundary to the established transfer worker and writers
 
-**Confirmed statically.** A separate setup routine `0x00466820` starts worker
-`0x00466450` through thread helper `0x0056DC08`. The worker invokes virtual
-slots `+0x58`, `+0x50`, and `+0x4C`; it converts frame image objects through
-`0x004661A0`, passes the conversion buffer and length to `+0x4C`, and invokes
-`+0x50` with frame/length-related values. This is the worker described in the
-[screen image-conversion audit](rk-screen-image-conversion-path-audit.md).
-The G5 screen serializers are separately established in the
-[screen/GIF payload audit](rk-screen-gif-payload-audit.md): command `0x0B`
-parameter writer, command `0x0D` GIF metadata writer, and command `0x0C` page
-writer. The page serializer accepts a caller buffer and splits it into
-up-to-512-byte subreports; the screen-capable profiles in this package set
-`DataUnitSize=512`.
+**Confirmed statically.** The `WM_INITDIALOG` dispatch starts worker
+`0x00466450` through `0x00466820` and thread helper `0x0056DC08`, passing the
+screen-dialog object as the worker parameter. The worker reads the frame count
+and pointer array from this same object's `+0x3A4`/`+0x3A8` fields, converts
+each image through `0x004661A0`, then passes the converted buffer, length,
+frame index, and progress callback to device-object virtual slot `+0x4C`.
 
-**Unresolved.** This follow-up does not recover a call or message-map dispatch
-from the `0x00479A27` modal path to vtable slot `+0x150` (`0x00466820`). The
-vtable membership establishes that the modal class has the worker-start
-method, but does not prove that this UI action invokes it. Nor does the
-available edge establish that the copied list is the worker's `+0x3A8` frame
-array, or that `0x004661A0` output reaches
-`FUN_00412F20`/`FUN_00412B10`. The concrete
-targets of worker slots `+0x4C`, `+0x50`, and `+0x58` are not established by
-this UI trace. No UI click path is established here for the `0x0B` or `0x0D`
-serializers.
+For the 4.06 `CDevG5KB` vtable at `0x005CBA2C`, the existing vtable map
+resolves the worker's calls as follows:
+
+| Worker slot | Resolved target | Static operation | Worker callsites |
+| --- | --- | --- | --- |
+| `+0x58` | `0x0040D0D0` | Reset screen-transfer cancellation state | `0x004664C1` |
+| `+0x50` | `0x00412890` | GIF metadata writer, command `0x0D` | `0x00466600`, `0x00466651`, `0x0046674B` |
+| `+0x4C` | `0x00412F20` → `0x00412B10` | Frame/page writer, command `0x0C` | `0x004666CC` |
+
+This establishes a static UI-to-worker-to-G5-writer route for the multi-frame
+transfer branch, conditional on the active device object using the recovered
+G5 vtable. The 4.06 profiles advertising screen support route statically to
+G5, but runtime profile selection, physical device identity, protocol
+acceptance, and visible transfer success were not observed. The worker does
+not call the adjacent G5 `+0x48` screen-parameter slot (`0x00410230`, command
+`0x0B`) in this path; its UI caller remains unresolved.
+
+The exact UI meaning of the copied numeric field and frame-value mapping into
+command `0x0D`/`0x0C` arguments remain unresolved. The separate one-image PNG
+branch is not shown to reach the multi-frame worker.
 
 The available click-handler block reads no `ShowScreen` field directly. It
 has a positive frame-count condition and calls the device object's virtual
@@ -125,10 +137,10 @@ specific UI action uses that field as its gate.
 ## Bounded conclusion
 
 The 4.06 screen editor has a concrete child-window route that prepares PNG/GIF
-objects and another route that, after a device-object gate and nonempty-frame
-check, copies up to 512 frame-related pointers plus a numeric value into a
-screen modal object. A separate worker converts image objects and calls
-virtual methods, while separate G5 command writers serialize screen data.
-Static evidence stops at the modal-to-worker and worker-slot-to-G5-writer
-edges. Thus the UI path is mapped to a candidate transfer dialog, but an
-end-to-end GIF-to-device write is not established.
+objects and a second route that gates on the device object's `+0x28` method
+and a nonempty frame list. It copies up to 512 frame pointers into a dialog
+object; its `WM_INITDIALOG` route starts the frame worker, whose converted
+frame buffers and GIF metadata reach the statically mapped G5 command `0x0C`
+and `0x0D` writers. This is a static write path, not proof that the connected
+keyboard selected that family or accepted any payload. Physical-device
+compatibility and runtime outcome remain unresolved.

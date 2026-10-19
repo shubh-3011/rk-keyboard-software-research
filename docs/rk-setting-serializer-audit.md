@@ -223,10 +223,12 @@ from the screen-parameter command `0x0B`.
   connect its 512-byte macro chunks to their source buffer and profile state.
 - Map all 128 LED bytes and RGB/group color semantics to profile fields and UI
   controls.
-- Recover the runtime caller of the G5 screen vtable slots and the UI-to-device
-  bridge; the static worker near `0x00466450` converts frames and invokes
-  virtual slots `+0x4C`/`+0x50`, but the concrete target relationship remains
-  unresolved.
+- Continue screen-path work at the boundary before the frame list is populated,
+  and on physical-model/runtime acceptance. The 4.06 modal `WM_INITDIALOG`
+  path now statically starts the worker; its G5 `+0x4C`/`+0x50` calls resolve
+  to page command `0x0C` and GIF command `0x0D` writers in the
+  [screen UI-to-worker follow-up](rk-406-screen-ui-to-worker-modal-follow-up.md).
+  The separate screen-parameter command `0x0B` caller remains unresolved.
 - Determine whether other software versions implement screen/GIF/page paths
   for RKKB or 3632; the inspected 4.06 model map has 15 screen profiles, all
   statically routed to G5, which is not universal product evidence.
