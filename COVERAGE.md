@@ -96,6 +96,15 @@ For current blockers and the recommended reverse-engineering order, see the
   and [comparison scanner](scripts/compare_rk_f99_background_js.py),
   the [package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md),
   and [hash catalog](docs/rk-product-specific-software-package-catalog-2026-10-19.csv).
+  A further bounded F99 Windows trace follows two saved renderer actions: DPI
+  selection through the HID report write path and firmware query/update through
+  the OTA report writer. It records 95 literal renderer IPC calls across 91
+  hash-pinned sidecar scripts, but the renderer files are not indexed in the
+  pinned ASAR header; their co-shipping with this main bundle is unresolved.
+  The trace found no literal renderer IPC channels for lighting or keymap, and
+  its DPI/version endpoint evidence is mouse-oriented. See the
+  [renderer-to-HID report](docs/rk-f99-windows-ui-ipc-to-hid-trace-2026-10-20.md)
+  and [path ledger](docs/rk-f99-windows-ui-to-hid-path-ledger-2026-10-20.csv).
   The selector still does not enumerate retired, regional, or removed records.
   See the [API/catalog audit](docs/rk-official-selector-api-catalog-audit-2026-10-19.md),
   [dated CSV](docs/rk-official-download-selector-catalog-2026-10-19.csv), and
