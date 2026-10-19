@@ -64,6 +64,18 @@ recognized transfer are unresolved, not proven unused. Register-flow routes
 that cross a conditional branch require manual or CFG analysis; examples are
 called out below and may be absent from the supplemental CSV rows.
 
+The original CSV above is preserved as the raw conservative scan. A separate
+[reconciled companion CSV](rk-v4.6-native-api-call-sites-reconciled.csv)
+adds the manually reviewed calls from the hash-pinned
+[unresolved-reference follow-up](rk-v4.6-unresolved-api-reference-audit.md).
+That follow-up resolves the raw scan's 16 `none_decoded` import rows to 31
+static `call reg` instruction sites, including both `PlaySoundW` calls in its
+worker. The companion has 8,077 rows, 886 register-indirect call rows, and no
+remaining `none_decoded` rows. This merged view improves API-site accounting;
+it still does not establish a complete CFG, caller reachability, or runtime
+execution. Regenerate it with
+[`reconcile_rk46_api_call_sites.py`](../scripts/reconcile_rk46_api_call_sites.py).
+
 ## Added imports versus the installed 4.06 baseline
 
 The previous binary delta audit identified four added imports. Their 4.6

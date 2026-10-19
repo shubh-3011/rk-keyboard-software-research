@@ -59,6 +59,13 @@ model or runtime map.
   installed or run. Its full 1,249-file path/size/SHA-256 inventory and
   provenance are in [`docs/rk-v4.6-package-snapshot.md`](docs/rk-v4.6-package-snapshot.md)
   and [`docs/rk-4.6-package-manifest.csv`](docs/rk-4.6-package-manifest.csv).
+- Static setup metadata identifies Inno Setup 5.3.3 Unicode and seven
+  languages, but does not expose the 4.6 compiled PascalScript callbacks.
+  The extracted payload has no generated uninstaller log; 4.06 callback
+  findings remain baseline-only and do not establish the 4.6 install or
+  uninstall flow. See the installer boundary section in the
+  [package snapshot](docs/rk-v4.6-package-snapshot.md) and the
+  [4.06 script audit](docs/rk-installer-uninstaller-script-audit.md).
 - A normalized path/hash comparison with the installed 4.06 tree records
   743 identical, 50 changed, 455 added, and 17 absent application paths; see
   [`docs/rk-package-file-delta-v4.06-v4.6.md`](docs/rk-package-file-delta-v4.06-v4.6.md)
@@ -147,11 +154,13 @@ model or runtime map.
 - A hash-pinned 4.6 import/callsite pass records candidate direct, thunk,
   relative, and straight-line register-indirect transfers, including HID and
   local macro-file references. A follow-up maps the prior 16 unresolved
-  imports to one IAT load each and 31 register-indirect call candidates; this
-  is static transfer evidence, not CFG reachability or runtime proof. One
-  branch-spanning SetupAPI route is documented outside the conservative CSV
-  heuristic. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md)
-  and [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md).
+  imports to one IAT load each and 31 register-indirect call candidates; the
+  reconciled companion ledger adds those sites without changing the raw scan.
+  This is static transfer evidence, not CFG reachability or runtime proof. One
+  branch-spanning SetupAPI route is also documented outside the conservative
+  scan. See the [primary audit](docs/rk-v4.6-native-api-call-path-audit.md),
+  [indirect-reference follow-up](docs/rk-v4.6-unresolved-api-reference-audit.md),
+  and [reconciled ledger](docs/rk-v4.6-native-api-call-sites-reconciled.csv).
   A focused follow-up traces the 4.6 `PlaySoundW` worker states to embedded
   aliases `MenuCommand` and `MenuPopup`, its stop branch, and five code-level
   state producers; their visible triggers and runtime playback remain

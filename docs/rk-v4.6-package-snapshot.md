@@ -66,6 +66,28 @@ package. This hash identity does not validate the `.upf` as a firmware image
 or demonstrate a safe firmware-copy operation; see the
 [firmware readback audit](rk-firmware-readback-audit.md).
 
+## Installer metadata and uninstaller-script boundary
+
+The official setup file was also inspected with `innoextract 1.9 --info`,
+without installing or launching it. Its setup-data metadata identifies Inno
+Setup 5.3.3 Unicode and seven language entries (`en`, `sc`, `tw`, Korean,
+Japanese, Turkish, and Russian). The package listing includes
+`localappdata/RKKB/lang.ini`, also present in the extracted manifest above.
+This metadata does not expose the full compiled PascalScript callback body or
+prove which setup callbacks the Inno engine dispatches.
+
+The packaged `InitSetup.dll` and `uninstall.dll` are byte-identical to the
+installed 4.06 components, but the 4.6 extracted payload does not include a
+generated `unins000.exe` or `unins000.dat`. The existing
+[4.06 script audit](rk-installer-uninstaller-script-audit.md) therefore
+documents a related baseline only: its two decoded PascalScript snapshots
+include setup-window close checks, a callback that passes
+`%LOCALAPPDATA%\RKKB` to `InitSetup.dll!SetupInit`, and language-index
+writing. Their presence in the 4.06 uninstall log does not prove either script
+snapshot is the active 4.6 setup script. The exact 4.6 callbacks, generated
+uninstaller script, file/registry/shortcut actions, overwrite rules, and
+runtime effects remain unresolved.
+
 The 4.6-labeled `DeviceDriver.exe` is the changed main binary, and its
 version-specific API/address evidence is tracked separately in the
 [native-binary delta audit](rk-v4.6-native-binary-delta-audit.md). That delta

@@ -15,6 +15,10 @@ session or that an API succeeds.
 
 The machine-readable results are in
 [`rk-v4.6-unresolved-api-references.csv`](rk-v4.6-unresolved-api-references.csv).
+Their callsites are merged into the separate
+[`rk-v4.6-native-api-call-sites-reconciled.csv`](rk-v4.6-native-api-call-sites-reconciled.csv)
+view by the documented generator; the original conservative scan remains
+unchanged.
 
 ## Method
 

@@ -62,6 +62,8 @@
 - [4.6 HID GetFeature handle-argument audit for all six read callsites](rk-v4.6-hid-getfeature-argument-audit.md)
 - [4.6 native API feature-path follow-up](rk-v4.6-native-api-feature-follow-up.md)
 - [4.6 native import callsite ledger](rk-v4.6-native-api-call-sites.csv)
+- [4.6 reconciled native import callsite ledger](rk-v4.6-native-api-call-sites-reconciled.csv)
+- [4.6 native import callsite reconciliation script](../scripts/reconcile_rk46_api_call_sites.py)
 - [4.6 COM/OLE activation callsites: startup shortcut, audio, file dialogs, and unresolved class factory](rk-v4.6-com-ole-activation-audit.md)
 - [4.6 `LoadLibraryA` and `GetModuleHandleA` call paths](rk-v4.6-dynamic-loader-api-audit.md)
 - [4.6 unresolved import reference follow-up](rk-v4.6-unresolved-api-reference-audit.md)
