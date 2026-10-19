@@ -3,6 +3,9 @@
 This file prevents the package snapshot from being mistaken for a universal RK
 model or runtime map.
 
+For current blockers and the recommended reverse-engineering order, see the
+[full-suite gap matrix](docs/reverse-engineering-gap-matrix-2026-10-19.md).
+
 ## Native Windows reconstruction milestone
 
 - The research repository now includes a source-first C# WPF Windows app in
@@ -269,9 +272,14 @@ model or runtime map.
   [`docs/rk-v4.6-ui-knob-localization-path-audit.md`](docs/rk-v4.6-ui-knob-localization-path-audit.md).
   A follow-up confirms the conditional `CKeyDlg` message-`0x477` handler can
   queue setting `2`, which reaches the G5 flag-2 command-4 serializer and
-  `HidD_SetFeature` path for the mapped G5 profiles. The visible sender, payload
-  semantics, runtime reachability, and device acceptance remain unresolved;
-  see the [knob-to-command-4 audit](docs/rk-v4.6-knob-signal-to-g5-command04-follow-up.md).
+  `HidD_SetFeature` path for the mapped G5 profiles. The distinct `lParam=2`
+  sender, payload semantics, runtime reachability, and device acceptance remain
+  unresolved;
+  a separate popup trace links `0x00435A23` to localized knob-option arrays,
+  but that sender uses `lParam=0`, not the command-4 branch's required `2`.
+  The `lParam=2` origin and exact visible widget remain unknown. See the
+  [knob-to-command-4 audit](docs/rk-v4.6-knob-signal-to-g5-command04-follow-up.md)
+  and [popup-origin trace](docs/rk-v4.6-knob-popup-origin-partial-audit.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
   (`0xC8C8` bytes). The exact path base, MFC event association, and relation to
@@ -283,12 +291,15 @@ model or runtime map.
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
   these two files; the `.upf` remains unvalidated and is not a device dump. A
-  focused updater follow-up maps the conditional mode-3 HID preflight and
-  fallback, including fixed `0603:1021` and `0603:1020` selectors. The `.upf`
-  has a malformed declared A-section length, and the successful `1021` status
-  path to transfer remains open; a potential six-byte buffer versus advertised
-  feature-length mismatch is recorded as static risk only. See the
-  [mode-3 audit](docs/rk-v4.6-update-mode3-hid-preflight-audit.md).
+  Focused updater follow-ups map the conditional mode-3 HID preflight and
+  fallback, including fixed `0603:1021` and `0603:1020` selectors, and trace
+  the successful `1021` status response through a secondary worker to a
+  conditional `1020` section-transfer path. The `.upf` has a malformed
+  declared A-section length; runtime branch predicates and device responses
+  remain unknown. A potential six-byte buffer versus advertised feature-length
+  mismatch is recorded as static risk only. See the
+  [preflight audit](docs/rk-v4.6-update-mode3-hid-preflight-audit.md) and
+  [status-to-transfer follow-up](docs/rk-v4.6-mode3-status-to-transfer-worker-followup.md).
 - A per-key XML comparison covers seven UI locales, generic and profile LED
   dictionaries, and profile side-light labels. It records added knob/screen
   strings and side-light resources, eight changed values, two malformed

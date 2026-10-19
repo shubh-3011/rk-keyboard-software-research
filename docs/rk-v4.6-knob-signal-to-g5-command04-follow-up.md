@@ -33,10 +33,14 @@ The helper clears bit `0x8000`, enqueues the resulting DWORD through
 This is a proven handler-to-queue route, conditional on message arguments and
 `ApplyNow`. It is not yet a proven visible knob-control-to-handler route. The
 existing static audit identifies two `PostMessageW(0x477)` sites, at
-`0x00435A23` and `0x00436686`, but does not identify their objects as the
-localized knob controls or show that either sender supplies the required
-second argument `2`. The four knob labels and profile fields are evidence of
-software data, not a confirmed sender identity.
+`0x00435A23` and `0x00436686`. A follow-up ties `0x00435A23` to a dynamically
+created `CMenuDlg` popup populated from the localized knob-option arrays, but
+that particular popup stores `lParam=0`; it does not satisfy the required
+second argument `2`. The `CMenuSrDlg` sender at `0x00436686`, the origin of the
+distinct `lParam=2` path, and the exact visible control remain unresolved. See
+the [popup-origin follow-up](rk-v4.6-knob-popup-origin-partial-audit.md).
+The four knob labels and profile fields remain evidence of software data, not
+proof of a selected or connected device.
 
 ## Queue to family implementation
 

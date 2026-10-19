@@ -91,6 +91,7 @@ as confirmed.
 
 - [Main static reverse-engineering report](docs/reverse-engineering.md)
 - [Coverage status and unresolved subsystems](COVERAGE.md)
+- [Prioritized full-suite reverse-engineering gap matrix](docs/reverse-engineering-gap-matrix-2026-10-19.md)
 - [Installed 4.06 skin assets and 4.6 delta](docs/rk-skin-asset-metadata-followup.md)
 - [How the 4.06 app loads its skin and profile art](docs/rk-skin-loader-static-followup.md)
 - [Package-wide `mak.skn` format/consumer scan](docs/rk-mak-skn-package-scan-followup.md)
@@ -177,6 +178,7 @@ as confirmed.
 - [Updater low `WM_TIMER` producer follow-up](docs/rk-updater-low-timer-producer-followup.md)
 - [One-click updater command `0x0419` static UI-to-worker trace](docs/rk-updater-command-0419-static-path-audit.md)
 - [4.6 mode-3 updater HID preflight and fallback path](docs/rk-v4.6-update-mode3-hid-preflight-audit.md)
+- [4.6 mode-3 status response to section-transfer worker](docs/rk-v4.6-mode3-status-to-transfer-worker-followup.md)
 - [Updater dongle-pairing checkbox state and direct-reference audit](docs/rk-updater-dongle-pairing-option-audit.md)
 - [Updater UART file-sink direct-reference and initialization audit](docs/rk-uart-file-sink-reachability-audit.md)
 - [Updater UART file-open path crosswalk](docs/rk-uart-file-open-path-crosswalk.md)
@@ -196,6 +198,7 @@ as confirmed.
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
 - [4.6 Inno overlay and PascalScript recovery follow-up](docs/rk-v4.6-inno-overlay-static-recovery-followup.md)
 - [4.6 knob signal to G5 command-4 follow-up](docs/rk-v4.6-knob-signal-to-g5-command04-follow-up.md)
+- [4.6 knob-option popup origin and message-argument gap](docs/rk-v4.6-knob-popup-origin-partial-audit.md)
 - [Host update/download and installer path audit](docs/rk-host-update-install-path-audit.md)
 - [Dated public model list compared with the 4.06 profile catalog](docs/rk-public-model-coverage-gaps.md)
 - [Dated storefront model list and profile-name crosswalk](docs/rk-storefront-model-crosswalk.csv)

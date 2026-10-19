@@ -1,5 +1,7 @@
 # Audit files
 
+- [Prioritized full-suite reverse-engineering gap matrix](reverse-engineering-gap-matrix-2026-10-19.md)
+
 ## Package and model catalog
 
 - [Open-source RK software directory](../SOFTWARE-DIRECTORY.md)
@@ -31,6 +33,7 @@
 - [4.06-to-4.6 localization changes and limits](rk-localization-delta-v4.06-v4.6.md)
 - [4.6 generated localized UI labels and knob profile path](rk-v4.6-ui-knob-localization-path-audit.md)
 - [4.6 knob signal to G5 command-4 path](rk-v4.6-knob-signal-to-g5-command04-follow-up.md)
+- [4.6 knob-option popup origin and message-argument gap](rk-v4.6-knob-popup-origin-partial-audit.md)
 - [Row-level localization keys and resource comparison](rk-localization-delta-v4.06-v4.6.csv)
 - [4.6 profile catalog and 4.06 comparison](rk-profile-catalog-v4.6-delta.md)
 - [4.06/4.6 profile IDs cross-referenced with the RK Drive model registry](rk-package-drive-model-evidence-matrix-2026-10-18.md)
@@ -143,6 +146,7 @@
 - [Updater UART receive state machine](rk-updater-uart-state-machine.md)
 - [One-click updater command `0x0419` static UI-to-worker trace](rk-updater-command-0419-static-path-audit.md)
 - [4.6 mode-3 updater HID preflight and fallback path](rk-v4.6-update-mode3-hid-preflight-audit.md)
+- [4.6 mode-3 status response to section-transfer worker](rk-v4.6-mode3-status-to-transfer-worker-followup.md)
 - [Updater progress-control bindings and `PBM_SETPOS` sites](rk-updater-progress-control-audit.md)
 - [Updater timer-origin inventory and `WM_TIMER` scheduling gap](rk-updater-timer-origin-static-audit.md)
 - [Updater low `WM_TIMER` producer follow-up](rk-updater-low-timer-producer-followup.md)

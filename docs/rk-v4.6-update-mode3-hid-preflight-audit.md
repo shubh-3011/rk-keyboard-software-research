@@ -142,10 +142,14 @@ builds a feature report beginning `05 C9 60`, sends it with
 `0x0040980D` (up to six one-second intervals). It checks for a `60` response
 prefix and updates the gate `0x005C5F08` from the response byte. If this poll
 returns zero in mode 3, `FUN_0040A0F0` calls `FUN_0040A580` at
-`0x0040A389`; otherwise it returns. The eventual transfer-thread entry from
-the successful `1021`/status path is not established by this direct call
-sequence. The separate timer-3 handler can create `FUN_00406BD0`, but the
-timer's creation/source remains unresolved in the existing timer audit.
+`0x0040A389`; otherwise the caller returns while the probe helper has started
+the separate `FUN_00406C20` worker. A follow-up traces that worker through
+`FUN_0040B770` into a conditional `FUN_0040A580` call and then the fallback
+`0603:1020` pair that can create `FUN_00406BD0`; see the
+[status-to-transfer follow-up](rk-v4.6-mode3-status-to-transfer-worker-followup.md).
+The branch predicates and device responses remain unobserved. The separate
+timer-3 handler can also create `FUN_00406BD0`, but the timer's origin remains
+unresolved in the existing timer audit.
 
 ## Mode-switch fallback path
 
@@ -198,7 +202,8 @@ here.
 - **Unresolved:** whether the malformed packaged `.upf` is accepted, which
   interface paths are chosen at runtime, whether the 1,032/2,050-byte
   collections exist for those IDs, the `+0x8E6F` value at mode-switch time,
-  and how the successful `1021` status path reaches the transfer worker.
+  whether the successful `1021` status response and secondary-worker branch
+  predicates are satisfied at runtime, and the origin of timer 3.
 - **Unresolved:** any direct or indirect link between this HID path and the
   UART response/file sinks.
 
