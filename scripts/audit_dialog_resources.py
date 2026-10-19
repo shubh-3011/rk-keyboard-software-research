@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory Win32 dialog-template resources in the installed RK package.
+"""Inventory Win32 dialog-template resources in an RK package snapshot.
 
 This parser reads PE resource bytes only. It never executes an RK binary or
 communicates with a keyboard. Requires pefile (see requirements-audit.txt).
@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import struct
 from pathlib import Path
 from typing import Any
@@ -233,11 +234,45 @@ def collect_dialogs(rk_root: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def verify_manifest_inputs(rk_root: Path, manifest_path: Path, parser: argparse.ArgumentParser) -> None:
+    with manifest_path.open("r", encoding="utf-8-sig", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    if not rows:
+        parser.error(f"manifest has no file rows: {manifest_path}")
+    path_field = "path" if "path" in rows[0] else "relative_path"
+    if path_field not in rows[0] or not {"size_bytes", "sha256"}.issubset(rows[0]):
+        parser.error("manifest must contain path or relative_path, size_bytes, and sha256 columns")
+
+    expected = {
+        row[path_field].replace("\\", "/").casefold(): row
+        for row in rows
+    }
+    for relative in PE_NAMES:
+        path = rk_root / relative
+        if not path.is_file():
+            continue
+        name = relative.as_posix()
+        candidates = (name.casefold(), f"app/{name}".casefold())
+        matches = [expected[key] for key in candidates if key in expected]
+        if len(matches) != 1:
+            parser.error(f"expected exactly one manifest row for {name}, found {len(matches)}")
+        row = matches[0]
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if path.stat().st_size != int(row["size_bytes"]):
+            parser.error(f"size mismatch for {name}: {path.stat().st_size} != {row['size_bytes']}")
+        if digest.casefold() != row["sha256"].casefold():
+            parser.error(f"SHA-256 mismatch for {name}")
+        print(f"Verified manifest input: {name} ({digest})")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--rk-root", type=Path, required=True, help="Installed RK Keyboard Software directory")
+    parser.add_argument("--rk-root", type=Path, required=True, help="package directory containing the named PE files")
+    parser.add_argument("--manifest", type=Path, help="optional package hash manifest for the PE inputs")
     parser.add_argument("--output", type=Path, required=True, help="Output CSV path")
     args = parser.parse_args()
+    if args.manifest:
+        verify_manifest_inputs(args.rk_root, args.manifest, parser)
     rows = collect_dialogs(args.rk_root)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     fields = [

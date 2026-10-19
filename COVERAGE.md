@@ -81,6 +81,16 @@ model or runtime map.
   [group CSV](docs/rk-resource-group-inventory-v4.6.csv),
   [per-profile asset CSV](docs/rk-model-resource-asset-inventory-v4.6.csv),
   and [generator/verifier](scripts/audit_rk46_resource_inventory.py).
+- A static Win32 dialog-resource parse of the hash-verified 4.6 driver and
+  bundled updater found 10 driver templates with seven declared controls and
+  four updater templates with 34 controls; there were no parse errors. Their
+  resource/control rows match the installed 4.06 driver and updater exactly.
+  This compares embedded `RT_DIALOG` resources only; runtime-built MFC
+  controls and changed handler maps remain outside this comparison. The two
+  extra rows in the 4.06 full inventory come from its generated uninstaller,
+  which is absent from the extracted 4.6 payload. See the
+  [dialog-resource audit](docs/rk-v4.6-dialog-resource-audit.md) and
+  [row ledger](docs/rk-v4.6-dialog-resource-controls.csv).
 - The installed 4.06 `skins/` directory has a file-by-file metadata census of
   96 assets, including image dimensions, formats, and modes. The full installed
   manifest was rechecked with no mismatches; the recorded 4.6 delta adds two

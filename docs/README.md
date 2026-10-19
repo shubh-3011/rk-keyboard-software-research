@@ -11,6 +11,8 @@
 - [4.06 all-import register-indirect call supplement](rk-406-register-indirect-call-audit.md)
 - [Official Windows 4.6 package snapshot](rk-v4.6-package-snapshot.md)
 - [4.6-labeled package resource and per-profile asset inventory](rk-v4.6-resource-inventory.md)
+- [4.6 dialog-resource inventory and 4.06 comparison](rk-v4.6-dialog-resource-audit.md)
+- [4.6 dialog/control resource rows](rk-v4.6-dialog-resource-controls.csv)
 - [4.6 package resource groups](rk-resource-group-inventory-v4.6.csv)
 - [4.6 per-profile resource assets](rk-model-resource-asset-inventory-v4.6.csv)
 - [Public RK Drive Web App bundle and model registry audit](rk-drive-web-app-audit.md)
