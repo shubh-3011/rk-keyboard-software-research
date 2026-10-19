@@ -83,10 +83,17 @@ For current blockers and the recommended reverse-engineering order, see the
   The F99 Mac DMG now has a static UDIF/APFS-block/Mach-O/ASAR carve pass. The
   carved ASAR is validated and compared member-by-member with Windows: 4,362
   raw hashes match, 185 additional matches are CRLF/LF-only, and one common
-  `background.js` member remains different. APFS path attribution, app assets,
-  and the behavior of that remaining delta are unresolved. See the
+  `background.js` member remains different. A focused static comparison ties
+  the changed Webpack factory 607 to the same HID wrapper and byte-identical
+  worker source on both platforms, while 1,409 coarse changed spans remain
+  semantically unattributed. APFS path attribution, app assets, and the
+  user-visible behavior of that delta remain unresolved. See the
   [ASAR comparison](docs/rk-f99-asar-cross-platform-diff-2026-10-20.md),
   [member ledger](docs/rk-f99-macos-vs-windows-asar-members-2026-10-20.csv),
+  [focused `background.js` comparison](docs/rk-f99-background-js-cross-platform-diff-2026-10-20.md),
+  [module identity map](docs/rk-f99-background-js-content-identity-map-2026-10-20.csv),
+  [changed-span ledger](docs/rk-f99-background-js-change-blocks-2026-10-20.csv),
+  and [comparison scanner](scripts/compare_rk_f99_background_js.py),
   the [package audit](docs/rk-product-specific-software-package-audit-2026-10-19.md),
   and [hash catalog](docs/rk-product-specific-software-package-catalog-2026-10-19.csv).
   The selector still does not enumerate retired, regional, or removed records.
