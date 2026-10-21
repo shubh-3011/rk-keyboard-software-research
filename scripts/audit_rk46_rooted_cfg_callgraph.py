@@ -2,7 +2,7 @@
 """Hash-pinned, root-seeded CFG and direct-call audit for RK 4.6 DeviceDriver.
 
 The traversal starts only from the PE entrypoint, structurally recovered MFC
-message handlers, and proven entries in the two audited 4.6 device-family
+message handlers, and proven entries in three audited 4.6 device-family
 vtables. It follows decoded conditional branches and direct calls. This is a
 bounded static graph, not a complete function map, CFG, or runtime trace.
 """
@@ -33,10 +33,12 @@ IMAGE_BASE = 0x00400000
 VTABLE_FILES = (
     "rk-v4.6-cdevg5-vtable-map.csv",
     "rk-v4.6-cdevrkbb-vtable-map.csv",
+    "rk-v4.6-cdev3632-vtable-map.csv",
 )
 EXPECTED_VTABLE_HASHES = {
     "rk-v4.6-cdevg5-vtable-map.csv": "6c994b3f91c0d40e4302e9e29d2e9e5da4a0d74b82635662a579e86ae71384e1",
     "rk-v4.6-cdevrkbb-vtable-map.csv": "7086073683dd51e8531ca607ab3afa9b1a7508fed4e46e964a40fd8af42bd862",
+    "rk-v4.6-cdev3632-vtable-map.csv": "9f51961237cee31fce47d174ce0872b66569ab87ff6bb5697771fa5d33f16f1a",
 }
 
 
@@ -540,7 +542,7 @@ def main() -> int:
             "rk-v4.6-rooted-cfg-blocks.csv": sha256((out / "rk-v4.6-rooted-cfg-blocks.csv").read_bytes()),
         },
         "limits": [
-            "Roots are the PE entrypoint, structurally validated MFC message handlers, proven entries in two audited device-family vtables, and internal direct-call targets discovered from them.",
+            "Roots are the PE entrypoint, structurally validated MFC message handlers, proven entries in three audited device-family vtables, and internal direct-call targets discovered from them.",
             "Conditional branches are followed both ways without evaluating flags; branch reachability is not established.",
             "A decoded direct-call target is a function-entry candidate, not independently validated as a function boundary.",
             "Unconditional jumps into another root or a common frame prologue are recorded as tail-jump candidates; other unconditional jumps are followed as intra-function branches.",

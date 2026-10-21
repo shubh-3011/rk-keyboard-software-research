@@ -141,6 +141,8 @@ as confirmed.
 - [4.6 G5 vtable, ApplySetting and command paths](docs/rk-v4.6-cdevg5-settings-and-vtable-audit.md)
 - [4.6 G5 29-slot method evidence map](docs/rk-v4.6-cdevg5-vtable-map.csv)
 - [4.6 Fw=3 `CDev3632` vtable and transport audit](docs/rk-v4.6-fw3-cdev3632-vtable-audit.md)
+- [4.6 `CDev3632` RTTI-verified vtable root map](docs/rk-v4.6-cdev3632-vtable-map.csv)
+- [4.6 root-seeded CFG/call-edge audit](docs/rk-v4.6-rooted-cfg-callgraph-audit.md)
 - [4.6 `CDev3632` frame, response queue, and selector audit](docs/rk-v4.6-cdev3632-frame-and-selector-audit.md)
 - [4.6 Side LED profile, UI, and report-builder audit](docs/rk-v4.6-side-led-static-audit.md)
 - [4.6 Side LED message-map and selection-state follow-up](docs/rk-v4.6-side-led-message-map-follow-up.md)

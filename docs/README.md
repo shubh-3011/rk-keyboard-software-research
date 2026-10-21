@@ -176,6 +176,8 @@
 - [4.6 deferred-settings signal path and 24 caller edges](rk-v4.6-apply-signal-callers.csv)
 - [4.6 settings-signal caller verifier](../scripts/audit_rk46_apply_signal_callers.py)
 - [4.6 Fw=3 `CDev3632` vtable and transport audit](rk-v4.6-fw3-cdev3632-vtable-audit.md)
+- [4.6 `CDev3632` RTTI-verified vtable root map](rk-v4.6-cdev3632-vtable-map.csv)
+- [4.6 hash-pinned root-seeded CFG/call-edge audit](rk-v4.6-rooted-cfg-callgraph-audit.md)
 - [4.6 `CDev3632` frame, response queue, and selector audit](rk-v4.6-cdev3632-frame-and-selector-audit.md)
 - [4.6 Side LED profile, UI, and report-builder audit](rk-v4.6-side-led-static-audit.md)
 - [4.6 Side LED message-map and selection-state follow-up](rk-v4.6-side-led-message-map-follow-up.md)

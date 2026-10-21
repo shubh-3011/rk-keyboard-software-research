@@ -939,17 +939,20 @@ For current blockers and the recommended reverse-engineering order, see the
   does not prove runtime dispatch or complete map coverage; see
   `docs/rk-v4.6-mfc-message-map-inventory.md`.
 - A hash-pinned root-seeded CFG pass for that 4.6 image starts from its PE
-  entrypoint, 1,033 unique MFC handlers, and 37 proven device-family vtable
-  targets. It records 3,433 root candidates, 31,520 basic blocks, 13,652
-  unique direct-call edges, 3,019 exact IAT call sites, and 73 IAT tail-jump
-  sites. A follow-up resolves all four indirect calls in the `WM_DEVICECHANGE`
-  handler: two dispatch to a conditionally selected logger and two call
-  `SetTimer`, linking HID arrival/removal notifications to a delayed rescan.
-  The raw graph ledger records 3,537 indirect-call candidates; the follow-up
-  reclassifies four, leaving 3,533 unresolved. The graph also leaves 123
-  indirect jumps, 147 possible tail transfers, and 66.34% of raw `.text`
-  outside the selected paths. It visits 580,139 decoded instruction bytes
-  (33.66% of raw `.text`); the full function/CFG gap remains open. See
+  entrypoint, 1,033 unique MFC handlers, and proven entries from three device
+  family vtables (`CDevG5KB`, `CDevRKKB`, and RTTI-identified `CDev3632`). The
+  77 vtable rows reduce to 52 unique executable targets. The current pass
+  records 3,450 root candidates, 31,639 basic blocks, 13,677 unique direct-call
+  edges, 3,030 unique exact IAT call sites, and 73 IAT tail-jump sites. A
+  follow-up resolves all four indirect calls in the `WM_DEVICECHANGE` handler:
+  two dispatch to a conditionally selected logger and two call `SetTimer`,
+  linking HID arrival/removal notifications to a delayed rescan. The raw graph
+  ledger records 3,568 indirect-call contexts (3,564 distinct sites); the
+  follow-up reclassifies four, leaving 3,564 contexts (3,560 sites) unresolved.
+  The graph also leaves 123 indirect jumps, 147 possible tail transfers, and
+  66.20% of raw `.text` outside the selected paths. It visits 582,534 decoded
+  instruction bytes (33.80% of raw `.text`); the full function/CFG gap remains
+  open. See
   `docs/rk-v4.6-rooted-cfg-callgraph-audit.md`.
 - A separate V4.6 trace follows literal private message `0x0477` from both
   shared popup click handlers into the RTTI-attributed page maps; the screen

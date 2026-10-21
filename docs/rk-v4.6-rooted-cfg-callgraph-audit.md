@@ -18,20 +18,25 @@ The traversal roots are intentionally limited to:
 - handler addresses from 145 structurally validated MFC message-map
   candidates (1,214 entry rows; 1,033 unique handler addresses); and
 - the 37 unique executable targets among 50 `proven` entries in the audited
-  `CDevG5KB` and `CDevRKKB` vtable maps.
+  `CDevG5KB` and `CDevRKKB` vtable maps; and
+- all 27 entries in the RTTI-identified `CDev3632` vtable associated by the
+  selector with profile `0208`/M20.
 
 The MFC map scanner is
 [`audit_rk46_mfc_message_maps.py`](../scripts/audit_rk46_mfc_message_maps.py),
 SHA-256 `daa5de4f086feb16af840a8ac80b9e5f6228bdcf9ff45a0a85da027194afa4ab`.
 The CFG scanner is
 [`audit_rk46_rooted_cfg_callgraph.py`](../scripts/audit_rk46_rooted_cfg_callgraph.py),
-SHA-256 `bb42b82011458fcb52bbebd36d98de8a091d3988087cd4cb2b02b86997132497`.
-The two vtable-map inputs are hash-checked by the new scanner:
+SHA-256 `5c0a723102c59817bac022f45a4fb26b78a2f41fe7149524de307e7fb69ebd21`.
+The three vtable-map inputs are hash-checked by the scanner:
 
 | Root evidence input | SHA-256 |
 | --- | --- |
 | `rk-v4.6-cdevg5-vtable-map.csv` | `6c994b3f91c0d40e4302e9e29d2e9e5da4a0d74b82635662a579e86ae71384e1` |
 | `rk-v4.6-cdevrkbb-vtable-map.csv` | `7086073683dd51e8531ca607ab3afa9b1a7508fed4e46e964a40fd8af42bd862` |
+| `rk-v4.6-cdev3632-vtable-map.csv` | `9f51961237cee31fce47d174ce0872b66569ab87ff6bb5697771fa5d33f16f1a` |
+
+The `CDev3632` entries come from the separate [Fw=3 vtable audit](rk-v4.6-fw3-cdev3632-vtable-audit.md), which proves the table address and RTTI name from the same image hash. The row-level root input is [here](rk-v4.6-cdev3632-vtable-map.csv). Its inclusion expands the seed evidence to the `Fw=3`/M20 class; it does not prove that this physical model was connected or that a branch ran.
 
 The scan follows decoded conditional branches both ways and recursively adds
 internal direct-call targets as function-root candidates. Exact absolute IAT
@@ -43,36 +48,43 @@ register, vtable, callback, COM, or computed targets.
 
 ## Results
 
-The hash-pinned run processed 3,433 root addresses: 1,070 initial roots plus
-2,363 additional direct-call or tail-jump candidates. These are candidate
-entry addresses, **not** 3,433 validated function boundaries. It decoded
-187,221 unique instruction addresses spanning 580,139 unique bytes, or 33.66%
-of the 1,723,392 raw bytes in `.text`. The linear sweep remains the source for
-section-wide byte decoding; this percentage means only that those bytes were
-visited by the selected recursive paths.
+The hash-pinned run processed 3,450 root addresses: 1,085 initial roots plus
+2,365 additional direct-call or tail-jump candidates. The initial set contains
+77 proven vtable-entry rows that reduce to 52 unique executable targets. These
+are candidate entry addresses, **not** 3,450 validated function boundaries.
+It decoded 187,974 unique instruction addresses spanning 582,534 unique bytes,
+or 33.80% of the 1,723,392 raw bytes in `.text`. The linear sweep remains the
+source for section-wide byte decoding; this percentage means only that those
+bytes were visited by the selected recursive paths.
 
-| Static graph observation | Unique instruction/address count |
-| --- | ---: |
-| Processed root addresses | 3,433 |
-| Basic-block candidates | 31,520 |
-| Direct-call edges to executable targets | 13,652 |
-| Conditional-branch sites, both sides explored | 15,850 |
-| Exact IAT `call [address]` sites | 3,019 |
-| Exact IAT tail-jump sites | 73 |
-| Imported API names with at least one rooted transfer | 447 |
-| Unresolved indirect calls | 3,537 |
-| Unresolved indirect jumps | 123 |
-| Unconditional-jump tail-call candidates | 147 |
-| Instruction addresses attributed to multiple roots | 402 |
+| Static graph observation | Edge contexts / roots | Unique sites or addresses |
+| --- | ---: | ---: |
+| Processed root candidates | 3,450 | — |
+| Unique initial roots | 1,085 | — |
+| Proven vtable-entry rows / executable targets | 77 | 52 |
+| Decoded instruction addresses | — | 187,974 |
+| Decoded instruction bytes | — | 582,534 (33.80% of `.text`) |
+| Basic-block candidates | — | 31,639 |
+| Direct calls to executable targets | 13,723 | 13,677 |
+| Conditional-branch sites, both sides explored | 15,930 | 15,902 |
+| Exact IAT `call [address]` sites | 3,034 | 3,030 |
+| Exact IAT tail-jump sites | — | 73 |
+| Rooted IAT transfer sites, including tail jumps | — | 3,103 |
+| Imported API names with at least one rooted transfer | — | 447 |
+| Unresolved indirect-call contexts / sites before manual review | 3,568 | 3,564 |
+| Unresolved indirect-jump sites | — | 123 |
+| Unconditional-jump tail-call candidates | — | 147 |
+| Instruction addresses attributed to multiple roots | — | 402 |
 
-The generated scanner ledger labels 3,537 calls as unresolved before this
-manual follow-up. The four sites in `WM_DEVICECHANGE` are reclassified below,
-leaving 3,533 indirect-call candidates unresolved by the combined evidence.
+The generated scanner ledger labels 3,568 edge contexts (3,564 distinct
+instruction sites) as unresolved indirect calls before this manual follow-up.
+The four sites in `WM_DEVICECHANGE` are reclassified below, leaving 3,564
+contexts (3,560 distinct sites) unresolved by the combined evidence.
 
-Before the manual follow-up, the raw call ledger had 1,632 register-operand and
-1,905 memory-operand unresolved calls. Reclassifying the two `ESI` calls to
-`SetTimer` and two absolute-global logger calls leaves 1,630 register-operand
-and 1,903 memory-operand indirect-call candidates unresolved. Of the 123
+Before the manual follow-up, the raw call ledger had 1,648 register-operand and
+1,920 memory-operand unresolved call contexts. Reclassifying the two `ESI`
+calls to `SetTimer` and two absolute-global logger calls leaves 1,646
+register-operand and 1,918 memory-operand contexts unresolved. Of the 123
 unresolved indirect jumps, 9 use a register operand and 114 use a memory
 operand. Operand form does not establish whether a site is a virtual call,
 callback, table lookup, or another dispatch mechanism. The 402 multiply
@@ -135,12 +147,14 @@ From the repository root, with Python 3, `pefile`, and Capstone 5.x available:
 
 ```powershell
 python scripts/audit_rk46_rooted_cfg_callgraph.py `
-  .research/rk4_6_official_extract_20261015/app/DeviceDriver.exe `
+  ..\.research\rk4_6_official_extract_20261015\app\DeviceDriver.exe `
   --docs-dir docs --output-dir docs
 ```
 
 The scanner refuses a different executable hash and refuses changed or missing
 vtable-map CSV inputs. It regenerates the four machine-readable outputs above.
+The extracted vendor binary is kept outside the public repository; provide its
+local path in place of the example path when reproducing this audit elsewhere.
 
 ## Remaining graph gap and evidence limits
 
@@ -151,12 +165,13 @@ PDB path, but no matching PDB was available in this workspace. The MFC scan is
 bounded to its accessor/table signature and does not prove complete MFC or
 runtime dispatch coverage.
 
-The principal unresolved remainder is 3,533 register/memory indirect-call
-candidates, 123 register/memory indirect-jump sites, 147 possible tail
-transfers, and the 66.34% of `.text` raw bytes not visited from the selected
-roots. The CSV and JSON outputs preserve the scanner's pre-follow-up raw count
-of 3,537 unresolved calls; this report reclassifies the four resolved handler
-sites. That unvisited portion is not evidence of dead code or unreachable
+The principal unresolved remainder is 3,564 register/memory indirect-call
+edge contexts (3,560 distinct sites), 123 register/memory indirect-jump sites,
+147 possible tail transfers, and 1,140,858 bytes (66.20%) of `.text` not
+visited from the selected roots. The CSV and JSON outputs preserve the
+scanner's pre-follow-up raw counts of 3,568 call contexts and 3,564 distinct
+sites; this report reclassifies the four resolved handler sites. That
+unvisited portion is not evidence of dead code or unreachable
 behavior. Direct calls, IAT references, and explored branches are static
 candidates, not proof that a path runs in a particular process state. Import
 presence does not prove API success, device access, or keyboard effect.

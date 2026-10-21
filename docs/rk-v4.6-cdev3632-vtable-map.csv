@@ -1,0 +1,28 @@
+slot_index,vtable_offset,entry_va,target_va,role,status,static_evidence,scope_limit
+0,+0x00,0x005D2464,0x0040DBC0,deleting-destructor wrapper,proven,"0x0040DBC0 calls destructor 0x0040DBE0 and conditionally frees the object.",Target identity and slot are proven from the RTTI-attributed table; destruction was not executed.
+1,+0x04,0x005D2468,0x0040DD80,VID/PID and HID-capability match plus open,proven,"0x0040DD80 checks device IDs and capability fields then calls CreateFileW on a matching path.",Software-side match/open logic only; no physical device was opened.
+2,+0x08,0x005D246C,0x0040D710,zero-return method,proven,"0x0040D710 returns zero.",Exact inherited interface method name unresolved.
+3,+0x0C,0x005D2470,0x0040DC60,worker resource start,proven,"0x0040DC60 creates three event objects and starts worker 0x0040D7D0.",Thread creation is static; runtime behavior was not observed.
+4,+0x10,0x005D2474,0x0040DCE0,worker resource stop,proven,"0x0040DCE0 closes and clears event handles and signals/waits on one event.",Cleanup route only; not executed.
+5,+0x14,0x005D2478,0x00413D90,primary HID handle getter,proven,"0x00413D90 returns object field +0x04.",Static object field only; no live handle was obtained.
+6,+0x18,0x005D247C,0x0040DD50,primary handle close/reset,proven,"0x0040DD50 closes and clears the primary handle and adjacent connection fields.",Cleanup route only; not executed.
+7,+0x1C,0x005D2480,0x0040D720,zero-return method,proven,"0x0040D720 returns zero.",Exact inherited interface method name unresolved.
+8,+0x20,0x005D2484,0x0040DEB0,temporary path-open helper,proven,"0x0040DEB0 attempts CreateFileW on an object path and closes a successful temporary handle.",Return meaning and unresolved fallback helper remain unknown.
+9,+0x24,0x005D2488,0x0043E950,zero-return method,proven,"0x0043E950 returns zero.",End-user feature mapping unresolved.
+10,+0x28,0x005D248C,0x0040D710,zero-return method,proven,"0x0040D710 returns zero.",Exact inherited interface method name unresolved.
+11,+0x2C,0x005D2490,0x0040E6E0,selector 0x07 query,proven,"When +0x25C is clear this calls 0x0040E200 with selector 0x07 and stores a Boolean response field.",Selector semantics and physical effect unresolved.
+12,+0x30,0x005D2494,0x0040E600,selector 0x4A query,proven,"Calls 0x0040E200 with selector 0x4A and a two-byte response buffer.",Selector and returned-byte semantics unresolved.
+13,+0x34,0x005D2498,0x0040E6B0,selector 0x05 variable-buffer query,proven,"Calls 0x0040E9C0 with selector 0x05 and caller-supplied buffers and lengths.",Selector semantics and physical effect unresolved.
+14,+0x38,0x005D249C,0x0040E680,selector 0x06 query,proven,"Calls 0x0040E200 with selector 0x06.",Selector semantics and physical effect unresolved.
+15,+0x3C,0x005D24A0,0x0040E5D0,selector 0x44 variable-buffer query,proven,"Calls 0x0040E200 with selector 0x44 and caller-provided arguments.",Selector semantics and physical effect unresolved.
+16,+0x40,0x005D24A4,0x0044B310,one-return method,proven,"0x0044B310 returns one.",End-user feature mapping unresolved.
+17,+0x44,0x005D24A8,0x0040EE30,temporary G5 object operation,proven,"Under a busy flag allocates a temporary CDevG5KB object and invokes its vtable slot +0x44.",Exact operation purpose and nested-family semantics unresolved.
+18,+0x48,0x005D24AC,0x0040ED20,selector 0x88 writer,proven,"When +0x238 is clear calls 0x0040DF10 with selector 0x88 and caller data/length.",Data meaning and device acceptance unresolved.
+19,+0x4C,0x005D24B0,0x0040ED70,read selector 0x44 then write selector 0x04,proven,"Sleeps 30 ms, queries 0x80 bytes through slot 15, then writes the buffer using selector 0x04.",Record meaning and physical effect unresolved.
+20,+0x50,0x005D24B4,0x0040E640,selector 0x0B writer/query,proven,"Calls 0x0040DF10 with selector 0x0B, length 0x0F, caller data and an output argument.",Selector semantics and physical effect unresolved.
+21,+0x54,0x005D24B8,0x0040D740,zero-return method,proven,"0x0040D740 returns zero and discards cleanup arguments.",Exact inherited interface method name unresolved.
+22,+0x58,0x005D24BC,0x0040D740,zero-return method,proven,"0x0040D740 returns zero and discards cleanup arguments.",Exact inherited interface method name unresolved.
+23,+0x5C,0x005D24C0,0x0040D750,signal object event,proven,"Sets +0x28C and signals event +0x290 when +0x288 is nonzero.",Runtime scheduling and event consumer unresolved.
+24,+0x60,0x005D24C4,0x0040D780,reset object event,proven,"Clears +0x28C and resets event +0x290 when present.",Runtime scheduling and event consumer unresolved.
+25,+0x64,0x005D24C8,0x0040D7A0,object event-state getter,proven,"Returns object field +0x28C.",Field semantic name unresolved.
+26,+0x68,0x005D24CC,0x0043E950,zero-return method,proven,"0x0043E950 returns zero.",End-user feature mapping unresolved.
