@@ -446,9 +446,14 @@ For current blockers and the recommended reverse-engineering order, see the
   `TouchWeb` with an RK Drive URL fallback and selector-`0x12` internal
   action/command dispatch. The reconciled main API report also traces the
   direct `WritePrivateProfileStringW` call at `0x00403643` from the selected
-  locale index to a host `lang.ini` write. It also traces a shared temp-file
+  locale index to a host `lang.ini` write at the intended %LOCALAPPDATA%\RKKB\ path if the package config is selected; runtime write remains unobserved.
+   It also traces a shared temp-file
   factory through `GetTempPathW`, `GetTempFileNameW`, and delete-on-close
-  `CreateFileW`; toolbar-property-page callers pass an archive-like stream to an unresolved virtual serializer; a shared registry holds the raw handle and replacement closes the prior delete-on-close file. Normal cleanup and contents remain unknown. The visible control
+  `CreateFileW`; toolbar-property-page callers reach MFC serializer
+   `0x004A49B9`. Archive mode zero stores state-dependent toolbar/menu data
+   and flushes it through the CFile wrapper. A shared registry holds the raw
+   handle, and replacement closes the prior delete-on-close file. Exact bytes
+   and normal cleanup remain unknown. The visible control
   origin, actual browser/device outcome, text-macro identity, asset ownership,
   write success, and runtime reachability remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
@@ -499,7 +504,9 @@ For current blockers and the recommended reverse-engineering order, see the
   [`0x0477` argument-origin audit](docs/rk-v4.6-0x477-lparam2-origin-audit.md).
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
-  (`0xC8C8` bytes). The exact path base, MFC event association, and relation to
+  (`0xC8C8` bytes). If startup selects `app/Cfg.ini`, the intended path shape is
+   `%LOCALAPPDATA%\RKKB\<four-hex-value>\textmacro.dct`. Absolute `cfg.ini`
+   selection, runtime branch execution, MFC event association, and relation to
   keyboard reports remain unresolved; this is host-file persistence evidence,
   not firmware storage. See
   [`docs/rk-v4.6-textmacro-path-audit.md`](docs/rk-v4.6-textmacro-path-audit.md)
@@ -722,8 +729,8 @@ For current blockers and the recommended reverse-engineering order, see the
   aliases, callbacks, or dispatch forms. Five additional superficially
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
-  receiver's concrete type remains unknown. Twenty-five register-mediated calls
-  across five bounded batches resolve through constructor-established vptrs
+  receiver's concrete type remains unknown. Thirty-five register-mediated calls
+  across seven bounded batches resolve through constructor-established vptrs
   and slots to `USER32!DrawTextW`. These bounded slices do not exhaust the
   83-pattern candidate set or all `+0x68` calls. The helper has no direct file
   sink. This does not establish a full read-only S98 firmware export. See

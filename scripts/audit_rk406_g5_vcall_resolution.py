@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve six DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
+"""Resolve eleven DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
 
 This is a static disassembly audit. It invokes GNU objdump on a supplied PE;
 it never executes the target binary or communicates with a keyboard.
@@ -16,7 +16,21 @@ import subprocess
 import sys
 
 
-CANDIDATES = (0x00401E92, 0x00401F1E, 0x00401FB5, 0x00402059, 0x004020FD, 0x0040217A)
+RECEIVER_STACK_OFFSETS = {
+    0x00401E92: 0x48,
+    0x00401F1E: 0x48,
+    0x00401FB5: 0x48,
+    0x00402059: 0x48,
+    0x004020FD: 0x48,
+    0x0040217A: 0x48,
+    0x00421BE1: 0x58,
+    0x00421C87: 0x58,
+    0x00421D7C: 0x58,
+    0x00421E12: 0x58,
+    0x00421EA8: 0x58,
+}
+CANDIDATES = tuple(RECEIVER_STACK_OFFSETS)
+PRE_CALL_INSTRUCTION_COUNTS = {0x00421C87: 12}
 G5_WRAPPER = 0x00410700
 EXPECTED_SHA256 = "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6"
 ENTRY_RE = re.compile(r"^\s*([0-9a-fA-F]+):\s*((?:[0-9a-fA-F]{2}\s+)+)(\S.*)$")
@@ -84,6 +98,10 @@ def run() -> int:
     if constructor.get(0x00471069) != "mov dword ptr [eax+0x8],ecx" or constructor.get(0x0047106C) != "mov dword ptr [eax+0xc],ecx":
         raise RuntimeError("the local adapter constructor fields changed")
 
+    local_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x004216C7, 0x004216D0))
+    if local_constructor.get(0x004216C7) != "lea ecx,[esp+0x48]" or local_constructor.get(0x004216CB) != "call 0x47105c":
+        raise RuntimeError("the repeated-label receiver is no longer constructed at [esp+0x48] by 0x0047105C")
+
     vtable = run_objdump(args.objdump, "-s", "--start-address=0x59f374", "--stop-address=0x59f380", str(args.binary))
     if not re.search(r"59f374\s+bb104700\s+e2104700\s+1a114700", vtable.lower()):
         raise RuntimeError("vtable 0x0059F314 slot +0x68 no longer resolves to 0x0047111A")
@@ -97,7 +115,12 @@ def run() -> int:
 
     rows: list[dict[str, str]] = []
     for call_va in CANDIDATES:
-        window = nearest_window(instructions, call_va, 8, 1)
+        window = nearest_window(
+            instructions,
+            call_va,
+            PRE_CALL_INSTRUCTION_COUNTS.get(call_va, 8),
+            1,
+        )
         call_asm = by_address[call_va]
         if not re.fullmatch(r"call\s+edx", call_asm):
             raise RuntimeError(f"candidate 0x{call_va:08X} is no longer call edx: {call_asm}")
@@ -113,7 +136,9 @@ def run() -> int:
             raise RuntimeError(f"unexpected call setup at 0x{call_va:08X}: {pre_call}")
         # Every one of these sites loads slot +0x68 through the local adapter's
         # vtable, rather than through a CDevG5KB receiver.
-        if "mov eax,dword ptr [esp+0x48]" not in pre_call or "mov edx,dword ptr [eax+0x68]" not in pre_call or "lea ecx,[esp+0x48]" not in pre_call:
+        receiver_offset = RECEIVER_STACK_OFFSETS[call_va]
+        receiver_stack = f"[esp+0x{receiver_offset:x}]"
+        if f"mov eax,dword ptr {receiver_stack}" not in pre_call or "mov edx,dword ptr [eax+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:
             raise RuntimeError(f"call 0x{call_va:08X} no longer loads the local adapter receiver and its +0x68 slot")
 
         rows.append({
@@ -149,7 +174,7 @@ def run() -> int:
         if args.out:
             out.close()
     print(f"Resolved {len(rows)} +0x68 sites to USER32!DrawTextW; decoded push counts: 0x8134={push_8134_count}, 0x8135={push_8135_count}.", file=sys.stderr)
-    print("These six UI calls are not GetRealData callers; the actual command-0x88 caller remains unresolved.", file=sys.stderr)
+    print("These bounded UI calls are not GetRealData callers; the actual command-0x88 caller remains unresolved.", file=sys.stderr)
     return 0
 
 

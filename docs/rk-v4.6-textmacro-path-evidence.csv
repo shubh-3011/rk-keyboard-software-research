@@ -1,7 +1,7 @@
 evidence_id,va,role,evidence,confidence
 path_format,0x005CFD8C,UTF-16 literal,"%s%04X\\%s",proven
 path_leaf,0x005D50F0,UTF-16 literal,textmacro.dct,proven
-path_base_arg,0x006352B0,formatter argument,".data virtual-only tail; runtime value unresolved",proven
+path_base_arg,0x006352B0,formatter argument,"Static setup formats this from CSIDL_LOCAL_APPDATA and configured [OPT] appdir; if package app/Cfg.ini is selected, intended base is %LOCALAPPDATA%\RKKB\. Absolute cfg.ini source path and runtime/API success are not observed.",proven
 path_formatter,0x00575B4E,formatter wrapper,"forwards destination limits format and varargs to 0x00575846",proven
 write_helper,0x0041F540,path and file helper,"formats path; CreateFileW GENERIC_READ|GENERIC_WRITE CREATE_ALWAYS; WriteFile 0xC8C8 bytes from 0x0060D3C4",proven
 write_api,0x0041F5C1,Win32 file call,WriteFile IAT call,proven

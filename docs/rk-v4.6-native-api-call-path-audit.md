@@ -211,17 +211,48 @@ text with `%d`. The four `WritePrivateProfileStringW` arguments at
 | `lpAppName` | `L"OPT"` | Literal at `0x005D0044`, pushed immediately before the call. |
 | `lpKeyName` | `L"LangIndex"` | Literal at `0x005D0030`. |
 | `lpString` | A stack buffer formatted as decimal `%d` from `0x0062BD64` | The selected index is copied to that global; the buffer address is pushed as the value argument. |
-| `lpFileName` | A stack path buffer formatted as `"%slang.ini"`, using global prefix `0x006352B0` | The prefix's runtime contents are not recovered from this callsite. The 4.6 installer callback independently names `{localappdata}\\RKKB\\lang.ini`; see the [installer callback recovery](rk-v4.6-inno-installer-callback-recovery-2026-10-20.md). |
+| `lpFileName` | A stack path buffer formatted as `"%slang.ini"`, using global prefix `0x006352B0` | Static startup path setup derives this prefix from `CSIDL_LOCAL_APPDATA` and configured `appdir`; the package `app/Cfg.ini` has `appdir=RKKB`; if that value is read, the intended path shape is `%LOCALAPPDATA%\RKKB\lang.ini`. The absolute `cfg.ini` source path is not established. Runtime execution and write success are not observed; see the Config-derived local-appdata root section below and the [installer callback recovery](rk-v4.6-inno-installer-callback-recovery-2026-10-20.md). |
 
 This is a host-side locale preference sink. The API return value is not tested
 in the shown path, so a successful write is not established. The binary's
 direct call and the selected-index flow are statically visible, but whether
 Windows/MFC dispatch reaches `0x00403670`, and the state effects of the
 function-pointer call through global `0x00646C1C` earlier in that handler, are
-not resolved here. The 4.6 installer path corroborates the intended file
-location independently; it does not reveal the runtime contents of the
-native prefix global. This slice contains no keyboard report or device-I/O
-operation.
+not resolved here. Static setup code conditionally derives this location, and the 4.6 installer
+names the same intended destination; neither establishes that the runtime
+branch executes or that Windows creates or writes the file. This slice contains
+no keyboard report or device-I/O operation.
+
+### Config-derived local-appdata root
+
+The 4.6 package manifest identifies `app/Cfg.ini` with SHA-256
+`AB9C84BB951BCFEC99E18E0C6A77ECE913E14376265C33276E3B176C030B6CC5`. Its
+`[OPT]` section sets `appdir=RKKB`. In `DeviceDriver.exe`,
+`0x00456520` builds a `cfg.ini` path from global prefix `0x006354B8` and the
+UTF-16 `cfg.ini` literal; the prefix's runtime contents are not recovered.
+It calls `GetPrivateProfileStringW` at `0x0045693D` (IAT
+`0x005A63D8`) for `[OPT] appdir`. The default is empty; the destination is
+global wide buffer `0x00629F64` with size `0x1E`. The package entry contains
+`appdir=RKKB`, but the evidence does not establish that `0x006354B8` resolves
+to the package `app/` directory at runtime.
+
+The initialization path in `0x00448030` calls `0x00456520` and, when its
+return is nonzero, calls `0x00453220`. That path calls
+`SHGetSpecialFolderPathW` at `0x0045323F` (IAT `0x005A6534`) with
+`hWnd=null`, `CSIDL_LOCAL_APPDATA` (`0x1C`), `fCreate=0`, and a stack output
+buffer. It formats `"%s\\%s\\"` from that buffer and `0x00629F64` into global
+`0x006352B0`, then checks the result with `PathFileExistsW` (IAT
+`0x005A6558`) and calls `CreateDirectoryW` (IAT `0x005A640C`) if it does not
+exist.
+
+If the runtime reader selects package `app/Cfg.ini`, these code paths imply
+the intended prefix `%LOCALAPPDATA%\RKKB\`. The absolute config path remains
+unknown. The `SHGetSpecialFolderPathW` return value is unchecked; runtime API
+results and branch execution were not observed, and no user-local configuration
+was read. This conditional path derivation does not prove a directory was
+created. It explains how `0x006352B0` is populated; its concrete runtime value
+depends on the selected config and API success. This prefix is used in the
+downstream language and text-macro paths below.
 
 ## Host temporary-file factory
 
@@ -295,19 +326,66 @@ places the traced callers in MFC toolbar/property-page UI code. It supports a
 host UI customization context; it does not establish which command state is
 serialized or that this is a keyboard profile/configuration path.
 
-The factory constructs the archive-like object at `0x004DC3B6` with the CFile
+The factory constructs the CArchive-like object at `0x004DC3B6` with the CFile
 wrapper, mode argument `0`, buffer size `0x1000`, and null caller buffer, then
-calls the second argument object's vtable entry `+0x08` at `0x004DC3D1`.
-That call is consistent with an MFC `CObject::Serialize(CArchive&)`-style
-dispatch, but the dynamic target and its implementation are unresolved. The
-mode value `0` is consistent with MFC archive load mode; since the dynamic
-class and mode interpretation were not independently resolved in this trace,
-this is an inference only. No direct `WriteFile` call is present in the
-factory or these callers, and the unresolved virtual call does not prove a
-file write, read, or particular file contents. The temporary file is created
-with `CREATE_ALWAYS`, so the file bytes' provenance and any subsequent
-serialization behavior remain unknown. No evidence in this call chain links
-the file to keyboard reports or firmware.
+calls the second argument object's vtable entry `+0x08` at `0x004DC3D1`. The
+concrete target is now resolved for both caller forms described above:
+
+- For the page-owned object at `[this+0x3E4]`, initialization at
+  `0x00551E2B` passes runtime-class record `0x006095AC` to the class-check
+  helper at `0x0048BFBB`. The record names `CMFCMenuBar` and gives object size
+  `0xC54`; its TypeDescriptor is at `0x006095D4` (`.?AVCMFCMenuBar@@`), with
+  Complete Object Locator `0x005E863C` and vtable `0x005B64DC`. Vtable entry
+  `+0x08` is `0x004A49B9`.
+- For the cleanup form, the object at `[this+0x3E8]` is initialized as
+  `CMFCPopupMenu` (vtable `0x005B3C64`, RTTI COL `0x005E7D34`). Its vtable
+  entry `+0x19C` is `0x004E75E8`, which directly returns its embedded object
+  at `this+0x124`. That embedded object is initialized with vtable
+  `0x005B4384`, whose RTTI identifies `CMFCPopupMenuBar` (COL
+  `0x005E7F20`). Its `+0x08` entry also targets `0x004A49B9`.
+
+The serializer at `0x004A49B9` is therefore the concrete shared target for
+these dispatches. The archive constructor at `0x0048D49C` stores the supplied
+mode at archive `+0x18`; here that value is zero. In this target, the zero-mode
+branch at `0x004A4B50` takes the store path: it calls archive helpers that
+write values into the archive buffer. The earlier statement that mode `0`
+implied load mode was incorrect and is superseded by this branch and helper
+trace.
+
+### Serializer data path and known payload
+
+The following byte-content facts are direct consequences of the target's
+decoded calls and the archive helpers; runtime values and collection contents
+are still unknown:
+
+1. `0x004A49B9` first delegates to `0x0050B07F`. In the zero-mode path,
+   `0x0050B07F` writes two 32-bit values through `0x0048CFD0`: the current
+   object's `[this+0x70] & 0xF000`, then the return value of that object's
+   vtable entry `+0x154`. The meaning of the second value is unresolved.
+2. It serializes the embedded list at `[this+0xB04]` through virtual `+0x08`
+   (`0x004A4A3F`). The list helper at `0x004E88A5` writes the list count, then
+   iterates its linked entries and invokes the MFC object-serialization helper
+   at `0x004E266C` for each object. The helper writes null/object identity and
+   runtime-class metadata as applicable, then dispatches each non-null
+   object's own `Serialize` entry at `+0x08`. Thus the list's exact records
+   depend on its runtime contents and each dynamic object's serializer.
+3. It writes `[this+0xA54]` as a 32-bit value via `0x0048CFD0`.
+4. It obtains a Unicode window caption from `[this+0x20]` through the
+   `GetWindowTextLengthW` / `GetWindowTextW` imports when no cached string is
+   present, then serializes that CString via `0x00477F69`. That helper writes
+   the wide-string marker (`0xFF`, then `0xFFFE`), a CArchive count encoding
+   for the character length, and `2 * length` bytes of UTF-16 text. The actual
+   caption and length depend on runtime window state.
+5. It writes `[this+0x10C]` as a 32-bit value via `0x0048CFD0`.
+
+After the virtual call, the factory calls `0x0048CDAB` to flush the archive
+buffer. Its zero-mode path passes the buffered data and byte count through the
+wrapped CFile's virtual file operations. This establishes that the serializer
+populates and flushes bytes to the temporary file on this path; it does not
+establish the exact complete byte stream because the list objects, virtual
+return value, fields, and caption are state-dependent. The file is host-side
+MFC toolbar/menu state in the traced path. No evidence in this call chain links
+it to keyboard reports or firmware.
 
 On the successful normal path, the temporary CFile wrapper is constructed
 with its close-on-destruction field cleared at `0x004847D6`; its destructor
@@ -373,9 +451,13 @@ full UI-to-playback path remain unresolved; see the
 
 **Proven statically:** this hash imports the listed Windows APIs; the CSV maps
 decoded direct IAT calls, IAT jumps, and relative calls to detected import
-thunks. Independent 4.6 code also contains a SetupAPI/HID discovery/open path,
-feature-report callsites, local profile keys and Side LED assets, and local
-`textmacro.dct` read/write paths.
+thunks. Given the package `appdir` value, native setup code implies this
+intended `0x006352B0` prefix is `%LOCALAPPDATA%\RKKB\` if that package config
+is selected. The toolbar temporary-file path reaches the concrete MFC
+serializer `0x004A49B9`, and its archive
+buffer is flushed through the wrapped CFile. Independent 4.6 code contains a
+SetupAPI/HID discovery/open path, feature-report callsites, local profile keys
+and Side LED assets, and local `textmacro.dct` read/write paths.
 
 **Inferred:** the setup path is intended to enumerate HID interfaces and
 inspect report capabilities; Side LED keys/assets support a Side LED UI or

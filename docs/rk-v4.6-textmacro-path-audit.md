@@ -24,7 +24,13 @@ pass these values to the internal bounded wide-string formatter at
 therefore describes a wide path assembled from a base string, a four-digit
 hexadecimal value, a backslash, and `textmacro.dct`. The base pointer is
 `0x006352B0`, which lies in the `.data` virtual-only tail and has no initialized
-bytes in the file; its runtime value and exact directory are unresolved.
+bytes in the file. Static setup code at `0x00453220` formats this global from
+`CSIDL_LOCAL_APPDATA` and the configured `appdir`. The package's
+`app/Cfg.ini` contains `[OPT] appdir=RKKB`. If the startup reader selects that
+package config, the intended path shape is
+`%LOCALAPPDATA%\RKKB\<four-hex-value>\textmacro.dct`. The runtime call,
+absolute config path, actual per-user directory, and configured value on any
+installed system were not observed.
 
 At `0x0041F59A`, `CreateFileW` is called with `GENERIC_READ | GENERIC_WRITE`,
 share mode `3`, `CREATE_ALWAYS`, and `FILE_ATTRIBUTE_NORMAL`. If the handle is
@@ -99,9 +105,9 @@ event/control association is not recovered.
 
 ## Unresolved
 
-- Runtime value and source of the base path at `0x006352B0`, exact resolved
-  path, and whether it is rooted under the application, user profile, or a
-  model-specific directory.
+- Which absolute `cfg.ini` path and `appdir` value the runtime selects,
+  whether the startup path builder executes successfully, and the concrete
+  per-user path at runtime.
 - MFC message-map/command-ID or vtable mapping for `0x00421350`, `0x00459F50`,
   `0x0045C620`, and `0x0046C211`; consequently the exact UI events, lifecycle
   timing, and user interaction that cause load/save are unknown.
