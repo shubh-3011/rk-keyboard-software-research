@@ -840,12 +840,19 @@ For current blockers and the recommended reverse-engineering order, see the
   builder selects `tc_eft*` when `Fw` is nonzero, otherwise `tc_led_mode*`
   when `RGBKb` is nonzero, otherwise `tc_led*`; `ShowSleepTime` is a separate
   option. `LedMask` defaults to zero and set bits skip the candidate-control
-  construction path. The generated 4,536-row crosswalk covers all 189
-  installed profiles and distinguishes mask-filtered candidates from labels
-  absent in the selected dictionary. It does not establish widget visibility,
-  event handling, or a command mapping. See
+  construction path. Each locale's generated 4,536-row candidate crosswalk
+  covers all 189 installed profiles and distinguishes mask-filtered
+  candidates from labels absent in the selected dictionary. It does not
+  establish widget visibility, event handling, or a command mapping. A static
+  join covers 22,680 locale/profile/slot rows across the five installed
+  dictionaries (`en`, `Japanese`, `Korean`, `sc`, `tw`): 18,825 carry
+  same-numbered six-cell `LedOptN` tuples and 3,855 lack that key. Tuple-cell
+  and firmware-effect meanings remain unresolved. See
   `docs/rk-led-control-candidates-4.06.md` and
-  `docs/rk-led-control-candidates-4.06-en.csv`. A separate
+  `docs/rk-led-control-candidates-4.06-en.csv`, plus the
+  [label/profile tuple report](docs/rk-406-led-label-profile-tuple-crosswalk.md)
+  and [all-locales generated crosswalk](docs/rk-406-led-label-profile-tuple-crosswalk-4.06-all-locales.csv).
+  A separate
   label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language
   selector and the tray-menu Configuration/Exit command origins. The tray

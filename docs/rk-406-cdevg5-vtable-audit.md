@@ -172,21 +172,32 @@ admits ordinary data/function-pointer loads. The six calls at `0x00401E92` throu
 `0x0040217A` and the adapter call at `0x004051AC` are separately resolved
 above; none uses the G5 vtable.
 
-Three two-argument sites looked superficially compatible with a buffer and
-length. All pass a 16-byte rectangle and zero as the second argument:
+Four two-argument sites looked superficially compatible with a buffer and
+length. Each passes a pointer to a 16-byte rectangle and zero as the second
+argument:
 
 | Call instruction | Static argument and subsequent-use evidence |
 | --- | --- |
 | `0x00475808` | Passes `&RECT` at `[ebp-0x20]` and `edi=0`; the return feeds the geometry helper at `0x00473357`. |
 | `0x0048CD57` | Passes `&RECT` at `[ebp-0x14]` and zero; the routine continues with window/rectangle geometry calculations. |
 | `0x0048EA3D` | Passes `&RECT` at `[ebp-0x10]` and zero to an object stored at parent offset `+0x418`; the rectangle is derived from parent/child layout offsets. |
+| `0x0049292A` | Loads the receiver from `[ebx+0xB0]`, passes `&[ebp-0x60]` and `edi=0`; after the call, the four rectangle fields feed geometry calculations and a positioning helper. |
 
 At these sites the second stack argument is zero, matching a zero requested
 length if interpreted using the G5 wrapper ABI. The G5 helper rejects
 non-positive lengths before constructing its command-`0x88` request, so these
 calls cannot establish a byte read even under that hypothetical dispatch.
-Their receivers are not statically identified as `CDevG5KB`; the geometry
-data flow further argues against treating them as firmware-read callers.
+For `0x0049292A`, the function zeroes `EDI` at `0x004927FE`; the receiver is the
+object pointer stored at `[ebx+0xB0]`. The 16-byte local at `[ebp-0x60]` is
+copied from four existing coordinates at `[ebp-0x1C..-0x10]` before the
+virtual call. After it returns, the same `[ebx+0xB0]` object is queried through
+direct helper `0x0047882E` for style bits; the code adjusts the rectangle's
+edges, derives width/height, and passes the resulting coordinates to helper
+`0x00478BDE`. This static producer/use chain identifies this candidate as a
+window-geometry path. It does not recover the receiver's concrete runtime
+class, and it does not prove that every other `+0x68` receiver is unrelated to
+G5. The other three sites also have rectangle/layout data flow, and their
+receivers are not statically identified as `CDevG5KB`.
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.
 

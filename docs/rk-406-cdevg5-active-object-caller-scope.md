@@ -81,6 +81,26 @@ establish the concrete object family chosen at runtime. The instruction at
 also mean this path does not close the `GetRealData` caller/buffer-consumer
 question.
 
+## Direct active-root cross-check for `+0x68`
+
+The hash-pinned [active-profile Apply follow-up](rk-406-active-profile-apply-dispatch-follow-up.md)
+enumerates 21 direct read/compare references and five stores to
+`0x0062B380`; its verifier checks each listed instruction's bytes against the
+same 4.06 image. I rechecked the 21 read/compare sites for a local `+0x68`
+method load. For each site, the bounded interval was the decoded linear
+instruction sequence beginning at that reference and ending at the first
+decoded `RET`. No non-stack `[register+0x68]` load appeared in those intervals,
+and the full decoded `.text` contains no direct call to `0x00410700`.
+
+This is a bounded cross-check, not recovered control-flow graphs or proof that
+all aliases of the active object were found. A branch that skips a linear
+`RET`, a pointer passed to another routine, or an alternate indirect-call
+shape may escape this interval check. Combined with the separately documented
+decoded-callsite sweep, it adds no attributable `CDevG5KB +0x68` caller and no
+return-buffer consumer. The `0x88` helper's caller and downstream use of its
+copied bytes therefore remain unresolved; a complete firmware export is not
+established.
+
 ## Negative-result boundary
 
 This is a bounded caller-scope result. The search used decoded `.text` from
