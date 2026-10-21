@@ -343,6 +343,31 @@ G5 search; they are not device data reads. They do not identify a caller of
 the loose `+0x68` candidate set. Runtime reachability and displayed strings
 remain unobserved.
 
+### Next five register-mediated candidates: repeated text layout
+
+The next bounded batch is five calls in the UI routine containing the
+`0x0041E1xx` block. At `0x0041E130`, the code passes local `[esp+0x38]` to
+constructor `0x0047105C`; the constructor establishes vptr `0x0059F314`. At
+each call below, four arguments have been pushed, so receiver `[esp+0x48]`
+and `ECX` refer back to that same local. The dispatch loads slot `+0x68` at
+`0x0059F37C`, whose value is `0x0047111A`; the adapter forwards the local
+object's `this+4` field and four arguments through IAT `0x0059E6B8` to
+`USER32!DrawTextW`, then returns with `ret 0x10`.
+
+| Slot load / call instruction | Argument producers | Immediate result use / resolution |
+| --- | --- | --- |
+| `0x0041E32B` / `0x0041E332` | CString pointer from `[esp+0x10]`, count from `[text-0xC]`, local rectangle at `[esp+0x18]`, and flags `0x8115`. | The next instructions update exception-cleanup state and reload the local CString; the drawing return is overwritten without being used as a buffer or length. Resolved `DrawTextW`. |
+| `0x0041E401` / `0x0041E408` | CString pointer at `[esp+0x10]`, staged from global `0x0062B5F8` through the preceding local-string helpers; count from `[text-0xC]`, local rectangle at `[esp+0x18]`, and flags `0x8114`. | The next instructions update cleanup state and reload the local CString; no response-buffer use follows. Resolved `DrawTextW`. |
+| `0x0041E4C6` / `0x0041E4CD` | CString pointer at `[esp+0x10]` produced by the local formatting helper, count from `[text-0xC]`, local rectangle at `[esp+0x18]`, and flags `0x8114`. | The next instructions update cleanup state and reload the local CString; the return is not consumed as a buffer or length. Resolved `DrawTextW`. |
+| `0x0041E58F` / `0x0041E596` | CString pointer at `[esp+0x10]`, count from `[text-0xC]`, local rectangle at `[esp+0x18]`, and flags `0x8114`. | The next instructions update cleanup state and reload the local CString; no output-data use follows. Resolved `DrawTextW`. |
+| `0x0041E658` / `0x0041E65F` | CString pointer at `[esp+0x10]`, count from `[text-0xC]`, local rectangle at `[esp+0x18]`, and flags `0x8114`. | The next instructions update cleanup state and reload the local CString; the drawing return is not read as data. Resolved `DrawTextW`. |
+
+These five slot-load/call pairs resolve to the same local GDI text adapter,
+not the `CDevG5KB` `+0x68` wrapper. They are additional false positives for
+the G5 caller search; the command-`0x88` caller and downstream response
+consumer remain unresolved, and this batch does not exhaust the loose
+candidate set or prove runtime reachability.
+
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.
 

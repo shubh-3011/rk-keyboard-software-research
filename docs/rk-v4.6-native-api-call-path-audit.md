@@ -258,11 +258,68 @@ serialized content were not traced in this slice.
 
 This is proven host-side temporary-file behavior with an `AFX` filename
 prefix. The API bytes do not identify a keyboard settings file or firmware
-readback path. The runtime directory, successful API execution, the virtual
-operation's format, and feature-level callers remain unresolved. The
-`GetTempPathW` and `GetTempFileNameW` API results are not explicitly checked
-in the shown sequence; only the `CreateFileW` invalid-handle result is
-tested.
+readback path. The runtime directory and successful API execution remain
+unresolved. The `GetTempPathW` and `GetTempFileNameW` API results are not
+explicitly checked in the shown sequence; only the `CreateFileW`
+invalid-handle result is tested.
+
+### Recovered caller and stream path
+
+The direct caller edges in `rk-v4.6-rooted-cfg-edges.csv` identify these
+callsites into `0x004DC2CC`:
+
+- `0x00551405` is in `0x00551398` (`WM_DESTROY`) and `0x00551C13` is in
+  `0x00551BD3` (`WM_COMMAND`, ID `0x40ED`). At each site `ECX` is
+  `0x0061DD54`, the first stack argument is the page's `[this+0x3F4]`, and
+  the second is `[this+0x3E4]`. The factory's virtual call at `+0x08`
+  therefore receives the archive-like stream through the object at
+  `[this+0x3E4]`.
+- `0x0055193D` and `0x005519F9` are in `0x0055181F` (`WM_COMMAND`, ID
+  `0x40F0`). `ECX` is again `0x0061DD54`; the first stack arguments are
+  `[EDI+0x68]` and `EDI`, respectively, while the second argument is
+  `[this+0x3E4]` at both sites. The stream is passed to that same page-owned
+  object.
+- `0x00551390` is in helper `0x0055133E`. Its first argument is
+  `[[this+0x3E8]+0xDBC]`; its second is the return value of virtual method
+  `+0x19C` on the object at `[this+0x3E8]`. The helper is reached from
+  `0x00551398` (`WM_DESTROY`, call at `0x00551431`), `0x0055145A`
+  (`WM_COMMAND`, ID `0x40EE`, call at `0x00551497`), and callback-like
+  function `0x00551597` (call at `0x005515B6`). The latter is reached from
+  `0x004E61A2` at `0x004E635A` when its `[ESI+0x11C]` field is nonzero; its
+  precise higher-level trigger is not mapped here.
+
+The MFC message map names the owner for the mapped entries as
+`.?AVCMFCToolBarsMenuPropertyPage@@` (`rk-v4.6-mfc-message-map-entries.csv`).
+Together with the toolbar-customization resource strings in this image, this
+places the traced callers in MFC toolbar/property-page UI code. It supports a
+host UI customization context; it does not establish which command state is
+serialized or that this is a keyboard profile/configuration path.
+
+The factory constructs the archive-like object at `0x004DC3B6` with the CFile
+wrapper, mode argument `0`, buffer size `0x1000`, and null caller buffer, then
+calls the second argument object's vtable entry `+0x08` at `0x004DC3D1`.
+That call is consistent with an MFC `CObject::Serialize(CArchive&)`-style
+dispatch, but the dynamic target and its implementation are unresolved. The
+mode value `0` is consistent with MFC archive load mode; since the dynamic
+class and mode interpretation were not independently resolved in this trace,
+this is an inference only. No direct `WriteFile` call is present in the
+factory or these callers, and the unresolved virtual call does not prove a
+file write, read, or particular file contents. The temporary file is created
+with `CREATE_ALWAYS`, so the file bytes' provenance and any subsequent
+serialization behavior remain unknown. No evidence in this call chain links
+the file to keyboard reports or firmware.
+
+On the successful normal path, the temporary CFile wrapper is constructed
+with its close-on-destruction field cleared at `0x004847D6`; its destructor
+path does not close the raw handle. The factory associates that handle with
+the first argument in the `0x0061DD54` object's registry via `0x004A232E` and
+returns success. A later factory call for the same key retrieves and closes
+the prior handle at `0x004DC30C` before replacement. The file's
+`FILE_FLAG_DELETE_ON_CLOSE` means it is removed when its raw handle is closed.
+Factory exception-unwind paths also close the open handle at `0x004DC436`,
+`0x004DC454`, and `0x004DC472`. The eventual normal-path registry cleanup or
+close site was not traced, so persistence beyond those observed paths is
+unknown.
 
 ## Side LED and text-macro references
 

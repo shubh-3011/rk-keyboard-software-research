@@ -309,7 +309,7 @@ For current blockers and the recommended reverse-engineering order, see the
   96 assets, including image dimensions, formats, and modes. The full installed
   manifest was rechecked with no mismatches; the recorded 4.6 delta adds two
   Side LED images. A static loader trace confirms GDI+ file-loading paths for
-  named backgrounds and control groups, model-art fallback behavior, and three
+  named backgrounds and control groups, model-art fallback behavior. A profile-art caller checks `Dev\\%04X\\<name>` paths and selects `kbled.png` or attempts `keycfg.png` then falls back to `keyimg.png`. The installed profile directories contain 102 `kbled.png`, 102 `keyimg.png`, and no `keycfg.png`; runtime branch choice and displayed pixels remain unknown. The trace also finds three
   `power_*` paths absent from both package manifests. It found no direct
   `mak.skn` consumer. A package-wide scan of all five installed PEs and the
   520-byte blob found no identifiable format signature or direct consumer;
@@ -448,7 +448,7 @@ For current blockers and the recommended reverse-engineering order, see the
   direct `WritePrivateProfileStringW` call at `0x00403643` from the selected
   locale index to a host `lang.ini` write. It also traces a shared temp-file
   factory through `GetTempPathW`, `GetTempFileNameW`, and delete-on-close
-  `CreateFileW`; later caller and contents remain unknown. The visible control
+  `CreateFileW`; toolbar-property-page callers pass an archive-like stream to an unresolved virtual serializer; a shared registry holds the raw handle and replacement closes the prior delete-on-close file. Normal cleanup and contents remain unknown. The visible control
   origin, actual browser/device outcome, text-macro identity, asset ownership,
   write success, and runtime reachability remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
@@ -722,8 +722,8 @@ For current blockers and the recommended reverse-engineering order, see the
   aliases, callbacks, or dispatch forms. Five additional superficially
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
-  receiver's concrete type remains unknown. Twenty register-mediated calls
-  across four bounded batches resolve through constructor-established vptrs
+  receiver's concrete type remains unknown. Twenty-five register-mediated calls
+  across five bounded batches resolve through constructor-established vptrs
   and slots to `USER32!DrawTextW`. These bounded slices do not exhaust the
   83-pattern candidate set or all `+0x68` calls. The helper has no direct file
   sink. This does not establish a full read-only S98 firmware export. See
