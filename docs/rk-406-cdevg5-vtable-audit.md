@@ -314,6 +314,35 @@ does not identify a caller of `0x00410700` or a consumer of its response
 buffer. The dynamic reachability and actual displayed strings remain
 unobserved.
 
+### Additional register-mediated calls: same local text adapter
+
+The following five dispatches are further members of the bounded
+register-mediated candidate set. Three occur later in the `0x00408A20`
+routine; two occur in the `0x0041C190` routine already traced above. The
+`0x00408A20` routine constructs a local object at `[esp+0x3C]` with
+`0x0047105C` at `0x00408A8B`. At the three later calls, the same object is
+addressed through `[esp+0x4C]`/`ECX`; the four pushed arguments shift its
+original stack location by `0x10`. The constructor installs vptr
+`0x0059F314`, whose `+0x68` slot at `0x0059F37C` points to `0x0047111A`.
+That adapter forwards its `this+4` field and the four stack arguments through
+IAT `0x0059E6B8` to `USER32!DrawTextW` and returns with `ret 0x10`. The two
+`0x0041C190` sites use the same constructor-established local adapter and
+slot chain documented above.
+
+| Call instruction | Argument producers | Immediate result use / resolution |
+| --- | --- | --- |
+| `0x00409022` | CString text at `[0x0062B780]`, its count at `[text-0xC]`, a local rectangle, and flags `0x8134`. | Subsequent code stages another layout item and overwrites `EAX`; no buffer/length is read from the result. Resolved `DrawTextW`. |
+| `0x004090F4` | CString text at `[0x0062B740]`, its count at `[text-0xC]`, a local rectangle, and flags `0x8134`. | The next instructions load a separate object field into `EAX`; the drawing return is not consumed. Resolved `DrawTextW`. |
+| `0x00409176` | CString text at `[0x0062B77C]`, its count at `[text-0xC]`, a local rectangle, and flags `0x8134`. | The next instruction zeroes `ESI`; no buffer or length is read from the drawing result. Resolved `DrawTextW`. |
+| `0x0041C91E` | Text from the local CString/table helper, count from `[text-0xC]`, a local rectangle derived from `[EDI-0x10]`, and flags `0x8135`. | The next instructions update cleanup state and load local data independently; no result-buffer use follows. Resolved `DrawTextW`. |
+| `0x0041CBA8` | Text at `[esp+0x10]` from the local formatting helper, count from `[text-0xC]`, a local rectangle, and flags `0x8134`. | The next instructions update cleanup state and reload local data; the drawing return is not read. Resolved `DrawTextW`. |
+
+These five receiver/slot/ABI traces add false-positive resolutions to the
+G5 search; they are not device data reads. They do not identify a caller of
+`0x00410700`, a consumer of its response buffer, or all remaining cases in
+the loose `+0x68` candidate set. Runtime reachability and displayed strings
+remain unobserved.
+
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.
 

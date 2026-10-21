@@ -223,6 +223,47 @@ location independently; it does not reveal the runtime contents of the
 native prefix global. This slice contains no keyboard report or device-I/O
 operation.
 
+## Host temporary-file factory
+
+The same hash-pinned image has a temporary-file factory at `0x004DC2CC`,
+called directly from multiple later code locations. Its path construction and
+file open are explicit in this routine:
+
+1. `GetTempPathW` is called at `0x004DC32D` (IAT `0x005A62E0`) with a
+   `0x104`-character stack buffer returned by the string helper and a
+   `0x104` length. The API return value is not tested in the recovered
+   sequence.
+2. `GetTempFileNameW` is called at `0x004DC35E` (IAT `0x005A62E4`) with that
+   temporary-directory string, the `L"AFX"` prefix at `0x005B2FF0`, unique
+   value zero, and a second `0x104`-character stack buffer. Its API return is
+   not tested before the output string is passed onward.
+3. `CreateFileW` is called at `0x004DC380` (IAT `0x005A6474`) for that
+   generated path with desired access `0xC0000000` (read/write), share mode
+   zero, null security attributes, `CREATE_ALWAYS` (`2`), flags
+   `0x04000100` (`FILE_ATTRIBUTE_TEMPORARY` plus
+   `FILE_FLAG_DELETE_ON_CLOSE`), and a null template handle. This return is
+   checked against `INVALID_HANDLE_VALUE`; failure clears the temporary
+   string state and returns zero.
+
+On the successful open path, the handle is wrapped at `0x004847D6`; a
+`0x1000`-byte buffer and an internal stream-like object are then prepared.
+The routine invokes a virtual method at offset `+0x08` on the caller-supplied
+object with the stream-like pointer as its argument, releases the temporary
+wrapper objects, and stores the raw handle into caller-owned state through
+`0x004A232E`. Exception-unwind cleanup blocks at `0x004DC42B`, `0x004DC449`,
+and `0x004DC467` call `CloseHandle` (IAT `0x005A64B8`) on the opened handle
+and clear the associated state. On the normal return path the handle is
+transferred to caller-owned state; its later close site and the actual
+serialized content were not traced in this slice.
+
+This is proven host-side temporary-file behavior with an `AFX` filename
+prefix. The API bytes do not identify a keyboard settings file or firmware
+readback path. The runtime directory, successful API execution, the virtual
+operation's format, and feature-level callers remain unresolved. The
+`GetTempPathW` and `GetTempFileNameW` API results are not explicitly checked
+in the shown sequence; only the `CreateFileW` invalid-handle result is
+tested.
+
 ## Side LED and text-macro references
 
 ### Proven static references

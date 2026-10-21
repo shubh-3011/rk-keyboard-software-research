@@ -446,9 +446,11 @@ For current blockers and the recommended reverse-engineering order, see the
   `TouchWeb` with an RK Drive URL fallback and selector-`0x12` internal
   action/command dispatch. The reconciled main API report also traces the
   direct `WritePrivateProfileStringW` call at `0x00403643` from the selected
-  locale index to a host `lang.ini` write. The visible control origin, actual
-  browser/device outcome, text-macro identity, asset ownership, write success,
-  and runtime reachability remain open;
+  locale index to a host `lang.ini` write. It also traces a shared temp-file
+  factory through `GetTempPathW`, `GetTempFileNameW`, and delete-on-close
+  `CreateFileW`; later caller and contents remain unknown. The visible control
+  origin, actual browser/device outcome, text-macro identity, asset ownership,
+  write success, and runtime reachability remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
   [`docs/rk-v4.6-native-api-feature-follow-up.md`](docs/rk-v4.6-native-api-feature-follow-up.md).
 - A separate 4.6 hook pass maps four thread-scoped `SetWindowsHookExW`
@@ -720,16 +722,22 @@ For current blockers and the recommended reverse-engineering order, see the
   aliases, callbacks, or dispatch forms. Five additional superficially
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
-  receiver's concrete type remains unknown. A separate five-call register-
-  mediated batch is resolved through a constructor-established vptr and slot
-  to `USER32!DrawTextW`. These bounded slices do not exhaust the 83-pattern
-  candidate set or all `+0x68` calls. The helper has no direct file sink.
-  This does not establish a full read-only S98 firmware export. See
+  receiver's concrete type remains unknown. Twenty register-mediated calls
+  across four bounded batches resolve through constructor-established vptrs
+  and slots to `USER32!DrawTextW`. These bounded slices do not exhaust the
+  83-pattern candidate set or all `+0x68` calls. The helper has no direct file
+  sink. This does not establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
   and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
   [call-resolution ledger](docs/rk-406-vtable-68-resolution.csv),
   [static checker](scripts/audit_rk406_g5_vcall_resolution.py), and
   [active-object caller-scope follow-up](docs/rk-406-cdevg5-active-object-caller-scope.md).
+- A separate 4.6 G5 command-`0x88` trace proves a request write followed by a
+  conditional feature read and chunk copies into caller-owned memory. The
+  77-site virtual-call scan and three generic tail relays do not attribute a
+  caller or consumer; no full image range or file sink is established, and
+  the response meaning remains unknown. See
+  [the command-`0x88` response/sink audit](docs/rk-v4.6-g5-command-0x88-response-sink-audit.md).
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
