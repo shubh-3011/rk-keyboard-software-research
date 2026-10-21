@@ -70,6 +70,16 @@ DRAW_TEXT_RESOLVED = {
     0x0042205D,
     0x004269DC,
     0x00426A61,
+    0x00426AE6,
+    0x00426B61,
+    0x00426BED,
+    0x00426C68,
+    0x00426CE3,
+    0x00426D5E,
+    0x00426F54,
+    0x00426FC7,
+    0x00433DDA,
+    0x00433E83,
     0x0043526A,
     0x0044AE80,
 }
@@ -135,8 +145,8 @@ def run() -> int:
         raise RuntimeError(f"expected 90 unique pattern matches, found {len(candidates)}")
     if not EARLIER_RESOLVED <= call_vas:
         raise RuntimeError("the seven earlier-resolved calls are not all present in the scan")
-    if len(DRAW_TEXT_RESOLVED) != 40 or not DRAW_TEXT_RESOLVED <= call_vas:
-        raise RuntimeError("the 40 documented DrawTextW calls do not match the scan")
+    if len(DRAW_TEXT_RESOLVED) != 50 or not DRAW_TEXT_RESOLVED <= call_vas:
+        raise RuntimeError("the 50 documented DrawTextW calls do not match the scan")
     if EARLIER_RESOLVED & DRAW_TEXT_RESOLVED:
         raise RuntimeError("earlier-resolved and later DrawTextW classifications overlap")
 
@@ -153,8 +163,8 @@ def run() -> int:
             row["evidence"] = "receiver/target provenance has not been established"
 
     unclassified = sum(row["classification"] == "unclassified candidate pattern" for row in candidates)
-    if unclassified != 43:
-        raise RuntimeError(f"expected 43 unclassified pattern matches, found {unclassified}")
+    if unclassified != 33:
+        raise RuntimeError(f"expected 33 unclassified pattern matches, found {unclassified}")
 
     fields = [
         "slot_load_va",
@@ -174,8 +184,8 @@ def run() -> int:
             out.close()
     print(
         "Scanned 90 register-mediated +0x68 patterns in .text: "
-        "7 previously resolved, 40 documented DrawTextW false positives, "
-        "43 unclassified.",
+        "7 previously resolved, 50 documented DrawTextW false positives, "
+        "33 unclassified.",
         file=sys.stderr,
     )
     return 0

@@ -118,9 +118,9 @@ and the four-argument `DrawTextW` ABI, while the concrete G5 wrapper at
 `0x00410700` returns with `ret 8` and calls helper `0x0040FF60` at
 `0x00410718`. A caller of the G5 method remains unresolved.
 
-The row-level evidence for the original six calls and the ten later calls
+The row-level evidence for the original six calls and the twenty later calls
 verified by the hash-pinned checker is in the
-[`16-call resolution ledger`](rk-406-vtable-68-resolution.csv).
+[`26-call resolution ledger`](rk-406-vtable-68-resolution.csv).
 The hash-pinned static checker is
 [`audit_rk406_g5_vcall_resolution.py`](../scripts/audit_rk406_g5_vcall_resolution.py);
 run it against the same `DeviceDriver.exe` to verify the constructor, vtable
@@ -169,8 +169,8 @@ scan of `.text` finds 90 pairs where code loads `[register+0x68]` into a
 register and calls through it within the next three decoded instructions.
 Seven calls (the six sites at `0x00401E92` through `0x0040217A` and
 `0x004051AC`) were already resolved in the preceding sections, leaving 83
-additional candidates. Of those, 40 are now traced to constructor-established
-local text adapters that call `USER32!DrawTextW`; the other 43 remain
+additional candidates. Of those, 50 are now traced to constructor-established
+local text adapters that call `USER32!DrawTextW`; the other 33 remain
 unclassified. These are candidate dispatch shapes, not a count of proven
 `CDevG5KB` calls: `+0x68` is common across unrelated interfaces, and the
 register-mediated pattern also admits ordinary data/function-pointer loads.
@@ -480,10 +480,63 @@ to `USER32.dll!DrawTextW`, then returns with `ret 0x10`, unlike the G5
 | `0x00426A5A` / `0x00426A61` | Text pointer from `0x0062B558`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | The next instructions load a separate `[ESI+0xE88]` value and overwrite `EAX`; the result is not consumed. Resolved `DrawTextW`. |
 
 These five receiver/slot/ABI chains resolve to the local GDI text adapter.
-The bounded static scan now resolves forty of the 83 additional loose
-register-mediated candidates; the other 43 are not classified by these
+The bounded static scan now resolves 50 of the 83 additional loose
+register-mediated candidates; the other 33 are not classified by these
 batches. This does not prove reachability or identify the G5 `0x88` caller or
 its response consumer.
+
+### Next five register-mediated candidates: repeated property-page labels
+
+The next five pairs in the candidate census are `0x00426ADF`/`0x00426AE6`,
+`0x00426B5A`/`0x00426B61`, `0x00426BE6`/`0x00426BED`,
+`0x00426C61`/`0x00426C68`, and `0x00426CDC`/`0x00426CE3`. Each is inside the
+routine whose local adapter is constructed at `0x004267E8` from
+`[esp+0x34]`. Four pushed arguments shift that receiver to `[esp+0x44]`; the
+callers load its vptr, select slot `+0x68`, set `ECX` to the same receiver,
+and call the target. The constructor-established vptr `0x0059F314` has
+`0x0047111A` at `+0x68`; that adapter calls `USER32.dll!DrawTextW` through
+IAT `0x0059E6B8` and returns with `ret 0x10`.
+
+| Slot load / call instruction | Argument producers | Immediate result use / resolution |
+| --- | --- | --- |
+| `0x00426ADF` / `0x00426AE6` | Text pointer from `0x0062B560`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | Next code loads `[ESI+0x14D0]` into `ECX`; later `lea EAX,[esp+0x14]` overwrites the draw result. Resolved `DrawTextW`. |
+| `0x00426B5A` / `0x00426B61` | Text pointer from `0x0062B584`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | The next instruction reloads `[ESI+0x1654]` into `EAX`; the result is not consumed. Resolved `DrawTextW`. |
+| `0x00426BE6` / `0x00426BED` | Text pointer from `0x0062B588`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | Next code loads `[ESI+0x17D8]` into `ECX`; later `lea EAX,[esp+0x14]` overwrites the draw result. Resolved `DrawTextW`. |
+| `0x00426C61` / `0x00426C68` | Text pointer from `0x0062B5AC`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | Next code loads `[ESI+0x2884]` into `ECX`; later `lea EAX,[esp+0x14]` overwrites the draw result. Resolved `DrawTextW`. |
+| `0x00426CDC` / `0x00426CE3` | Text pointer from `0x0062B55C`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | The next `lea` overwrites `EAX`; the drawing return is not consumed. Resolved `DrawTextW`. |
+
+These five slot-load/call pairs resolve to the same local GDI text adapter.
+They bring the documented false-positive total to 50 of 83 additional loose
+patterns; 33 remain unclassified in the census. They do not establish a G5
+`0x88` caller, returned-data meaning, runtime reachability, or displayed UI.
+
+### Next five register-mediated candidates: mixed label helpers
+
+The next five pairs in ascending census order are
+`0x00426D57`/`0x00426D5E`, `0x00426F4D`/`0x00426F54`,
+`0x00426FC0`/`0x00426FC7`, `0x00433DD3`/`0x00433DDA`, and
+`0x00433E7C`/`0x00433E83`. The first three use the adapter local constructed
+at `0x004267E8` from `[esp+0x34]`; four pushed arguments shift it to
+`[esp+0x44]` at each call. The last two use the local constructed at
+`0x00433ABB` from `[esp+0x28]`; four pushes shift it to `[esp+0x38]`. At
+those latter sites, the routine loads the local's first DWORD into `EDX`,
+loads `[EDX+0x68]` into `EAX`, and calls through `EAX` with `ECX` set to the
+local's address. Both constructor paths use `0x0047105C`, which writes vptr
+`0x0059F314`; slot `+0x68` is `0x0047111A`, the wrapper to
+`USER32.dll!DrawTextW` through IAT `0x0059E6B8` (`ret 0x10`).
+
+| Slot load / call instruction | Argument producers | Immediate result use / resolution |
+| --- | --- | --- |
+| `0x00426D57` / `0x00426D5E` | Text pointer from `0x0062B568`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | The next instructions load `[ESI+0x2B8C]` and overwrite `EAX`; draw result is not consumed. Resolved `DrawTextW`. |
+| `0x00426F4D` / `0x00426F54` | Text pointer from `0x0062B564`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | The next instructions load a separate object field and overwrite `EAX`; no response data is read. Resolved `DrawTextW`. |
+| `0x00426FC0` / `0x00426FC7` | Text pointer from `0x0062B570`, count from `[text-0xC]`, local rectangle, and flags `0x8134`. | The following code uses a distinct stack-local value for its formatting helper; the drawing result is not consumed. Resolved `DrawTextW`. |
+| `0x00433DD3` / `0x00433DDA` | Text pointer from a local CString at `[esp+0x14]`, count from `[text-0xC]`, third argument pointer from `EBX`, and flags `0x8134`. | The next CString cleanup path reloads the local string into `EAX`; the draw result is not consumed. Resolved `DrawTextW`. |
+| `0x00433E7C` / `0x00433E83` | Text pointer from a local CString at `[esp+0x14]`, count from `[text-0xC]`, third argument pointer computed in `ESI`, and flags `0x8134`. | The next CString cleanup path reloads the local string into `EAX`; the draw result is not consumed. Resolved `DrawTextW`. |
+
+These receiver/vtable/import/ABI paths resolve all five as local text-layout
+calls. The census now records 50 of 83 additional patterns as resolved
+`DrawTextW` false positives and 33 as unclassified. This is not evidence of
+G5 device-data reads or of runtime UI reachability.
 
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.

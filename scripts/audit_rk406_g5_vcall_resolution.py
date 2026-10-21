@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve sixteen DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
+"""Resolve twenty-six DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
 
 This is a static disassembly audit. It invokes GNU objdump on a supplied PE;
 it never executes the target binary or communicates with a keyboard.
@@ -33,9 +33,20 @@ RECEIVER_STACK_OFFSETS = {
     0x0042205D: 0x58,
     0x004269DC: 0x44,
     0x00426A61: 0x44,
+    0x00426AE6: 0x44,
+    0x00426B61: 0x44,
+    0x00426BED: 0x44,
+    0x00426C68: 0x44,
+    0x00426CE3: 0x44,
+    0x00426D5E: 0x44,
+    0x00426F54: 0x44,
+    0x00426FC7: 0x44,
+    0x00433DDA: 0x38,
+    0x00433E83: 0x38,
 }
 CANDIDATES = tuple(RECEIVER_STACK_OFFSETS)
-PRE_CALL_INSTRUCTION_COUNTS = {0x00421C87: 12}
+PRE_CALL_INSTRUCTION_COUNTS = {0x00421C87: 12, 0x00433E83: 12}
+ALTERNATE_CALL_REGISTERS = {0x00433DDA: "eax", 0x00433E83: "eax"}
 G5_WRAPPER = 0x00410700
 EXPECTED_SHA256 = "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6"
 ENTRY_RE = re.compile(r"^\s*([0-9a-fA-F]+):\s*((?:[0-9a-fA-F]{2}\s+)+)(\S.*)$")
@@ -111,6 +122,10 @@ def run() -> int:
     if later_page_constructor.get(0x004267E4) != "lea ecx,[esp+0x34]" or later_page_constructor.get(0x004267E8) != "call 0x47105c":
         raise RuntimeError("the later-page receiver is no longer constructed at [esp+0x34] by 0x0047105C")
 
+    color_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x00433AB7, 0x00433AC0))
+    if color_page_constructor.get(0x00433AB7) != "lea ecx,[esp+0x28]" or color_page_constructor.get(0x00433ABB) != "call 0x47105c":
+        raise RuntimeError("the color-page receiver is no longer constructed at [esp+0x28] by 0x0047105C")
+
     vtable = run_objdump(args.objdump, "-s", "--start-address=0x59f374", "--stop-address=0x59f380", str(args.binary))
     if not re.search(r"59f374\s+bb104700\s+e2104700\s+1a114700", vtable.lower()):
         raise RuntimeError("vtable 0x0059F314 slot +0x68 no longer resolves to 0x0047111A")
@@ -131,23 +146,26 @@ def run() -> int:
             1,
         )
         call_asm = by_address[call_va]
-        if not re.fullmatch(r"call\s+edx", call_asm):
-            raise RuntimeError(f"candidate 0x{call_va:08X} is no longer call edx: {call_asm}")
+        call_register = ALTERNATE_CALL_REGISTERS.get(call_va, "edx")
+        if not re.fullmatch(rf"call\s+{call_register}", call_asm):
+            raise RuntimeError(f"candidate 0x{call_va:08X} no longer uses its expected indirect call register: {call_asm}")
         pre_call = [asm for _, asm in window[:-1]]
         pushes = [asm for asm in pre_call if asm.startswith("push ")]
-        vtable_loads = [asm for asm in pre_call if re.search(r"\[eax\+0x68\]", asm)]
         receiver_setups = [asm for asm in pre_call if asm.startswith("lea ecx,")]
         pushed_id = next((asm.removeprefix("push ") for asm in pushes if re.fullmatch(r"push\s+0x813[45]", asm)), "")
         # nearest_window includes the instruction after the call as the last row.
         following = nearest_window(instructions, call_va, 0, 1)[-1][1]
         immediate_adjust = bool(re.match(r"(?:add|lea)\s+esp\b|pop\s+", following))
-        if len(pushes) != 4 or len(vtable_loads) != 1 or not receiver_setups or pushed_id not in ("0x8134", "0x8135"):
+        if len(pushes) != 4 or not receiver_setups or pushed_id not in ("0x8134", "0x8135"):
             raise RuntimeError(f"unexpected call setup at 0x{call_va:08X}: {pre_call}")
         # Every one of these sites loads slot +0x68 through the local adapter's
         # vtable, rather than through a CDevG5KB receiver.
         receiver_offset = RECEIVER_STACK_OFFSETS[call_va]
         receiver_stack = f"[esp+0x{receiver_offset:x}]"
-        if f"mov eax,dword ptr {receiver_stack}" not in pre_call or "mov edx,dword ptr [eax+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:
+        if call_va in ALTERNATE_CALL_REGISTERS:
+            if "mov edx,dword ptr [esp+0x28]" not in pre_call or "mov eax,dword ptr [edx+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:
+                raise RuntimeError(f"call 0x{call_va:08X} no longer loads the constructed adapter vptr and its +0x68 slot")
+        elif f"mov eax,dword ptr {receiver_stack}" not in pre_call or "mov edx,dword ptr [eax+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:
             raise RuntimeError(f"call 0x{call_va:08X} no longer loads the local adapter receiver and its +0x68 slot")
 
         rows.append({

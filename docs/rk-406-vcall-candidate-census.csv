@@ -44,16 +44,16 @@ slot_load_va,call_va,loaded_register,receiver_register,classification,evidence
 0x00422056,0x0042205D,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x004269D5,0x004269DC,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00426A5A,0x00426A61,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x00426ADF,0x00426AE6,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426B5A,0x00426B61,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426BE6,0x00426BED,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426C61,0x00426C68,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426CDC,0x00426CE3,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426D57,0x00426D5E,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426F4D,0x00426F54,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00426FC0,0x00426FC7,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00433DD3,0x00433DDA,EAX,EDX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00433E7C,0x00433E83,EAX,EDX,unclassified candidate pattern,receiver/target provenance has not been established
+0x00426ADF,0x00426AE6,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426B5A,0x00426B61,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426BE6,0x00426BED,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426C61,0x00426C68,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426CDC,0x00426CE3,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426D57,0x00426D5E,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426F4D,0x00426F54,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00426FC0,0x00426FC7,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00433DD3,0x00433DDA,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00433E7C,0x00433E83,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x004344F5,0x004344FA,EAX,EDX,unclassified candidate pattern,receiver/target provenance has not been established
 0x00435263,0x0043526A,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x004352C4,0x004352CC,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established

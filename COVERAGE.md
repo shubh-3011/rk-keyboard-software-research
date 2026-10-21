@@ -729,10 +729,10 @@ For current blockers and the recommended reverse-engineering order, see the
   aliases, callbacks, or dispatch forms. Five additional superficially
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
-  receiver's concrete type remains unknown. Forty register-mediated calls
-  across eight bounded batches resolve through constructor-established vptrs
+  receiver's concrete type remains unknown. Fifty register-mediated calls
+  across ten bounded batches resolve through constructor-established vptrs
   and slots to `USER32!DrawTextW`; a hash-pinned census records the 90 total
-  pattern matches, with 43 of the 83 additional candidates still unclassified.
+  pattern matches, with 33 of the 83 additional candidates still unclassified.
   These bounded slices do not exhaust all `+0x68` calls. The helper has no direct file
   sink. This does not establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
