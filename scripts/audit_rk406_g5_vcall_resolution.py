@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve eleven DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
+"""Resolve sixteen DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
 
 This is a static disassembly audit. It invokes GNU objdump on a supplied PE;
 it never executes the target binary or communicates with a keyboard.
@@ -28,6 +28,11 @@ RECEIVER_STACK_OFFSETS = {
     0x00421D7C: 0x58,
     0x00421E12: 0x58,
     0x00421EA8: 0x58,
+    0x00421F45: 0x58,
+    0x00421FDD: 0x58,
+    0x0042205D: 0x58,
+    0x004269DC: 0x44,
+    0x00426A61: 0x44,
 }
 CANDIDATES = tuple(RECEIVER_STACK_OFFSETS)
 PRE_CALL_INSTRUCTION_COUNTS = {0x00421C87: 12}
@@ -101,6 +106,10 @@ def run() -> int:
     local_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x004216C7, 0x004216D0))
     if local_constructor.get(0x004216C7) != "lea ecx,[esp+0x48]" or local_constructor.get(0x004216CB) != "call 0x47105c":
         raise RuntimeError("the repeated-label receiver is no longer constructed at [esp+0x48] by 0x0047105C")
+
+    later_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x004267E4, 0x004267ED))
+    if later_page_constructor.get(0x004267E4) != "lea ecx,[esp+0x34]" or later_page_constructor.get(0x004267E8) != "call 0x47105c":
+        raise RuntimeError("the later-page receiver is no longer constructed at [esp+0x34] by 0x0047105C")
 
     vtable = run_objdump(args.objdump, "-s", "--start-address=0x59f374", "--stop-address=0x59f380", str(args.binary))
     if not re.search(r"59f374\s+bb104700\s+e2104700\s+1a114700", vtable.lower()):

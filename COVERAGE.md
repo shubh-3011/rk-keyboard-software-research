@@ -729,15 +729,18 @@ For current blockers and the recommended reverse-engineering order, see the
   aliases, callbacks, or dispatch forms. Five additional superficially
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
-  receiver's concrete type remains unknown. Thirty-five register-mediated calls
-  across seven bounded batches resolve through constructor-established vptrs
-  and slots to `USER32!DrawTextW`. These bounded slices do not exhaust the
-  83-pattern candidate set or all `+0x68` calls. The helper has no direct file
+  receiver's concrete type remains unknown. Forty register-mediated calls
+  across eight bounded batches resolve through constructor-established vptrs
+  and slots to `USER32!DrawTextW`; a hash-pinned census records the 90 total
+  pattern matches, with 43 of the 83 additional candidates still unclassified.
+  These bounded slices do not exhaust all `+0x68` calls. The helper has no direct file
   sink. This does not establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
   and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
   [call-resolution ledger](docs/rk-406-vtable-68-resolution.csv),
+  [candidate census](docs/rk-406-vcall-candidate-census.csv),
   [static checker](scripts/audit_rk406_g5_vcall_resolution.py), and
+  [census scanner](scripts/audit_rk406_vcall_candidate_census.py),
   [active-object caller-scope follow-up](docs/rk-406-cdevg5-active-object-caller-scope.md).
 - A separate 4.6 G5 command-`0x88` trace proves a request write followed by a
   conditional feature read and chunk copies into caller-owned memory. The

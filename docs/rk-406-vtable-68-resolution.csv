@@ -10,3 +10,8 @@ call_va,indirect_method_offset,receiver_constructor_va,receiver_vtable_va,slot_t
 0x00421D7C,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
 0x00421E12,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
 0x00421EA8,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
+0x00421F45,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
+0x00421FDD,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
+0x0042205D,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
+0x004269DC,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
+0x00426A61,+0x68,0x0047105C,0x0059F314,0x0047111A,4,0x8134,USER32!DrawTextW (IAT VA 0x0059E6B8),ret 0x10,ret 8,false,local GDI text adapter,resolved DrawTextW layout call; not a CDevG5KB/GetRealData dispatch
