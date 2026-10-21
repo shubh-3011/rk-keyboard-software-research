@@ -711,12 +711,16 @@ For current blockers and the recommended reverse-engineering order, see the
   the adapter constructor, vtable slot, import, wrapper ABI, and callsites.
   A follow-up caller scan found no direct call to the G5 wrapper and no
   statically attributable virtual caller; the actual G5 command-`0x88` caller
-  remains unresolved. The helper has no direct file sink. This does not
-  establish a full read-only S98 firmware export. See
+  remains unresolved. A new holder trace shows one concrete G5 object reaching
+  global `0x0062B380`; the decoded calls through that holder use `+0x14` and
+  `+0x28`, not `+0x68`. This narrows one alias path but does not exclude other
+  aliases, callbacks, or dispatch forms. The helper has no direct file sink.
+  This does not establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
   and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
   [call-resolution ledger](docs/rk-406-vtable-68-resolution.csv),
-  and [static checker](scripts/audit_rk406_g5_vcall_resolution.py).
+  [static checker](scripts/audit_rk406_g5_vcall_resolution.py), and
+  [active-object caller-scope follow-up](docs/rk-406-cdevg5-active-object-caller-scope.md).
 - The documented native paths include HID enumeration, selected
   device-family protocol routines, updater transfer/readback, local
   profile/macro/screen persistence, installer helpers, and uninstaller
@@ -774,6 +778,13 @@ For current blockers and the recommended reverse-engineering order, see the
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),
   [field-boundary follow-up](docs/rk-406-brightness-handler-field-boundary.md),
   and [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
+- A new 4.06 LED-selection follow-up maps a candidate `WM_LBUTTONDOWN`
+  producer posting private message `0x0594` to a `CLedDlg` selection handler,
+  selected-row state, and the Apply worker. The route conditionally reaches
+  the G5 command-`4` serializer for mapped S98 profile rows. The sender
+  control-to-row mapping, runtime message delivery, active object, mode
+  meaning, and hardware acceptance remain unresolved; see
+  [`docs/rk-406-led-selection-ui-to-worker-followup.md`](docs/rk-406-led-selection-ui-to-worker-followup.md).
 - A separate 4.6 trace closes the G5 profile-default and serializer path:
   `LightUI` display values, 24 `LedOpt` profile rows, `DefBri` defaults, and
   `LightHW` output translation feed active per-mode state and dialog rendering.
@@ -954,6 +965,13 @@ For current blockers and the recommended reverse-engineering order, see the
   instruction bytes (33.80% of raw `.text`); the full function/CFG gap remains
   open. See
   `docs/rk-v4.6-rooted-cfg-callgraph-audit.md`.
+- A focused 4.6 API trace follows the timer/device-change rescan into
+  `SetupDiGetClassDevsW`, interface enumeration, conditional `CreateFileW`,
+  HID attribute/capability queries, object construction, and cleanup. This
+  statically establishes an enumeration path but does not identify the S98;
+  the queried attributes are not visibly used as a VID/PID filter in this
+  helper. See
+  [`docs/rk-v4.6-hid-interface-enumeration-rescan-audit.md`](docs/rk-v4.6-hid-interface-enumeration-rescan-audit.md).
 - A separate V4.6 trace follows literal private message `0x0477` from both
   shared popup click handlers into the RTTI-attributed page maps; the screen
   dialog map's `CScreenDlg` owner is now confirmed statically. The page-level

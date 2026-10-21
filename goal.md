@@ -25,4 +25,4 @@ The present scope is static and non-invasive. Do not open the keyboard HID inter
 
 ## Current state
 
-Paused at the user's request on 2026-10-21. No further reverse-engineering work should continue until the user resumes it. See [`progress.md`](progress.md) for the saved snapshot, findings, limitations, and resume checkpoint.
+Resumed at the user's request on 2026-10-21. The goal remains active and incomplete. See [`progress.md`](progress.md) for the current snapshot, findings, limitations, and resume checkpoint.
