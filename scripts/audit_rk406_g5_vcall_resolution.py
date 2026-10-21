@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve thirty-nine DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
+"""Resolve forty-eight DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
 
 This is a static disassembly audit. It invokes GNU objdump on a supplied PE;
 it never executes the target binary or communicates with a keyboard.
@@ -56,14 +56,29 @@ RECEIVER_STACK_OFFSETS = {
     0x0045B5BF: 0x2C,
     0x00469345: 0x20,
     0x00469386: 0x20,
+    0x00469407: 0x20,
+    0x0046B5BE: 0x4C,
+    0x0046B6B4: 0x4C,
+    0x0046B75A: 0x4C,
+    0x0046B81C: 0x4C,
+    0x0046B8DB: 0x4C,
+    0x0046B98F: 0x4C,
+    0x0046BA05: 0x4C,
+    0x0046E9A1: 0x3C,
 }
 CANDIDATES = tuple(RECEIVER_STACK_OFFSETS)
 PRE_CALL_INSTRUCTION_COUNTS = {
     0x00421C87: 12,
     0x00433E83: 12,
     0x00469345: 10,
+    0x00469407: 10,
 }
-ALTERNATE_CALL_REGISTERS = {0x00433DDA: "eax", 0x00433E83: "eax", 0x0044AEAE: "eax"}
+ALTERNATE_CALL_REGISTERS = {
+    0x00433DDA: "eax",
+    0x00433E83: "eax",
+    0x0044AEAE: "eax",
+    0x0046E9A1: "eax",
+}
 SPECIAL_VPTR_SETUP = {
     0x00433DDA: (
         "mov edx,dword ptr [esp+0x28]",
@@ -84,6 +99,11 @@ SPECIAL_VPTR_SETUP = {
         "mov edx,dword ptr [esp+0x68]",
         "mov eax,dword ptr [edx+0x68]",
         "lea ecx,[esp+0x6c]",
+    ),
+    0x0046E9A1: (
+        "mov edx,dword ptr [esp+0x2c]",
+        "mov eax,dword ptr [edx+0x68]",
+        "lea ecx,[esp+0x3c]",
     ),
 }
 DYNAMIC_FLAG_CALLS = {0x0044AEAE}
@@ -189,6 +209,14 @@ def run() -> int:
     layout_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x00469214, 0x0046921D))
     if layout_page_constructor.get(0x00469214) != "lea ecx,[esp+0x10]" or layout_page_constructor.get(0x00469218) != "call 0x47105c":
         raise RuntimeError("the layout-page receiver is no longer constructed at [esp+0x10] by 0x0047105C")
+
+    model_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x0046B327, 0x0046B330))
+    if model_page_constructor.get(0x0046B327) != "lea ecx,[esp+0x3c]" or model_page_constructor.get(0x0046B32B) != "call 0x47105c":
+        raise RuntimeError("the model-page receiver is no longer constructed at [esp+0x3C] by 0x0047105C")
+
+    model_art_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x0046E4C1, 0x0046E4CA))
+    if model_art_constructor.get(0x0046E4C1) != "lea ecx,[esp+0x2c]" or model_art_constructor.get(0x0046E4C5) != "call 0x47105c":
+        raise RuntimeError("the model-art receiver is no longer constructed at [esp+0x2C] by 0x0047105C")
 
     dynamic_flags = instruction_map(disassemble_range(args.binary, args.objdump, 0x0044AE84, 0x0044AE92))
     expected_dynamic_flags = {

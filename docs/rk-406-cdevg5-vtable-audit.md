@@ -118,9 +118,9 @@ and the four-argument `DrawTextW` ABI, while the concrete G5 wrapper at
 `0x00410700` returns with `ret 8` and calls helper `0x0040FF60` at
 `0x00410718`. A caller of the G5 method remains unresolved.
 
-The row-level evidence for the original six calls and the thirty-three later
+The row-level evidence for the original six calls and the forty-two later
 calls verified by the hash-pinned checker is in the
-[`39-call resolution ledger`](rk-406-vtable-68-resolution.csv).
+[`48-call resolution ledger`](rk-406-vtable-68-resolution.csv).
 The hash-pinned static checker is
 [`audit_rk406_g5_vcall_resolution.py`](../scripts/audit_rk406_g5_vcall_resolution.py);
 run it against the same `DeviceDriver.exe` to verify the constructor, vtable
@@ -169,8 +169,8 @@ scan of `.text` finds 90 pairs where code loads `[register+0x68]` into a
 register and calls through it within the next three decoded instructions.
 Seven calls (the six sites at `0x00401E92` through `0x0040217A` and
 `0x004051AC`) were already resolved in the preceding sections, leaving 83
-additional candidates. Of those, 63 are now traced to constructor-established
-local text adapters that call `USER32!DrawTextW`; the other 20 remain
+additional candidates. Of those, 72 are now traced to constructor-established
+local text adapters that call `USER32!DrawTextW`; the other 11 remain
 unclassified. These are candidate dispatch shapes, not a count of proven
 `CDevG5KB` calls: `+0x68` is common across unrelated interfaces, and the
 register-mediated pattern also admits ordinary data/function-pointer loads.
@@ -650,6 +650,40 @@ rectangle with flags `0x8134`; the return is not read as output data.
 These four proven calls raise the bounded census to 63 of 83 additional
 patterns resolved, with 20 still unclassified. They do not establish a G5
 `0x88` caller or a consumer of its response buffer.
+
+The layout-page call at `0x00469407` shares constructor `0x00469218` and
+receiver local `[esp+0x10]` with `0x00469345` and `0x00469386`. Four pushed
+arguments place the receiver at `[esp+0x20]`; the unchanged `0x0059F314`
+vptr reaches `0x0047111A` → `USER32!DrawTextW`. The four arguments are a
+global CString, its preceding DWORD count, a local rectangle, and flags
+`0x8134`; the return is not used as output data.
+
+Seven more calls (`0x0046B5BE`, `0x0046B6B4`, `0x0046B75A`, `0x0046B81C`,
+`0x0046B8DB`, `0x0046B98F`, and `0x0046BA05`) share the model-page local
+constructed at `[esp+0x3C]` by `0x0047105C` at `0x0046B32B`. Each call has four
+text/count/rectangle/flag arguments; after argument staging the local receiver
+is at `[esp+0x4C]`. The slot load uses that object's `0x0059F314` vptr, and no
+intervening write to the receiver vptr slot was found. All seven therefore
+reach `0x0047111A` → `USER32!DrawTextW`; their flags are `0x8134` except
+`0x0046B81C`, which uses `0x8136`. A stack cleanup at `0x0046B631` is included
+in the receiver-offset calculation for `0x0046B6B4`. The call results flow
+into later UI cleanup/staging and are not read as response data.
+
+These eight additions bring the 83-candidate census to 72 resolved and 11
+unclassified. The candidate at `0x0046A00B` remains unclassified even though
+its arguments resemble text drawing: the receiver local is constructor-
+initialized, but the object whose `+0x68` slot is loaded comes from `[esp+0x50]`,
+which is written by a helper at `0x00469D60`. The target object's vtable
+provenance is therefore not established.
+
+The earlier candidate at `0x0046E9A1` also resolves to the local text adapter.
+Constructor `0x0046E4C5` initializes the receiver at `[esp+0x2C]`; the call
+loads that local's `+0x68` slot, then passes the same receiver at
+`[esp+0x3C]` after four arguments. The constructor-established vptr is
+`0x0059F314`, so the slot target is `0x0047111A` and its import is
+`USER32!DrawTextW`. The call passes CString text/count, a local rectangle, and
+flags `0x8134`; following cleanup does not read the draw return as data. This
+is included in the 72 resolved / 11 unclassified census above.
 
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.
