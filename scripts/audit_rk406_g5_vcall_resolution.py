@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve twenty-six DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
+"""Resolve twenty-nine DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
 
 This is a static disassembly audit. It invokes GNU objdump on a supplied PE;
 it never executes the target binary or communicates with a keyboard.
@@ -43,10 +43,36 @@ RECEIVER_STACK_OFFSETS = {
     0x00426FC7: 0x44,
     0x00433DDA: 0x38,
     0x00433E83: 0x38,
+    0x004352CC: 0x1C,
+    0x0044AEAE: 0x6C,
+    0x0045792D: 0x58,
 }
 CANDIDATES = tuple(RECEIVER_STACK_OFFSETS)
 PRE_CALL_INSTRUCTION_COUNTS = {0x00421C87: 12, 0x00433E83: 12}
-ALTERNATE_CALL_REGISTERS = {0x00433DDA: "eax", 0x00433E83: "eax"}
+ALTERNATE_CALL_REGISTERS = {0x00433DDA: "eax", 0x00433E83: "eax", 0x0044AEAE: "eax"}
+SPECIAL_VPTR_SETUP = {
+    0x00433DDA: (
+        "mov edx,dword ptr [esp+0x28]",
+        "mov eax,dword ptr [edx+0x68]",
+        "lea ecx,[esp+0x38]",
+    ),
+    0x00433E83: (
+        "mov edx,dword ptr [esp+0x28]",
+        "mov eax,dword ptr [edx+0x68]",
+        "lea ecx,[esp+0x38]",
+    ),
+    0x004352CC: (
+        "mov eax,dword ptr [esp+0x18]",
+        "mov edx,dword ptr [eax+0x68]",
+        "lea ecx,[esp+0x1c]",
+    ),
+    0x0044AEAE: (
+        "mov edx,dword ptr [esp+0x68]",
+        "mov eax,dword ptr [edx+0x68]",
+        "lea ecx,[esp+0x6c]",
+    ),
+}
+DYNAMIC_FLAG_CALLS = {0x0044AEAE}
 G5_WRAPPER = 0x00410700
 EXPECTED_SHA256 = "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6"
 ENTRY_RE = re.compile(r"^\s*([0-9a-fA-F]+):\s*((?:[0-9a-fA-F]{2}\s+)+)(\S.*)$")
@@ -126,6 +152,29 @@ def run() -> int:
     if color_page_constructor.get(0x00433AB7) != "lea ecx,[esp+0x28]" or color_page_constructor.get(0x00433ABB) != "call 0x47105c":
         raise RuntimeError("the color-page receiver is no longer constructed at [esp+0x28] by 0x0047105C")
 
+    focused_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x00435125, 0x0043512E))
+    if focused_page_constructor.get(0x00435125) != "lea ecx,[esp+0xc]" or focused_page_constructor.get(0x00435129) != "call 0x47105c":
+        raise RuntimeError("the focused-page receiver is no longer constructed at [esp+0x0C] by 0x0047105C")
+
+    scale_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x0044A6C8, 0x0044A6D1))
+    if scale_page_constructor.get(0x0044A6C8) != "lea ecx,[esp+0x5c]" or scale_page_constructor.get(0x0044A6CC) != "call 0x47105c":
+        raise RuntimeError("the scale-page receiver is no longer constructed at [esp+0x5C] by 0x0047105C")
+
+    mode_page_constructor = instruction_map(disassemble_range(args.binary, args.objdump, 0x00457517, 0x00457520))
+    if mode_page_constructor.get(0x00457517) != "lea ecx,[esp+0x48]" or mode_page_constructor.get(0x0045751B) != "call 0x47105c":
+        raise RuntimeError("the mode-page receiver is no longer constructed at [esp+0x48] by 0x0047105C")
+
+    dynamic_flags = instruction_map(disassemble_range(args.binary, args.objdump, 0x0044AE84, 0x0044AE92))
+    expected_dynamic_flags = {
+        0x0044AE84: "xor eax,eax",
+        0x0044AE86: "cmp ecx,ebx",
+        0x0044AE88: "setle al",
+        0x0044AE8B: "add eax,0x8134",
+        0x0044AE90: "mov ecx,eax",
+    }
+    if any(dynamic_flags.get(address) != asm for address, asm in expected_dynamic_flags.items()):
+        raise RuntimeError("the 0x0044AEAE text flags are no longer derived as 0x8134 or 0x8135")
+
     vtable = run_objdump(args.objdump, "-s", "--start-address=0x59f374", "--stop-address=0x59f380", str(args.binary))
     if not re.search(r"59f374\s+bb104700\s+e2104700\s+1a114700", vtable.lower()):
         raise RuntimeError("vtable 0x0059F314 slot +0x68 no longer resolves to 0x0047111A")
@@ -152,17 +201,22 @@ def run() -> int:
         pre_call = [asm for _, asm in window[:-1]]
         pushes = [asm for asm in pre_call if asm.startswith("push ")]
         receiver_setups = [asm for asm in pre_call if asm.startswith("lea ecx,")]
-        pushed_id = next((asm.removeprefix("push ") for asm in pushes if re.fullmatch(r"push\s+0x813[45]", asm)), "")
+        pushed_id = next((asm.removeprefix("push ") for asm in pushes if re.fullmatch(r"push\s+0x(?:811[45]|813[456])", asm)), "")
+        if call_va in DYNAMIC_FLAG_CALLS and "push ecx" in pushes:
+            pushed_id = "0x8134/0x8135 (derived)"
         # nearest_window includes the instruction after the call as the last row.
         following = nearest_window(instructions, call_va, 0, 1)[-1][1]
         immediate_adjust = bool(re.match(r"(?:add|lea)\s+esp\b|pop\s+", following))
-        if len(pushes) != 4 or not receiver_setups or pushed_id not in ("0x8134", "0x8135"):
+        if len(pushes) != 4 or not receiver_setups or not pushed_id:
             raise RuntimeError(f"unexpected call setup at 0x{call_va:08X}: {pre_call}")
         # Every one of these sites loads slot +0x68 through the local adapter's
         # vtable, rather than through a CDevG5KB receiver.
         receiver_offset = RECEIVER_STACK_OFFSETS[call_va]
         receiver_stack = f"[esp+0x{receiver_offset:x}]"
-        if call_va in ALTERNATE_CALL_REGISTERS:
+        if call_va in SPECIAL_VPTR_SETUP:
+            if any(asm not in pre_call for asm in SPECIAL_VPTR_SETUP[call_va]):
+                raise RuntimeError(f"call 0x{call_va:08X} no longer follows its constructor-established virtual-call setup")
+        elif call_va in ALTERNATE_CALL_REGISTERS:
             if "mov edx,dword ptr [esp+0x28]" not in pre_call or "mov eax,dword ptr [edx+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:
                 raise RuntimeError(f"call 0x{call_va:08X} no longer loads the constructed adapter vptr and its +0x68 slot")
         elif f"mov eax,dword ptr {receiver_stack}" not in pre_call or "mov edx,dword ptr [eax+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:

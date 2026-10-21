@@ -54,13 +54,13 @@ slot_load_va,call_va,loaded_register,receiver_register,classification,evidence
 0x00426FC0,0x00426FC7,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00433DD3,0x00433DDA,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00433E7C,0x00433E83,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x004344F5,0x004344FA,EAX,EDX,unclassified candidate pattern,receiver/target provenance has not been established
+0x004344F5,0x004344FA,EAX,EDX,unclassified candidate pattern,DrawTextW-like argument shape; EDI receiver vtable target is not identified
 0x00435263,0x0043526A,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x004352C4,0x004352CC,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
+0x004352C4,0x004352CC,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0044AE79,0x0044AE80,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x0044AEA7,0x0044AEAE,EAX,EDX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00454D46,0x00454D4B,EAX,EDX,unclassified candidate pattern,receiver/target provenance has not been established
-0x00457926,0x0045792D,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
+0x0044AEA7,0x0044AEAE,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
+0x00454D46,0x00454D4B,EAX,EDX,unclassified candidate pattern,DrawTextW-like argument shape; EBX receiver vtable target is not identified
+0x00457926,0x0045792D,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00457953,0x0045795A,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
 0x0045797D,0x00457984,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established
 0x004579A7,0x004579AE,EDX,EAX,unclassified candidate pattern,receiver/target provenance has not been established

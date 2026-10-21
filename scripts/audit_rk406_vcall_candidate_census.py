@@ -80,8 +80,16 @@ DRAW_TEXT_RESOLVED = {
     0x00426FC7,
     0x00433DDA,
     0x00433E83,
+    0x004352CC,
+    0x0044AEAE,
+    0x0045792D,
     0x0043526A,
     0x0044AE80,
+}
+
+REVIEWED_UNRESOLVED = {
+    0x004344FA: "DrawTextW-like argument shape; EDI receiver vtable target is not identified",
+    0x00454D4B: "DrawTextW-like argument shape; EBX receiver vtable target is not identified",
 }
 
 
@@ -145,8 +153,8 @@ def run() -> int:
         raise RuntimeError(f"expected 90 unique pattern matches, found {len(candidates)}")
     if not EARLIER_RESOLVED <= call_vas:
         raise RuntimeError("the seven earlier-resolved calls are not all present in the scan")
-    if len(DRAW_TEXT_RESOLVED) != 50 or not DRAW_TEXT_RESOLVED <= call_vas:
-        raise RuntimeError("the 50 documented DrawTextW calls do not match the scan")
+    if len(DRAW_TEXT_RESOLVED) != 53 or not DRAW_TEXT_RESOLVED <= call_vas:
+        raise RuntimeError("the 53 documented DrawTextW calls do not match the scan")
     if EARLIER_RESOLVED & DRAW_TEXT_RESOLVED:
         raise RuntimeError("earlier-resolved and later DrawTextW classifications overlap")
 
@@ -158,13 +166,16 @@ def run() -> int:
         elif call_va in DRAW_TEXT_RESOLVED:
             row["classification"] = "resolved false positive; USER32!DrawTextW"
             row["evidence"] = "docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace"
+        elif call_va in REVIEWED_UNRESOLVED:
+            row["classification"] = "unclassified candidate pattern"
+            row["evidence"] = REVIEWED_UNRESOLVED[call_va]
         else:
             row["classification"] = "unclassified candidate pattern"
             row["evidence"] = "receiver/target provenance has not been established"
 
     unclassified = sum(row["classification"] == "unclassified candidate pattern" for row in candidates)
-    if unclassified != 33:
-        raise RuntimeError(f"expected 33 unclassified pattern matches, found {unclassified}")
+    if unclassified != 30:
+        raise RuntimeError(f"expected 30 unclassified pattern matches, found {unclassified}")
 
     fields = [
         "slot_load_va",
@@ -184,8 +195,8 @@ def run() -> int:
             out.close()
     print(
         "Scanned 90 register-mediated +0x68 patterns in .text: "
-        "7 previously resolved, 50 documented DrawTextW false positives, "
-        "33 unclassified.",
+        "7 previously resolved, 53 documented DrawTextW false positives, "
+        "30 unclassified.",
         file=sys.stderr,
     )
     return 0
