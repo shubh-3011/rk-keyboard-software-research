@@ -83,6 +83,16 @@ DRAW_TEXT_RESOLVED = {
     0x004352CC,
     0x0044AEAE,
     0x0045792D,
+    0x0045795A,
+    0x00457984,
+    0x004579AE,
+    0x0045B5BF,
+    0x0045B714,
+    0x0045B7E0,
+    0x00466A8D,
+    0x00466AD8,
+    0x00469345,
+    0x00469386,
     0x0043526A,
     0x0044AE80,
 }
@@ -90,6 +100,14 @@ DRAW_TEXT_RESOLVED = {
 REVIEWED_UNRESOLVED = {
     0x004344FA: "DrawTextW-like argument shape; EDI receiver vtable target is not identified",
     0x00454D4B: "DrawTextW-like argument shape; EBX receiver vtable target is not identified",
+    0x00457F4B: "receiver stack slot [esp+0x48] is written at 0x00457ACF; relation to the earlier constructor is unproved",
+    0x0045C60A: "DrawTextW-like arguments use ESI as receiver; its vtable target is not identified",
+    0x0045DF80: "DrawTextW-like arguments use ESI as receiver; its vtable target is not identified",
+    0x00464B47: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 after the earlier constructor",
+    0x00464BB0: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
+    0x00464C8D: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
+    0x00464D1D: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
+    0x00466F58: "DrawTextW-like arguments use a local receiver from [esp+0x24]; its vtable target is not identified",
 }
 
 
@@ -153,8 +171,8 @@ def run() -> int:
         raise RuntimeError(f"expected 90 unique pattern matches, found {len(candidates)}")
     if not EARLIER_RESOLVED <= call_vas:
         raise RuntimeError("the seven earlier-resolved calls are not all present in the scan")
-    if len(DRAW_TEXT_RESOLVED) != 53 or not DRAW_TEXT_RESOLVED <= call_vas:
-        raise RuntimeError("the 53 documented DrawTextW calls do not match the scan")
+    if len(DRAW_TEXT_RESOLVED) != 63 or not DRAW_TEXT_RESOLVED <= call_vas:
+        raise RuntimeError("the 63 documented DrawTextW calls do not match the scan")
     if EARLIER_RESOLVED & DRAW_TEXT_RESOLVED:
         raise RuntimeError("earlier-resolved and later DrawTextW classifications overlap")
 
@@ -174,8 +192,8 @@ def run() -> int:
             row["evidence"] = "receiver/target provenance has not been established"
 
     unclassified = sum(row["classification"] == "unclassified candidate pattern" for row in candidates)
-    if unclassified != 30:
-        raise RuntimeError(f"expected 30 unclassified pattern matches, found {unclassified}")
+    if unclassified != 20:
+        raise RuntimeError(f"expected 20 unclassified pattern matches, found {unclassified}")
 
     fields = [
         "slot_load_va",
@@ -195,8 +213,8 @@ def run() -> int:
             out.close()
     print(
         "Scanned 90 register-mediated +0x68 patterns in .text: "
-        "7 previously resolved, 53 documented DrawTextW false positives, "
-        "30 unclassified.",
+        "7 previously resolved, 63 documented DrawTextW false positives, "
+        "20 unclassified.",
         file=sys.stderr,
     )
     return 0
