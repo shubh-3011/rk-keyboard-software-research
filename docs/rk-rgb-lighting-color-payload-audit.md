@@ -51,16 +51,24 @@ locale fallback.
 **High — static code.** `FUN_00422AF0` builds label lookup keys from these
 families. It tries the active profile's
 `Dev\\<profile>\\<locale>\\led.xml` path at `0x00422B84`, then the generic
-`Dev\\<locale>\\led.xml` path at `0x00422BDB`. `FUN_00422DA0` builds the
-associated list/controls, with `LedMask` (`0x00611798`) participating in
-selection. The driver also probes keys `tc_led_mode22`–`tc_led_mode25`, which
-are not present in the shipped generic dictionaries.
+`Dev\\<locale>\\led.xml` path at `0x00422BDB`. The family selector checks
+`Fw` (`0x00611760`) first: nonzero selects `tc_eft%d`. Otherwise it checks
+`RGBKb` (`0x006117C4`): nonzero selects `tc_led_mode%d`, and zero selects
+`tc_led%d`. `ShowSleepTime` is stored separately at `0x0061178C`. The list
+builder formats 24 candidates. `FUN_00422DA0` skips candidate-control
+construction when the corresponding `LedMask` (`0x00611798`) bit is set; the
+profile loader defaults an absent mask to zero. The driver also probes keys
+`tc_led_mode22`–`tc_led_mode25`, which are not present in the shipped generic
+dictionaries. A generated profile/locale crosswalk is available in the [LED
+control candidate audit](rk-led-control-candidates-4.06.md).
 
 **Unresolved.** The mode/effect suffix is not proven to be a wire command,
 firmware enum, or `LedOptN` slot. The three label families are not
 interchangeable just because their numeric suffixes overlap. The installed
 `ET`/`Cartoon` pattern text and profile-local pattern files document effect
 assets, but this audit did not recover a complete asset-to-packet path.
+The static candidate audit does not establish that empty-label candidates are
+visible, interactive, or connected to a writer.
 
 ## Profile fields and runtime option records
 

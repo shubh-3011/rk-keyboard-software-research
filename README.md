@@ -112,6 +112,8 @@ as confirmed.
 - [Audio-reactive capture and output-path audit](docs/rk-audio-reactive-path-audit.md)
 - [Audio UI page-state and capture lifecycle follow-up](docs/rk-audio-ui-control-followup.md)
 - [Lighting profile options to runtime records and UI](docs/rk-lighting-profile-record-path-audit.md)
+- [4.06 LED label/control candidates by profile](docs/rk-led-control-candidates-4.06.md)
+- [4.06 English LED candidate crosswalk](docs/rk-led-control-candidates-4.06-en.csv)
 - [Keyboard LED brightness UI and unresolved apply path](docs/rk-lighting-brightness-ui-handler-audit.md)
 - [Profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
 - [Machine-readable 188-profile catalog](models.json)

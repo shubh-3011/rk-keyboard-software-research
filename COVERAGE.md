@@ -818,7 +818,17 @@ For current blockers and the recommended reverse-engineering order, see the
   `docs/rk-firmware-readback-audit.md` and
   `scripts/probe_rk_hid_capabilities.ps1`.
 - The main UI's model-specific LED XML path and generic fallback path are
-  statically cross-referenced. A separate label/control/handler crosswalk
+  statically cross-referenced. For the pinned 4.06 driver, the 24-label
+  builder selects `tc_eft*` when `Fw` is nonzero, otherwise `tc_led_mode*`
+  when `RGBKb` is nonzero, otherwise `tc_led*`; `ShowSleepTime` is a separate
+  option. `LedMask` defaults to zero and set bits skip the candidate-control
+  construction path. The generated 4,536-row crosswalk covers all 189
+  installed profiles and distinguishes mask-filtered candidates from labels
+  absent in the selected dictionary. It does not establish widget visibility,
+  event handling, or a command mapping. See
+  `docs/rk-led-control-candidates-4.06.md` and
+  `docs/rk-led-control-candidates-4.06-en.csv`. A separate
+  label/control/handler crosswalk
   resolves selected paths such as the generated Apply control and language
   selector and the tray-menu Configuration/Exit command origins. The tray
   language menu's `0x6A00`–`0x6A06` IDs are statically traced to Win32

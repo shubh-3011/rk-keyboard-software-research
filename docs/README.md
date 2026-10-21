@@ -328,6 +328,8 @@
 
 - [Dialog-resource control inventory](rk-dialog-resource-controls.csv)
 - [Resource and localization audit](rk-resource-localization-audit.md)
+- [4.06 LED label/control candidate audit](rk-led-control-candidates-4.06.md)
+- [4.06 LED label candidates by profile and English locale](rk-led-control-candidates-4.06-en.csv)
 - [Resource groups](rk-resource-group-inventory.csv)
 - [Per-model resources](rk-model-resource-asset-inventory.csv)
 - [Localization files](rk-localization-file-inventory.csv)
