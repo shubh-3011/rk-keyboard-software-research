@@ -780,11 +780,18 @@ For current blockers and the recommended reverse-engineering order, see the
   and [selector-message sender trace](docs/rk-led-selector-message-sender-followup.md).
 - A new 4.06 LED-selection follow-up maps a candidate `WM_LBUTTONDOWN`
   producer posting private message `0x0594` to a `CLedDlg` selection handler,
-  selected-row state, and the Apply worker. The route conditionally reaches
-  the G5 command-`4` serializer for mapped S98 profile rows. The sender
-  control-to-row mapping, runtime message delivery, active object, mode
-  meaning, and hardware acceptance remain unresolved; see
-  [`docs/rk-406-led-selection-ui-to-worker-followup.md`](docs/rk-406-led-selection-ui-to-worker-followup.md).
+  selected-row state, and the Apply worker. A follow-up confirms the handler
+  ignores posted `wParam`/`lParam`, queries the dynamically created
+  `CTreeCtrlExRk` child (control ID `0x0105`), matches the selected `HTREEITEM`,
+  and stores its generated-list ordinal. The localized choices are rows in one
+  tree control, so the posted ID is not a per-label control ID. The route
+  conditionally reaches the G5 command-`4` serializer for mapped S98 profile
+  rows. The selected ordinal indexes profile `LedOpt` data, but its
+  option-to-device-effect meaning, runtime delivery, active object, and
+  hardware effect remain unresolved; see
+  [`docs/rk-406-led-selection-ui-to-worker-followup.md`](docs/rk-406-led-selection-ui-to-worker-followup.md) and
+  [`docs/rk-406-led-0594-parameter-and-generated-row-audit.md`](docs/rk-406-led-0594-parameter-and-generated-row-audit.md) and the
+  [source-control/tree-row follow-up](docs/rk-406-led-0594-tree-control-row-token-followup.md).
 - A separate 4.6 trace closes the G5 profile-default and serializer path:
   `LightUI` display values, 24 `LedOpt` profile rows, `DefBri` defaults, and
   `LightHW` output translation feed active per-mode state and dialog rendering.
@@ -968,10 +975,18 @@ For current blockers and the recommended reverse-engineering order, see the
 - A focused 4.6 API trace follows the timer/device-change rescan into
   `SetupDiGetClassDevsW`, interface enumeration, conditional `CreateFileW`,
   HID attribute/capability queries, object construction, and cleanup. This
-  statically establishes an enumeration path but does not identify the S98;
-  the queried attributes are not visibly used as a VID/PID filter in this
-  helper. See
-  [`docs/rk-v4.6-hid-interface-enumeration-rescan-audit.md`](docs/rk-v4.6-hid-interface-enumeration-rescan-audit.md).
+  statically establishes an enumeration path but does not identify a physical
+  S98; the queried attributes are not visibly used as a VID/PID filter in this
+  helper. Follow-ups trace the populated 80-row table into two immediate
+  consumers that compare profile-row VID/PID and HID usage/report-length fields
+  before opening an eligible row, then link those arguments to the selector
+  table and family routes (`Fw=0` → `CDevRKKB`, `Fw=3` → `CDev3632`, other
+  nonzero values → `CDevG5KB`). The software profile-to-driver bridge is
+  resolved for this package; physical model/revision compatibility remains
+  unverified. See
+  [`docs/rk-v4.6-hid-interface-enumeration-rescan-audit.md`](docs/rk-v4.6-hid-interface-enumeration-rescan-audit.md) and
+  [`docs/rk-v4.6-hid-record-to-interface-eligibility-audit.md`](docs/rk-v4.6-hid-record-to-interface-eligibility-audit.md) and
+  [`docs/rk-v4.6-hid-profile-caller-bridge-audit.md`](docs/rk-v4.6-hid-profile-caller-bridge-audit.md).
 - A separate V4.6 trace follows literal private message `0x0477` from both
   shared popup click handlers into the RTTI-attributed page maps; the screen
   dialog map's `CScreenDlg` owner is now confirmed statically. The page-level

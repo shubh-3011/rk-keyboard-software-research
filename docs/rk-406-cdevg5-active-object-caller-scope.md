@@ -51,6 +51,36 @@ The targets and method descriptions are corroborated by the row-level
 [27-slot vtable ledger](rk-406-cdevg5-vtable-map.csv). These four dispatches
 do not call the G5 `+0x68` `GetRealData` slot at `0x00410700`.
 
+## Additional selected-entry setter path
+
+A second static path writes the same global from a selected list entry in
+`0x00465A20`. The caller scans ten dialog child records at stride `0x184`,
+comparing the incoming value at `[ebp+0x0C]` with each record's child ID at
+`+0x20` (`0x00465B17`–`0x00465B2D`). The matching ordinal in `EBX` selects a
+node from the list rooted at `0x00603554`; the alternate branch starts from
+`0x0060356C` and subtracts the list base/count field at `0x0060354C`
+(`0x00465B33`–`0x00465B81`). The selected list node's first DWORD is loaded
+into `ESI`, and the following dereference `[ESI]` yields the device object
+(`0x00465B81`–`0x00465B89`).
+
+When the selected object exists, the setter applies several object-field
+checks (`+0x268`, `+0x24C`, `+0x254`) and may dispatch virtual slot `+0x2C`
+(`0x00465B8D`–`0x00465BB9`). The 4.06 G5 vtable maps that slot to
+`0x00410640`, a direct-handle/child predicate whose higher-level meaning is
+unresolved. The branch reaching `0x00465BBF` stores the selected holder `ESI`
+at global `0x0062B380` (`0x00465BC1`) and calls `0x00465830` with the matching
+ordinal and dialog pointer. The helper iterates ten stride-`0x184` records and
+conditionally clears a field/calls an imported function; its broader UI or
+resource semantics are not established here.
+
+This proves an additional selected-entry assignment to the active-holder
+global, but it does not identify the dialog's user-facing feature, prove that
+the selected list is populated by the profile routine at `0x00415900`, or
+establish the concrete object family chosen at runtime. The instruction at
+`0x00465BC1` stores the holder, not the bare device object. These limitations
+also mean this path does not close the `GetRealData` caller/buffer-consumer
+question.
+
 ## Negative-result boundary
 
 This is a bounded caller-scope result. The search used decoded `.text` from
