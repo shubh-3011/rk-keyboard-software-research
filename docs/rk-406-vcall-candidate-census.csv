@@ -80,7 +80,7 @@ slot_load_va,call_va,loaded_register,receiver_register,classification,evidence
 0x0046933E,0x00469345,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0046937F,0x00469386,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00469400,0x00469407,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x0046A003,0x0046A00B,EAX,EDX,unclassified candidate pattern,"receiver local is constructor-initialized, but target object comes from [esp+0x50], written by a helper at 0x00469D60; target vtable provenance is unproved"
+0x0046A003,0x0046A00B,EAX,EDX,unclassified candidate pattern,target object is GDI+ Graphics returned by GdipCreateFromHDC at 0x00469D53 and stored at [esp+0x50]; its internal +0x68 target is unidentified
 0x0046B5B7,0x0046B5BE,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0046B6AD,0x0046B6B4,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0046B753,0x0046B75A,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace

@@ -117,7 +117,7 @@ REVIEWED_UNRESOLVED = {
     0x00464C8D: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
     0x00464D1D: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
     0x00466F58: "DrawTextW-like arguments use a local receiver from [esp+0x24]; its vtable target is not identified",
-    0x0046A00B: "receiver local is constructor-initialized, but target object comes from [esp+0x50], written by a helper at 0x00469D60; target vtable provenance is unproved",
+    0x0046A00B: "target object is GDI+ Graphics returned by GdipCreateFromHDC at 0x00469D53 and stored at [esp+0x50]; its internal +0x68 target is unidentified",
 }
 
 

@@ -670,11 +670,16 @@ in the receiver-offset calculation for `0x0046B6B4`. The call results flow
 into later UI cleanup/staging and are not read as response data.
 
 These eight additions bring the 83-candidate census to 72 resolved and 11
-unclassified. The candidate at `0x0046A00B` remains unclassified even though
-its arguments resemble text drawing: the receiver local is constructor-
-initialized, but the object whose `+0x68` slot is loaded comes from `[esp+0x50]`,
-which is written by a helper at `0x00469D60`. The target object's vtable
-provenance is therefore not established.
+unclassified. Candidate `0x0046A00B` remains unclassified even though its
+arguments resemble text drawing. At `0x00469D49`, the code passes a stack
+out-pointer and an HDC to thunk `0x005890F8`, which the PE import table maps
+to `GdipCreateFromHDC`. It loads the returned object at `0x00469D58` and stores
+that pointer at `[esp+0x50]` at `0x00469D60`; later, `0x0046A003` loads the
+object field at `+0x68` as the indirect target. The call uses a CString pointer,
+its preceding DWORD count, a local rectangle, and flags `0x8135`, but that ABI-
+like shape does not identify the GDI+ object's internal target. The separate
+local initialized by constructor `0x00469CDB` does not establish this object's
+slot target, so no vtable or function identity is claimed.
 
 The earlier candidate at `0x0046E9A1` also resolves to the local text adapter.
 Constructor `0x0046E4C5` initializes the receiver at `[esp+0x2C]`; the call

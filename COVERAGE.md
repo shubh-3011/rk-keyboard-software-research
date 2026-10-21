@@ -730,12 +730,12 @@ For current blockers and the recommended reverse-engineering order, see the
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
   receiver's concrete type remains unknown. Seventy-two register-mediated calls resolve through constructor-established
-  vptrs and slots to `USER32!DrawTextW` (fourteen complete five-call batches plus
-  two additional resolved calls). A hash-pinned census records 90 total
+  vptrs and slots to `USER32!DrawTextW`. A hash-pinned census records 90 total
   pattern matches, with 11 of the 83 additional candidates still unclassified.
   The latest resolved calls are `0x00469407` plus seven sites from
-  `0x0046B5BE` through `0x0046BA05`; `0x0046A00B` remains open because its
-  target-object vtable provenance is unproved. These bounded slices do not
+  `0x0046B5BE` through `0x0046BA05`; `0x0046A00B` uses the opaque Graphics
+  object returned by `GdipCreateFromHDC`, whose internal `+0x68` target is
+  unidentified. These bounded slices do not
   exhaust all `+0x68` calls. The helper has no direct file sink. This does not
   establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
