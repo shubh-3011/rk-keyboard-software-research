@@ -444,9 +444,11 @@ For current blockers and the recommended reverse-engineering order, see the
   lookup and Unicode key-event batches, the added GDI+ property calls to an
   animated-image timer/frame path, and `GetPrivateProfileStringA` to `OPT` /
   `TouchWeb` with an RK Drive URL fallback and selector-`0x12` internal
-  action/command dispatch. The visible control origin, actual browser/device
-  outcome, text-macro identity, asset ownership, and runtime reachability
-  remain open;
+  action/command dispatch. The reconciled main API report also traces the
+  direct `WritePrivateProfileStringW` call at `0x00403643` from the selected
+  locale index to a host `lang.ini` write. The visible control origin, actual
+  browser/device outcome, text-macro identity, asset ownership, write success,
+  and runtime reachability remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
   [`docs/rk-v4.6-native-api-feature-follow-up.md`](docs/rk-v4.6-native-api-feature-follow-up.md).
 - A separate 4.6 hook pass maps four thread-scoped `SetWindowsHookExW`
@@ -787,8 +789,13 @@ For current blockers and the recommended reverse-engineering order, see the
   A full-code reference census
   finds `LightUI` writes only in the profile loader. A separate record census
   traces `DefBri` into runtime `+0x04` during initialization; the selected-row
-  helper and five direct callers do not write that field. No later UI edit was
-  found within the recovered callback boundary. Physical brightness
+  helper and five direct callers do not write that field. The `0x0800` parent
+  handler can conditionally signal worker mask `0x02` and save eligible
+  `0x3E74`-byte objects to `pro.dct`, including current brightness bytes; its
+  observed save-loop mutation is selected-row `+0x213C`, not brightness
+  `+0x04`. Recovered family serializers can conditionally consume the existing
+  value through `LightHW`, but the runtime receiver and UI-to-value-writer edge
+  remain unresolved. Physical brightness
   units and the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),

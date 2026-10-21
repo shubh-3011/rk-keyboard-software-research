@@ -187,6 +187,42 @@ direct callers of `0x00401100`; it keeps the caller class and UI-control
 mapping unresolved. Other `ReleaseSemaphore` sites use a different global
 handle and are not assumed to wake this worker. No worker was run.
 
+## Host-local language preference write
+
+For `DeviceDriver.exe` SHA-256
+`8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9`, the
+reconciled callsite ledger has a direct `KERNEL32!WritePrivateProfileStringW`
+call at `0x00403643` (`FF 15 84 64 5A 00`, IAT VA `0x005A6484`). In the
+surrounding code, the message handler at `0x00403670` compares its `lParam`
+with the child window handle read through `this+0x8C/+0x20`; on a match, it
+reads the selected integer from `this+0x11C` and passes it to `0x00403570`.
+That routine uses the index to select a 120-byte locale-table record, formats
+a `Text\\<locale>\\text.xml` path, and calls the internal locale loader at
+`0x00444320`.
+
+At `0x00403570`, the selected integer is also saved at global `0x0062BD64`.
+The routine formats a local path buffer from the global prefix at
+`0x006352B0` plus the literal `lang.ini`, and formats the integer as decimal
+text with `%d`. The four `WritePrivateProfileStringW` arguments at
+`0x00403643`, in API order, are:
+
+| Argument | Value/source | Evidence |
+| --- | --- | --- |
+| `lpAppName` | `L"OPT"` | Literal at `0x005D0044`, pushed immediately before the call. |
+| `lpKeyName` | `L"LangIndex"` | Literal at `0x005D0030`. |
+| `lpString` | A stack buffer formatted as decimal `%d` from `0x0062BD64` | The selected index is copied to that global; the buffer address is pushed as the value argument. |
+| `lpFileName` | A stack path buffer formatted as `"%slang.ini"`, using global prefix `0x006352B0` | The prefix's runtime contents are not recovered from this callsite. The 4.6 installer callback independently names `{localappdata}\\RKKB\\lang.ini`; see the [installer callback recovery](rk-v4.6-inno-installer-callback-recovery-2026-10-20.md). |
+
+This is a host-side locale preference sink. The API return value is not tested
+in the shown path, so a successful write is not established. The binary's
+direct call and the selected-index flow are statically visible, but whether
+Windows/MFC dispatch reaches `0x00403670`, and the state effects of the
+function-pointer call through global `0x00646C1C` earlier in that handler, are
+not resolved here. The 4.6 installer path corroborates the intended file
+location independently; it does not reveal the runtime contents of the
+native prefix global. This slice contains no keyboard report or device-I/O
+operation.
+
 ## Side LED and text-macro references
 
 ### Proven static references

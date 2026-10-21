@@ -175,12 +175,63 @@ index is established by this census. An untraced indirect alias or callback
 outside the recovered candidate set remains possible; runtime dispatch and
 device behavior were not observed.
 
+## Parent-handler continuation: save path and conditional apply
+
+The `0x0800` handler continues beyond the state-copy helper. `FUN_00422190`
+first forwards the same `wParam`/`lParam` to `FUN_00422220`; for `lParam`
+`0x95`, that callee reads `LightUI[wParam]` and formats it for a child
+control. The handler then calls `FUN_00425440`, whose selected-record stores
+and special-row global copies are summarized above.
+
+After those calls, the handler checks global `0x00611794`. If it is zero, it
+returns without the worker signal or save call. If nonzero, it queries the
+child at `this+0xAC` with `SendMessageW(0x110A, 9, 0)` and searches the linked
+rows at `this+0x1B0`. When the matched row has `+0x10 == 0x1E`, the handler
+returns before both the worker signal and save. Otherwise it rechecks
+`0x00611794`; if still nonzero, it calls `FUN_00401080(0x02)` at
+`0x004221F7`. It then calls `FUN_0045ABF0(0x0061175C)` at `0x00422202`.
+These guards and calls are visible in `0x004221AB`–`0x00422207`.
+
+`FUN_0045ABF0` builds a `%s%04X\\%s` path using the supplied active ID and
+the filename `pro.dct`, opens it with `CreateFileW` using `CREATE_ALWAYS`,
+and loops over eligible objects in the list rooted at `0x006035B4`. For each,
+it calls `WriteFile` with the object pointer and length `0x3E74`. The known
+configuration layout places the runtime record array, including its first
+record's `+0x04` value at object offset `+0x2144`, inside that range. Thus the
+save path can persist the current brightness-index bytes as part of the raw
+object. In this loop the only explicit object mutation observed is changing
+selected-row field `+0x213C` from `0x1E` to the byte at `0x00612B01` before
+the write; there is no explicit store to record `+0x04`. The file write is
+therefore evidence of persistence of the current value, not evidence that
+this handler selected or changed that value. The `.dct` path and full-file
+behavior are also recorded in the [UI event and worker audit](rk-ui-event-worker-path-audit.md).
+
+For the optional mask-`0x02` branch, `FUN_00401080` stores the mask with bit
+`0x8000` cleared at `0x0061972C` and releases semaphore `0x00619724`. The
+worker `FUN_00401170` later dispatches through the active root object's
+virtual slot `+0x3C` at `0x004012A0`. RTTI-backed class targets include
+`CDevRKKB` → `FUN_00413BF0`, `CDevG5KB` → `FUN_00411B90`, and
+`CDev3632` → `FUN_0040E690` (which enters the G5/3632 orchestrator). In the
+recovered mask-`0x02` LED paths, the serializers can read record `+0x04`,
+index `LightHW`, and place the translated byte into a device payload. This
+is a conditional serialization of the value already in the record; it does
+not show that selector `0x95` supplied that value. The worker's concrete
+receiver and the execution of this handler's mask through a specific family
+serializer remain unresolved. The shared worker stores one mask value rather
+than a distinct queued record per signal, as detailed in the
+[Apply worker audit](rk-settings-apply-worker-audit.md).
+
 ## Evidence boundary
 
 | Claim | Status |
 | --- | --- |
 | Selector `0x95` reads and formats `LightUI[index]` | **Proven statically** |
 | `0x0800` calls the formatter and the general state-copy helper, then can signal worker mask `0x02` | **Proven statically** |
+| `0x0800` can save eligible configuration objects to `pro.dct` as raw `0x3E74`-byte records | **Proven statically; active path is guard/row dependent** |
+| That raw save contains the existing record `+0x04` bytes for objects with this layout | **Proven from the recovered object layout and copy length** |
+| The `0x0800` save loop assigns a new brightness index | **Not found; its observed field mutation is selected-row `+0x213C`** |
+| The `0x0800` mask-`0x02` signal reaches a particular family serializer | **Unresolved; worker receiver is indirect/runtime-dependent** |
+| A family serializer conditionally reads `+0x04` through `LightHW` | **Proven statically for the recovered class paths; connection to this event is conditional** |
 | The helper's selected lighting-row writes include `+0x08`, `+0x0C`, `+0x18`, `+0x34`, not brightness index `+0x04` | **Proven statically for this helper** |
 | Runtime record `+0x04` initializes from `DefBri`, then the two serializer families index `LightHW` with it | **Proven statically** |
 | Full code reference sweep finds LightUI writes only in `FUN_004513B0` | **Proven within the stated sweep and xref boundary** |
