@@ -74,19 +74,83 @@ After a valid handle is returned, the helper calls:
 3. `HidP_GetCaps` at `0x004174EB`; a successful status enters capability
    processing at `0x00417504`.
 
-The code passes a local buffer to `HidD_GetAttributes`, but this helper does
-not visibly branch on or compare a vendor/product ID from that buffer. The
-capability path calls `HidP_GetSpecificButtonCaps` at `0x00417673` and
-`HidP_GetSpecificValueCaps` at `0x004176A5` when the corresponding counts are
-nonzero. It then searches a global record table through `0x00417300`, creates
-or initializes an internal object at `0x00417534`, and copies HID capability
-words into fields at offsets `+0x208` through `+0x224`.
+The helper passes a local buffer to `HidD_GetAttributes`. After successful
+`HidP_GetCaps`, it calls `HidP_GetSpecificButtonCaps` at `0x00417673` and
+`HidP_GetSpecificValueCaps` at `0x004176A5` when their corresponding counts
+are nonzero. It then searches a global record table through `0x00417300`,
+initializes a record at `0x00417534`, and copies metadata into fields at
+offsets `+0x208` through `+0x224`.
+
+### Capability selector and row gate
+
+The successful `HidP_GetCaps` path passes its local `HIDP_CAPS` block to
+`FUN_004175C0` at `0x0041750D`. That helper visits report types in the literal
+order `{2, 0, 1}` (Feature, Input, Output), checks each type's button-cap count
+before its value-cap count, and skips a query when that count is zero. For each
+query it passes zero for UsagePage, LinkCollection, and Usage, then compares
+the returned status with `0x00110000`. On the first successful query, it
+returns byte `+2` of the first returned cap record; the documented
+`HIDP_BUTTON_CAPS` and `HIDP_VALUE_CAPS` layouts identify that byte as
+`ReportID`. Microsoft documents that all three zero selection criteria are
+equivalent to requesting all button or value caps for that report type. If no
+query succeeds, this helper returns zero. The caller zero-extends this result
+and does not test it before trying to obtain a record slot, so it is recorded
+metadata rather than a visible eligibility/rejection gate in this slice.
+
+`FUN_00417300` searches the 80-row pool from `0x0063BE30` in `0x22C`-byte
+steps for the first row whose leading `WORD` is zero; it returns that row
+pointer or null if none is free. The caller tests only this pointer at
+`0x00417521`. A null pointer skips row initialization, while a non-null
+pointer reaches the direct initializer call at `0x00417534` and these stores:
+
+| Row offset | Value copied by the helper |
+| --- | --- |
+| `+0x208` | Zero-extended `ReportID` returned by `FUN_004175C0` (zero if no query succeeded) |
+| `+0x20C` | `HIDP_CAPS.InputReportByteLength` |
+| `+0x210` | `HIDP_CAPS.OutputReportByteLength` |
+| `+0x214` | `HIDP_CAPS.FeatureReportByteLength` |
+| `+0x218` | `HIDP_CAPS.UsagePage` |
+| `+0x21C` | `HIDP_CAPS.Usage` |
+| `+0x220` | `HIDD_ATTRIBUTES.VendorID` |
+| `+0x224` | `HIDD_ATTRIBUTES.ProductID` |
+
+The `HidD_GetAttributes` return is not tested before the last two values are
+copied, and no instruction in this helper initializes the local
+`HIDD_ATTRIBUTES.Size` field before that call. The API documentation requires
+the caller to set `Size`; this is a static call-site gap, not evidence of the
+runtime outcome. `VersionNumber` is not copied in this row-writing sequence.
+Although VID/PID are retained, no VID/PID comparison or model/profile mapping
+appears in this bounded path. See Microsoft's references for
+[`HIDP_CAPS`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/hidpi/ns-hidpi-_hidp_caps),
+[`HIDP_BUTTON_CAPS`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/hidpi/ns-hidpi-_hidp_button_caps),
+[`HIDP_VALUE_CAPS`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/hidpi/ns-hidpi-_hidp_value_caps),
+[`HIDD_ATTRIBUTES`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/hidsdi/ns-hidsdi-_hidd_attributes),
+[`HidP_GetSpecificButtonCaps`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/hidpi/nf-hidpi-hidp_getspecificbuttoncaps), and
+[`HidP_GetSpecificValueCaps`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/hidpi/nf-hidpi-hidp_getspecificvaluecaps).
+
+The outer enumerator tests the helper's return at `0x0041739F`: a nonzero
+result reaches early cleanup at `0x004173D4`, while zero advances the index
+and calls `SetupDiEnumDeviceInterfaces` again at `0x004173AF`. The analyzed
+helper returns zero on its visible allocation-failure exit (`0x00417445`) and
+its common post-processing exit (`0x004175B0`), including after row
+population. Thus the early-stop branch is not a successful-device signal for
+these statically visible helper paths. No model identity or runtime selection
+is established here.
 
 The opened handle reaches `CloseHandle` at `0x00417597`; the allocated detail
 buffer is released through `0x00575283` at `0x0041759E`. The failure branch
 after `HidP_GetCaps` calls `HidD_FreePreparsedData` at `0x004174F9`. A matching
 free is not visible on the successful branch within this helper, so its
 successful-path lifetime is unresolved by this trace.
+
+Across the bounded outer-enumerator, interface-helper, and selector ranges
+(`0x00417330–0x004175BA` and `0x004175C0–0x00417714`), this follow-up found no
+additional unresolved register-indirect calls or jumps. The helper's two
+`call ebp` SetupAPI sites were resolved separately in the
+[root-CFG audit](rk-v4.6-rooted-cfg-callgraph-audit.md#per-interface-setupapi-detail-calls);
+the remaining indirect call operand is the symbol-resolved `CloseHandle` IAT
+entry, and the other calls in these ranges are direct relative calls or
+symbol-resolved IAT calls.
 
 ## What this establishes
 

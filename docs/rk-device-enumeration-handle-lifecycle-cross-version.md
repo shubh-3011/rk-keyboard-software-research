@@ -80,16 +80,18 @@ when `HidP_GetCaps` fails after preparsed data has been acquired:
 | 4.06 | `HidD_GetPreparsedData`, `0x0041664D` | `HidD_GetAttributes`, `0x0041665C` | `HidP_GetCaps`, `0x0041666B` | `0x00416679` (GetCaps failure edge) | `0x00416717` |
 | 4.6 | `HidD_GetPreparsedData`, `0x004174CD` | `HidD_GetAttributes`, `0x004174DC` | `HidP_GetCaps`, `0x004174EB` | `0x004174F9` (GetCaps failure edge) | `0x00417597` |
 
-In both helper ranges, an attributes-query failure after preparsed-data
-acquisition branches to handle cleanup without a direct free call. The
-successful `HidP_GetCaps` path proceeds through specific-capability queries,
-row recording, and handle close, with no further direct
-`HidD_FreePreparsedData` call. Static cross-reference inventory finds no
-other direct free call in either image. These branches make an unreleased
-preparsed-data allocation a **static leak candidate** on the attributes-fail
-and success paths. This is not a runtime leak measurement: indirect cleanup,
-callee behavior, exceptional exits, or ownership conventions were not
-established here.
+In both helper ranges, the return from `HidD_GetAttributes` is not tested;
+execution proceeds directly to `HidP_GetCaps`. The only visible conditional
+free is on the `HidP_GetCaps` failure edge. If capabilities succeed, execution
+continues through selector/capability processing and row handling, then closes
+the file handle; it does not directly free preparsed data. The acquired
+preparsed-data pointer is held in a stack local, passed to the HID capability
+APIs, and is not copied into the table row or passed to the outer enumerator.
+Full static callsite inventories show no other direct
+`HidD_FreePreparsedData` call in either image. This makes the successful
+`HidP_GetCaps` path a **static release-gap candidate**. It is not a runtime leak
+measurement: release by an indirect mechanism or an API ownership convention
+was not established.
 
 ## Findings and unresolved items
 
@@ -99,10 +101,13 @@ established here.
 - **Proven statically:** the helpers make no feature-report request in their
   analyzed ranges; the recorded table row contains selector/capability
   metadata, not the opened handle.
-- **Static leak candidate:** `HidD_FreePreparsedData` appears once per image
-  and its direct callsite is restricted to the `HidP_GetCaps` failure edge;
-  no direct release is present on the visible attributes-failure or success
-  edges.
+- **Proven statically:** neither per-interface helper tests the
+  `HidD_GetAttributes` return before calling `HidP_GetCaps`; the previous
+  wording that described an attributes-failure cleanup edge was incorrect.
+- **Static release-gap candidate:** `HidD_FreePreparsedData` appears once per
+  image and its direct callsite is restricted to the `HidP_GetCaps` failure
+  edge. On the successful-capabilities path, the pointer remains local to the
+  helper and no direct release is present before return.
 - **Unresolved:** what sets the access-selector DWORD away from its initial
   zero; why the alternate branch requests access zero; the semantic meaning
   of the selector/capability row for each profile; whether cleanup is

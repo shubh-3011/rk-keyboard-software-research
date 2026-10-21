@@ -63,21 +63,54 @@ initialized to selector `0x95` for one LightUI-based control construction:
   field into `lParam` before posting `0x0800` and `0x0801`, respectively.
 
 This proves the selector assignment to field `+0x9E0` on that construction
-path and the matching sender-field offset. It does not prove that one of those
-sender methods is invoked on that constructed instance at runtime. The
-`wParam` values remain dynamic or caller arguments, and a specific
-widget-to-index mapping is unresolved.
+path and the matching sender-field offset. In isolation, this data-flow did
+not prove that one of those sender methods is invoked on that constructed
+instance at runtime; the message-map bridge below adds the static class-level
+association. The `wParam` values remain dynamic or caller arguments, and a
+specific widget-to-index mapping is unresolved.
+
+## RTTI-backed child-class and message-map bridge
+
+The constructor and MFC metadata statically identify the object used by that
+selector initializer:
+
+- `CLedDlg` constructor `0x004210C0` calls `0x0044CBE0` with `this+0x1A6C`
+  (`0x00421177`). The same constructor calls it for other offsets, but this
+  selector path specifically passes `this+0x1A6C`.
+- Constructor `0x0044CBE0` writes vptr address point `0x005D5EF4`. Its RTTI
+  Complete Object Locator at `0x005E4664` references TypeDescriptor
+  `0x00603B54`, whose name is `.?AVCPngSliderBar@@`.
+- The `CPngSliderBar` vtable's `GetMessageMap` slot calls `0x0044CDD0`, which
+  returns map descriptor `0x005D5EA8`; that descriptor points to entries at
+  `0x005D5DD0`. The entries bind private message `0x0800` to `0x0044DA80`
+  and `0x0801` to `0x0044DAC0` (both signature `0x0E`).
+- Those two methods load `[this+0x9E0]` into `lParam`, call `GetParent`, then
+  post their corresponding private message through `PostMessageW`. The
+  selector initialization above stores `0x95` at this same field on the
+  `CLedDlg+0x1A6C` child object.
+- The `CLedDlg` MFC map separately binds `0x0800` to `0x00422190` and `0x0801`
+  to `0x00422220`. The latter handles `lParam == 0x95` through the `LightUI`
+  table path described above.
+
+Together, this establishes a static object/type/map/data-flow bridge:
+`CLedDlg+0x1A6C` is constructed as `CPngSliderBar`; that class's message map
+associates the two private IDs with methods that post the same IDs and the
+stored selector to the parent; and `CLedDlg` has matching parent handlers.
+This supports a child-to-parent message route for selector `0x95`, but does
+not establish that Windows dispatches either callback for this instance in a
+particular run or identify the user-visible label/behavior of the control.
 
 ## Limits
 
 - The literal `PostMessageW` callsites and arguments are proven, while
   computed-message sends or alternate API wrappers are outside this literal
   search.
-- The owning `CLedDlg` relationship is inferred from the parent-window path
-  and matching map IDs; it is not runtime evidence.
-- Whether the initialized `+0x9E0` value is later overwritten, which child
-  control initiates the posts, and what visible label it represents remain
-  unresolved.
+- The parent HWND identity is not observed at runtime; its association with
+  `CLedDlg` is supported statically by the child being constructed at
+  `CLedDlg+0x1A6C` and by the matching parent-map IDs.
+- Whether the initialized `+0x9E0` value is later overwritten, what action
+  delivers the private messages to the child handlers, and what visible label
+  or behavior the control represents remain unresolved.
 - The message path does not prove a brightness adjustment, a family-specific
   serializer selection, or any physical keyboard effect.
 

@@ -198,6 +198,66 @@ window-geometry path. It does not recover the receiver's concrete runtime
 class, and it does not prove that every other `+0x68` receiver is unrelated to
 G5. The other three sites also have rectangle/layout data flow, and their
 receivers are not statically identified as `CDevG5KB`.
+
+### Additional two-argument rectangle/layout callsites
+
+Five more `+0x68` callsites in the pinned image have a rectangle pointer and a
+scalar or Boolean argument. Their decoded argument provenance and immediate
+consumers are:
+
+| Call instruction | Receiver and arguments | Output use after the call |
+| --- | --- | --- |
+| `0x0052C160` | The enclosing method saves `this` from `ECX` in `EBX`. It calls `0x004787A4(this, 0xE900)`, then uses the returned `EAX` object as receiver; it passes a local 16-byte rectangle copied from `[ebx+0x130..+0x13C]` and `[ebp-4]`. That local is set to 0 or 1 from a child-object check at `0x0052C0B5..0x0052C0CB`. | Reads all four rectangle fields and computes four coordinate deltas against `[ebx+0x130..+0x13C]`. |
+| `0x0052C19E` | Receiver is `this` in `EBX`; passes a local 16-byte rectangle and the same Boolean `[ebp-4]`. | Passes the returned rectangle to `USER32!IntersectRect` through IAT `0x0059E690`, with `[ebx+0x140]` as the other rectangle. |
+| `0x0052C83D` | In method `0x0052C7CB`, `EBX` holds `this`; `0x004787A4(this, 0xE900)` supplies the receiver in `EAX`. Passes a local rectangle copied from `[ebx+0x130..+0x13C]` and literal `1`. | Reads all four returned fields and uses their deltas against the four parent coordinates to update another local rectangle. |
+| `0x0052C94A` | In method `0x0052C889`, `EBX` holds `this`; `0x004787A4(this, 0xE900)` supplies the receiver in `EAX`. Passes a local rectangle copied from `[ebx+0x130..+0x13C]` and literal `1`. | Reads all four fields and computes coordinate deltas against the parent rectangle. |
+| `0x0052C988` | Receiver is `this` in `EBX`; passes a local rectangle and Boolean `[ebp-4]`, derived from a child-object check earlier in the method. | Passes the returned rectangle to `USER32!IntersectRect` through IAT `0x0059E690`, then continues with rectangle clipping and layout calls. |
+
+The receiver provenance supports a UI interpretation for this group. In the
+fallback branch, helper `0x004787A4` calls `USER32!GetDlgItem` through IAT
+`0x0059E628` using the parent window handle and control ID `0xE900`, then
+passes the resulting handle through `0x004752FD`; its alternate branch
+dispatches through an already stored child object. The rectangle data is then
+consumed as four coordinates, with two sites feeding `IntersectRect`. For
+`this`-receiver context, nearby constructor `0x0052C057` stores vtable address
+point `0x005B6DF4`; its RTTI names `COleDocIPFrameWnd`, and that table's `+0x68`
+entry at `0x005B6E5C` is `0x004B4B05`, not the G5 target `0x00410700`. This
+corroborates a separate MFC window-object path in this code area. The
+individual callsites do not prove the dynamic class of any receiver or rule
+out all runtime aliases.
+
+These five sites are bounded false-positive resolutions based on their
+rectangle producers, Boolean/flag arguments, and subsequent geometry use;
+they do not reveal a caller of G5 `GetRealData` or a consumer of its response
+buffer. In particular, the helper-returned receiver's concrete vtable is not
+proved at these callsites, and the G5 caller/buffer-consumer trace remains
+open.
+
+### Five register-mediated candidates: resolved text calls
+
+I checked a bounded batch of five more register-mediated candidates from the
+same hash-pinned image. In each, the receiver is a local object whose vptr is
+written by constructor `0x0047105C` to `0x0059F314`; no intervening write to
+that vptr appears before dispatch. Its `+0x68` entry at `0x0059F37C` contains
+`0x0047111A`. That wrapper forwards the object's `this+4` field and four
+arguments through IAT VA `0x0059E6B8`, mapped by the PE import table to
+`USER32.dll!DrawTextW`. The four-argument cleanup (`ret 0x10`) also differs
+from the G5 `GetRealData` wrapper's `ret 8`.
+
+| Call instruction(s) | Receiver provenance and argument producers | Consumer / resolution |
+| --- | --- | --- |
+| `0x00406F00`, `0x00406F4C`, `0x00406F95` | Constructor `0x0047105C` at `0x00406A0B` initializes the local at `[esp+0x38]`; after four arguments are pushed, `[esp+0x48]` is that same object's vptr. Each branch passes a CString text pointer, its preceding DWORD at `[text-0xC]` as count, a local rectangle, and flags `0x8136`. | Same proven `DrawTextW` adapter on three branches of one routine; no response-buffer use follows. |
+| `0x0043526A` | Constructor `0x0047105C` at `0x00435129` initializes the local at `[esp+0x0C]`; after four arguments are pushed, `[esp+0x1C]` is its vptr. The arguments are text from `[esi+0x530]`, count from `[text-0xC]`, a local rectangle, and flags `0x8135`. | Proven `DrawTextW` adapter; the return is not used as a buffer or length. |
+| `0x0044AE80` | Constructor `0x0047105C` at `0x0044A6CC` initializes the local at `[esp+0x5C]`; after four arguments are pushed, `[esp+0x6C]` is its vptr. This branch passes text from `[edi+0x8C]`, count from `[text-0xC]`, a local rectangle, and a flag from `[edi+0xB8]`. | Proven `DrawTextW` adapter; afterward the rectangle fields feed width/height calculations and the following drawing/layout calls. |
+
+These five register-mediated candidates are resolved false positives for the
+G5 caller search: their constructor-established vptr and slot target prove a
+local text-rendering path. This batch does not resolve the other members of
+the loose 83-pattern set or every `+0x68` dispatch in the image. Other
+register-mediated loads may still have unresolved receiver aliases; none of
+the findings above establish a caller of `0x00410700` or identify a consumer
+of its response buffer.
+
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.
 

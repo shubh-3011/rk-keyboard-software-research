@@ -434,10 +434,11 @@ For current blockers and the recommended reverse-engineering order, see the
 - A cross-version static trace follows HID class discovery through interface
   path retrieval, `CreateFileW`, preparsed-data/capability queries, metadata
   storage, and `CloseHandle` in the installed 4.06 and extracted 4.6 drivers.
-  Both use an 80-row pool and a data-controlled access mask; visible
-  `HidD_FreePreparsedData` calls occur only on the `HidP_GetCaps` failure edge,
-  leaving a static leak candidate on other exits. Runtime ownership and the
-  selector's nonzero case remain unresolved. See the
+  Both use an 80-row pool and a data-controlled access mask. Neither checks
+  the `HidD_GetAttributes` return before `HidP_GetCaps`; each image has one
+  direct `HidD_FreePreparsedData` call on the `HidP_GetCaps` failure edge,
+  while the success path has a static release-gap candidate. Runtime ownership
+  and the selector's nonzero case remain unresolved. See the
   [enumeration lifecycle audit](docs/rk-device-enumeration-handle-lifecycle-cross-version.md).
 - A new 4.6 API follow-up traces `SendInput` to a gated 50-record UTF-16 text
   lookup and Unicode key-event batches, the added GDI+ property calls to an
@@ -714,7 +715,13 @@ For current blockers and the recommended reverse-engineering order, see the
   remains unresolved. A new holder trace shows one concrete G5 object reaching
   global `0x0062B380`; the decoded calls through that holder use `+0x14` and
   `+0x28`, not `+0x68`. This narrows one alias path but does not exclude other
-  aliases, callbacks, or dispatch forms. The helper has no direct file sink.
+  aliases, callbacks, or dispatch forms. Five additional superficially
+  compatible `+0x68` calls are traced through rectangle producers and geometry
+  consumers; they support layout-helper interpretations, while the child
+  receiver's concrete type remains unknown. A separate five-call register-
+  mediated batch is resolved through a constructor-established vptr and slot
+  to `USER32!DrawTextW`. These bounded slices do not exhaust the 83-pattern
+  candidate set or all `+0x68` calls. The helper has no direct file sink.
   This does not establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
   and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
@@ -757,7 +764,9 @@ For current blockers and the recommended reverse-engineering order, see the
   RGB-table commands `10`/`9`, color-group commands `6`/`2`, and RKKB `02 29`
   and `03 7E` paths. A follow-up confirms dynamic `LedOpt%d` reads, tuple cell
   4's conditional effect on runtime-record `+0x08`, and tuple cells 2–6's UI
-  state path. Full tuple semantics, label-to-effect mapping, channel meaning,
+  state path. Cells 2, 3, 5, and 6 also gate specific child-object offsets
+  through `CWnd::ShowWindow`; control IDs and labels remain unresolved. Full
+  tuple semantics, label-to-effect mapping, channel meaning,
   and profile-to-color-group mapping remain unresolved; static packer
   structure is not physical-device validation. See
   `docs/rk-rgb-lighting-color-payload-audit.md` and
@@ -771,10 +780,15 @@ For current blockers and the recommended reverse-engineering order, see the
   paint handler and its `0x0800`/`0x0801` handlers. Four and five literal
   `PostMessageW` sender sites are recovered for those messages, respectively.
   One LightUI-based construction path stores selector `0x95` in the `+0x9E0`
-  field later used by its sender pair; runtime sender association and which
-  child control sends them remain unresolved. A full-code reference census
-  finds `LightUI` writes only in the profile loader; no separate UI setter or
-  runtime brightness-index update was found in this pass. Physical brightness
+  field of `CLedDlg+0x1A6C`, constructed as RTTI-identified `CPngSliderBar`.
+  Its recovered MFC map binds `0x0800`/`0x0801` to the matching sender pair,
+  and the parent `CLedDlg` map has corresponding handlers. Runtime dispatch,
+  visible label/meaning, and widget-to-writer association remain unresolved.
+  A full-code reference census
+  finds `LightUI` writes only in the profile loader. A separate record census
+  traces `DefBri` into runtime `+0x04` during initialization; the selected-row
+  helper and five direct callers do not write that field. No later UI edit was
+  found within the recovered callback boundary. Physical brightness
   units and the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),

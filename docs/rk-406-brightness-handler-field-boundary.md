@@ -114,6 +114,67 @@ association, changing `wParam` source, the actual `+0x04` UI setter if one
 exists, and its worker-to-family-writer edge remain unresolved. No runtime
 execution or device interaction was performed.
 
+## Runtime brightness-index write census
+
+This follow-up also checked the runtime record field independently of the
+`LightUI` table. The exact input remained
+`C:\Users\shubh\Downloads\sshorcale\_rk_analysis\inputs\DeviceDriver.exe`
+with SHA-256
+`C03F88BC4E2D78AA4392D7445B0FD62182DC824F97F5D5DB40BD009E547A9AB6`.
+The scan searched the full `objdump -d -Mintel` disassembly for record-base
+operands `0x2138`, `0x2140`, and `0x2144`, then traced the observed dynamic
+row calculation and every direct call to `FUN_00425440`. The complete
+recovered `CLedDlg` MFC map was used to include handlers that do not call that
+copy helper. This bounds the negative result to these record references and
+candidate UI callbacks; it does not resolve every possible indirect alias.
+
+**Proven statically — initialization:** profile loader `FUN_004513B0` stores
+`[OPT] DefBri` in global `0x00611850` at `0x00451C2A`. Construction routine
+`FUN_0045A7D0` calls `FUN_0045A430` at `0x0045A7FD`. The initializer clears
+the lighting-record area, reads `0x00611850` at `0x0045A4B5`, forms the first
+record base at `config + 0x2140`, and stores the default to that record's
+`+0x04` at `0x0045A505`. Its loop advances by `0x30` bytes for each of 24
+records, so this is a profile-derived initializer, not evidence of a later
+user edit.
+
+**Candidate UI writer checked — no `+0x04` store:** the selected-row helper
+`FUN_00425440` forms a row pointer as `config + 0x2138 + index * 0x30`. Its
+stores are to offsets `+0x08` (`0x004254F1`), `+0x0C` (`0x004254F9`),
+`+0x18` (`0x00425505`), and `+0x34` (`0x00425514`). For special row
+`0x1E`, it copies separate fields to globals. It never stores row offset
+`+0x04`. A full direct-call search found these five callsites:
+
+- `0x004221A6`, from `FUN_00422190`, the `CLedDlg` private-message handler
+  `0x0800`.
+- `0x00422601`, from `FUN_00422580`, mapped to private messages `0x0461` and
+  `0x05D1`.
+- `0x004226E2`, from `FUN_00422640`, mapped to private message `0x0482`.
+- `0x00422883`, from `FUN_00422780`, mapped to private message `0x0481`.
+- `0x00424A97`, from child-HWND callback `FUN_004248C0`; its particular
+  control and message-map owner remain unresolved.
+
+The other likely row-selection callbacks do not establish a brightness edit.
+`FUN_00422430` (message `0x0594`) stores the selected row number at object
+offset `+0x213C` and refreshes UI through `FUN_00424B10`. `FUN_004251E0`
+(message `0x08B3`) also changes `+0x213C`, then calls refresh helper
+`FUN_00425340`. These fields identify the active row; they are before the
+record array at `+0x2140`. `FUN_00422220` formats the value read from
+`record +0x04` through `LightUI`; `FUN_00424B10` likewise reads that field
+for display at `0x00424BCA`. Neither is a setter. The remaining entries in
+the recovered `CLedDlg` map are paint, generic pointer routing, cleanup, or
+no-op handlers; no additional `+0x04` store was found in those candidate
+callbacks.
+
+**Bounded negative result:** the full-image search found `0x0045A505` as the
+runtime record `+0x04` store in the traced construction path. The two literal
+`0x2144` memory operands, at `0x00411A9B` and `0x00424BCA`, are reads by a
+serializer and a UI formatter. The only inspected dynamic selected-row
+writer is `FUN_00425440`, whose direct callers are listed above and whose
+stores exclude `+0x04`. No subsequent UI edit to the runtime brightness
+index is established by this census. An untraced indirect alias or callback
+outside the recovered candidate set remains possible; runtime dispatch and
+device behavior were not observed.
+
 ## Evidence boundary
 
 | Claim | Status |
@@ -125,6 +186,9 @@ execution or device interaction was performed.
 | Full code reference sweep finds LightUI writes only in `FUN_004513B0` | **Proven within the stated sweep and xref boundary** |
 | Separate UI path mutates runtime record `+0x04` | **Not found in this pass; unresolved outside the traced handlers** |
 | `0x0800` or selector `0x95` mutates record `+0x04` | **Not established by these handlers** |
+| `FUN_0045A430` initializes each record `+0x04` from profile `DefBri` | **Proven statically** |
+| Candidate selected-row UI helper `FUN_00425440` writes record `+0x04` | **Not found; its stores are at `+0x08`, `+0x0C`, `+0x18`, `+0x34`** |
+| UI callback edits runtime record `+0x04` after initialization | **Not established by this bounded census** |
 | This UI event selects RKKB vs G5/3632, reaches a specific writer, or produces a known physical brightness | **Unresolved** |
 | Values represent percent, luminance, or another measured physical unit | **Unresolved** |
 

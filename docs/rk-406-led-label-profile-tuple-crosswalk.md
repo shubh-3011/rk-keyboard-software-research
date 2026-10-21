@@ -63,6 +63,16 @@ and their firmware-side effects remain unresolved. The
 profile-localized comments for some options but does not establish a universal
 cell-to-effect or cell-to-command mapping.
 
+A further disassembly pass ties four fields to child-object visibility calls
+in `FUN_00424B10`: cell 2 gates dialog-object offsets `+0x106C` and `+0x0364`,
+cell 3 gates `+0x1A6C` and `+0x01E0`, cell 5 gates `+0x2AB4`, and cell 6 gates
+`+0x2C38` and `+0x6D94` (subject to global gate `0x006117C4`). Cell 4 has a
+separate conditional effect on runtime-record `+0x08`, but no direct
+visibility consumer was identified in this sequence. These are child-object
+offsets, not numeric control IDs or names. See the expanded
+[profile-to-record path audit](rk-lighting-profile-record-path-audit.md) for
+callsite addresses and the exact limits.
+
 ## Snapshot counts
 
 | Locale | Candidate rows | Localized labels present | Unmasked candidates with empty label | `LedOptN` present |

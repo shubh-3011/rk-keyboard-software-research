@@ -182,6 +182,25 @@ selector-`0x95` path that formats the `LightUI` value at
 `0x00611854 + index` for a runtime control; it is not evidence of a
 `LedOpt`-to-record setter.
 
+The same routine turns four of the copied tuple fields into explicit child
+window visibility calls. It converts each nonzero flag to argument `5` and
+zero to argument `0` before calling the `CWnd::ShowWindow` wrapper at
+`0x00478985`:
+
+| Tuple cell | Dialog field | Child-object offsets passed to `ShowWindow` | Callsites |
+| ---: | ---: | --- | --- |
+| 2 | `+0x2C4C` | `+0x106C`, `+0x0364` | `0x00424F5A`, `0x00424F66` |
+| 3 | `+0x2C54` | `+0x1A6C`, `+0x01E0` | `0x00424F35`, `0x00424F41` |
+| 4 | `+0x2C50` | No direct visibility gate identified in this sequence | — |
+| 5 | `+0x2C5C` | `+0x2AB4` | `0x00424F81` |
+| 6 | `+0x2C60` | `+0x2C38`, `+0x6D94` | `0x00424FA5`, `0x00424FB1` |
+
+For cell 6, global `0x006117C4` can force the `ShowWindow` argument to zero
+at `0x00424F93`–`0x00424F9C`. This ties tuple availability values to child
+object offsets and callsites, but it does not recover the controls' numeric
+IDs, labels, or user-edit callbacks. Cell 4's separate value-1/value-2 effect
+on runtime-record `+0x08` remains as described above.
+
 `DAT_00612B00` is assigned the return value of `FUN_00422DA0` during dialog
 construction. The settings and RGB packers use it as their runtime row
 count. The exact construction logic that decides this count, its relation to
