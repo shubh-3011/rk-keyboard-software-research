@@ -69,6 +69,51 @@ inner RKKB payload prefix; command `4` belongs to the G5/3632 serializer path.
 These distinctions do not establish what a connected keyboard reports or
 what luminance results.
 
+## LightUI write census and nearest UI edge
+
+For this follow-up, `C:\Users\shubh\Downloads\sshorcale\_rk_analysis\inputs\DeviceDriver.exe`
+was re-hashed and matched the installed image SHA-256 above. I disassembled
+its executable code with `objdump -d -Mintel` and searched the complete
+disassembly for each absolute byte address from `0x00611854` through
+`0x00611878`, covering the 20-byte `LightUI` table
+(`0x00611854`–`0x00611867`) and adjacent `LightHW` table. The sweep found 17
+instruction operands in the LightUI range, including indexed operands such as
+`[reg+0x00611854]`; the existing Ghidra global-xref export was cross-checked
+for the exact `0x00611854` object.
+
+**Observed statically:** every identified write to `LightUI` is inside profile
+loader `FUN_004513B0`:
+
+- `0x00451A85`–`0x00451A9D` clears the 20-byte table before loading profile
+  data.
+- At `0x00451ABE`, the loader sets `EDI` to the table base and calls the
+  profile-list parser with a maximum count of `0x14` (20). Its indexed stores
+  are at `0x00451B1A`, `0x00451B56`, and `0x00451B77`. The latter two are the
+  fallback sequences that fill five or six entries with their indices.
+- `0x00451BDC` reads the loaded table while copying it into `LightHW` when
+  that profile list is missing or invalid; it does not write back to
+  `LightUI`.
+
+The other direct `LightUI` references are reads: `0x004222D1` formats the
+indexed value for selector `0x95`; `0x00423630` scans entries 19 down to 0 to
+choose an initial row index for a constructed UI control; and `0x00424BD8`
+formats the selected record's indexed value during a UI refresh. The nearby
+constructor call at `0x004236D9` passes that initial index and selector
+`0x95` to `FUN_00450140`; the existing sender trace shows selector `0x95`
+stored in child field `+0x9E0`. The `0x0801` handler's formatter is a read
+path. The `0x0800` handler and `FUN_00425440` copy other fields and can signal
+worker mask `0x02`, but this trace does not show either writing a `LightUI`
+entry or runtime brightness-index field `+0x04`.
+
+**Bounded negative result:** this full-code literal-reference sweep and the
+exact-global xref export find no separate `LightUI` setter or writer outside
+`FUN_004513B0`; no new path from the selected UI index to runtime record
+`+0x04` was found. This is not a claim that every indirect alias or runtime
+control path has been resolved: the visible control's sender-instance
+association, changing `wParam` source, the actual `+0x04` UI setter if one
+exists, and its worker-to-family-writer edge remain unresolved. No runtime
+execution or device interaction was performed.
+
 ## Evidence boundary
 
 | Claim | Status |
@@ -77,6 +122,8 @@ what luminance results.
 | `0x0800` calls the formatter and the general state-copy helper, then can signal worker mask `0x02` | **Proven statically** |
 | The helper's selected lighting-row writes include `+0x08`, `+0x0C`, `+0x18`, `+0x34`, not brightness index `+0x04` | **Proven statically for this helper** |
 | Runtime record `+0x04` initializes from `DefBri`, then the two serializer families index `LightHW` with it | **Proven statically** |
+| Full code reference sweep finds LightUI writes only in `FUN_004513B0` | **Proven within the stated sweep and xref boundary** |
+| Separate UI path mutates runtime record `+0x04` | **Not found in this pass; unresolved outside the traced handlers** |
 | `0x0800` or selector `0x95` mutates record `+0x04` | **Not established by these handlers** |
 | This UI event selects RKKB vs G5/3632, reaches a specific writer, or produces a known physical brightness | **Unresolved** |
 | Values represent percent, luminance, or another measured physical unit | **Unresolved** |

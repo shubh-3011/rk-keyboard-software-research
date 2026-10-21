@@ -772,8 +772,10 @@ For current blockers and the recommended reverse-engineering order, see the
   `PostMessageW` sender sites are recovered for those messages, respectively.
   One LightUI-based construction path stores selector `0x95` in the `+0x9E0`
   field later used by its sender pair; runtime sender association and which
-  child control sends them remain unresolved. Physical brightness units and
-  the widget-to-writer path remain unresolved. See the
+  child control sends them remain unresolved. A full-code reference census
+  finds `LightUI` writes only in the profile loader; no separate UI setter or
+  runtime brightness-index update was found in this pass. Physical brightness
+  units and the widget-to-writer path remain unresolved. See the
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),
   [field-boundary follow-up](docs/rk-406-brightness-handler-field-boundary.md),
@@ -971,9 +973,14 @@ For current blockers and the recommended reverse-engineering order, see the
   edges, 3,030 unique exact IAT call sites, and 73 IAT tail-jump sites. A
   follow-up resolves all four indirect calls in the `WM_DEVICECHANGE` handler:
   two dispatch to a conditionally selected logger and two call `SetTimer`,
-  linking HID arrival/removal notifications to a delayed rescan. The raw graph
-  ledger records 3,568 indirect-call contexts (3,564 distinct sites); the
-  follow-up reclassifies four, leaving 3,564 contexts (3,560 sites) unresolved.
+  linking HID arrival/removal notifications to a delayed rescan. A manual
+  branch-aware review also resolves the two register-indirect
+  `SetupDiGetDeviceInterfaceDetailW` calls, including their arguments and
+  detail-buffer handoff to `CreateFileW`. The raw graph ledger records 3,568
+  indirect-call contexts (3,564 distinct sites); six reviewed transfers leave
+  3,562 contexts (3,558 sites) unresolved. The generated CSV conservatively
+  retains those two SetupAPI calls as unresolved because its register analysis
+  does not propagate the branch-spanning definition.
   The graph also leaves 123 indirect jumps, 147 possible tail transfers, and
   66.20% of raw `.text` outside the selected paths. It visits 582,534 decoded
   instruction bytes (33.80% of raw `.text`); the full function/CFG gap remains

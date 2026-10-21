@@ -112,10 +112,15 @@ not copied from the 4.06 build:
 3. `SetupDiGetDeviceInterfaceDetailW` has IAT VA `0x005A6510`, loaded into
    `EBP` at `0x00417400`. The same function body calls through `EBP` at
    `0x00417421` and, after a conditional branch and buffer setup, at
-   `0x0041746F`. The first call passes a null detail buffer and a required-size
-   pointer, consistent with the documented size-query pattern (**inferred**);
-   the second supplies the prepared buffer. The branch-spanning second call
-   is not recovered by the CSV's straight-line register heuristic.
+   `0x0041746F`. A branch-aware reaching-definition and stack-argument review
+   confirms both calls use that IAT target: the first passes null detail data,
+   size zero, a valid `RequiredSize` pointer, and null `DeviceInfoData`; the
+   second passes the returned size and allocated detail buffer, reuses the
+   required-size pointer, and also passes null `DeviceInfoData`. The first
+   Boolean result is ignored; the second is tested. This matches the documented
+   two-call size-query/retrieval pattern. The second call remains absent from
+   the CSV's straight-line register heuristic because it is branch-spanning;
+   see the detailed [root-CFG follow-up](rk-v4.6-rooted-cfg-callgraph-audit.md#per-interface-setupapi-detail-calls).
 4. `CreateFileW` is called at `0x004174A1` and `0x004174B2` after the detail
    query and uses the resulting path buffer. This supports a device-interface
    open path in the code, but the static report does not prove the path resolves

@@ -77,14 +77,19 @@ bytes were visited by the selected recursive paths.
 | Instruction addresses attributed to multiple roots | — | 402 |
 
 The generated scanner ledger labels 3,568 edge contexts (3,564 distinct
-instruction sites) as unresolved indirect calls before this manual follow-up.
-The four sites in `WM_DEVICECHANGE` are reclassified below, leaving 3,564
-contexts (3,560 distinct sites) unresolved by the combined evidence.
+instruction sites) as unresolved indirect calls before manual review. This
+report now reclassifies six sites: four in `WM_DEVICECHANGE` and the two
+`SetupDiGetDeviceInterfaceDetailW` transfers below. That leaves 3,562
+contexts (3,558 distinct sites) unresolved by the combined evidence. The
+generated CSV remains unchanged and conservatively retains the two SetupAPI
+calls as unresolved because its automated register analysis does not
+propagate the `EBP` definition across this branch-spanning sequence.
 
 Before the manual follow-up, the raw call ledger had 1,648 register-operand and
 1,920 memory-operand unresolved call contexts. Reclassifying the two `ESI`
-calls to `SetTimer` and two absolute-global logger calls leaves 1,646
-register-operand and 1,918 memory-operand contexts unresolved. Of the 123
+calls to `SetTimer`, two absolute-global logger calls, and the two `EBP`
+calls to `SetupDiGetDeviceInterfaceDetailW` leaves 1,644 register-operand and
+1,918 memory-operand contexts unresolved. Of the 123
 unresolved indirect jumps, 9 use a register operand and 114 use a memory
 operand. Operand form does not establish whether a site is a virtual call,
 callback, table lookup, or another dispatch mechanism. The 402 multiply
@@ -136,10 +141,58 @@ rescan timer it calls table setup `0x004497C0`, which calls HID enumerator
 calls in the notification handler resolved. Branch conditions, timer success,
 Windows message delivery, and actual rescan results remain unobserved.
 
-The per-interface helper's two register-indirect
-`SetupDiGetDeviceInterfaceDetailW` calls at `0x00417421` and `0x0041746F` are
-still unresolved in this graph; their IAT load/use pattern is documented in the
-[cross-version enumeration lifecycle audit](rk-device-enumeration-handle-lifecycle-cross-version.md).
+### Per-interface SetupAPI detail calls
+
+The two register-indirect calls in `FUN_004173F0` are both statically
+attributed to `SETUPAPI!SetupDiGetDeviceInterfaceDetailW`, not left as unknown
+indirect transfers. The image import table places the function at IAT VA
+`0x005A6510`; instruction `0x00417400` loads that pointer into `EBP`. No
+instruction writes `EBP` between that load and calls at `0x00417421` and
+`0x0041746F`. The later `lea ebp,[esi+4]` at `0x00417494` occurs only after
+both API calls. The generated rooted-CFG edge CSV still labels these rows
+`unresolved_indirect_call`: its automated pass does not propagate this register
+definition across the branch. This section records the separate manual
+instruction-level resolution.
+
+At `0x00417413`–`0x00417421`, the helper copies incoming `ECX` and `EDX` to
+`EDI` and `EBX`, then pushes six parameters in reverse order:
+
+| API parameter | Value at the first call (`0x00417421`) | Value at the second call (`0x0041746F`) |
+| --- | --- | --- |
+| `DeviceInfoSet` | `EDI`, copied from incoming `ECX` | same `EDI` |
+| `DeviceInterfaceData` | `EBX`, copied from incoming `EDX` | same `EBX` |
+| `DeviceInterfaceDetailData` | `NULL` | allocated detail buffer in `ESI` |
+| `DeviceInterfaceDetailDataSize` | `0` | required size cached at `[ESP+0x10]` before argument pushes |
+| `RequiredSize` | pointer formed by `lea eax,[esp+0x18]` at `0x0041740A` and pushed at `0x0041740E` | pointer to the same local DWORD, formed by `lea ecx,[esp+0x18]` at `0x00417460` and pushed at `0x00417464` |
+| `DeviceInfoData` | `NULL` | `NULL` |
+
+After the first call, the helper reads the DWORD written through `RequiredSize`
+at `[ESP+0x14]`, pushes that value, and passes it to helper `0x00575360`; the
+helper's return is retained in `ESI` as the second call's detail buffer. The
+first API call's Boolean return in `EAX` is not tested. The caller checks
+whether the helper returned a buffer at `0x00417436`, taking its error path
+only if `ESI` is null. The helper has no explicit zero-size rejection: its
+strategy-1 branch substitutes one for a zero request (`0x005753A5`–
+`0x005753B1`), its strategy-3 branch passes the value to another allocator
+before falling back, and the fallback path changes zero to one and aligns it
+to 16 (`0x005753C3`–`0x005753D7`). Thus the caller does not directly reject a
+zero `RequiredSize`.
+Before the second API call, `mov dword ptr [esi],6` sets the detail
+structure's leading `cbSize` field; the second API call's Boolean return is
+tested at `0x00417471`.
+
+This matches the documented two-call SetupAPI size-query and retrieval
+pattern: the first call uses a null detail pointer, size zero, and valid
+`RequiredSize`; the second supplies a buffer sized from that output. On the
+success branch, the path pointer `ESI+4` is passed to `CreateFileW` at
+`0x004174A1` or `0x004174B2`. The code therefore statically connects the
+imported API pointer through both calls to the interface-path buffer used by
+the subsequent open attempt. The API's runtime return values, actual path,
+open result, selected physical device, and Windows message reachability remain
+unobserved. See the [cross-version enumeration lifecycle audit](rk-device-enumeration-handle-lifecycle-cross-version.md)
+for the surrounding handle and capability path and the
+[Microsoft API reference](https://learn.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdigetdeviceinterfacedetailw)
+for the function signature and documented size-query procedure.
 
 ## Reproduction
 
@@ -165,12 +218,13 @@ PDB path, but no matching PDB was available in this workspace. The MFC scan is
 bounded to its accessor/table signature and does not prove complete MFC or
 runtime dispatch coverage.
 
-The principal unresolved remainder is 3,564 register/memory indirect-call
-edge contexts (3,560 distinct sites), 123 register/memory indirect-jump sites,
+The principal unresolved remainder is 3,562 register/memory indirect-call
+edge contexts (3,558 distinct sites), 123 register/memory indirect-jump sites,
 147 possible tail transfers, and 1,140,858 bytes (66.20%) of `.text` not
 visited from the selected roots. The CSV and JSON outputs preserve the
 scanner's pre-follow-up raw counts of 3,568 call contexts and 3,564 distinct
-sites; this report reclassifies the four resolved handler sites. That
+sites; this report reclassifies the four resolved handler sites and two
+resolved SetupAPI calls. That
 unvisited portion is not evidence of dead code or unreachable
 behavior. Direct calls, IAT references, and explored branches are static
 candidates, not proof that a path runs in a particular process state. Import
