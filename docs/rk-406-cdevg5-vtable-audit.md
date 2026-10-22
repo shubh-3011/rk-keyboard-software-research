@@ -2,6 +2,14 @@
 
 ## Scope and evidence boundary
 
+**2026-10-22 correction:** the earlier overwritten-receiver and GDI+ target
+claims compared textual stack offsets across argument pushes/cleanup. Six
+calls now resolve after correcting that error; see the
+[stack-alias correction](rk-406-stack-alias-corrections.md). Five more sites
+resolve on concrete caller/paint paths in the
+[forwarded-receiver audit](rk-406-forwarded-text-receivers.md). Earlier batch
+counts below record the investigation history; the census summary is current.
+
 This audit maps the 4.06 `CDevG5KB` vtable and follows its command-`0x88`
 GetRealData path. The exact x86 PE examined is
 `C:\Users\shubh\Downloads\sshorcale\_rk_analysis\inputs\DeviceDriver.exe`,
@@ -118,9 +126,9 @@ and the four-argument `DrawTextW` ABI, while the concrete G5 wrapper at
 `0x00410700` returns with `ret 8` and calls helper `0x0040FF60` at
 `0x00410718`. A caller of the G5 method remains unresolved.
 
-The row-level evidence for the original six calls and the forty-two later
+The row-level evidence for the original six calls and the forty-eight later
 calls verified by the hash-pinned checker is in the
-[`48-call resolution ledger`](rk-406-vtable-68-resolution.csv).
+[`54-call resolution ledger`](rk-406-vtable-68-resolution.csv).
 The hash-pinned static checker is
 [`audit_rk406_g5_vcall_resolution.py`](../scripts/audit_rk406_g5_vcall_resolution.py);
 run it against the same `DeviceDriver.exe` to verify the constructor, vtable
@@ -169,9 +177,11 @@ scan of `.text` finds 90 pairs where code loads `[register+0x68]` into a
 register and calls through it within the next three decoded instructions.
 Seven calls (the six sites at `0x00401E92` through `0x0040217A` and
 `0x004051AC`) were already resolved in the preceding sections, leaving 83
-additional candidates. Of those, 72 are now traced to constructor-established
-local text adapters that call `USER32!DrawTextW`; the other 11 remain
-unclassified. These are candidate dispatch shapes, not a count of proven
+additional candidates. Of those, 78 are now traced to constructor-established
+local text adapters that call `USER32!DrawTextW`; the other five resolve to
+that adapter on listed caller paths. Alternate callers and runtime receiver
+types of those five remain unproved. No row in this bounded pattern census is
+now wholly unclassified. These are candidate dispatch shapes, not a count of proven
 `CDevG5KB` calls: `+0x68` is common across unrelated interfaces, and the
 register-mediated pattern also admits ordinary data/function-pointer loads.
 The complete row-level census and hash-pinned scanner are the
@@ -544,8 +554,8 @@ The next five candidates in census order are
 `0x004344F5`/`0x004344FA`, `0x004352C4`/`0x004352CC`,
 `0x0044AEA7`/`0x0044AEAE`, `0x00454D46`/`0x00454D4B`, and
 `0x00457926`/`0x0045792D`. Three resolve through constructor-established
-local adapters; two remain unclassified because their receiver vtable targets
-are not identified.
+local adapters; two required the caller tracing documented in the
+[forwarded-receiver report](rk-406-forwarded-text-receivers.md).
 
 The `0x004352CC` receiver is constructed at `0x00435129` as a local at
 `[esp+0x0C]`. Four argument pushes shift it to `[esp+0x1C]`; its vptr is
@@ -560,15 +570,15 @@ after four pushes it is `[esp+0x58]`, and its slot likewise resolves to
 
 | Slot load / call instruction | Argument producers | Resolution and return use |
 | --- | --- | --- |
-| `0x004344F5` / `0x004344FA` | Text pointer from a local CString, count from `[text-0xC]`, rectangle pointer in `EBX`, and flags `0x8134`. Receiver is `EDI`, loaded from `[EBP+0x08]`; the vptr slot is loaded through that receiver. | **Unclassified.** The argument shape resembles a four-argument text call, but the receiver's concrete vtable and `+0x68` target are not established. The return is followed by CString cleanup. |
+| `0x004344F5` / `0x004344FA` | Text pointer from a local CString, count from `[text-0xC]`, rectangle pointer in `EBX`, and flags `0x8134`. Receiver is `EDI`, loaded from `[EBP+0x08]`. | **Resolved on the listed paint path.** The base WM_PAINT handler forwards its constructor-established adapter through virtual slot `+0x144`; see the forwarded-receiver report. Alternate receivers remain unproved. |
 | `0x004352C4` / `0x004352CC` | Text pointer in `ESI`, count from `[text-0xC]`, local rectangle, and flags `0x8115`. | **Resolved `DrawTextW`.** Constructor, vptr, slot, import, and `ret 0x10` agree; the return is used only through subsequent geometry/cleanup code. |
 | `0x0044AEA7` / `0x0044AEAE` | Text pointer from `[EDI+0x8C]`, count from `[text-0xC]`, local rectangle, and conditional flags `0x8134`/`0x8135`. | **Resolved `DrawTextW`.** The return is followed by a separate MFC drawing helper and is not read as a response buffer or length. |
-| `0x00454D46` / `0x00454D4B` | Text pointer from a local CString, count from `[text-0xC]`, rectangle pointer at `[EBP+0x0C]`, and flags in `EDI` (`0x8134` or `0x8114`). Receiver is `EBX`; the vptr is read from `[EBX]`. | **Unclassified.** No constructor or vtable target has been tied to this `EBX` receiver. The text-shaped arguments alone do not resolve the target. |
+| `0x00454D46` / `0x00454D4B` | Text pointer from a local CString, count from `[text-0xC]`, rectangle pointer at `[EBP+0x0C]`, and flags in `EDI` (`0x8134` or `0x8114`). Receiver is `EBX`. | **Resolved on two listed direct caller paths.** Both supply the local adapter constructed at `0x004267E8` through EBX; other callers are unproved. |
 | `0x00457926` / `0x0045792D` | Text pointer from `0x0062B4B4`, count from `[text-0xC]`, rectangle pointer `[EDI+0xE38]`, and flags `0x8134`. | **Resolved `DrawTextW`.** The next instruction branches; no response-buffer use follows. |
 
-These traces raise the resolved count to 53 of the 83 additional patterns.
-Thirty remain unclassified, including the two receivers above. None of these
-five sites establishes a G5 `0x88` caller or response consumer.
+The original pass resolved the three local adapters; the follow-up resolves
+the other two on their listed caller paths. None of these five sites
+establishes a G5 `0x88` caller or response consumer.
 
 ### Next five register-mediated candidates: model text labels
 
@@ -579,23 +589,21 @@ use the local object constructed by `0x0045751B` at `[esp+0x48]`; four
 argument pushes shift it to `[esp+0x58]`. The fifth uses the object constructed
 by `0x0045B408` at `[esp+0x1C]`, shifted to `[esp+0x2C]`. These four proven
 receivers have vptr `0x0059F314`; slot `+0x68` resolves to `0x0047111A`, which
-forwards to `USER32!DrawTextW` and returns with `ret 0x10`. At the fourth site,
-`0x00457ACF` writes the stack slot used as the receiver, so the earlier
-constructor does not establish the call's vptr without a control-flow/lifetime
-proof.
+forwards to `USER32!DrawTextW` and returns with `ret 0x10`. The fourth site
+also uses the first constructor's adapter: the apparent overwrite at
+`0x00457ACF` is to normalized local `S+0x44`, while its vptr is at `S+0x48`.
+See the stack-alias correction for the pushed-argument calculation.
 
 | Slot load / call instruction | Argument producers | Immediate result use / resolution |
 | --- | --- | --- |
 | `0x00457953` / `0x0045795A` | Text pointer from `0x0062B744`, count from `[text-0xC]`, rectangle pointer `[EDI+0xE38]`, and flags `0x8134`. | Immediately jumps to shared cleanup; draw return is not consumed. Resolved `DrawTextW`. |
 | `0x0045797D` / `0x00457984` | Text pointer from `0x0062B748`, count from `[text-0xC]`, rectangle pointer `[EDI+0xE38]`, and flags `0x8134`. | Immediately jumps to shared cleanup; draw return is not consumed. Resolved `DrawTextW`. |
 | `0x004579A7` / `0x004579AE` | Text pointer from `0x0062B74C`, count from `[text-0xC]`, rectangle pointer `[EDI+0xE38]`, and flags `0x8134`. | Immediately jumps to shared cleanup; draw return is not consumed. Resolved `DrawTextW`. |
-| `0x00457F44` / `0x00457F4B` | Text pointer from a local CString, count from `[text-0xC]`, local rectangle, and flags `0x8135`. | **Unclassified.** The receiver slot `[esp+0x48]` is written at `0x00457ACF`; receiver provenance is not established by the earlier constructor. |
+| `0x00457F44` / `0x00457F4B` | Text pointer from a local CString, count from `[text-0xC]`, local rectangle, and flags `0x8135`. | **Resolved `DrawTextW`.** After four pushes, `[esp+0x58]` is the local constructed at `S+0x48`; the suspected overwrite is a different normalized slot. |
 | `0x0045B5B8` / `0x0045B5BF` | Text pointer from a local CString, count from `[text-0xC]`, local rectangle, and flags `0x8135`. | The following cleanup reloads the CString; no output buffer or length is read. Resolved `DrawTextW`. |
 
-Four of the five resolve to the same local GDI text adapter, not the G5
-`+0x68` method. The census now has 57 of 83 additional patterns resolved and
-26 unclassified. This does not identify the G5 `0x88` caller or its response
-consumer.
+All five resolve to the same local GDI text adapter. This does not identify
+the G5 `0x88` caller or its response consumer.
 
 ### Following five register-mediated candidates: repeated model-page labels
 
@@ -611,21 +619,18 @@ identified `0x0047111A` adapter for `USER32!DrawTextW`.
 | --- | --- | --- |
 | `0x0045B70D` / `0x0045B714` | Local CString pointer and count from `[text-0xC]`, local rectangle, and flags `0x8135`. | Cleanup follows; no output buffer or length is read. Resolved `DrawTextW`. |
 | `0x0045B7D9` / `0x0045B7E0` | Local CString pointer and count from `[text-0xC]`, local rectangle, and flags `0x8135`. | Cleanup follows; no output buffer or length is read. Resolved `DrawTextW`. |
-| `0x0045C605` / `0x0045C60A` | CString pointer/count, local rectangle, and flags `0x8134`; receiver is `ESI`. | **Unclassified.** The receiver vtable target has not been established. |
-| `0x0045DF7B` / `0x0045DF80` | CString pointer/count, local rectangle, and flags `0x8134`; receiver is `ESI`. | **Unclassified.** The receiver vtable target has not been established. |
-| `0x00464B40` / `0x00464B47` | CString pointer/count, local rectangle, and flags `0x8134`. | **Unclassified.** Although constructor `0x0046473B` uses `[esp+0x1C]`, that slot is overwritten at `0x00464896` before this call. |
+| `0x0045C605` / `0x0045C60A` | CString pointer/count, local rectangle, and flags `0x8134`; receiver is `ESI`. | **Resolved on the listed direct caller path.** The second entry argument forwards the adapter constructed at `0x0045BDE8`; alternate callers remain unproved. |
+| `0x0045DF7B` / `0x0045DF80` | CString pointer/count, local rectangle, and flags `0x8134`; receiver is `ESI`. | **Resolved on the listed direct caller path.** The first entry argument forwards the adapter constructed at `0x0045D7B8`; alternate callers remain unproved. |
+| `0x00464B40` / `0x00464B47` | CString pointer/count, local rectangle, and flags `0x8134`. | **Resolved `DrawTextW`.** Constructor `0x0046473B` initializes `S+0x1C`; the suspected overwrites normalize to `S+0x14`. |
 
-This batch adds two proven UI text adapters. The census now resolves 59 of 83
-additional patterns and leaves 24 unclassified. These are not G5 data-read
-callers and do not identify the command-`0x88` response consumer.
+This batch now contains three local adapter resolutions and two resolutions
+on listed caller paths. They do not identify the command-`0x88` response consumer.
 
 The four adjacent calls `0x00464B47`, `0x00464BB0`, `0x00464C8D`, and
-`0x00464D1D` remain unclassified. Each reads its receiver from local slot
-`[esp+0x1C]` after four pushed arguments, but the earlier constructor at
-`0x0046473B` does not establish the target: code overwrites that slot at
-`0x00464896` and again at `0x00464959` before these calls. The string/count/
-rectangle arguments resemble text drawing, but the receiver target is not
-proven.
+`0x00464D1D` resolve to the adapter constructed at `S+0x1C`. Four argument
+pushes make that local `[esp+0x2C]` at each call. Stores at `0x00464896` and
+`0x00464959` follow two pushes, so their textual `[esp+0x1C]` destinations
+normalize to `S+0x14`. The prior overwrite claim is retracted.
 
 ### Model-page text and layout candidates after `0x00464D1D`
 
@@ -637,9 +642,10 @@ to adapter `0x0047111A` (`USER32!DrawTextW`). Both pass text, count from
 `[text-0xC]`, a local rectangle, and flags `0x8134`; cleanup follows without
 consuming the return as data.
 
-The nearby `0x00466F58` has a similar text/count/rectangle/flag shape but loads
-its receiver from an object reached through `[esp+0x24]`; no constructor or
-vtable target was established, so it remains unclassified.
+The nearby `0x00466F58` resolves on the listed base-paint-handler path: its
+saved first argument forwards the adapter constructed at `0x004557F8`.
+The forwarded-receiver report records its class/vtable/message-map bridge
+and the limits on alternate callers.
 
 Two layout-page sites, `0x00469345` and `0x00469386`, use the local constructed
 by `0x00469218` at `[esp+0x10]`. Four argument pushes shift that receiver to
@@ -669,17 +675,19 @@ reach `0x0047111A` → `USER32!DrawTextW`; their flags are `0x8134` except
 in the receiver-offset calculation for `0x0046B6B4`. The call results flow
 into later UI cleanup/staging and are not read as response data.
 
-These eight additions bring the 83-candidate census to 72 resolved and 11
-unclassified. Candidate `0x0046A00B` remains unclassified even though its
-arguments resemble text drawing. At `0x00469D49`, the code passes a stack
-out-pointer and an HDC to thunk `0x005890F8`, which the PE import table maps
-to `GdipCreateFromHDC`. It loads the returned object at `0x00469D58` and stores
-that pointer at `[esp+0x50]` at `0x00469D60`; later, `0x0046A003` loads the
-object field at `+0x68` as the indirect target. The call uses a CString pointer,
-its preceding DWORD count, a local rectangle, and flags `0x8135`, but that ABI-
-like shape does not identify the GDI+ object's internal target. The separate
-local initialized by constructor `0x00469CDB` does not establish this object's
-slot target, so no vtable or function identity is claimed.
+The earlier pass reached 72 resolved and 11 unclassified additional patterns.
+The 2026-10-22 correction resolves six local receivers and five forwarded
+receiver paths, giving 78 local plus five caller-scoped resolutions.
+
+Candidate `0x0046A00B` uses the adapter constructed at `S+0x3C` by
+`0x00469CDB`. Five formatting arguments remain on the stack at `0x00469FF1`,
+so its `[esp+0x50]` source is `(S-0x14)+0x50 = S+0x3C`. After explicit
+cleanup at `0x00469FF5` and four text arguments, ECX at `0x0046A007` is
+`(S-0x10)+0x4C = S+0x3C`. It therefore uses the same `DrawTextW` adapter,
+with flags `0x8135`. The genuine GDI+ object stored at `S+0x50` is separate;
+the previous claim attributing this dispatch to that object is retracted.
+See the [correction report](rk-406-stack-alias-corrections.md) for exact
+push/return instructions and preservation evidence.
 
 The earlier candidate at `0x0046E9A1` also resolves to the local text adapter.
 Constructor `0x0046E4C5` initializes the receiver at `[esp+0x2C]`; the call
@@ -688,7 +696,7 @@ loads that local's `+0x68` slot, then passes the same receiver at
 `0x0059F314`, so the slot target is `0x0047111A` and its import is
 `USER32!DrawTextW`. The call passes CString text/count, a local rectangle, and
 flags `0x8134`; following cleanup does not read the draw return as data. This
-is included in the 72 resolved / 11 unclassified census above.
+is included in the 78 local resolutions in the census above.
 
 Other scanned `+0x68` sites have different observed argument shapes or
 status/UI behavior, and none could be tied to the G5 vptr at `0x005CBA2C`.

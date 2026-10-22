@@ -181,6 +181,8 @@ as confirmed.
 - [4.06 Startup shortcut integration audit](docs/rk-v406-startup-shortcut-integration-audit.md)
 - [HID enumeration and hot-plug notification audit](docs/rk-device-enumeration-notification-audit.md)
 - [4.06 G5 active-object holder and bounded GetRealData caller scope](docs/rk-406-cdevg5-active-object-caller-scope.md)
+- [4.06 stack-offset correction and six local text-dispatch resolutions](docs/rk-406-stack-alias-corrections.md)
+- [4.06 five forwarded text receivers and their concrete caller paths](docs/rk-406-forwarded-text-receivers.md)
 - [Native API import, callsite, and syscall crosswalk](docs/rk-system-api-crosswalk.md)
 - [Indirect API call and callback follow-up](docs/rk-native-api-indirect-call-audit.md)
 - [Remaining unresolved native API invocation paths](docs/rk-remaining-native-api-path-audit.md)

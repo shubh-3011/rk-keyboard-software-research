@@ -729,14 +729,16 @@ For current blockers and the recommended reverse-engineering order, see the
   aliases, callbacks, or dispatch forms. Five additional superficially
   compatible `+0x68` calls are traced through rectangle producers and geometry
   consumers; they support layout-helper interpretations, while the child
-  receiver's concrete type remains unknown. Seventy-two register-mediated calls resolve through constructor-established
-  vptrs and slots to `USER32!DrawTextW`. A hash-pinned census records 90 total
-  pattern matches, with 11 of the 83 additional candidates still unclassified.
-  The latest resolved calls are `0x00469407` plus seven sites from
-  `0x0046B5BE` through `0x0046BA05`; `0x0046A00B` uses the opaque Graphics
-  object returned by `GdipCreateFromHDC`, whose internal `+0x68` target is
-  unidentified. These bounded slices do not
-  exhaust all `+0x68` calls. The helper has no direct file sink. This does not
+  receiver's concrete type remains unknown. Seventy-eight register-mediated
+  calls resolve through constructor-established local vptrs and slots to
+  `USER32!DrawTextW`; five more resolve on listed caller/paint-handler paths.
+  Together with seven earlier resolutions, this classifies all 90 rows of the
+  bounded pattern census. Alternate callers/runtime receivers of those five
+  forwarded sites remain unproved. The 2026-10-22 correction retracts the prior
+  overwritten-receiver and opaque-GDI+ claims: normalizing argument pushes and
+  cleanup shows six additional calls use the local text adapter. The expanded
+  54-site checker now replays ESP changes in each call setup. These slices do
+  not exhaust all `+0x68` calls. The helper has no direct file sink. This does not
   establish a full read-only S98 firmware export. See
   [`docs/rk-406-cdevg5-vtable-audit.md`](docs/rk-406-cdevg5-vtable-audit.md)
   and its [slot ledger](docs/rk-406-cdevg5-vtable-map.csv),
@@ -744,6 +746,9 @@ For current blockers and the recommended reverse-engineering order, see the
   [candidate census](docs/rk-406-vcall-candidate-census.csv),
   [static checker](scripts/audit_rk406_g5_vcall_resolution.py), and
   [census scanner](scripts/audit_rk406_vcall_candidate_census.py),
+  [stack-alias correction](docs/rk-406-stack-alias-corrections.md),
+  [forwarded-receiver report](docs/rk-406-forwarded-text-receivers.md),
+  [caller-path checker](scripts/audit_rk406_forwarded_text_receivers.py), and
   [active-object caller-scope follow-up](docs/rk-406-cdevg5-active-object-caller-scope.md).
 - A separate 4.6 G5 command-`0x88` trace proves a request write followed by a
   conditional feature read and chunk copies into caller-owned memory. The

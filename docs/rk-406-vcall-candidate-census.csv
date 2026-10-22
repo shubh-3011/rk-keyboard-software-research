@@ -54,33 +54,33 @@ slot_load_va,call_va,loaded_register,receiver_register,classification,evidence
 0x00426FC0,0x00426FC7,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00433DD3,0x00433DDA,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00433E7C,0x00433E83,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x004344F5,0x004344FA,EAX,EDX,unclassified candidate pattern,DrawTextW-like argument shape; EDI receiver vtable target is not identified
+0x004344F5,0x004344FA,EAX,EDX,resolved listed caller paths; USER32!DrawTextW,docs/rk-406-forwarded-text-receivers.md: concrete caller/paint path; alternate callers and runtime receiver types unproved
 0x00435263,0x0043526A,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x004352C4,0x004352CC,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0044AE79,0x0044AE80,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0044AEA7,0x0044AEAE,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x00454D46,0x00454D4B,EAX,EDX,unclassified candidate pattern,DrawTextW-like argument shape; EBX receiver vtable target is not identified
+0x00454D46,0x00454D4B,EAX,EDX,resolved listed caller paths; USER32!DrawTextW,docs/rk-406-forwarded-text-receivers.md: concrete caller/paint path; alternate callers and runtime receiver types unproved
 0x00457926,0x0045792D,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00457953,0x0045795A,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0045797D,0x00457984,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x004579A7,0x004579AE,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x00457F44,0x00457F4B,EDX,EAX,unclassified candidate pattern,receiver stack slot [esp+0x48] is written at 0x00457ACF; relation to the earlier constructor is unproved
+0x00457F44,0x00457F4B,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution
 0x0045B5B8,0x0045B5BF,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0045B70D,0x0045B714,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0045B7D9,0x0045B7E0,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x0045C605,0x0045C60A,EAX,EDX,unclassified candidate pattern,DrawTextW-like arguments use ESI as receiver; its vtable target is not identified
-0x0045DF7B,0x0045DF80,EAX,EDX,unclassified candidate pattern,DrawTextW-like arguments use ESI as receiver; its vtable target is not identified
-0x00464B40,0x00464B47,EDX,EAX,unclassified candidate pattern,local receiver slot [esp+0x1c] is overwritten at 0x00464896 after the earlier constructor
-0x00464BA9,0x00464BB0,EDX,EAX,unclassified candidate pattern,local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor
-0x00464C86,0x00464C8D,EDX,EAX,unclassified candidate pattern,local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor
-0x00464D16,0x00464D1D,EDX,EAX,unclassified candidate pattern,local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor
+0x0045C605,0x0045C60A,EAX,EDX,resolved listed caller paths; USER32!DrawTextW,docs/rk-406-forwarded-text-receivers.md: concrete caller/paint path; alternate callers and runtime receiver types unproved
+0x0045DF7B,0x0045DF80,EAX,EDX,resolved listed caller paths; USER32!DrawTextW,docs/rk-406-forwarded-text-receivers.md: concrete caller/paint path; alternate callers and runtime receiver types unproved
+0x00464B40,0x00464B47,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution
+0x00464BA9,0x00464BB0,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution
+0x00464C86,0x00464C8D,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution
+0x00464D16,0x00464D1D,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution
 0x00466A86,0x00466A8D,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00466AD1,0x00466AD8,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x00466F55,0x00466F58,EAX,EDX,unclassified candidate pattern,DrawTextW-like arguments use a local receiver from [esp+0x24]; its vtable target is not identified
+0x00466F55,0x00466F58,EAX,EDX,resolved listed caller paths; USER32!DrawTextW,docs/rk-406-forwarded-text-receivers.md: concrete caller/paint path; alternate callers and runtime receiver types unproved
 0x0046933E,0x00469345,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0046937F,0x00469386,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x00469400,0x00469407,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
-0x0046A003,0x0046A00B,EAX,EDX,unclassified candidate pattern,target object is GDI+ Graphics returned by GdipCreateFromHDC at 0x00469D53 and stored at [esp+0x50]; its internal +0x68 target is unidentified
+0x0046A003,0x0046A00B,EAX,EDX,resolved false positive; USER32!DrawTextW,docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution
 0x0046B5B7,0x0046B5BE,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0046B6AD,0x0046B6B4,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace
 0x0046B753,0x0046B75A,EDX,EAX,resolved false positive; USER32!DrawTextW,docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace

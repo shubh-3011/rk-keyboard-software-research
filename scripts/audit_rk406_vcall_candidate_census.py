@@ -104,20 +104,25 @@ DRAW_TEXT_RESOLVED = {
     0x0046E9A1,
     0x0043526A,
     0x0044AE80,
+    0x00457F4B,
+    0x00464B47,
+    0x00464BB0,
+    0x00464C8D,
+    0x00464D1D,
+    0x0046A00B,
 }
 
-REVIEWED_UNRESOLVED = {
-    0x004344FA: "DrawTextW-like argument shape; EDI receiver vtable target is not identified",
-    0x00454D4B: "DrawTextW-like argument shape; EBX receiver vtable target is not identified",
-    0x00457F4B: "receiver stack slot [esp+0x48] is written at 0x00457ACF; relation to the earlier constructor is unproved",
-    0x0045C60A: "DrawTextW-like arguments use ESI as receiver; its vtable target is not identified",
-    0x0045DF80: "DrawTextW-like arguments use ESI as receiver; its vtable target is not identified",
-    0x00464B47: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 after the earlier constructor",
-    0x00464BB0: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
-    0x00464C8D: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
-    0x00464D1D: "local receiver slot [esp+0x1c] is overwritten at 0x00464896 and 0x00464959 after the earlier constructor",
-    0x00466F58: "DrawTextW-like arguments use a local receiver from [esp+0x24]; its vtable target is not identified",
-    0x0046A00B: "target object is GDI+ Graphics returned by GdipCreateFromHDC at 0x00469D53 and stored at [esp+0x50]; its internal +0x68 target is unidentified",
+STACK_ALIAS_CORRECTED = {
+    0x00457F4B, 0x00464B47, 0x00464BB0,
+    0x00464C8D, 0x00464D1D, 0x0046A00B,
+}
+
+FORWARDED_TEXT_RESOLVED = {
+    0x004344FA,
+    0x00454D4B,
+    0x0045C60A,
+    0x0045DF80,
+    0x00466F58,
 }
 
 
@@ -181,10 +186,14 @@ def run() -> int:
         raise RuntimeError(f"expected 90 unique pattern matches, found {len(candidates)}")
     if not EARLIER_RESOLVED <= call_vas:
         raise RuntimeError("the seven earlier-resolved calls are not all present in the scan")
-    if len(DRAW_TEXT_RESOLVED) != 72 or not DRAW_TEXT_RESOLVED <= call_vas:
-        raise RuntimeError("the 72 documented DrawTextW calls do not match the scan")
-    if EARLIER_RESOLVED & DRAW_TEXT_RESOLVED:
-        raise RuntimeError("earlier-resolved and later DrawTextW classifications overlap")
+    if len(DRAW_TEXT_RESOLVED) != 78 or not DRAW_TEXT_RESOLVED <= call_vas:
+        raise RuntimeError("the 78 documented local DrawTextW calls do not match the scan")
+    if not STACK_ALIAS_CORRECTED <= DRAW_TEXT_RESOLVED:
+        raise RuntimeError("stack-corrected sites must be included in local DrawTextW classifications")
+    if len(FORWARDED_TEXT_RESOLVED) != 5 or not FORWARDED_TEXT_RESOLVED <= call_vas:
+        raise RuntimeError("the five caller-scoped DrawTextW sites do not match the scan")
+    if EARLIER_RESOLVED & DRAW_TEXT_RESOLVED or FORWARDED_TEXT_RESOLVED & (EARLIER_RESOLVED | DRAW_TEXT_RESOLVED):
+        raise RuntimeError("call classifications overlap")
 
     for row in candidates:
         call_va = int(row["call_va"], 16)
@@ -193,17 +202,21 @@ def run() -> int:
             row["evidence"] = "docs/rk-406-cdevg5-vtable-audit.md: expanded decoded-callsite sweep"
         elif call_va in DRAW_TEXT_RESOLVED:
             row["classification"] = "resolved false positive; USER32!DrawTextW"
-            row["evidence"] = "docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace"
-        elif call_va in REVIEWED_UNRESOLVED:
-            row["classification"] = "unclassified candidate pattern"
-            row["evidence"] = REVIEWED_UNRESOLVED[call_va]
+            row["evidence"] = (
+                "docs/rk-406-stack-alias-corrections.md: ESP-normalized constructor/vptr/ABI trace; corrects earlier attribution"
+                if call_va in STACK_ALIAS_CORRECTED else
+                "docs/rk-406-cdevg5-vtable-audit.md: constructor/vtable/ABI trace"
+            )
+        elif call_va in FORWARDED_TEXT_RESOLVED:
+            row["classification"] = "resolved listed caller paths; USER32!DrawTextW"
+            row["evidence"] = "docs/rk-406-forwarded-text-receivers.md: concrete caller/paint path; alternate callers and runtime receiver types unproved"
         else:
             row["classification"] = "unclassified candidate pattern"
             row["evidence"] = "receiver/target provenance has not been established"
 
     unclassified = sum(row["classification"] == "unclassified candidate pattern" for row in candidates)
-    if unclassified != 11:
-        raise RuntimeError(f"expected 11 unclassified pattern matches, found {unclassified}")
+    if unclassified != 0:
+        raise RuntimeError(f"expected 0 unclassified pattern matches, found {unclassified}")
 
     fields = [
         "slot_load_va",
@@ -223,8 +236,9 @@ def run() -> int:
             out.close()
     print(
         "Scanned 90 register-mediated +0x68 patterns in .text: "
-        "7 previously resolved, 72 documented DrawTextW false positives, "
-        "11 unclassified.",
+        "7 previously resolved, 78 local DrawTextW false positives, "
+        "5 DrawTextW sites on listed caller paths, 0 unclassified patterns. "
+        "Alternate callers of the five forwarded sites remain unproved.",
         file=sys.stderr,
     )
     return 0

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve forty-eight DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
+"""Resolve fifty-four DeviceDriver +0x68 dispatches and compare them with G5 GetRealData.
 
 This is a static disassembly audit. It invokes GNU objdump on a supplied PE;
 it never executes the target binary or communicates with a keyboard.
@@ -49,6 +49,11 @@ RECEIVER_STACK_OFFSETS = {
     0x0045795A: 0x58,
     0x00457984: 0x58,
     0x004579AE: 0x58,
+    0x00457F4B: 0x58,
+    0x00464B47: 0x2C,
+    0x00464BB0: 0x2C,
+    0x00464C8D: 0x2C,
+    0x00464D1D: 0x2C,
     0x00466A8D: 0x2C,
     0x00466AD8: 0x2C,
     0x0045B714: 0x2C,
@@ -65,6 +70,7 @@ RECEIVER_STACK_OFFSETS = {
     0x0046B98F: 0x4C,
     0x0046BA05: 0x4C,
     0x0046E9A1: 0x3C,
+    0x0046A00B: 0x4C,
 }
 CANDIDATES = tuple(RECEIVER_STACK_OFFSETS)
 PRE_CALL_INSTRUCTION_COUNTS = {
@@ -72,12 +78,14 @@ PRE_CALL_INSTRUCTION_COUNTS = {
     0x00433E83: 12,
     0x00469345: 10,
     0x00469407: 10,
+    0x0046A00B: 11,
 }
 ALTERNATE_CALL_REGISTERS = {
     0x00433DDA: "eax",
     0x00433E83: "eax",
     0x0044AEAE: "eax",
     0x0046E9A1: "eax",
+    0x0046A00B: "eax",
 }
 SPECIAL_VPTR_SETUP = {
     0x00433DDA: (
@@ -104,6 +112,12 @@ SPECIAL_VPTR_SETUP = {
         "mov edx,dword ptr [esp+0x2c]",
         "mov eax,dword ptr [edx+0x68]",
         "lea ecx,[esp+0x3c]",
+    ),
+    0x0046A00B: (
+        "mov edx,dword ptr [esp+0x50]",
+        "add esp,0x14",
+        "mov eax,dword ptr [edx+0x68]",
+        "lea ecx,[esp+0x4c]",
     ),
 }
 DYNAMIC_FLAG_CALLS = {0x0044AEAE}
@@ -147,6 +161,90 @@ def nearest_window(instructions: list[tuple[int, str]], target: int, before: int
         raise RuntimeError(f"target VA 0x{target:08X} not found in disassembly")
     index = index_by_address[target]
     return instructions[max(0, index - before):index + after + 1]
+
+
+def verify_stack_alias(pre_call: list[str], call_register: str) -> None:
+    """Compare vptr-load and ECX addresses within one call-setup window.
+
+    The origin is arbitrary; replaying 32-bit PUSH/POP and immediate ADD/SUB ESP
+    establishes address equality, not whole-function stack or CFG coverage.
+    An earlier call or branch discards tracked values and starts a new local
+    origin: both addresses must be established again in the final suffix.
+    """
+    delta = 0
+    values: dict[str, tuple[str, int]] = {}
+    parents = {name: "e" + stem for stem, names in (
+        ("ax", ("ax", "al", "ah")), ("bx", ("bx", "bl", "bh")),
+        ("cx", ("cx", "cl", "ch")), ("dx", ("dx", "dl", "dh")),
+        ("si", ("si",)), ("di", ("di",)), ("bp", ("bp",)), ("sp", ("sp",)),
+    ) for name in names}
+    for asm in pre_call[:-1]:  # Last instruction is the candidate CALL.
+        if asm.startswith("call ") or re.match(r"j[a-z]+ ", asm):
+            values.clear()
+            delta = 0
+            continue
+        if asm.startswith("push "):
+            operand = asm.removeprefix("push ")
+            if not re.fullmatch(r"e(?:ax|bx|cx|dx|si|di|bp|sp)|0x[0-9a-f]+|dword ptr .+", operand):
+                raise RuntimeError(f"unsupported non-DWORD push: {asm}")
+            delta -= 4
+            continue
+        if asm.startswith("pop "):
+            destination = asm.split()[1]
+            if destination in {"esp", "sp"}:
+                raise RuntimeError(f"unsupported stack-pointer write: {asm}")
+            if not re.fullmatch(r"e(?:ax|bx|cx|dx|si|di|bp)", destination):
+                raise RuntimeError(f"unsupported POP operand: {asm}")
+            delta += 4
+            values.pop(parents.get(destination, destination), None)
+            continue
+        adjust = re.fullmatch(r"(add|sub) esp,0x([0-9a-f]+)", asm)
+        if adjust:
+            amount = int(adjust.group(2), 16)
+            delta += amount if adjust.group(1) == "add" else -amount
+            continue
+        if re.match(r"\w+ (?:esp|sp)(?:,|$)", asm):
+            raise RuntimeError(f"unsupported stack-pointer write: {asm}")
+        stack = re.fullmatch(r"(mov|lea) (e[a-z]{2}),(?:dword ptr )?\[esp\+0x([0-9a-f]+)\]", asm)
+        if stack:
+            kind, register, offset = stack.groups()
+            values[register] = ("vptr" if kind == "mov" else "address", delta + int(offset, 16))
+            continue
+        slot = re.fullmatch(r"mov (e[a-z]{2}),dword ptr \[(e[a-z]{2})\+0x68\]", asm)
+        if slot:
+            destination, source = slot.groups()
+            origin = values.get(source)
+            values.pop(destination, None)
+            if origin and origin[0] == "vptr":
+                values[destination] = ("target", origin[1])
+            continue
+        copy = re.fullmatch(r"mov (e[a-z]{2}),(e[a-z]{2})", asm)
+        if copy:
+            destination, source = copy.groups()
+            origin = values.get(source)
+            values.pop(destination, None)
+            if origin:
+                values[destination] = origin
+            continue
+        opcode, _, operands = asm.partition(" ")
+        if opcode in {"cmp", "test", "nop"}:
+            continue
+        # Unknown instructions must fail closed: implicit writes and register
+        # exchanges cannot be modeled by assuming a single destination.
+        write_opcodes = {"mov", "movzx", "movsx", "lea", "add", "sub", "xor", "and", "or", "inc", "dec", "shl", "shr", "sal", "sar", "rol", "ror", "neg", "not"}
+        if opcode in write_opcodes or re.fullmatch(r"set[a-z]+", opcode):
+            destination = operands.split(",", 1)[0]
+            register = parents.get(destination, destination)
+            if re.fullmatch(r"e(?:ax|bx|cx|dx|si|di|bp|sp)", register):
+                values.pop(register, None)
+                continue
+            if opcode == "mov" and "[" in destination:
+                continue  # A store does not write a register in this replay.
+        raise RuntimeError(f"unsupported instruction in stack-alias replay: {asm}")
+    target = values.get(call_register)
+    receiver = values.get("ecx")
+    if not target or not receiver or target[0] != "target" or receiver[0] != "address" or target[1] != receiver[1]:
+        raise RuntimeError(f"vptr source and ECX do not alias after ESP replay: {target=}, {receiver=}")
 
 
 def run() -> int:
@@ -218,6 +316,40 @@ def run() -> int:
     if model_art_constructor.get(0x0046E4C1) != "lea ecx,[esp+0x2c]" or model_art_constructor.get(0x0046E4C5) != "call 0x47105c":
         raise RuntimeError("the model-art receiver is no longer constructed at [esp+0x2C] by 0x0047105C")
 
+    # These sites were previously misclassified by comparing textual ESP
+    # offsets across argument pushes/cleanup. Pin the corrective evidence.
+    stack_correction_guards = {
+        0x00464737: "lea ecx,[esp+0x1c]",
+        0x0046473B: "call 0x47105c",
+        0x00469CD7: "lea ecx,[esp+0x3c]",
+        0x00469CDB: "call 0x47105c",
+        0x00469D58: "mov edx,dword ptr [esp+0x14]",
+        0x00469D60: "mov dword ptr [esp+0x50],edx",
+        0x00457AC2: "push esi",
+        0x00457ACF: "mov dword ptr [esp+0x48],edx",
+        0x004052B7: "ret 0x4",
+        0x004052BC: "ret 0x4",
+        0x00464894: "push ecx",
+        0x00464895: "push edx",
+        0x00464896: "mov dword ptr [esp+0x1c],eax",
+        0x00464957: "push eax",
+        0x00464958: "push ecx",
+        0x00464959: "mov dword ptr [esp+0x1c],edx",
+        0x00469FD8: "push edx",
+        0x00469FD9: "push ecx",
+        0x00469FDA: "push eax",
+        0x00469FDF: "push 0x5da268",
+        0x00469FE4: "push edx",
+        0x00469FE5: "call 0x405590",
+        0x004055A3: "ret",
+        0x00469FF1: "mov edx,dword ptr [esp+0x50]",
+        0x00469FF5: "add esp,0x14",
+        0x0046A007: "lea ecx,[esp+0x4c]",
+    }
+    for address, expected in stack_correction_guards.items():
+        if by_address.get(address) != expected:
+            raise RuntimeError(f"stack-correction evidence changed at 0x{address:08X}: {by_address.get(address)}")
+
     dynamic_flags = instruction_map(disassemble_range(args.binary, args.objdump, 0x0044AE84, 0x0044AE92))
     expected_dynamic_flags = {
         0x0044AE84: "xor eax,eax",
@@ -276,6 +408,8 @@ def run() -> int:
         elif f"mov eax,dword ptr {receiver_stack}" not in pre_call or "mov edx,dword ptr [eax+0x68]" not in pre_call or f"lea ecx,{receiver_stack}" not in pre_call:
             raise RuntimeError(f"call 0x{call_va:08X} no longer loads the local adapter receiver and its +0x68 slot")
 
+        verify_stack_alias(pre_call, call_register)
+
         rows.append({
             "call_va": f"0x{call_va:08X}",
             "indirect_method_offset": "+0x68",
@@ -283,6 +417,7 @@ def run() -> int:
             "receiver_vtable_va": "0x0059F314",
             "slot_target_va": "0x0047111A",
             "stack_push_count": str(len(pushes)),
+            "vptr_and_this_stack_alias_verified": "true",
             "literal_argument": pushed_id,
             "resolved_import": "USER32!DrawTextW (IAT VA 0x0059E6B8)",
             "adapter_return": "ret 0x10",

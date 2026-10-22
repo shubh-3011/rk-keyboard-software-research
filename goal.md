@@ -25,4 +25,4 @@ The present scope is static and non-invasive. Do not open the keyboard HID inter
 
 ## Current state
 
-Resumed at the user's request on 2026-10-21. The goal remains active and incomplete. See [`progress.md`](progress.md) for the current snapshot, findings, limitations, and resume checkpoint.
+Resumed at the user's request on 2026-10-21 and continued on 2026-10-22. The 4.06 bounded 90-pattern census now has seven earlier classifications, 78 local text-adapter resolutions, and five resolutions on listed caller paths; alternate receivers of the latter remain unproved. This does not close the overall goal or establish a G5 data-read caller. See [`progress.md`](progress.md) for the current snapshot, findings, limitations, and resume checkpoint.
