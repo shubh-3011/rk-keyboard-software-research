@@ -69,6 +69,21 @@ FACTS: dict[int, tuple[str, str]] = {
     0x00409ED9: ("ff1588a25500", "App worker calls WaitForSingleObject through IAT slot 0x0055A288."),
     0x00409F60: ("e8cb7bffff", "After the event wait, app worker calls 0x00401B30."),
     0x00401C3E: ("e8cd030000", "Worker/update routine 0x00401B30 calls 0x00402010."),
+    0x004025B4: ("e8d7060000", "The 0x00402010 worker calls the payload-transfer routine 0x00402C90."),
+    0x004025B9: ("84c0", "The worker tests the transfer routine's AL result."),
+    0x004025BB: ("750e", "A successful transfer result branches to the post-transfer path."),
+    0x004025C4: ("83f805", "The worker compares the failed-transfer retry counter with five."),
+    0x004025C7: ("7cdd", "The failed-transfer loop can retry the transfer while the counter is below five."),
+    0x00402C90: ("558bec81ec2c080000a1c0d15a0033c5", "Transfer routine 0x00402C90 opens a stack frame and reserves its report buffer."),
+    0x00402CE4: ("c70305570000", "Transfer routine initializes its first feature report with command prefix 05 57."),
+    0x00402CF0: ("ff15e0a15500", "Transfer routine sends the 05 57 report through HID.DLL!HidD_SetFeature."),
+    0x00402D20: ("66c7060677", "Transfer routine initializes each payload report with prefix 06 77."),
+    0x00402DC5: ("8b15fce35b00", "Transfer routine loads the staged host-image byte length from global 0x005BE3FC."),
+    0x00402DE6: ("a1f8e35b00", "Transfer routine loads the staged host-image pointer from global 0x005BE3F8."),
+    0x00402E36: ("ff15e0a15500", "Transfer routine sends a payload report through HID.DLL!HidD_SetFeature."),
+    0x00402F29: ("ff15e0a15500", "Transfer routine's terminal path calls HID.DLL!HidD_SetFeature."),
+    0x00402F51: ("ff15e0a15500", "Transfer routine's final report call also targets HID.DLL!HidD_SetFeature."),
+    0x0040265F: ("e84c030000", "After a successful transfer return, the worker calls verifier 0x004029B0."),
     0x004026FD: ("e87e010000", "Routine 0x00402010 calls read-to-command helper 0x00402880."),
     0x004028C1: ("66c7060572", "Helper initializes the six-byte feature buffer with prefix 05 72."),
     0x004028C6: ("8b35c8a15500", "Helper loads HidD_GetFeature from IAT slot 0x0055A1C8."),
@@ -86,6 +101,8 @@ CALL_EDGES = {
     0x0040C64B: 0x00532290,
     0x00409F60: 0x00401B30,
     0x00401C3E: 0x00402010,
+    0x004025B4: 0x00402C90,
+    0x0040265F: 0x004029B0,
     0x004026FD: 0x00402880,
 }
 
@@ -205,7 +222,7 @@ def main() -> int:
         writer.writerows(rows)
     print(f"Verified package/resource hashes, All Start MFC map row, {len(FACTS)} instruction byte facts, {len(CALL_EDGES)} direct call edges, and {len(EXPECTED_IMPORTS)} IAT mappings.")
     print(f"Wrote {len(rows)} evidence rows to {args.out}")
-    print("Static chain reaches the 0x00402880 HidD_GetFeature helper conditionally; runtime execution and device effects remain unobserved.")
+    print("Static chain reaches the 0x00402C90 host-image transfer routine and post-transfer verification conditionally; runtime execution and device effects remain unobserved.")
     return 0
 
 

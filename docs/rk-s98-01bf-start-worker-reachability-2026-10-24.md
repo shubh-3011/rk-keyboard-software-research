@@ -60,17 +60,35 @@ static MFC message map.
    `WaitForSingleObject` (IAT `0x0055A288`) at `0x00409ED9`. After the wait,
    the path calls `0x00401B30` at `0x00409F60`, which calls `0x00402010` at
    `0x00401C3E`.
-7. `0x00402010` calls helper `0x00402880` at `0x004026FD`. The helper loads
-   `HidD_GetFeature` from IAT `0x0055A1C8`, initializes a six-byte buffer with
-   prefix `05 72`, and calls the API at `0x004028CD` and `0x004028F5`. The
-   helper later builds a `05 77` report and calls `HidD_SetFeature` at
-   `0x0040295A` through the loaded setter pointer.
+7. Before its readback checks, `0x00402010` calls transfer routine
+   `0x00402C90` at `0x004025B4`. The caller checks the returned `AL` value and
+   retries failed transfers while its counter remains below five. The
+   successful-return branch reaches verifier `0x004029B0` at `0x0040265F`.
+8. `0x00402C90` first constructs a `05 57` feature report and calls
+   `HidD_SetFeature` through IAT `0x0055A1E0` at `0x00402CF0`. It then builds
+   `0x802`-byte reports with prefix `06 77`; for each block it reads the
+   staged host-image pointer from global `0x005BE3F8` and total byte length
+   from `0x005BE3FC`, copies at most `0x800` payload bytes, and calls the same
+   `HidD_SetFeature` IAT at `0x00402E36`. The routine also has terminal
+   feature-write calls at `0x00402F29` and `0x00402F51`. The existing
+   [feature-read consumer audit](rk-s98-feature-read-consumer-audit-2026-10-24.md)
+   details the next `0x004029B0` path: `05 52` request, `06 72` response,
+   and chunkwise comparison against the host staging buffer.
+9. After that verifier path, `0x00402010` calls helper `0x00402880` at
+   `0x004026FD`. The helper loads `HidD_GetFeature` from IAT `0x0055A1C8`,
+   initializes a six-byte buffer with prefix `05 72`, and calls the API at
+   `0x004028CD` and `0x004028F5`. It later builds a `05 77` report and calls
+   `HidD_SetFeature` at `0x0040295A` through the loaded setter pointer.
 
-**Reachability result:** yes. In this bounded static call/data-flow chain, the
-newly mapped `HidD_GetFeature` helper at `0x00402880` is reachable from the
-All Start command through slot setup, event signaling, and the event-waiting
-worker callback. This is conditional static reachability, not evidence the
-handler or worker actually ran.
+**Reachability result:** yes. This bounded static chain reaches the payload
+transfer routine from the All Start command through slot setup, event
+signaling, and the event-waiting worker callback. The routine constructs
+`HidD_SetFeature` reports from a host-side staging buffer and is followed by
+the separately audited readback-comparison path. This is conditional static
+reachability, not evidence the handler or worker ran, any API succeeded, or a
+device accepted or persisted an update. The trace does not establish that the
+staged bytes are a file exported from the keyboard; it describes host-to-device
+transfer behavior in this update route only.
 
 ## Reproduction
 
@@ -83,10 +101,10 @@ python scripts/audit_s98_01bf_start_worker_reachability.py `
 ```
 
 The verifier checks the whole-file and `.text` hashes, resource RVA/raw offset,
-size and hash, dialog title/control, MFC map descriptor and row, 37 exact
-instruction byte facts, nine direct call targets, and six IAT mappings. The
+size and hash, dialog title/control, MFC map descriptor and row, 52 exact
+instruction byte facts, 11 direct call targets, and six IAT mappings. The
 resulting [evidence CSV](rk-s98-01bf-start-worker-reachability-evidence-2026-10-24.csv)
-contains 48 rows. The [verifier](../scripts/audit_s98_01bf_start_worker_reachability.py)
+contains 63 rows. The [verifier](../scripts/audit_s98_01bf_start_worker_reachability.py)
 only reads the PE and writes the CSV.
 
 ## Runtime limits and unresolved points
@@ -94,7 +112,7 @@ only reads the PE and writes the CSV.
 Static analysis cannot establish that a device was present, the handler's
 gates passed, event creation/signaling or thread creation succeeded, the worker
 was scheduled, any HID call succeeded, or the device accepted or acted on the
-reports. The meaning of the `05 72` read and `05 77` command fields remains
-unresolved. This trace does not establish the full updater lifecycle, firmware
-write behavior, all UI routes, or equivalence across the other S98 packages or
-RK software families.
+reports. The staged image's source/format, report-field meanings, device
+acceptance, flash persistence, and full updater lifecycle remain unresolved.
+This trace does not establish all UI routes or equivalence across the other
+S98 packages or RK software families.
