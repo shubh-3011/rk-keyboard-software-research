@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import struct
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -141,6 +142,7 @@ def main() -> int:
     linear_references: list[dict[str, Any]] = []
     selector_references: list[Any] = []
     control_references_to_init: list[tuple[int, str]] = []
+    immediate_references_to_init: list[tuple[int, str, str]] = []
     section_counts: Counter[str] = Counter()
 
     for section in pe.sections:
@@ -149,6 +151,11 @@ def main() -> int:
         section_name = section.Name.rstrip(b"\0").decode("ascii", "replace")
         start = image_base + int(section.VirtualAddress)
         for instruction in decoder.disasm(section.get_data(), start):
+            for operand in instruction.operands:
+                if operand.type == X86_OP_IMM and (int(operand.imm) & 0xFFFFFFFF) == INITIALIZER:
+                    immediate_references_to_init.append(
+                        (int(instruction.address), instruction.mnemonic, instruction.op_str)
+                    )
             if instruction.group(CS_GRP_CALL) or instruction.group(CS_GRP_JUMP):
                 if instruction.operands and instruction.operands[0].type == X86_OP_IMM:
                     if (int(instruction.operands[0].imm) & 0xFFFFFFFF) == INITIALIZER:
@@ -168,6 +175,37 @@ def main() -> int:
                 }
                 linear_references.append(row)
                 section_counts[section_name] += 1
+
+    raw_va_pattern = struct.pack("<I", INITIALIZER)
+    raw_rva_pattern = struct.pack("<I", INITIALIZER - IMAGE_BASE)
+    raw_va_hits: list[str] = []
+    raw_rva_hits: list[str] = []
+    for section in pe.sections:
+        section_name = section.Name.rstrip(b"\0").decode("ascii", "replace")
+        start = image_base + int(section.VirtualAddress)
+        raw = section.get_data()
+        for pattern, hits in ((raw_va_pattern, raw_va_hits), (raw_rva_pattern, raw_rva_hits)):
+            offset = 0
+            while True:
+                offset = raw.find(pattern, offset)
+                if offset < 0:
+                    break
+                hits.append(f"{section_name}:{hx(start + offset)}")
+                offset += 1
+    if immediate_references_to_init or raw_va_hits or raw_rva_hits:
+        raise SystemExit(
+            "Unexpected static initializer references: "
+            f"immediates={immediate_references_to_init!r}, "
+            f"VA_hits={raw_va_hits!r}, RVA_hits={raw_rva_hits!r}"
+        )
+    export_count = len(getattr(getattr(pe, "DIRECTORY_ENTRY_EXPORT", None), "symbols", []))
+    has_tls_callbacks = hasattr(pe, "DIRECTORY_ENTRY_TLS") and bool(
+        int(pe.DIRECTORY_ENTRY_TLS.struct.AddressOfCallBacks)
+    )
+    if export_count != 0 or has_tls_callbacks:
+        raise SystemExit(
+            f"Unexpected PE entry-reference surface: exports={export_count}, tls={has_tls_callbacks}"
+        )
 
     linear_calls: dict[int, Any] = {}
     linear_stores: list[tuple[int, int, Any]] = []
@@ -329,6 +367,7 @@ def main() -> int:
     print(f"linear_rooted_overlap={len(overlap)} rooted_only={len(rooted_only)} linear_only={len(linear_only)}")
     print(f"selector_absolute_refs={len(selector_references)} selector_ref_mnemonics=cmp-only")
     print(f"initializer_direct_control_refs_in_linear_sweep={len(control_references_to_init)}")
+    print("initializer_code_immediates=0 raw_va_pointers=0 raw_rva_pointers=0 exports=0 tls_callbacks=0")
     print(f"candidate_stores={[(hx(site), hx(target)) for site, target, _ in linear_stores]}")
     print(f"ledger_rows={len(sites)} output={args.output}")
     return 0

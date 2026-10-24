@@ -79,9 +79,12 @@ be logging dispatches, not keyboard transfers.
 ## What remains unknown
 
 - The rooted edge ledger has no direct call/jump edge to `0x0040D140`, and the
-  `.text` linear sweep found no direct call/jump reference to that address.
-  An indirect entry, runtime registration, or other dispatch route is not
-  excluded.
+  `.text` linear sweep found no direct call/jump or other immediate reference
+  to that address. A raw-section search found no embedded 32-bit VA or RVA
+  pointer to it; the PE has no exports or TLS callback table. These checks make
+  a conventional static entry reference unobserved, but do not prove the body
+  is unreachable: computed dispatch, runtime registration, or code outside the
+  scanned decode boundaries is not excluded.
 - All 14 absolute references to selector `0x0063BE28` in the `.text` linear
   sweep are comparisons; this sweep found no direct assignment to it. Aliased
   writes or other initialization mechanisms are not ruled out.
