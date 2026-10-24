@@ -1,0 +1,103 @@
+binary_sha256,evidence_va,bytes,observation,claim_status
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407C66,A104E45B00,Loads configured VendorID value from global 0x005BE404.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407C78,8986288C0000,Copies the configured VendorID value to dialog field +0x8C28.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407C7E,A100E45B00,Loads configured ProductID value from global 0x005BE400.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407C95,8986248C0000,Copies the configured ProductID value to dialog field +0x8C24.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004086F4,6820275C00,Pushes the HID class-GUID output buffer at 0x005C2720.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004086F9,FF15D8A15500,Calls HID.DLL!HidD_GetHidGuid through IAT 0x0055A1D8.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004086FF,6A12,Pushes SetupDiGetClassDevsW flags 0x12: present and device-interface class flags.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408708,FF15BCA45500,Calls SetupAPI!SetupDiGetClassDevsW through IAT 0x0055A4BC.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408710,C745C81C000000,Sets SP_DEVICE_INTERFACE_DATA.cbSize to 0x1C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040874F,FF15B8A45500,Calls SetupAPI!SetupDiEnumDeviceInterfaces through IAT 0x0055A4B8.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408763,8B3DB0A45500,Loads SetupDiGetDeviceInterfaceDetailW from IAT 0x0055A4B0.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004087A8,FFD7,Calls SetupDiGetDeviceInterfaceDetailW for the current interface path.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004087BC,8D7304,Uses the returned interface-detail path at the allocated detail record +4.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004087C0,FF155CA25500,Calls CreateFileW for the candidate path.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004087DA,C745E40C000000,Sets HID_ATTRIBUTES.Size to 12.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004087E3,FF15DCA15500,Calls HidD_GetAttributes on the opened candidate handle.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004087F1,FF15CCA15500,Calls HidD_GetPreparsedData on the opened candidate handle.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408801,FF15D0A15500,Calls HidP_GetCaps on the candidate preparsed data.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040880D,FF15D4A15500,Calls HidD_FreePreparsedData.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408813,668B7DEA,Loads HID_ATTRIBUTES.ProductID (structure offset 6).,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408819,668B5590,Loads HIDP_CAPS.FeatureReportByteLength (structure offset 8).,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408824,B903060000,Loads the special-path VendorID constant 0x0603.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408829,66394DE8,Compares HID_ATTRIBUTES.VendorID (offset 4) with 0x0603.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040882F,663BBD50FFFFFF,Compares ProductID with special-path constant 0x1020.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408838,663B855CFFFFFF,Compares HIDP_CAPS.UsagePage with 0xFF00.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408841,B802080000,Loads the special-path feature-report length 0x0802.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408849,0F849D010000,Branches on FeatureReportByteLength == 0x0802.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040884F,6683FA06,Checks the alternative special-path FeatureReportByteLength == 6.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408862,3981248C0000,Compares candidate ProductID with the dialog's configured value at +0x8C24.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408877,0FB745E8,Loads candidate VendorID for the configured-ID comparison.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040887B,3981288C0000,Compares candidate VendorID with the dialog's configured value at +0x8C28.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040888E,663B855CFFFFFF,The configured-ID branch also requires UsagePage == 0xFF00.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004088A5,6689873E8C0000,Stores the matched descriptor VersionNumber at dialog +0x8C3E.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408920,66C7070575,The configured-ID branch builds feature report prefix 05 75.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408931,FF15E0A15500,The configured-ID branch calls HidD_SetFeature; this is an active report path.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004089B4,8BBD70FFFFFF,"For FeatureReportByteLength == 6, selects the path table rooted at dialog +0x6A9C.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004089EC,8BBD6CFFFFFF,"For FeatureReportByteLength == 0x0802, selects the path table rooted at dialog +0x4A1C.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408A16,FF4580,The 0x0802 path branch increments its accepted-path count.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408EE2,897D94,Discovery-to-slot routine retains the current 0x0802 path-table entry.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004090D9,8145A408020000,Advances the per-slot status/path index by the 0x208-byte record stride.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004090E4,83FE10,Bounds the per-slot scan at 16 entries.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409123,C68660E45B0001,Marks the selected global worker slot populated before the feature-response qualification probe.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409138,894598,Retains the selected dialog slot row base (dialog + i*0x208).,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040913B,051C090000,Selects that row's primary path field at +0x91C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409150,0FB701,Copies the primary UTF-16 interface path into the selected row.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409166,81C180200000,Selects the parallel path table 0x2080 bytes after the primary table.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409176,6689840A9A290000,Copies the paired UTF-16 path into the selected row field at +0x299C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409198,FF155CA25500,Opens the selected row's primary interface path for the qualification probe.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004091D5,66837DB800,Rejects the selected interface if FeatureReportByteLength is zero.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004091E0,B806000000,"For the following probe, sets the local feature-report length to 6.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409205,C7010552F0FC,Builds the active 05 52 feature request bytes.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409218,FF15E0A15500,Sends the 05 52 request through HidD_SetFeature.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040923F,66C7010572,Builds the following 05 72 feature-read request.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040924D,FF15C8A15500,Calls HidD_GetFeature for the 05 72 request.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409261,80790261,Requires response byte +2 == 0x61 before setting the slot eligibility flag.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040926E,C6824490000001,Sets the dialog's current qualification-success byte at +0x9044.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409275,0FB64105,Reads the response classification byte at +5.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409305,888471448E0000,Copies qualification success to per-row byte +0x8E44 + 2*i.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409312,888471458E0000,Copies classification to per-row byte +0x8E45 + 2*i.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409320,8D4601,Formats the visible row ordinal as i+1.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409337,8D8114010000,Targets the corresponding per-row display string at row base +0x114.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409349,80BC72448E000000,Reads the per-row qualification-success byte.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409353,0FB68472458E0000,Reads the per-row classification byte.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004096BB,80BE60E45B0000,All Start gates on the global populated byte for slot i; it does not test dialog +0x8E44 here.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004096C9,833CB520E45B0000,All Start requires the worker-state dword for the same index to be zero.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004096D5,83BBC490000000,"Before setup, All Start also requires dialog field +0x90C4 to be zero.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004096E1,E84A000000,Eligible All Start row i calls per-slot setup 0x00409730 with index i.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004096E6,FF83C4900000,"After setup, increments dialog field +0x90C4; its reset/lifecycle is outside this trace.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409755,69F31C040000,Computes worker-record offset i*0x41C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040975B,C7049D20E45B0001000000,Marks global worker state for the selected index as started.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040976B,8D881C090000,Selects the dialog row's primary path at +0x91C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409771,8D9680E45B00,Selects worker-record primary path destination at 0x5BE480+i*0x41C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409793,8D9688E65B00,Selects worker-record paired-path destination at 0x5BE688+i*0x41C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409799,81C19C290000,Selects the same dialog row's paired path at +0x299C.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004097B1,889E90E85B00,Stores the selected row index in the worker record.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407D15,E836090000,Direct call to 0x00408650.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407D25,E826090000,Direct call to 0x00408650.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00407D65,E816110000,Direct call to 0x00408E80.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408AE4,E867FBFFFF,Direct call to 0x00408650.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408AF9,E852FBFFFF,Direct call to 0x00408650.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00408B48,E803FBFFFF,Direct call to 0x00408650.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004096E1,E84A000000,Direct call to 0x00409730.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1D8,,IAT resolves to HID.DLL!HidD_GetHidGuid.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A4BC,,IAT resolves to SETUPAPI.dll!SetupDiGetClassDevsW.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A4B8,,IAT resolves to SETUPAPI.dll!SetupDiEnumDeviceInterfaces.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A4B0,,IAT resolves to SETUPAPI.dll!SetupDiGetDeviceInterfaceDetailW.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A4B4,,IAT resolves to SETUPAPI.dll!SetupDiDestroyDeviceInfoList.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A25C,,IAT resolves to KERNEL32.dll!CreateFileW.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A264,,IAT resolves to KERNEL32.dll!CloseHandle.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1DC,,IAT resolves to HID.DLL!HidD_GetAttributes.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1CC,,IAT resolves to HID.DLL!HidD_GetPreparsedData.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1D0,,IAT resolves to HID.DLL!HidP_GetCaps.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1D4,,IAT resolves to HID.DLL!HidD_FreePreparsedData.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1E0,,IAT resolves to HID.DLL!HidD_SetFeature.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,IAT 0x0055A1C8,,IAT resolves to HID.DLL!HidD_GetFeature.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0058DC1C,B65E410028DC5800,MFC message map uses entry array at 0x0058DC28.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0058DC88,110100000000000001000000010000003A000000A0964000,WM_COMMAND ID 1 (All Start) is mapped to handler 0x004096A0.,confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,RT_DIALOG #102 RVA 0x001E62E8,,Dialog title is Update Tool; control ID 1 is the 全部開始 button; 16 STATIC controls ID 0x3E8–0x3F7 are captioned 1–16.,confirmed resource fact; direct HWND binding remains unproven
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,derived from 0x004090D9/0x00409166/0x00409755,,"Observed slot strides are 0x208 bytes in dialog path storage, 0x2080 bytes between the two 16-entry path tables, and 0x41C bytes in worker records.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,derived from 0x00409261/0x00409305/0x004096BB,,"Conditional path: response byte +2 == 0x61 sets current success and it is copied to per-row +0x8E44+2*i. All Start gates instead test global populated byte 0x5BE460[i], idle state 0x5BE420[i], and dialog +0x90C4 == 0; response success is not one of those gates.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,function 0x004096A0..0x004096F9,,"The bounded All Start handler body has no direct +0x8E44/+0x8E45 operand; its explicit checks use 0x5BE460[i], 0x5BE420[i], and dialog +0x90C4, which it increments after setup.",confirmed static fact
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,scope,,"Static file evidence only. No updater execution, live HID enumeration, report transmission, bootloader entry, or firmware write.",confirmed static fact

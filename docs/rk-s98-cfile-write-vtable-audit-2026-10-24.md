@@ -38,6 +38,15 @@ are candidate virtual dispatch sites only. Without proving each receiver's
 runtime class and the method signature at that site, none can be counted as
 a `CFile::Write` caller merely because the slot offset matches.
 
+A later hash-pinned caller audit provides bounded receiver and argument
+evidence for two archive-shaped sites, `0x0041CA16` and `0x0041CD65`, as
+`CFile`-family `+0x3C` virtual calls; 22 other sites fail bounded receiver,
+argument-role, or stack-arity checks. The archive field's runtime vptr remains
+unknown, and RTTI identifies `CMemFile`, `CSharedFile`, and `COleStreamFile`
+overrides at the same slot. Neither archive site therefore establishes a call
+to the base `CFile::Write`/`WriteFile` implementation. See the
+[virtual-call attribution audit](rk-s98-cfile-vcall-attribution-2026-10-24.md).
+
 The earlier 01BF feature-read audit identifies three bounded read consumers,
 including the `0x00402880` path that forwards selected response bytes into a
 later `05 77` feature report. No direct or receiver-proven edge from those

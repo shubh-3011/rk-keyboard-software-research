@@ -1,0 +1,19 @@
+evidence_kind,build,address_or_field,observation,scope
+binary,01BF,SHA-256,475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,Hash-pinned updater executable.
+code,01BF,.text SHA-256,3643f4d710a296b62598d3d8b71c7dd9dcab049ebbb540588b11757ccd5f03ed,Distinct code-section profile; hash does not imply behavior equivalence.
+RTTI,01BF,COL 0x00590578,.?AVCFile@@,MSVC Complete Object Locator TypeDescriptor names CFile.
+RTTI hierarchy,01BF,0x0058FC2C,.?AVCFile@@ -> .?AVCObject@@,Static base descriptors identify CFile and CObject.
+vtable,01BF,0x0055F878,22 executable entries,Same vtable address and entry count in both builds.
+vtable slot,01BF,slot 15 / +0x3C,0x0042D26F,"CFile Write method slot, independently resolved in each image."
+import,01BF,IAT 0x0055A378,KERNEL32.DLL!WriteFile,Import-table identity.
+implementation,01BF,0x0042D26F,call at 0x0042D28A; ret 8,"Static instruction shape uses ECX object, buffer/count stack arguments, and the object's handle field."
+generic virtual calls,01BF,+0x3C,24 sites,Same candidate census; each receiver's runtime class is not proven by this comparison.
+binary,0223,SHA-256,399020b7b66fda67cc6c69ae81336d67024204cbc9e15ffabde26a2cccd072ca,Hash-pinned updater executable.
+code,0223,.text SHA-256,bfc4506d668ee1ff8809a0455abd5f589545e45ff1d0b358a5fe3d4871e85ff2,Distinct code-section profile; hash does not imply behavior equivalence.
+RTTI,0223,COL 0x005905A8,.?AVCFile@@,MSVC Complete Object Locator TypeDescriptor names CFile.
+RTTI hierarchy,0223,0x0058FC5C,.?AVCFile@@ -> .?AVCObject@@,Static base descriptors identify CFile and CObject.
+vtable,0223,0x0055F878,22 executable entries,Same vtable address and entry count in both builds.
+vtable slot,0223,slot 15 / +0x3C,0x0042CFDD,"CFile Write method slot, independently resolved in each image."
+import,0223,IAT 0x0055A378,KERNEL32.DLL!WriteFile,Import-table identity.
+implementation,0223,0x0042CFDD,call at 0x0042CFF8; ret 8,"Static instruction shape uses ECX object, buffer/count stack arguments, and the object's handle field."
+generic virtual calls,0223,+0x3C,24 sites,Same candidate census; each receiver's runtime class is not proven by this comparison.
