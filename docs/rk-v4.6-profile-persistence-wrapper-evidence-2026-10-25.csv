@@ -1,0 +1,38 @@
+sha256,va,kind,bytes_or_data,claim,limit
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00489450,instruction,83 7e 54 00,WriteProfileInt tests registry-profile field [this+0x54],Static branch presence only
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00489472,instruction,ff 15 1c 60 5a 00,WriteProfileInt registry branch calls RegSetValueExW with REG_DWORD type 4 and four-byte input value,No runtime API result
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004894a9,instruction,ff 15 84 64 5a 00,WriteProfileInt INI branch calls WritePrivateProfileStringW,No runtime API result
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004894c5,instruction,83 79 54 00,WriteProfileString tests registry-profile field [this+0x54],Static branch presence only
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00489506,instruction,ff 15 34 60 5a 00,Null string plus non-null entry calls RegDeleteValueW,No runtime API result
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0048952b,instruction,ff 15 1c 60 5a 00,Non-null entry/string calls RegSetValueExW with REG_SZ type 1 and UTF-16 byte size plus terminator,No runtime API result
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0048954f,instruction,ff 15 84 64 5a 00,WriteProfileString INI branch calls WritePrivateProfileStringW,No runtime API result
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00489309,instruction,68 28 a6 5a 00,Profile root helper uses HKCU subkey literal software,The remaining subkey values are object fields
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005A9DDC,string,Settings,Section literal at direct caller 0x00486975,Value is only statically sourced
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005A9DF0,string,PreviewPages,Entry literal at direct caller 0x00486975,Semantic meaning inferred from label only
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00486975,callsite,E8 BD 2A 00 00,Settings/PreviewPages writes [this+0x94] through 0x00489437,Conditional on nonzero field; execution unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004869A5,callsite,E8 9B FF FF FF,Containing method calls helper 0x00486945 which contains Settings/PreviewPages write,Method entry dispatch/runtime caller incomplete
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00497077,callsite,E8 44 24 FF FF,Per-toolbar path clears formatted section via WriteProfileString(section,NULL,NULL),Prefix is caller/state dependent
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC38,string,%s-Bar%d,Per-toolbar section format,Prefix and index values are runtime state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC4C,string,%s-Summary,Aggregate section format,Prefix value is runtime state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004882AE,callsite,E8 B2 FB 00 00,Direct caller passes helper-produced string to aggregate toolbar writer 0x00497E65,Exact section prefix not recovered
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00497EA9,callsite,E8 46 F1 FF FF,Aggregate writer calls per-toolbar serializer 0x00496FF4 with prefix and index,Collection contents/runtime reachability unknown
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC28,string,Visible,Per-toolbar entry literal,Only written under its local condition
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC64,string,XPos,Per-toolbar entry literal,Sentinel-gated
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC70,string,YPos,Per-toolbar entry literal,Sentinel-gated
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC7C,string,MRUWidth,Per-toolbar entry literal,Sentinel-gated
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABC90,string,Docking,Per-toolbar entry literal,Only written under its local condition
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABCA0,string,MRUDockID,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABCB4,string,MRUDockLeftPos,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABCD4,string,MRUDockRightPos,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABCF4,string,MRUDockTopPos,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABD10,string,MRUDockBottomPos,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABD34,string,MRUFloatStyle,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABD50,string,MRUFloatXPos,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABD6C,string,MRUFloatYPos,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABD88,string,BarID,Per-toolbar entry literal,Per-bar state
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABD94,string,Horz,Per-toolbar entry literal,Only written when floating state field is nonzero
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABDA0,string,Floating,Per-toolbar entry literal,Only written when floating state field is nonzero
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABDB4,string,Bars,Per-toolbar and aggregate summary entry literal,The section distinguishes these two records
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABDC0,string,ScreenCX,Aggregate monitor width entry literal,Helper output at 0x00497460
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABDD4,string,ScreenCY,Aggregate monitor height entry literal,Helper output at 0x00497460
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005ABDE8,string,Bar#%d,Per-toolbar child-index entry format,Collection values/runtime state unknown
