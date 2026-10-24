@@ -13,8 +13,8 @@ constructor,0x00518AEC,"mov [ESI],0x005BB5B4",CPaneContainerManager constructor 
 vtable_slot,0x005BB624,"0x00518C91",Base CPaneContainerManager slot+0x70 target,proven,Derived runtime override is not observed
 caller,0x004A5521,"entry=0x004A54DE; this from IsKindOf+cast 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX becomes object pointer/null,proven,No G5 output buffer/length pair
 caller,0x004A587F,"entry=0x004A585D; ECX=[EAX] after accessor 0x004E288B; no pushes",Receiver unresolved; EAX used as object pointer/null,unresolved,No exact runtime type
-caller,0x004A5CD6,"entry=0x004A5B8E; receiver filtered to 0x005B8DB4 CBasePane; no pushes",CBasePane-derived receiver; exact type unresolved,proven-base-only,No exact dynamic type
-caller,0x004A64D5,"entry=0x004A63D5; ECX=ESI=[EBP+8]; no pushes",Receiver is caller-provided argument; type unresolved,unresolved,No exact runtime type
+caller,0x004A5CD6,"entry=0x004A5B8E; CBasePane candidate is further filtered to 0x005B4F40 CPaneDivider before relay; no pushes",CPaneDivider-compatible receiver on checked path,proven,The cast branch may fail at runtime
+caller,0x004A64D5,"entry=0x004A63D5; ECX=ESI=[EBP+8]; known relay-capable direct caller passes CPaneDivider-filtered pointer; no pushes",CPaneDivider-compatible receiver on known relay-capable path,proven,One direct caller passes arg2=1 and skips branch; other caller's arg2 is unresolved
 caller,0x004A700B,"entry=0x004A6D8F; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX used as object pointer/null,proven,No G5 output buffer/length pair
 caller,0x004A90B7,"entry=0x004A8FB6; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX feeds virtual slot+0x208,proven,Separate EH-framed function
 caller,0x004A9316,"entry=0x004A9230; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX feeds virtual slot+0x204,proven,Separate EH-framed function

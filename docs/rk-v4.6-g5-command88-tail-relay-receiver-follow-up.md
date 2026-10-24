@@ -24,6 +24,12 @@ addresses, caller prologue/call instruction bytes, and the class,
 constructor, field, and vtable entries used below. It does not execute the
 PE or prove runtime reachability.
 
+**Receiver correction:** a later direct-caller review resolves the receiver
+class at `0x004A5CD6` and the known relay-capable path to `0x004A64D5` as
+`CPaneDivider`-compatible. See the
+[receiver-type correction](rk-v4.6-g5-command88-receiver-type-corrections-2026-10-25.md)
+and its hash-pinned [verifier](../scripts/audit_rk46_g5_cmd88_receiver_type_corrections.py).
+
 ## Relay contract
 
 At 0x004EDD8D, the helper reads [ECX+0x138]. A null field branches to
@@ -99,8 +105,8 @@ an object pointer or null.
 | --- | --- | --- | --- | --- | --- |
 | 0x004A5521 | 0x004A54DE; frame-pointer prologue, two local slots, saved EBX/ESI/EDI | 0x0048BF9D checks class 0x005B4F40; 0x0048BFBB returns the CPaneDivider-compatible object | No explicit args; top frame words are saved EDI, ESI, EBX | EAX to ESI, null check, object helper 0x004800AD, compare returned value to [EBP+8] | **CPaneDivider receiver proven; nested field is manager-typed** |
 | 0x004A587F | 0x004A585D; frame-pointer prologue, local slot, saved ESI/EDI | ECX=[EAX] after accessor 0x004E288B on [caller-this+0x3C] | No explicit args; top frame words are saved EDI, ESI | EAX to ESI, compare to [EBP+8]; object helper and conditional vtable +0x320 call | **Receiver type unresolved** |
-| 0x004A5CD6 | 0x004A5B8E; frame-pointer prologue, 0x10 local bytes, saved EBX/ESI/EDI | 0x0048BFBB filters the object to class descriptor 0x005B8DB4 (CBasePane) | No explicit args; top frame words are saved EDI, ESI, EBX | EAX is pushed into a CBasePane cast; result null-checked, slot-zero compared to [EBP+0x10], then passed to 0x004E87FA | **CBasePane-derived object; exact receiver unresolved** |
-| 0x004A64D5 | 0x004A63D5; frame-pointer prologue, 0x34 local bytes, saved EBX/ESI/EDI; branch to site is 0x004A6425 | ESI is the caller's first stack argument [EBP+8]; no class filter at this site | No explicit args; top frame words are saved EDI, ESI, EBX | EAX+0x20 is read; EAX is saved to [EBP+8] and passed as a record/object to function pointer EDI | **Receiver type unresolved** |
+| 0x004A5CD6 | 0x004A5B8E; frame-pointer prologue, 0x10 local bytes, saved EBX/ESI/EDI | The CBasePane-filtered candidate is subsequently filtered to CPaneDivider at 0x004A5CC9; non-null result is passed in ECX | No explicit args; top frame words are saved EDI, ESI, EBX | Returned EAX is checked/used by the later slot-zero comparison and 0x004E87FA path | **CPaneDivider-compatible receiver proven on the checked path** |
+| 0x004A64D5 | 0x004A63D5; frame-pointer prologue, 0x34 local bytes, saved EBX/ESI/EDI; branch to site is 0x004A6425 | ESI is arg1 [EBP+8]. Both direct callers pass a CPaneDivider-filtered pointer; one passes arg2=1 and skips the relay branch, while the other does not explicitly supply arg2 | No arguments are pushed at the relay call | EAX+0x20 is read; EAX is saved to [EBP+8] and passed as a record/object to function pointer EDI | **CPaneDivider-compatible receiver on the known relay-capable path; branch/reachability remains conditional** |
 | 0x004A700B | 0x004A6D8F; frame-pointer prologue, 0x28 local bytes, saved ESI/EDI | 0x0048BFBB filters to class 0x005B4F40 (CPaneDivider) | No explicit args; top frame words are saved EDI, ESI | EAX is filtered to class 0x00609718, checked, then fields +0x2FC and +0xE4 are followed | **CPaneDivider receiver proven; nested field is manager-typed** |
 | 0x004A90B7 | 0x004A8FB6; EH prologue with 0x94 local bytes | 0x0048BFBB filters the object to CPaneDivider at 0x004A9091; result is in EDI | No explicit args; active EH/local frame remains under the call | Null check; nonnull result gets vtable slot +0x208 with -1, -1, [EBP+8] | **CPaneDivider receiver proven; nested field is manager-typed** |
 | 0x004A9316 | 0x004A9230; EH prologue with 0x9C local bytes | 0x0048BF9D/0x0048BFBB filter to CPaneDivider; result is passed in ECX | No explicit args; active EH/local frame remains under the call | EAX to EBX, null check, IsKindOf(0x00609718), then vtable slot +0x204 with -1, -1, [EBP+8] | **CPaneDivider receiver proven; nested field is manager-typed** |
@@ -117,20 +123,21 @@ are not one long function rooted at 0x004A8EDE.
 
 The type and field evidence narrows the eight callers materially:
 
-- Five direct callers pass a CPaneDivider-compatible receiver. For those
+- Seven direct relay callsites have CPaneDivider-compatible receivers on the
+  statically established paths. For those
   calls, the +0x138 field is initialized and written as a
   CPaneContainerManager-compatible member. The base manager vtable's +0x70
   entry is 0x00518C91, distinct from the G5 GetRealData wrapper at
-  0x00411030.
-- Three callers remain receiver-unresolved or only base-class-resolved:
-  0x004A587F, 0x004A5CD6, and 0x004A64D5. Their return-value use is
-  recovered, but the static slices do not prove the relay's [this+0x138]
-  dynamic type at those sites.
+  0x00411030. The manager's dynamic subtype is not established.
+- `0x004A587F` remains receiver-unresolved. Its return-value use is recovered,
+  but the static slice does not prove the relay's `[this+0x138]` dynamic type.
+- The receiver at `0x004A64D5` is typed on the known relay-capable direct path,
+  but its zero-argument gate and possible computed callers remain unresolved.
 - All eight make a nullary direct call to the relay and provide no
   caller-pushed output buffer and byte length. Therefore the eight sites do
   not establish invocation of the G5 two-argument wrapper or an attributable
-  response buffer. The three unresolved receivers are not declared
-  unreachable or conclusively excluded from every computed path.
+  response buffer. The unresolved receiver is not declared unreachable or
+  conclusively excluded from every computed path.
 
 This does not resolve the meaning of command 0x88, establish firmware
 bytes, or trace a full response range to a persistent sink. The separate
