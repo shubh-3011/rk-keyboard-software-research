@@ -74,8 +74,11 @@ compatibility/version behavior, and whether stale/partial files are handled
 elsewhere remain unresolved. A separate [record-reclamation trace]
 (rk-v4.6-textmacro-record-reclamation.md) maps how the driver scans mapping
 cells for the `0x0A00005B` tag/key pair and zero-fills a `0x404`-byte record
-when the examined linked-list cells contain no reference. Runtime execution,
-list identity, and persistence of the cleared table remain unobserved.
+when the examined linked-list cells contain no reference. A later [list-lifecycle trace](rk-v4.6-textmacro-list-lifecycle.md) identifies the global list owner
+and its generic operations, then compares cleanup branches with the direct
+writer paths. Runtime execution, payload semantics/completeness, and
+persistence of the cleared table through unresolved virtual dispatch remain
+unobserved.
 
 ### Call paths and feature gate
 

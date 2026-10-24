@@ -45,10 +45,12 @@ the requested range. Its large-fill fast path clears XMM0 and stores zeroed
 16-byte blocks, then clears any tail bytes. This clears the key and all text
 bytes in that record.
 
-The identities and ownership rules of the `0x00619DCC` list nodes are not
-established by this trace. The code proves the pointer traversal and cell
-layout it examines, not that the list is the exhaustive set of every profile
-or keyboard model in every runtime state.
+The follow-up [list-lifecycle trace](rk-v4.6-textmacro-list-lifecycle.md)
+identifies `0x00619DCC` as the head field of a global list-like object and maps
+its generic append/remove/clear/destruction helpers. The exact semantic type
+and runtime contents of each node payload, and whether the list covers every
+profile or keyboard model in every state, remain unresolved. The cleanup code
+proves only the pointer traversal and cell layout it examines.
 
 ## Direct-call contexts
 
@@ -63,9 +65,12 @@ The executable-section byte-linear decoder finds these three direct calls to
 
 These callers are consistent with pruning text-macro records after certain
 mapping or selection changes, but the user action and exact lifecycle timing
-are not established by the static callsites alone. The routine scans the
-linked-list nodes it is given; it cannot prove that no external or unlisted
-reference exists.
+are not established by the static callsites alone. A follow-up branch trace
+finds no direct `textmacro.dct` writer call on the cleanup branches; it also
+finds separate `pro.dct` profile persistence and one unresolved virtual call
+after cleanup. See the [list-lifecycle trace](rk-v4.6-textmacro-list-lifecycle.md)
+for per-caller details. The routine scans the linked-list nodes it is given;
+it cannot prove that no external or unlisted reference exists.
 
 ## Evidence and reproduction
 
@@ -80,7 +85,7 @@ the existing [MFC message-map ledger](rk-v4.6-mfc-message-map-entries.csv).
 python scripts/audit_rk46_textmacro_reclamation.py --binary .research/rk46-extract-full/app/DeviceDriver.exe --out docs/rk-v4.6-textmacro-record-reclamation.csv
 ```
 
-The next open questions are the runtime identity/completeness of the linked
+The next open questions are the runtime contents/completeness of the linked
 list, the device/profile meaning of its mapping cells, which user actions
-reach each caller, and whether zeroed records are later written to
-`textmacro.dct` on those paths.
+reach each caller, and whether unresolved virtual dispatch can later persist
+the cleared table to `textmacro.dct`.
