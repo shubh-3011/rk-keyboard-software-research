@@ -24,15 +24,20 @@ key-up record with flags `0x0006`. It calls `SendInput` with `cbSize=0x1C`.
 The code constructs host OS input records; this path does not call a keyboard
 HID feature-report writer.
 
-One decoded caller is at `0x0044B1BF`. Its surrounding code gates on two
-numeric values (`EDI == 10` and `ESI == 0x5B`), looks up a key in a 50-entry
-table at `0x0060D3C4` with `0x404`-byte stride through helper `0x0041F480`,
-and passes the UTF-16 text at the matching record's `+4` to `0x00458680`.
-The table occupies `0xC8C8` bytes, matching the size read/written by the
-separate `textmacro.dct` helpers. This is consistent with text-macro playback
-and uses the same fixed table that those helpers persist. The numeric gate
-fields and visible UI trigger remain unresolved. See
-the [local text-macro path audit](rk-v4.6-textmacro-path-audit.md).
+One decoded caller is at `0x0044B1BF`. A follow-up traces both the CDev3632
+and CDevG5KB read-worker decoders posting message `0x07EB` to the
+`COemDrvDlg` handler that contains this call. The handler decodes packed
+report fields, selects a mapping cell, requires its dword tag to equal
+`0x0A00005B`, and reads the record key at cell `+0x40`. Helper `0x0041F480`
+looks up that key in the 50-entry table at `0x0060D3C4` with `0x404`-byte
+stride and non-allocation mode. On success, the handler passes the UTF-16
+text at record `+4` to `0x00458680`. The table occupies `0xC8C8` bytes,
+matching the size read/written by the `textmacro.dct` helpers. This closes
+the static report-to-handler-to-host-input path for those compiled classes.
+Packet field semantics, physical key gesture, active profile, message delivery,
+and runtime API success remain unobserved. See the
+[device-trigger audit](rk-v4.6-textmacro-device-trigger.md) and
+[local text-macro path audit](rk-v4.6-textmacro-path-audit.md).
 
 ## GDI+ image-frame timing and selection
 

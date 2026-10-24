@@ -84,7 +84,7 @@ instruction paths are now statically mapped:
 | API | IAT VA | Decoded callsite evidence | What it supports |
 | --- | ---: | --- | --- |
 | `KERNEL32!GetPrivateProfileStringA` | `0x005A63C8` | Direct call `0x00456748` | Reads local section `OPT`, key `TouchWeb`, into a 50-byte buffer; empty value takes an RK Drive URL fallback. The value reaches selector-`0x12` RK action/command helpers; browser launch and device outcome are not established. |
-| `USER32!SendInput` | `0x005A66DC` | Direct call `0x0045877A` | Helper emits 28-byte Unicode keyboard down/up record pairs in batches of at most 64 code units. A caller at `0x0044B1BF` is gated by numeric fields and selects text from a fixed table; its visible feature name/reachability remain inferred or unresolved. |
+| `USER32!SendInput` | `0x005A66DC` | Direct call `0x0045877A` | Helper emits 28-byte Unicode keyboard down/up record pairs in batches of at most 64 code units. A follow-up maps two device-read decoders posting private message `0x07EB` to `COemDrvDlg`, which gates a selected mapping cell on tag `0x0A00005B`, looks up its text-macro record without allocation, and calls this helper. Physical key meaning, active profile, message delivery, and runtime success remain unobserved; see the [device-trigger audit](rk-v4.6-textmacro-device-trigger.md). |
 | `gdiplus!GdipGetPropertyItemSize` | `0x005A696C` | Thunk `0x00590914` jumps to the IAT; relative caller `0x0046F34C` | Reads property identifier `0x5100` in a multi-frame image timing path; frame selection and timer are mapped, while the asset/feature tie remains unresolved. |
 | `gdiplus!GdipGetPropertyItem` | `0x005A6968` | Thunk `0x0059091A` jumps to the IAT; relative caller `0x0046F376` | Reads the item used by the same image-frame timing path. See the dedicated follow-up for the interval and fallback evidence. |
 
@@ -448,12 +448,16 @@ This is strong static evidence for host-side local macro-file persistence.
 The file format and exact UI-to-serialization call graph are unresolved. These
 file operations do not identify firmware storage or a keyboard readback path.
 
-The `SendInput` call at `0x0045877A` is host input injection. A gated caller
-at `0x0044B1BF` looks up a text record in the same `0x0060D3C4` table and
-passes the UTF-16 record text to the helper; the table is also the buffer
-read/written by the `textmacro.dct` helpers. This supports an inferred
-text-macro playback route. The numeric gate meanings, visible trigger, and
-full UI-to-playback path remain unresolved; see the
+The `SendInput` call at `0x0045877A` is host input injection. Static tracing
+now joins both the `CDev3632` and `CDevG5KB` report decoders to the
+`COemDrvDlg` private-message handler at `0x0044AFF0`. The handler uses the
+packed report fields to select a mapping cell, requires its dword tag to be
+`0x0A00005B`, looks up the cell's record key in the same `0x0060D3C4` table,
+then passes the UTF-16 payload to `SendInput`. This is a static device-report
+to host text-macro path for two compiled classes. Physical key meanings,
+active profile values, runtime thread/message/API success, and the exact
+user gesture remain unresolved. See the
+[device-trigger audit](rk-v4.6-textmacro-device-trigger.md) and
 [native API feature follow-up](rk-v4.6-native-api-feature-follow-up.md).
 
 ## Conclusions and remaining limits

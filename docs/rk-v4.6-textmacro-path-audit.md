@@ -129,11 +129,11 @@ old-partition save and new-partition load through `ShowTextMacro` state.
   and `0x0046C211` plus their calls into the persistence routines.
 - Exact record key bit meanings, payload text encoding beyond 16-bit WCHAR
   copies, null/partial-file recovery, and any version migration.
-- The state-`5` option label, complete editor behavior, and the playback
-  trigger. The picker command-to-buffer save route is mapped; a separate
-  gated caller at `0x0044B1BF` looks up a record
-  through `0x0041F480` in the same `0x0060D3C4` table and passes its UTF-16
-  text to the host `SendInput` helper; the numeric gate meanings and visible
-  trigger remain unresolved. This does not establish a device-report path or
-  firmware storage, and does not provide a firmware backup method.
+- The state-`5` option label, complete editor behavior, physical key meaning,
+  and active runtime profile. A follow-up now maps the static device-report
+  route through private message `0x07EB`, the `0x0A00005B` mapping-cell gate,
+  non-allocating record lookup, and host `SendInput`; exact report semantics,
+  message delivery, and user gesture remain unobserved. See the
+  [device-trigger audit](rk-v4.6-textmacro-device-trigger.md). This does not
+  establish firmware storage or provide a firmware backup method.
 

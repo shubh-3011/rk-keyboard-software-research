@@ -460,7 +460,7 @@ For current blockers and the recommended reverse-engineering order, see the
   Exact serialized bytes and runtime cleanup outcomes remain unknown. See the
   [lifecycle report](docs/rk-v4.6-temp-registry-lifecycle.md) and its
   [verifier](scripts/audit_rk46_temp_registry_lifecycle.py). The visible control
-  origin, actual browser/device outcome, text-macro identity, asset ownership,
+  origin, actual browser/device outcome, active text-macro mapping selection, asset ownership,
   write success, and runtime reachability remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
   [`docs/rk-v4.6-native-api-feature-follow-up.md`](docs/rk-v4.6-native-api-feature-follow-up.md).
@@ -521,7 +521,12 @@ For current blockers and the recommended reverse-engineering order, see the
   [`docs/rk-v4.6-textmacro-path-audit.md`](docs/rk-v4.6-textmacro-path-audit.md)
   and its [evidence CSV](docs/rk-v4.6-textmacro-path-evidence.csv), plus the
   [command bridge](docs/rk-v4.6-textmacro-command-bridge.md) and
-  [verifier](scripts/audit_rk46_textmacro_command_bridge.py).
+  [verifier](scripts/audit_rk46_textmacro_command_bridge.py). A new static
+  device-trigger trace follows the `CDev3632` and `CDevG5KB` read-worker
+  decoders through private message `0x07EB`, the `COemDrvDlg` mapping-cell
+  tag `0x0A00005B`, a non-allocating macro lookup, and host `SendInput`. It
+  identifies the code path, not the physical key gesture, active profile,
+  runtime message delivery, or API success. See the [trigger report](docs/rk-v4.6-textmacro-device-trigger.md), [evidence ledger](docs/rk-v4.6-textmacro-device-trigger.csv), and [verifier](scripts/audit_rk46_textmacro_device_trigger.py).
 - In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
