@@ -1,0 +1,73 @@
+binary_sha256,va,bytes,instruction,branch_choice,scope
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2CC,6A7C,push 0x7c,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2CE,B842735900,"mov eax, 0x597342",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2D3,E80FBF0900,call 0x5781e7,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2D8,8BF1,"mov esi, ecx",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2DA,8975E4,"mov dword ptr [ebp - 0x1c], esi",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2DD,8B4D0C,"mov ecx, dword ptr [ebp + 0xc]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2E0,E85DFFFBFF,call 0x49c242,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2E5,85C0,"test eax, eax",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2E7,0F84AE010000,je 0x4dc49b,fallthrough -> 0x004DC2ED,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2ED,8D45E0,"lea eax, [ebp - 0x20]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2F0,50,push eax,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2F1,8D4508,"lea eax, [ebp + 8]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2F4,8D4E04,"lea ecx, [esi + 4]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2F7,33FF,"xor edi, edi",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2F9,50,push eax,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2FA,897DE0,"mov dword ptr [ebp - 0x20], edi",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC2FD,894DDC,"mov dword ptr [ebp - 0x24], ecx",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC300,E81253FCFF,call 0x4a1617,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC305,85C0,"test eax, eax",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC307,7409,je 0x4dc312,fallthrough -> 0x004DC309,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC309,FF75E0,push dword ptr [ebp - 0x20],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC30C,FF15B8645A00,call dword ptr [0x5a64b8],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC312,8D4DE8,"lea ecx, [ebp - 0x18]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC315,E8069FF2FF,call 0x406220,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC31A,BE04010000,"mov esi, 0x104",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC31F,56,push esi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC320,8D4DE8,"lea ecx, [ebp - 0x18]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC323,897DFC,"mov dword ptr [ebp - 4], edi",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC326,E8659DF2FF,call 0x406090,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC32B,50,push eax,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC32C,56,push esi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC32D,FF15E0625A00,call dword ptr [0x5a62e0],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC333,6AFF,push -1,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC335,8D4DE8,"lea ecx, [ebp - 0x18]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC338,E8838CF5FF,call 0x434fc0,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC33D,8D4DEC,"lea ecx, [ebp - 0x14]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC340,E8DB9EF2FF,call 0x406220,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC345,33DB,"xor ebx, ebx",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC347,43,inc ebx,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC348,56,push esi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC349,8D4DEC,"lea ecx, [ebp - 0x14]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC34C,885DFC,"mov byte ptr [ebp - 4], bl",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC34F,E83C9DF2FF,call 0x406090,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC354,50,push eax,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC355,57,push edi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC356,68F02F5B00,push 0x5b2ff0,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC35B,FF75E8,push dword ptr [ebp - 0x18],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC35E,FF15E4625A00,call dword ptr [0x5a62e4],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC364,6AFF,push -1,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC366,8D4DEC,"lea ecx, [ebp - 0x14]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC369,E8528CF5FF,call 0x434fc0,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC36E,57,push edi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC36F,6800010004,push 0x4000100,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC374,6A02,push 2,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC376,57,push edi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC377,57,push edi,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC378,68000000C0,push 0xc0000000,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC37D,FF75EC,push dword ptr [ebp - 0x14],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC380,FF1574645A00,call dword ptr [0x5a6474],,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC386,8BF0,"mov esi, eax",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC388,8975E0,"mov dword ptr [ebp - 0x20], esi",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC38B,83FEFF,"cmp esi, -1",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC38E,0F84F1000000,je 0x4dc485,taken -> 0x004DC485,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC485,8B4DEC,"mov ecx, dword ptr [ebp - 0x14]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC488,83C1F0,"add ecx, -0x10",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC48B,E81053F2FF,call 0x4017a0,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC490,8B4DE8,"mov ecx, dword ptr [ebp - 0x18]",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC493,83C1F0,"add ecx, -0x10",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC496,E80553F2FF,call 0x4017a0,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC49B,33C0,"xor eax, eax",,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC49D,E8EABD0900,call 0x57828c,,selected local branch path; calls treated atomically
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x004DC4A2,C20800,ret 8,,selected local branch path; calls treated atomically

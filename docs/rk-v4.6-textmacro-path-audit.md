@@ -12,6 +12,11 @@ The companion [`rk-v4.6-textmacro-path-evidence.csv`](rk-v4.6-textmacro-path-evi
 indexes the principal code references. VAs below use the PE preferred base
 `0x00400000`.
 
+The [2026-10-22 command bridge](rk-v4.6-textmacro-command-bridge.md) now
+maps the picker save command and one welcome-dialog selection-change path.
+It narrows the older UI/event gaps below without proving runtime delivery or
+all callers.
+
 ## Proven statically
 
 ### Path formation and local file operations
@@ -89,8 +94,17 @@ meaning of that value are inferred from use, not proven by symbols.
 
 The other write caller is inside the large routine beginning at `0x00421350`.
 Its branch at `0x00421596` looks up a record, copies its text field, then calls
-the persistence helper. This is a direct local call path, but the surrounding
-event/control association is not recovered.
+the persistence helper. The follow-up identifies this as `CKeyFunPickDlg`'s
+`WM_COMMAND` virtual override: it matches the sender HWND of an embedded
+`CPngBtn`, then state `5` reads non-empty text, updates the record, and saves.
+The sender uses the caption descriptor associated with `tc_apply` (English
+`Apply`); its actual runtime caption and the state-`5` option label remain
+unobserved.
+
+The same follow-up maps `0x0046C211` to `CWelcomDlg`'s command override. It
+matches one of ten child HWNDs, selects a device-associated holder, and
+forwards its identifier to `0x00459F50`. The examined change branch gates
+old-partition save and new-partition load through `ShowTextMacro` state.
 
 ## Inferred
 
@@ -100,21 +114,24 @@ event/control association is not recovered.
 - The `%04X` path component likely partitions this file by model/device
   identifier. The two callers of `0x00459F50` pass values from model/device
   objects, but runtime path strings were not observed.
-- The call from `0x00421350` may be part of text-macro handling after a
-  matching record is selected. Its exact trigger is not identified.
+- The record/persistence path is now statically linked to a picker command;
+  the displayed state-`5` option and exact user interaction remain unresolved.
 
 ## Unresolved
 
 - Which absolute `cfg.ini` path and `appdir` value the runtime selects,
   whether the startup path builder executes successfully, and the concrete
   per-user path at runtime.
-- MFC message-map/command-ID or vtable mapping for `0x00421350`, `0x00459F50`,
-  `0x0045C620`, and `0x0046C211`; consequently the exact UI events, lifecycle
-  timing, and user interaction that cause load/save are unknown.
+- The full caller/event ownership of setup helper `0x0045A950`, which contains
+  the other call at `0x0045C620`; alternate callers, runtime notification
+  delivery, complete selection-lifecycle timing, and actual user interaction.
+  The follow-up proves the selected virtual command paths for `0x00421350`
+  and `0x0046C211` plus their calls into the persistence routines.
 - Exact record key bit meanings, payload text encoding beyond 16-bit WCHAR
   copies, null/partial-file recovery, and any version migration.
-- The exact relation between this local buffer and the visible macro
-  editing/playback controls. A gated caller at `0x0044B1BF` looks up a record
+- The state-`5` option label, complete editor behavior, and the playback
+  trigger. The picker command-to-buffer save route is mapped; a separate
+  gated caller at `0x0044B1BF` looks up a record
   through `0x0041F480` in the same `0x0060D3C4` table and passes its UTF-16
   text to the host `SendInput` helper; the numeric gate meanings and visible
   trigger remain unresolved. This does not establish a device-report path or

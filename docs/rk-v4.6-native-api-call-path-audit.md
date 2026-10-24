@@ -284,8 +284,9 @@ wrapper objects, and stores the raw handle into caller-owned state through
 `0x004A232E`. Exception-unwind cleanup blocks at `0x004DC42B`, `0x004DC449`,
 and `0x004DC467` call `CloseHandle` (IAT `0x005A64B8`) on the opened handle
 and clear the associated state. On the normal return path the handle is
-transferred to caller-owned state; its later close site and the actual
-serialized content were not traced in this slice.
+transferred to caller-owned state. The later close sites are now traced in the
+[CMenuHash lifecycle follow-up](rk-v4.6-temp-registry-lifecycle.md); the exact
+complete serialized content remains dependent on runtime state.
 
 This is proven host-side temporary-file behavior with an `AFX` filename
 prefix. The API bytes do not identify a keyboard settings file or firmware
@@ -395,9 +396,17 @@ returns success. A later factory call for the same key retrieves and closes
 the prior handle at `0x004DC30C` before replacement. The file's
 `FILE_FLAG_DELETE_ON_CLOSE` means it is removed when its raw handle is closed.
 Factory exception-unwind paths also close the open handle at `0x004DC436`,
-`0x004DC454`, and `0x004DC472`. The eventual normal-path registry cleanup or
-close site was not traced, so persistence beyond those observed paths is
-unknown.
+`0x004DC454`, and `0x004DC472`. The
+[2026-10-22 lifecycle follow-up](rk-v4.6-temp-registry-lifecycle.md) identifies
+the registry as `CMenuHash`, single-key close/remove at `0x004DC28B`, and
+bulk close at `0x004DC0CC`. A zero-message-result branch in the app loop
+reaches the bulk routine through `COemDrvApp` virtual `+0x68` and
+`0x00490589`. The separately registered destructor clears map storage without
+that close loop. Cleanup execution/API success and complete exit-route
+coverage remain unobserved. The same follow-up records a conditional retained
+closed-handle-value candidate when replacement closes the old value but the
+new `CreateFileW` fails; its local witness does not simulate helper effects
+or concurrency.
 
 ## Side LED and text-macro references
 

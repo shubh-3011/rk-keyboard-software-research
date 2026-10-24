@@ -447,13 +447,19 @@ For current blockers and the recommended reverse-engineering order, see the
   action/command dispatch. The reconciled main API report also traces the
   direct `WritePrivateProfileStringW` call at `0x00403643` from the selected
   locale index to a host `lang.ini` write at the intended %LOCALAPPDATA%\RKKB\ path if the package config is selected; runtime write remains unobserved.
-   It also traces a shared temp-file
+  It also traces a shared temp-file
   factory through `GetTempPathW`, `GetTempFileNameW`, and delete-on-close
   `CreateFileW`; toolbar-property-page callers reach MFC serializer
-   `0x004A49B9`. Archive mode zero stores state-dependent toolbar/menu data
-   and flushes it through the CFile wrapper. A shared registry holds the raw
-   handle, and replacement closes the prior delete-on-close file. Exact bytes
-   and normal cleanup remain unknown. The visible control
+  `0x004A49B9`. Archive mode zero stores state-dependent toolbar/menu data
+  and flushes it through the CFile wrapper. The registry is RTTI-identified
+  `CMenuHash`; a single-key release closes/removes a value, and a bulk loop
+  closes cached handles on a traced application-loop termination branch.
+  The registered global destructor only frees map storage. A selected
+  replacement-failure path bypasses updating the cached value after closing
+  its old handle; stale-value consequences remain conditional and unobserved.
+  Exact serialized bytes and runtime cleanup outcomes remain unknown. See the
+  [lifecycle report](docs/rk-v4.6-temp-registry-lifecycle.md) and its
+  [verifier](scripts/audit_rk46_temp_registry_lifecycle.py). The visible control
   origin, actual browser/device outcome, text-macro identity, asset ownership,
   write success, and runtime reachability remain open;
   the `SendInput` path is host input synthesis, not keyboard HID output. See
@@ -505,12 +511,17 @@ For current blockers and the recommended reverse-engineering order, see the
 - A focused 4.6 text-macro trace maps the `ShowTextMacro` profile gate,
   `textmacro.dct` local read/write helpers, and a 50-record fixed-size buffer
   (`0xC8C8` bytes). If startup selects `app/Cfg.ini`, the intended path shape is
-   `%LOCALAPPDATA%\RKKB\<four-hex-value>\textmacro.dct`. Absolute `cfg.ini`
-   selection, runtime branch execution, MFC event association, and relation to
-  keyboard reports remain unresolved; this is host-file persistence evidence,
-  not firmware storage. See
+  `%LOCALAPPDATA%\RKKB\<four-hex-value>\textmacro.dct`. A follow-up maps the
+  `CKeyFunPickDlg` virtual `WM_COMMAND` path, embedded `CPngBtn` sender, state
+  `5`, text read/copy, and local save. Its caption descriptor joins `tc_apply`
+  (English `Apply`). `CWelcomDlg` selection among ten child HWNDs forwards an
+  identifier into conditional old-partition save/new-partition load. Absolute
+  `cfg.ini` selection, notification delivery, state-option label, COM text
+  getter, other setup callers, and runtime I/O remain unresolved. See
   [`docs/rk-v4.6-textmacro-path-audit.md`](docs/rk-v4.6-textmacro-path-audit.md)
-  and its [evidence CSV](docs/rk-v4.6-textmacro-path-evidence.csv).
+  and its [evidence CSV](docs/rk-v4.6-textmacro-path-evidence.csv), plus the
+  [command bridge](docs/rk-v4.6-textmacro-command-bridge.md) and
+  [verifier](scripts/audit_rk46_textmacro_command_bridge.py).
 - In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
