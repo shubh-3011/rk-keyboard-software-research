@@ -70,6 +70,24 @@ FACTS: dict[int, tuple[str, str, str]] = {
     0x00449054: ("e8677cffff", "mapping-list-clear-site", "Calls generic clear helper 0x00440CC0."),
     0x00460D08: ("bfbc9d6100", "mapping-list-clear-site", "Loads list owner 0x00619DBC into EDI."),
     0x00460D0F: ("e8acfffdff", "mapping-list-clear-site", "Calls generic clear helper 0x00440CC0."),
+    0x00421645: ("8b5500", "picker-post-cleanup-tail", "Loads the CKeyFunPickDlg vtable pointer."),
+    0x00421648: ("8b8258010000", "picker-post-cleanup-tail", "Loads CKeyFunPickDlg vtable slot +0x158."),
+    0x0042164E: ("8bcd", "picker-post-cleanup-tail", "Sets ECX to the dialog object."),
+    0x00421650: ("ffd0", "picker-post-cleanup-tail", "Calls the resolved dialog vtable method."),
+    0x00480C2F: ("6a01", "picker-dialog-close", "Passes result value 1 to the validation/update helper."),
+    0x00480C33: ("e8dab6ffff", "picker-dialog-close", "Calls helper 0x0047C312."),
+    0x00480C38: ("85c0", "picker-dialog-close", "Tests helper result before close."),
+    0x00480C3A: ("7409", "picker-dialog-close", "Zero result skips the EndDialog branch."),
+    0x00480C3C: ("6a01", "picker-dialog-close", "Passes modal result 1 to close helper."),
+    0x00480C40: ("e8bdffffff", "picker-dialog-close", "Calls dialog close helper 0x00480C02."),
+    0x0047C353: ("ff90fc000000", "picker-derived-data-slot", "Calls CKeyFunPickDlg slot +0xFC."),
+    0x00405770: ("c20400", "picker-derived-data-target", "Vtable slot target is a three-byte RET 4."),
+    0x00480C0A: ("f6463c18", "picker-dialog-close-helper", "Tests modal/window state flags."),
+    0x00480C15: ("ff908c000000", "picker-dialog-close-helper", "Conditionally calls CKeyFunPickDlg slot +0x8C."),
+    0x00480C21: ("ff15c0655a00", "picker-dialog-close-helper", "Calls USER32 EndDialog through its IAT slot."),
+    0x0047C6A9: ("894144", "picker-slot-8c-target", "Stores dialog result in object field +0x44."),
+    0x0047C6AC: ("8b413c", "picker-slot-8c-target", "Loads modal state flags from object +0x3C."),
+    0x0047C6C1: ("ff153c675a00", "picker-slot-8c-target", "Conditionally calls USER32 PostMessageW through its IAT slot."),
     0x005A53B0: ("b9bc9d6100", "mapping-list-destructor-thunk", "Loads list owner into ECX."),
     0x005A53B5: ("e946b7e9ff", "mapping-list-destructor-thunk", "Tail-jumps to generic teardown helper 0x00440B00."),
 }
@@ -157,6 +175,44 @@ def main() -> int:
                  "observation": "RTTI name .?AVCOemDrvDlg@@; vtable slot 84 points to initializer 0x00448930.",
                  "scope": "static RTTI/vtable linkage; method execution and symbolic name unobserved"})
 
+    picker_vtable = 0x005D530C
+    picker_col = struct.unpack("<I", raw(picker_vtable - 4, 4))[0]
+    require(picker_col == 0x005ED020, f"CKeyFunPickDlg vtable COL changed: 0x{picker_col:08X}")
+    picker_td = struct.unpack("<I", raw(picker_col + 12, 4))[0]
+    require(picker_td == 0x0061A170, f"CKeyFunPickDlg TypeDescriptor changed: 0x{picker_td:08X}")
+    require(raw(picker_td + 8, len(b".?AVCKeyFunPickDlg@@\0")) == b".?AVCKeyFunPickDlg@@\0",
+            "CKeyFunPickDlg RTTI name changed")
+    picker_targets = {
+        0x8C: 0x0047C6A1,
+        0xFC: 0x00405770,
+        0x158: 0x00480C2C,
+    }
+    for slot, target in picker_targets.items():
+        actual = struct.unpack("<I", raw(picker_vtable + slot, 4))[0]
+        require(actual == target,
+                f"CKeyFunPickDlg vtable slot +0x{slot:X} changed: 0x{actual:08X}")
+        rows.append({"binary_sha256": digest,
+                     "evidence_va": f"0x{picker_vtable + slot:08X}",
+                     "bytes": raw(picker_vtable + slot, 4).hex().upper(),
+                     "stage": "picker-rtti-vtable",
+                     "observation": f"RTTI .?AVCKeyFunPickDlg@@ slot +0x{slot:X} -> 0x{target:08X}.",
+                     "scope": "static RTTI/vtable linkage; method execution unobserved"})
+
+    iat_names = {entry.address: (library.dll.decode(errors="replace"), entry.name.decode(errors="replace") if entry.name else "")
+                 for library in pe.DIRECTORY_ENTRY_IMPORT for entry in library.imports}
+    require(iat_names.get(0x005A65C0) == ("USER32.dll", "EndDialog"),
+            "EndDialog IAT mapping changed")
+    require(iat_names.get(0x005A673C) == ("USER32.dll", "PostMessageW"),
+            "PostMessageW IAT mapping changed")
+    rows.extend((
+        {"binary_sha256": digest, "evidence_va": "0x005A65C0", "bytes": "",
+         "stage": "picker-api-import", "observation": "IAT slot resolves to USER32.dll!EndDialog.",
+         "scope": "static import table; runtime API call and success unobserved"},
+        {"binary_sha256": digest, "evidence_va": "0x005A673C", "bytes": "",
+         "stage": "picker-api-import", "observation": "IAT slot resolves to USER32.dll!PostMessageW.",
+         "scope": "static import table; runtime API call and success unobserved"},
+    ))
+
     # This is a literal absolute-address census, not a whole-program alias proof.
     encoded = struct.pack("<I", LIST_HEAD)
     hits: list[int] = []
@@ -217,7 +273,7 @@ def main() -> int:
         writer = csv.DictWriter(stream, fieldnames=("binary_sha256", "evidence_va", "bytes", "stage", "observation", "scope"))
         writer.writeheader()
         writer.writerows(rows)
-    print(f"Verified {len(FACTS)} exact instruction facts, static object bytes, COemDrvDlg RTTI/vtable linkage, {len(HEAD_LOADS)} absolute head loads, and {len(writer_calls)} direct writer calls.")
+    print(f"Verified {len(FACTS)} exact instruction facts, both dialog RTTI/vtable links, static list bytes, {len(HEAD_LOADS)} absolute head loads, and {len(writer_calls)} direct writer calls.")
     return 0
 
 

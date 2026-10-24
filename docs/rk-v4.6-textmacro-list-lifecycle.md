@@ -24,8 +24,10 @@ The cleanup caller review also narrows persistence. No direct call to the
 caller writes a separate `pro.dct` before cleanup; another can persist
 profile state to `pro.dct` after cleanup. In the picker handler, the direct
 `textmacro.dct` save path and cleanup path are mutually exclusive at the local
-state gate. An indirect callback after cleanup remains unresolved, so this is
-not proof that cleared records can never be persisted through another path.
+state gate. The shared virtual tail resolves to a dialog-close path with no
+direct file-writer call. Its first-use MFC guard, exceptional path, and parent
+modal-result handling are not fully closed, so this does not rule out every
+later persistence route.
 
 ## Evidence
 
@@ -111,21 +113,42 @@ audit](rk-v4.6-textmacro-path-audit.md):
 | --- | --- | --- |
 | `0x0040381B` | `0x00460DA0` (`pro.dct` writer) is called before the cleanup gate. After cleanup, the examined slice has no direct `0x0041F540` text-macro writer or `0x00459F50` save/load wrapper call. | Other indirect dispatch is not excluded. |
 | `0x0041D0A4` | The handler can call `0x0041EC50` after cleanup; depending on profile-state branches, it can reach `0x00460DA0` or `0x0041F1A9`, both host `pro.dct` persistence paths. | This is profile-file persistence, not `textmacro.dct`; runtime guards and indirect paths remain unobserved. |
-| `0x00421640` | The cleanup gate requires picker state not equal to `5`. The direct `textmacro.dct` writer call at `0x004215DE` belongs to the state-5 save branch, which skips cleanup. The post-cleanup slice makes a virtual call at `0x00421650`. | Local save and cleanup branches are mutually exclusive; virtual callback behavior remains unknown. |
+| `0x00421640` | The cleanup gate requires picker state not equal to `5`. The direct `textmacro.dct` writer call at `0x004215DE` belongs to the state-5 save branch, which skips cleanup. Both paths converge on the virtual call at `0x00421650`. | Local save and cleanup branches are mutually exclusive. The shared slot resolves to a dialog-close path, with MFC guard and parent modal-result paths still open. |
 
 The `textmacro.dct` writer at `0x0041F540` has two direct callers in the
 examined executable: `0x004215DE` and `0x0045A057`. This static direct-call
 census does not prove a complete interprocedural call graph. The current
 evidence therefore shows no direct write of the reclaimed buffer on the
-cleanup branches; it cannot exclude persistence reached through unresolved
-virtual calls, callbacks, or a caller outside the bounded image paths.
+cleanup branches or within the resolved dialog-close target. It cannot exclude
+persistence reached through the first-use helper's unresolved lazy callback,
+exception handling, parent modal-result processing, or a caller outside the
+bounded paths.
+
+### Picker virtual tail
+
+The call at `0x00421650` loads slot `+0x158` through the `CKeyFunPickDlg`
+vtable (`0x005D530C`); that slot points to `0x00480C2C`. This method calls
+`0x0047C312` with value `1`; a nonzero result reaches `0x00480C02` with modal
+result `1`. For this class, the helper's slot `+0xFC` target is `0x00405770`,
+a `ret 4`. The close helper can call slot `+0x8C` (`0x0047C6A1`), which stores
+the result and conditionally calls `USER32!PostMessageW`; it then calls
+`USER32!EndDialog` through IAT slot `0x005A65C0`. No direct text-macro writer
+or save/load wrapper call occurs in these resolved methods.
+
+The normal exception-frame epilogue restores the saved frame and returns, but
+the exceptional continuation is not semantically mapped. The first-use guard
+at `0x0048A529` calls `0x0048CA84` with callback `0x00477AA0` and global state
+`0x0061C398`; its lazy-init callback chain is not fully traced. Parent handling
+after `EndDialog` is also outside this local method trace. Thus this closes the
+immediate virtual target, not every deferred or exceptional route.
 
 ## Evidence and reproduction
 
 The [instruction ledger](rk-v4.6-textmacro-list-lifecycle.csv) records exact
-bytes for 52 instructions, the two initial object images, all nine absolute
-head-field loads, the RTTI/vtable linkage, and the two relative calls to the
-text-macro writer. The [verifier](../scripts/audit_rk46_textmacro_list_lifecycle.py)
+bytes for 70 instructions, the two initial object images, both dialog RTTI
+tables, all nine absolute head-field loads, the RTTI/vtable linkage, and the
+two relative calls to the text-macro writer. The
+[verifier](../scripts/audit_rk46_textmacro_list_lifecycle.py)
 pins the executable size and SHA-256 before checking the bytes and censuses.
 
 ```powershell
@@ -141,7 +164,8 @@ launched, and no keyboard, HID, updater, or firmware interface was opened.
   active mapping/profile objects are represented.
 - Whether the initializer's zero-return branch executes in an actual process
   and what `0x00448880` initializes.
-- Whether any unresolved virtual callback after cleanup reaches a persistence
-  writer, and whether cleared records later appear in a `textmacro.dct` write.
+- Whether the first-use lazy callback, exceptional continuation, or parent
+  modal-result handling can reach a persistence writer, and whether cleared
+  records later appear in a `textmacro.dct` write.
 - Which exact user actions select each cleanup branch and what runtime objects
   are active.
