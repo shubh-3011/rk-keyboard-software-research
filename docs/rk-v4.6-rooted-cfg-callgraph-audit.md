@@ -79,22 +79,41 @@ bytes were visited by the selected recursive paths.
 The generated scanner ledger labels 3,568 edge contexts (3,564 distinct
 instruction sites) as unresolved indirect calls before manual review. This
 report now reclassifies six sites: four in `WM_DEVICECHANGE` and the two
-`SetupDiGetDeviceInterfaceDetailW` transfers below. That leaves 3,562
-contexts (3,558 distinct sites) unresolved by the combined evidence. The
+`SetupDiGetDeviceInterfaceDetailW` transfers below. Four `SHAppBarMessage`
+transfers are also resolved below, leaving 3,558 contexts (3,554 distinct
+sites) unresolved by the combined evidence. The
 generated CSV remains unchanged and conservatively retains the two SetupAPI
 calls as unresolved because its automated register analysis does not
 propagate the `EBP` definition across this branch-spanning sequence.
 
 Before the manual follow-up, the raw call ledger had 1,648 register-operand and
 1,920 memory-operand unresolved call contexts. Reclassifying the two `ESI`
-calls to `SetTimer`, two absolute-global logger calls, and the two `EBP`
-calls to `SetupDiGetDeviceInterfaceDetailW` leaves 1,644 register-operand and
-1,918 memory-operand contexts unresolved. Of the 123
+calls to `SetTimer`, two absolute-global logger calls, the two `EBP` calls to
+`SetupDiGetDeviceInterfaceDetailW`, and four `EDI` calls to
+`SHAppBarMessage` leaves 1,640 register-operand and 1,918 memory-operand
+contexts unresolved. Of the 123
 unresolved indirect jumps, 9 use a register operand and 114 use a memory
 operand. Operand form does not establish whether a site is a virtual call,
 callback, table lookup, or another dispatch mechanism. The 402 multiply
 attributed instruction addresses can reflect shared code or function-boundary
 ambiguity; the scanner does not decide between them.
+
+### Four auto-hide appbar probes
+
+Function `0x0048FF62` loads the `SHAppBarMessage` IAT slot at `0x005A6544` and
+makes four indirect calls at `0x0049003D`, `0x0049005D`, `0x00490079`, and
+`0x00490099`. Each call uses message `7` (`ABM_GETAUTOHIDEBAR`) and a local
+`APPBARDATA` whose `cbSize` is `0x24`; the code sets `uEdge` in order to
+`3`, `1`, `0`, and `2`, then sets bits `0x08`, `0x04`, `0x01`, and `0x02` in
+the receiver's field `+0x1B4` when the corresponding call returns nonzero.
+The message retrieves an auto-hide appbar for the specified edge, and the
+`APPBARDATA.uEdge` field identifies that edge ([message documentation](https://learn.microsoft.com/en-us/windows/win32/shell/abm-getautohidebar),
+[structure documentation](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-appbardata)).
+The later meaning and use of the accumulated mask remain unresolved. This
+manual classification reduces the unresolved indirect-call count by four;
+the original scanner CSV/JSON are preserved and still show their pre-review
+counts. Exact bytes and the import mapping are in the [focused ledger](rk-v4.6-appbar-edge-probe.csv)
+and [hash-pinned verifier](../scripts/audit_rk46_appbar_edges.py).
 
 The machine-readable outputs preserve the seeded paths and their limitations:
 
@@ -218,13 +237,13 @@ PDB path, but no matching PDB was available in this workspace. The MFC scan is
 bounded to its accessor/table signature and does not prove complete MFC or
 runtime dispatch coverage.
 
-The principal unresolved remainder is 3,562 register/memory indirect-call
-edge contexts (3,558 distinct sites), 123 register/memory indirect-jump sites,
+The principal unresolved remainder is 3,558 register/memory indirect-call
+edge contexts (3,554 distinct sites), 123 register/memory indirect-jump sites,
 147 possible tail transfers, and 1,140,858 bytes (66.20%) of `.text` not
 visited from the selected roots. The CSV and JSON outputs preserve the
 scanner's pre-follow-up raw counts of 3,568 call contexts and 3,564 distinct
-sites; this report reclassifies the four resolved handler sites and two
-resolved SetupAPI calls. That
+sites; this report reclassifies the four resolved handler sites, two resolved
+SetupAPI calls, and four resolved `SHAppBarMessage` calls. That
 unvisited portion is not evidence of dead code or unreachable
 behavior. Direct calls, IAT references, and explored branches are static
 candidates, not proof that a path runs in a particular process state. Import

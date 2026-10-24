@@ -1,0 +1,19 @@
+binary_sha256,evidence_va,bytes,observation,scope
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490004,6A245F57,Allocates a 0x24-byte APPBARDATA local and pushes its address.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490010,899EB4010000,Clears the receiver's edge-result mask at object +0x1B4.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049001E,8D85C4FEFFFF,Loads the address of the local APPBARDATA structure.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490025,89BDC4FEFFFF,Sets APPBARDATA.cbSize to 0x24.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049002B,8B3D44655A00,Loads the indirect target from IAT slot 0x005A6544.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490033,C785D0FEFFFF03000000,Sets APPBARDATA.uEdge to 3 (ABE_BOTTOM).,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049003D,FFD7,Calls the imported SHAppBarMessage pointer with message 7.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490043,838EB401000008,"If the call returns nonzero, sets result-mask bit 0x08.",static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490053,C785D0FEFFFF01000000,Sets APPBARDATA.uEdge to 1 (ABE_TOP).,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049005D,FFD7,Calls the same SHAppBarMessage pointer with message 7.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490063,838EB401000004,"If the call returns nonzero, sets result-mask bit 0x04.",static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490073,899DD0FEFFFF,Sets APPBARDATA.uEdge to 0 (ABE_LEFT).,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490079,FFD7,Calls the same SHAppBarMessage pointer with message 7.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049007F,838EB401000001,"If the call returns nonzero, sets result-mask bit 0x01.",static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049008F,C785D0FEFFFF02000000,Sets APPBARDATA.uEdge to 2 (ABE_RIGHT).,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x00490099,FFD7,Calls the same SHAppBarMessage pointer with message 7.,static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x0049009F,838EB401000002,"If the call returns nonzero, sets result-mask bit 0x02.",static bytes/import table; function execution and appbar state unobserved
+8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9,0x005A6544,,IAT slot resolves to SHELL32.dll!SHAppBarMessage.,static import table; runtime API call and return unobserved

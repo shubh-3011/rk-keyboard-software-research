@@ -1,0 +1,24 @@
+binary_sha256,evidence_va,bytes,observation,scope
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004029F7,C70305520000,Builds update-verification feature request prefix 05 52.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402A03,FF15E0A15500,Calls HidD_SetFeature through IAT slot 0x0055A1E0.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402A5C,6802080000,Allocates a 0x802-byte response buffer.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402A78,66C7030672,Builds response prefix 06 72 in the feature buffer.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402AFD,FF15C8A15500,Calls HidD_GetFeature through IAT slot 0x0055A1C8.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402B79,8B0DFCE35B00,Reads the host image payload length from global 0x005BE3FC.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402B88,BE00080000,Sets the compare chunk size to 0x800 bytes.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402B95,A1F8E35B00,Loads the host image payload pointer from global 0x005BE3F8.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402BC0,8B01,Loads a DWORD from the read response comparison buffer.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402BC2,3B02,Compares each response DWORD with the host image bytes.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402C09,81C700080000,Advances the host-image offset by 0x800 per loop.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040265F,E84C030000,Calls the verifier helper at 0x004029B0.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040266F,83F80A,Bounds verifier retries at ten attempts.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402672,7CDD,Branches back to retry while the count is below ten.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409205,C7010552F0FC,Builds the six-byte query request beginning 05 52 F0 FC.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040920B,C6410404,Sets query request byte +4 to 0x04.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409218,FF15E0A15500,Calls HidD_SetFeature for the six-byte query.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040923F,66C7010572,Changes the query buffer to response prefix 05 72.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040924D,FF15C8A15500,Calls HidD_GetFeature for the query response.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409261,80790261,Checks response byte +2 against 0x61.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00409275,0FB64105,Reads response byte +5 into updater state selection logic.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0055A1E0,,IAT slot resolves to HID.DLL!HidD_SetFeature.,static import table; runtime API call and return unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0055A1C8,,IAT slot resolves to HID.DLL!HidD_GetFeature.,static import table; runtime API call and return unobserved

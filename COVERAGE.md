@@ -240,9 +240,14 @@ For current blockers and the recommended reverse-engineering order, see the
   4,848 import rows, 14,291 direct IAT call/tail-jump candidates, 3,523
   register-indirect call/jump candidates, and no decoded direct-syscall
   instruction candidates in two unique code builds. These are bounded static
-  scan results, not reachability or whole-suite coverage. See the
-  [S98 updater audit](docs/rk-s98-firmware-updater-static-audit-2026-10-19.md)
-  and its [reproduction script](scripts/audit_s98_firmware_packages.py).
+  scan results, not reachability or whole-suite coverage. A focused 01BF
+  read-consumer pass traces update verification to an in-memory comparison
+  with the host `.upf` image, plus a separate six-byte feature status query;
+  this does not demonstrate arbitrary firmware export, and the Thai code build
+  remains distinct. See the [S98 updater audit](docs/rk-s98-firmware-updater-static-audit-2026-10-19.md),
+  [01BF read-consumer report](docs/rk-s98-feature-read-consumer-audit-2026-10-24.md),
+  its [evidence ledger](docs/rk-s98-feature-read-consumer-evidence-2026-10-24.csv),
+  and [reproduction script](scripts/audit_s98_firmware_packages.py).
 
 ## Additional official 4.6 Windows Hub Driver snapshot
 
@@ -1039,11 +1044,14 @@ For current blockers and the recommended reverse-engineering order, see the
   linking HID arrival/removal notifications to a delayed rescan. A manual
   branch-aware review also resolves the two register-indirect
   `SetupDiGetDeviceInterfaceDetailW` calls, including their arguments and
-  detail-buffer handoff to `CreateFileW`. The raw graph ledger records 3,568
-  indirect-call contexts (3,564 distinct sites); six reviewed transfers leave
-  3,562 contexts (3,558 sites) unresolved. The generated CSV conservatively
-  retains those two SetupAPI calls as unresolved because its register analysis
-  does not propagate the branch-spanning definition.
+  detail-buffer handoff to `CreateFileW`. A further follow-up classifies four
+  `SHAppBarMessage(ABM_GETAUTOHIDEBAR)` calls and their per-edge result mask.
+  The raw graph ledger records 3,568 indirect-call contexts (3,564 distinct
+  sites); ten reviewed transfers leave 3,558 contexts (3,554 sites)
+  unresolved. The generated CSV conservatively retains the two SetupAPI calls
+  as unresolved because its register analysis does not propagate the
+  branch-spanning definition; the appbar verifier and its focused evidence
+  ledger are separate from the raw CFG outputs.
   The graph also leaves 123 indirect jumps, 147 possible tail transfers, and
   66.20% of raw `.text` outside the selected paths. It visits 582,534 decoded
   instruction bytes (33.80% of raw `.text`); the full function/CFG gap remains

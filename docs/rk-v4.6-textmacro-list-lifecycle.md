@@ -25,9 +25,10 @@ caller writes a separate `pro.dct` before cleanup; another can persist
 profile state to `pro.dct` after cleanup. In the picker handler, the direct
 `textmacro.dct` save path and cleanup path are mutually exclusive at the local
 state gate. The shared virtual tail resolves to a dialog-close path with no
-direct file-writer call. Its first-use MFC guard, exceptional path, and parent
-modal-result handling are not fully closed, so this does not rule out every
-later persistence route.
+direct file-writer call. The first-use MFC helper's normal TLS setup and
+per-thread object creation are now mapped; its exceptional path and parent
+modal-result handling remain open, so this does not rule out every later
+persistence route.
 
 ## Evidence
 
@@ -136,23 +137,41 @@ the result and conditionally calls `USER32!PostMessageW`; it then calls
 or save/load wrapper call occurs in these resolved methods.
 
 The normal exception-frame epilogue restores the saved frame and returns, but
-the exceptional continuation is not semantically mapped. The first-use guard
-at `0x0048A529` calls `0x0048CA84` with callback `0x00477AA0` and global state
-`0x0061C398`; its lazy-init callback chain is not fully traced. Parent handling
+the exceptional continuation is not semantically mapped. Parent handling
 after `EndDialog` is also outside this local method trace. Thus this closes the
 immediate virtual target, not every deferred or exceptional route.
+
+### Picker first-use thread-local object
+
+The guard at `0x0048A529` passes callback `0x00477AA0` and state object
+`0x0061C398` to helper `0x0048CA84`. On the normal path, the helper initializes
+the shared TLS context when absent, allocates a TLS index for the state object,
+looks up the current thread's entry, and calls the callback only when no
+per-thread object exists. It then registers the callback result in that
+thread's TLS record. The callback requests a zero-initialized `0x164`-byte
+object through `LocalAlloc`, sets vtable `0x005AA724`, and clears fields
+`+0x34`, `+0x4C`, `+0x50`, and `+0x54`.
+
+The traced helper slice uses TLS APIs, critical sections, and local/global
+allocation to manage the context and per-thread tables. No file, registry,
+network, or HID API call appears in this bounded normal-path helper/callback
+trace. That observation does not classify later methods reached through the
+new object's vtable, the MFC/SEH exceptional continuations, other callsites of
+the helper, or the parent dialog's modal-result handling. It therefore closes
+the lazy callback's basic initialization mechanics, not the full picker
+behavior or every possible persistence route.
 
 ## Evidence and reproduction
 
 The [instruction ledger](rk-v4.6-textmacro-list-lifecycle.csv) records exact
-bytes for 70 instructions, the two initial object images, both dialog RTTI
+bytes for 114 instructions, the two initial object images, both dialog RTTI
 tables, all nine absolute head-field loads, the RTTI/vtable linkage, and the
 two relative calls to the text-macro writer. The
 [verifier](../scripts/audit_rk46_textmacro_list_lifecycle.py)
 pins the executable size and SHA-256 before checking the bytes and censuses.
 
 ```powershell
-python scripts/audit_rk46_textmacro_list_lifecycle.py --binary .research/rk46-extract-full/app/DeviceDriver.exe --out docs/rk-v4.6-textmacro-list-lifecycle.csv
+python scripts/audit_rk46_textmacro_list_lifecycle.py --binary ..\.research\rk4_6_official_extract_20261015\app\DeviceDriver.exe --out docs/rk-v4.6-textmacro-list-lifecycle.csv
 ```
 
 All work was static. The binary was not executed, the RK application was not
@@ -164,8 +183,8 @@ launched, and no keyboard, HID, updater, or firmware interface was opened.
   active mapping/profile objects are represented.
 - Whether the initializer's zero-return branch executes in an actual process
   and what `0x00448880` initializes.
-- Whether the first-use lazy callback, exceptional continuation, or parent
-  modal-result handling can reach a persistence writer, and whether cleared
-  records later appear in a `textmacro.dct` write.
+- Whether the exceptional continuation or parent modal-result handling can
+  reach a persistence writer, and whether cleared records later appear in a
+  `textmacro.dct` write.
 - Which exact user actions select each cleanup branch and what runtime objects
   are active.
