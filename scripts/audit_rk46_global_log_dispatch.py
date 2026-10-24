@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Reconcile the 4.6 DeviceDriver global callback cell across two static scans.
+"""Reconcile the 4.6 DeviceDriver global callback cell across static scans.
 
 The linear sweep inventories absolute references to one callback cell in every
 raw executable section. The separate rooted CFG edge ledger provides selected
 recursive-path references; its instruction starts can differ from the linear
 sweep where decoders begin at different boundaries. This audit preserves those
-sources instead of treating either one as a complete code map.
+sources instead of treating either one as a complete code map. Targeted decode
+checks also verify the configuration-loader call chain that initializes the
+callback; the full-section linear sweep missed those valid instruction starts.
 """
 
 from __future__ import annotations
@@ -13,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import re
 import struct
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -27,6 +30,7 @@ from capstone.x86 import X86_OP_IMM, X86_OP_MEM
 EXPECTED_DRIVER_SHA256 = "8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9"
 EXPECTED_DRIVER_SIZE = 2_418_176
 EXPECTED_ROOT_EDGES_SHA256 = "e0aa66be6a217ed04674457af9e5520ff5e8ff0645301810c2defa244b00ac6c"
+EXPECTED_CFG_SHA256 = "ab9c84bb951bcfec99e18e0c6a77ece913e14376265c33276e3b176c030b6cc5"
 IMAGE_BASE = 0x00400000
 CALLBACK_CELL = 0x0063BE2C
 SELECTOR_CELL = 0x0063BE28
@@ -119,6 +123,12 @@ def main() -> int:
         type=Path,
         default=repo / "docs" / "rk-v4.6-global-log-callback-callsite-ledger-2026-10-25.csv",
     )
+    parser.add_argument(
+        "--cfg",
+        type=Path,
+        default=repo / ".research" / "rk46-extract-full" / "app" / "Cfg.ini",
+        help="local hash-matching package Cfg.ini (kept outside the public repo)",
+    )
     args = parser.parse_args()
 
     blob = args.driver.read_bytes()
@@ -138,6 +148,51 @@ def main() -> int:
         raise SystemExit(f"Refusing unexpected image base: {hx(image_base)}")
     decoder = capstone.Cs(CS_ARCH_X86, CS_MODE_32)
     decoder.detail = True
+
+    cfg_blob = args.cfg.read_bytes()
+    cfg_hash = digest(cfg_blob)
+    if cfg_hash != EXPECTED_CFG_SHA256:
+        raise SystemExit(f"Refusing unexpected Cfg.ini: sha256={cfg_hash}")
+    cfg_text = cfg_blob.decode("utf-16", errors="replace")
+    if re.search(r"(?im)^\s*Debug\s*=\s*0\s*$", cfg_text) is None:
+        raise SystemExit("Expected [OPT] Debug=0 entry was not found in Cfg.ini")
+
+    def verify_direct_call(site: int, target: int) -> None:
+        instruction = decode_at(pe, decoder, site)
+        if (
+            instruction is None
+            or instruction.mnemonic.lower() != "call"
+            or not instruction.operands
+            or instruction.operands[0].type != X86_OP_IMM
+            or (int(instruction.operands[0].imm) & 0xFFFFFFFF) != target
+        ):
+            raise SystemExit(
+                f"Unexpected targeted direct call at {hx(site)}: "
+                f"{instruction.mnemonic} {instruction.op_str}"
+                if instruction is not None
+                else f"No instruction at {hx(site)}"
+            )
+
+    # The full-section sweep does not decode these instruction boundaries.
+    # Decode known function starts directly to verify startup -> config loader
+    # -> logger initializer and the selector write between the two calls.
+    verify_direct_call(0x00448188, 0x00456520)
+    verify_direct_call(0x00456597, INITIALIZER)
+    int_loader = decode_at(pe, decoder, 0x00456573)
+    int_call = decode_at(pe, decoder, 0x00456590)
+    selector_store = decode_at(pe, decoder, 0x00456592)
+    if (
+        int_loader is None
+        or int_loader.mnemonic.lower() != "mov"
+        or absolute_mem_operand(int_loader.operands[1]) != 0x005A63E0
+        or int_call is None
+        or int_call.mnemonic.lower() != "call"
+        or int_call.op_str.lower() != "ebp"
+        or selector_store is None
+        or selector_store.mnemonic.lower() != "mov"
+        or absolute_mem_operand(selector_store.operands[0]) != SELECTOR_CELL
+    ):
+        raise SystemExit("Unexpected GetPrivateProfileIntW selector-load/store path")
 
     linear_references: list[dict[str, Any]] = []
     selector_references: list[Any] = []
@@ -281,8 +336,10 @@ def main() -> int:
 
     imports = import_map(pe)
     expected_imports = {
+        0x005A63E0: "KERNEL32.dll!GetPrivateProfileIntW",
         0x005A6458: "KERNEL32.dll!GetLocalTime",
         0x005A645C: "KERNEL32.dll!OutputDebugStringW",
+        0x005A6478: "KERNEL32.dll!GetModuleFileNameW",
         0x005A6534: "SHELL32.dll!SHGetSpecialFolderPathW",
     }
     for address, expected in expected_imports.items():
@@ -352,9 +409,10 @@ def main() -> int:
                     "target_candidate_vas": f"{hx(TARGET_DEBUG)};{hx(TARGET_FILE_LOG)}",
                     "classification": "shared-global-callback; conditional-log-target-set",
                     "limitation": (
-                        "Targets are assigned by 0x0040D140 in the linear sweep; "
-                        "initializer execution, selector value, aliases/writes outside the scan, "
-                        "and runtime target are unproven."
+                        "Targeted decode verifies 0x00448188 -> 0x00456520 -> "
+                        "0x0040D140 and a GetPrivateProfileIntW selector store; "
+                        "runtime path/config selection, alternate writes, and the "
+                        "callback value for a particular process remain unobserved."
                     ),
                 }
             )
@@ -365,9 +423,12 @@ def main() -> int:
     print(f"linear_sections={dict(section_counts)}")
     print(f"rooted_contexts={len(rooted_rows)} rooted_sites={len(rooted_sites)}")
     print(f"linear_rooted_overlap={len(overlap)} rooted_only={len(rooted_only)} linear_only={len(linear_only)}")
-    print(f"selector_absolute_refs={len(selector_references)} selector_ref_mnemonics=cmp-only")
-    print(f"initializer_direct_control_refs_in_linear_sweep={len(control_references_to_init)}")
-    print("initializer_code_immediates=0 raw_va_pointers=0 raw_rva_pointers=0 exports=0 tls_callbacks=0")
+    print(f"selector_linear_sweep_refs={len(selector_references)} selector_ref_mnemonics=cmp-only")
+    print("targeted_selector_store=0x00456592 via GetPrivateProfileIntW IAT=0x005A63E0")
+    print("targeted_direct_call_chain=0x00448188->0x00456520->0x00456597->0x0040D140")
+    print(f"linear_sweep_initializer_control_refs={len(control_references_to_init)}")
+    print("initializer_raw_va_pointers=0 raw_rva_pointers=0 exports=0 tls_callbacks=0")
+    print(f"cfg_sha256={cfg_hash} package_debug_value=0 runtime_cfg_selection=unobserved")
     print(f"candidate_stores={[(hx(site), hx(target)) for site, target, _ in linear_stores]}")
     print(f"ledger_rows={len(sites)} output={args.output}")
     return 0

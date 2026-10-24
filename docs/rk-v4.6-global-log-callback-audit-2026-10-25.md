@@ -10,10 +10,11 @@ the public repository.
 
 The audit reconciles absolute references to callback cell `0x0063BE2C` in a
 full `.text` linear sweep and the existing hash-pinned root-seeded CFG edge
-ledger. It inspects the two code stores and nearby target bodies. This is a
-static target-set analysis, not proof that the initializer executes or that
-any callsite runs. No RK program or updater was launched, and no keyboard
-interface was opened.
+ledger. It inspects the two code stores and nearby target bodies, then directly
+decodes the startup/config-loader instruction starts that the linear sweep
+misses. This is static evidence of a direct initializer call path, not proof
+that the path executes in a running process or that any callback callsite runs.
+No RK program or updater was launched, and no keyboard interface was opened.
 
 ## Reproducible census
 
@@ -68,6 +69,30 @@ timestamp. The strings and API calls support an append-style logging
 interpretation. They do not prove which helper writes the formatted data or
 that the file is successfully updated.
 
+## Targeted initialization path
+
+The prior linear-sweep negative result was caused by a missed instruction
+boundary. Targeted disassembly from the known routine starts verifies this
+direct chain:
+
+| Address | Static evidence |
+| --- | --- |
+| `0x00448188` | `call 0x00456520` from the startup routine at `0x00448030`. |
+| `0x00456573` | Loads the IAT entry at `0x005A63E0` (`KERNEL32!GetPrivateProfileIntW`) into `EBP`. |
+| `0x00456590` | Calls that import indirectly after pushing section `OPT`, key `Debug`, default `0`, and the constructed `cfg.ini` path. |
+| `0x00456592` | Stores the returned selector into `[0x0063BE28]`. |
+| `0x00456597` | Directly calls the callback initializer `0x0040D140`. |
+
+The package `app/Cfg.ini` is hash-pinned in the native API path report and
+contains `[OPT] Debug=0`. If the reader selects that file, the selector is zero
+and the initializer keeps the `OutputDebugStringW` callback target
+`0x0040D000`; a missing key also uses the code's default zero. A non-package
+configuration with selector 2 can take the conditional `Log.txt` branch and
+replace that target with `0x0040D090` if the internal setup helper succeeds.
+This is a static conditional interpretation. The global path prefix at
+`0x006354B8`, actual file selection, execution, and runtime callback value
+remain unobserved; see the [native API path report](rk-v4.6-native-api-call-path-audit.md).
+
 Thus the 234 rooted callsites have a constrained **candidate** target set of
 `0x0040D000` or `0x0040D090` if this initializer runs and the cell is not
 changed through another path. Two of these rooted sites, `0x00449E84` and
@@ -78,23 +103,24 @@ be logging dispatches, not keyboard transfers.
 
 ## What remains unknown
 
-- The rooted edge ledger has no direct call/jump edge to `0x0040D140`, and the
-  `.text` linear sweep found no direct call/jump or other immediate reference
-  to that address. A raw-section search found no embedded 32-bit VA or RVA
-  pointer to it; the PE has no exports or TLS callback table. These checks make
-  a conventional static entry reference unobserved, but do not prove the body
-  is unreachable: computed dispatch, runtime registration, or code outside the
-  scanned decode boundaries is not excluded.
-- All 14 absolute references to selector `0x0063BE28` in the `.text` linear
-  sweep are comparisons; this sweep found no direct assignment to it. Aliased
-  writes or other initialization mechanisms are not ruled out.
+- The targeted `call 0x0040D140` at `0x00456597` is not present in the existing
+  rooted edge ledger or the full-section linear-sweep decode. The linear sweep
+  therefore still reports zero branch/immediate references, but that is a
+  decoder-boundary miss, not evidence that no direct caller exists. A raw
+  section search found no embedded 32-bit VA or RVA pointer to the initializer;
+  the PE has no exports or TLS callback table. The relative direct call does
+  not require an embedded absolute pointer.
+- The linear sweep's 14 references to selector `0x0063BE28` are comparisons,
+  but targeted decode finds a missed store at `0x00456592`. The 14-hit sweep is
+  not a complete selector xref count; additional instruction-boundary misses
+  or aliases have not been excluded.
 - The callback cell's runtime value, initialization order, caller-specific
-  message argument semantics, and whether the candidate file target completes
-  a write are unobserved.
+  message argument semantics, actual config-file selection, and whether the
+  candidate file target completes a write are unobserved.
 
-For those reasons, this audit does not subtract the 232 new candidate-target
-contexts from the conservative unresolved count in the root CFG report. It
-narrows their likely role and possible target set while leaving execution and
-initialization unresolved. The separate callsite ledger is evidence for this
-specific executable hash only; it is not a complete function map or a claim
-about other RK builds.
+The call chain narrows the 232 additional rooted sites to a shared callback
+whose statically identified target selection depends on the selector and log
+setup branch. They remain in the root CFG's conservative unresolved total
+because a unique runtime target has not been established. The separate
+callsite ledger is evidence for this specific executable hash only; it is not
+a complete function map or a claim about other RK builds.

@@ -90,11 +90,15 @@ A separate [global callback audit](rk-v4.6-global-log-callback-audit-2026-10-25.
 finds 234 rooted callsites through absolute cell `0x0063BE2C` and constrains
 their candidate targets to two logger-shaped routines assigned by
 `0x0040D140`. This adds 232 sites to the earlier two callback observations.
-Because the initializer has no direct call/jump reference in the linear sweep,
-its execution and the callback's runtime value remain unproved; the conservative
-3,558 / 3,554 unresolved totals below are therefore retained. The follow-up
-also records 258 full-section linear-sweep calls and explains the different
-instruction-boundary counts between scans.
+Targeted decoding verifies a direct startup-to-config-loader-to-initializer
+chain (`0x00448188 -> 0x00456520 -> 0x00456597 -> 0x0040D140`) and a
+`GetPrivateProfileIntW` result store to selector `0x0063BE28`. The linear sweep
+missed these instruction boundaries, so its zero-reference conclusion was
+incorrect. The actual runtime config selection and callback target remain
+unobserved; the conservative 3,558 / 3,554 unresolved totals below are retained
+because the callback target is conditional. The follow-up also records 258
+full-section linear-sweep calls and explains the different instruction-boundary
+counts between scans.
 
 Before the manual follow-up, the raw call ledger had 1,648 register-operand and
 1,920 memory-operand unresolved call contexts. Reclassifying the two `ESI`
@@ -259,12 +263,12 @@ behavior. Direct calls, IAT references, and explored branches are static
 candidates, not proof that a path runs in a particular process state. Import
 presence does not prove API success, device access, or keyboard effect.
 
-The shared callback follow-up identifies a likely logger target set for 232
-additional rooted callsites, but does not reclassify those as resolved edges
-until initialization and runtime state are established. Its separate 258-call
-linear-sweep count is not added to the rooted totals; 31 rooted call addresses
-are absent from that sweep, and 55 swept addresses are absent from the rooted
-edge ledger.
+The shared callback follow-up identifies a static initializer call chain and a
+conditional logger target set for 232 additional rooted callsites, but does not
+reclassify those as single-target resolved edges because the runtime selector
+and log setup outcome are unknown. Its separate 258-call linear-sweep count is
+not added to the rooted totals; 31 rooted call addresses are absent from that
+sweep, and 55 swept addresses are absent from the rooted edge ledger.
 
 This report narrows the function/dispatch gap with reproducible root-seeded
 evidence; it does not close it or supersede the
