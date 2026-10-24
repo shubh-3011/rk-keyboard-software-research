@@ -1,0 +1,128 @@
+version,family_label_from_catalog,named_profile_count,direct_pid_profile_count,distinct_display_name_count,distinct_layout_count,rgb_profile_count,screen_profile_count,wireless_profile_count
+installed 4.06,100,5,5,5,3,4,0,0
+installed 4.06,104,2,2,2,1,2,0,0
+installed 4.06,61,16,16,15,5,13,0,0
+installed 4.06,68,13,13,13,3,10,0,0
+installed 4.06,71,8,8,8,1,6,0,0
+installed 4.06,750,1,1,1,1,1,0,0
+installed 4.06,84,5,5,5,2,5,0,0
+installed 4.06,857,3,3,2,1,1,0,0
+installed 4.06,858,1,1,1,1,1,0,0
+installed 4.06,868,1,1,1,1,1,0,0
+installed 4.06,87,7,7,7,3,5,0,0
+installed 4.06,883,1,1,1,1,1,0,0
+installed 4.06,89,2,2,2,1,1,0,0
+installed 4.06,896,1,1,1,1,1,0,0
+installed 4.06,92,1,1,1,1,1,0,0
+installed 4.06,920,1,1,1,1,1,0,0
+installed 4.06,932,3,3,3,1,2,0,0
+installed 4.06,937,1,1,1,1,1,0,0
+installed 4.06,96,3,3,3,2,2,0,0
+installed 4.06,960,1,1,1,1,0,0,0
+installed 4.06,98,5,5,5,3,5,0,0
+installed 4.06,987,5,5,5,1,4,0,0
+installed 4.06,A70,1,1,1,1,1,0,1
+installed 4.06,F68,1,1,1,1,0,0,0
+installed 4.06,F75,4,4,2,1,4,0,0
+installed 4.06,F99,1,1,1,1,1,0,0
+installed 4.06,G68,6,6,6,2,5,0,0
+installed 4.06,G87,2,2,1,2,2,0,0
+installed 4.06,G98,3,3,3,2,1,0,0
+installed 4.06,H81,3,3,3,2,3,0,0
+installed 4.06,H87,1,1,1,1,1,0,0
+installed 4.06,K104,1,1,1,1,0,0,0
+installed 4.06,K87,2,2,2,2,1,0,0
+installed 4.06,L75,2,2,2,2,2,0,0
+installed 4.06,L98,1,1,1,1,1,0,0
+installed 4.06,M100,1,1,1,1,1,0,1
+installed 4.06,M65,4,4,4,4,4,0,0
+installed 4.06,M70,4,4,4,2,4,0,2
+installed 4.06,M75,4,4,4,4,4,0,0
+installed 4.06,M87,3,3,3,3,3,3,0
+installed 4.06,N80,1,1,1,1,1,1,0
+installed 4.06,N99,1,1,1,1,1,1,0
+installed 4.06,R104,3,3,3,1,1,0,0
+installed 4.06,R65,5,5,5,3,5,0,0
+installed 4.06,R75,6,6,6,3,5,0,0
+installed 4.06,R87,10,10,6,6,8,0,0
+installed 4.06,R98,9,9,6,4,7,0,2
+installed 4.06,RK,1,1,1,1,1,0,0
+installed 4.06,S108,2,2,2,2,2,0,0
+installed 4.06,S70,3,3,3,2,3,0,0
+installed 4.06,S75,1,1,1,1,1,0,0
+installed 4.06,S85,2,2,2,2,2,2,0
+installed 4.06,S87,2,2,2,1,2,0,0
+installed 4.06,S98,8,8,8,5,8,8,0
+installed 4.06,T70,1,1,1,1,1,0,0
+installed 4.06,T75,1,1,1,1,1,0,0
+installed 4.06,X87,2,2,2,2,1,0,1
+4.6-labeled package (Cfg.ini Ver=0x406),100,6,6,5,3,4,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),104,2,2,2,1,2,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),61,20,20,18,8,14,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),68,14,14,14,4,11,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),71,8,8,8,1,6,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),750,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),756,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),84,9,9,9,5,9,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),857,3,3,2,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),858,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),868,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),87,7,7,7,3,5,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),883,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),89,2,2,2,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),896,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),92,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),920,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),932,3,3,3,1,2,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),937,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),96,3,3,3,2,2,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),960,1,1,1,1,0,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),98,5,5,5,3,5,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),987,5,5,5,1,4,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),A65,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),A70,1,1,1,1,1,0,1
+4.6-labeled package (Cfg.ini Ver=0x406),A72,1,1,1,1,1,0,1
+4.6-labeled package (Cfg.ini Ver=0x406),B68,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),B75,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),F68,1,1,1,1,0,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),F75,4,4,2,1,4,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),F99,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),G68,6,6,6,2,5,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),G87,3,3,2,3,3,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),G98,3,3,3,2,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),H81,3,3,3,2,3,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),H87,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),K104,1,1,1,1,0,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),K71,1,1,1,1,1,0,1
+4.6-labeled package (Cfg.ini Ver=0x406),K87,2,2,2,2,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),K99,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),L75,8,8,6,6,8,1,0
+4.6-labeled package (Cfg.ini Ver=0x406),L98,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),M100,5,5,3,4,5,0,5
+4.6-labeled package (Cfg.ini Ver=0x406),M20,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),M65,5,5,5,4,5,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),M70,5,5,5,2,5,0,2
+4.6-labeled package (Cfg.ini Ver=0x406),M75,8,8,8,7,8,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),M87,8,8,8,3,8,8,0
+4.6-labeled package (Cfg.ini Ver=0x406),N80,2,2,2,1,2,2,0
+4.6-labeled package (Cfg.ini Ver=0x406),N99,4,4,4,3,4,4,1
+4.6-labeled package (Cfg.ini Ver=0x406),R104,9,9,5,6,6,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),R108,1,1,1,1,1,0,1
+4.6-labeled package (Cfg.ini Ver=0x406),R61,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),R65,6,6,6,4,6,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),R75,7,7,7,4,6,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),R87,13,13,8,7,10,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),R98,13,13,10,7,11,0,4
+4.6-labeled package (Cfg.ini Ver=0x406),RK,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),S104,5,5,3,3,5,5,5
+4.6-labeled package (Cfg.ini Ver=0x406),S108,2,2,2,2,2,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),S68,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),S70,3,3,3,2,3,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),S75,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),S85,5,5,5,4,5,5,0
+4.6-labeled package (Cfg.ini Ver=0x406),S87,2,2,2,1,2,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),S98,12,12,9,8,12,12,0
+4.6-labeled package (Cfg.ini Ver=0x406),T70,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),T75,1,1,1,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),X104,2,2,2,1,1,0,0
+4.6-labeled package (Cfg.ini Ver=0x406),X87,3,3,3,3,2,0,2

@@ -1,0 +1,21 @@
+kind,address,bytes_or_value,claim,confidence,limit
+binary,DeviceDriver.exe,"size=2418176;sha256=8d8538de3ada5fcf80e00c13b364b17acefa708480e102ec1e6a0b1309639ae9",Pinned V4.6 image,proven,Static bytes only
+relay,0x004EDD8D,"8D 81 38 01 00 00;83 38 00;74 09;8B 00;8B 10;8B C8;FF 62 70;33 C0;C3",Reads this+138 and tail-jumps through nested vptr+70; null returns zero,proven,Does not resolve arbitrary indirect targets
+g5_wrapper,0x00411030,"83 B9 38 02 00 00 00;74 05;33 C0;C2 08 00;8B 44 24 08;...",G5 slot+70 wrapper consumes two stack arguments and ret 8,proven,Method invocation still requires receiver/caller attribution
+class,0x005B4F40,"name=CPaneDivider;size=0x13C;create=0x004EE783;base=0x005B8DB4",CPaneDivider runtime-class record,proven,Static class metadata
+constructor,0x004EE783,"alloc 0x13C;call 0x004EE0F6",CPaneDivider constructor thunk,proven,Construction not observed at runtime
+vptr,0x004EE106,"C7 06 64 4F 5B 00",CPaneDivider constructor installs vptr 0x005B4F64,proven,Static write only
+field_init,0x004EDC52,"89 9E 38 01 00 00; EBX=0",CPaneDivider initializer zeroes this+0x138,proven,Class ownership corroborated by constructor/vptr
+vtable_member,0x005B51E4,"0x004EE952",CPaneDivider vtable slot+0x280 points to typed assignment method,proven,Static vtable entry
+typed_assign,0x004EE9C3-0x004EE9D6,"push 0x005BB590;call 0x0048BFBB;mov [ESI+0x138],EAX",Stores CPaneContainerManager-filtered pointer or null into CPaneDivider+0x138,proven,The actual manager object/subtype is unobserved
+class,0x005BB590,"name=CPaneContainerManager;size=0x50;create=0x005194AA;base=0x005AAA8C",Nested member's runtime-class filter,proven,Successful runtime cast not observed
+constructor,0x00518AEC,"mov [ESI],0x005BB5B4",CPaneContainerManager constructor installs vptr 0x005BB5B4,proven,Static write only
+vtable_slot,0x005BB624,"0x00518C91",Base CPaneContainerManager slot+0x70 target,proven,Derived runtime override is not observed
+caller,0x004A5521,"entry=0x004A54DE; this from IsKindOf+cast 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX becomes object pointer/null,proven,No G5 output buffer/length pair
+caller,0x004A587F,"entry=0x004A585D; ECX=[EAX] after accessor 0x004E288B; no pushes",Receiver unresolved; EAX used as object pointer/null,unresolved,No exact runtime type
+caller,0x004A5CD6,"entry=0x004A5B8E; receiver filtered to 0x005B8DB4 CBasePane; no pushes",CBasePane-derived receiver; exact type unresolved,proven-base-only,No exact dynamic type
+caller,0x004A64D5,"entry=0x004A63D5; ECX=ESI=[EBP+8]; no pushes",Receiver is caller-provided argument; type unresolved,unresolved,No exact runtime type
+caller,0x004A700B,"entry=0x004A6D8F; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX used as object pointer/null,proven,No G5 output buffer/length pair
+caller,0x004A90B7,"entry=0x004A8FB6; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX feeds virtual slot+0x208,proven,Separate EH-framed function
+caller,0x004A9316,"entry=0x004A9230; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX feeds virtual slot+0x204,proven,Separate EH-framed function
+caller,0x004A9952,"entry=0x004A95B2; receiver filtered to CPaneDivider 0x005B4F40; no pushes",CPaneDivider relay receiver; EAX feeds CPaneDivider filter 0x00609718,proven,Separate EH-framed function

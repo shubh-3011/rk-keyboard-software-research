@@ -140,3 +140,14 @@ reduced font set, uneven profile artwork, one bundled firmware package, and
 generated-uninstaller gap. They do not identify why RK made those changes,
 prove an installer deletes any baseline file, or establish compatibility for
 all models/releases.
+
+## Installed-tree revalidation — 2026-10-25
+
+The current `C:\Program Files (x86)\RK Keyboard Software` tree was rechecked
+read-only against `rk-installed-package-manifest.csv` with
+[`verify_installed_manifest.py`](../scripts/verify_installed_manifest.py).
+It found 810 manifest paths and 810 installed files, with zero missing paths,
+extra paths, size mismatches, SHA-256 mismatches, or unsafe manifest paths.
+This confirms that the locally installed tree still matches the 4.06 snapshot
+at revalidation time; it does not identify the original installer or establish
+that the program is currently running.
