@@ -27,6 +27,7 @@
 - [Product-specific package hash catalog](rk-product-specific-software-package-catalog-2026-10-19.csv)
 - [R99 extracted package file manifest](rk-r99-package-manifest-2026-10-19.csv)
 - [R99 native API and CH375/HID transport-boundary audit](rk-r99-native-api-boundary-audit-2026-10-19.md)
+- [R99 CH375 read/write IOCTL call-path follow-up](rk-r99-ch375-ioctl-read-write-audit-2026-10-25.md)
 - [R99 PE import ledger](rk-r99-native-api-imports.csv)
 - [R99 imported API callsite candidates](rk-r99-native-api-callsite-candidates.csv)
 - [R99 decoded syscall candidate ledger](rk-r99-native-syscall-candidates.csv)
@@ -177,6 +178,7 @@
 - [4.6 row-level selector map](rk-v4.6-profile-selector-map.csv)
 - [4.6 profile-to-class routes verified through vtables and RTTI](rk-v4.6-profile-family-rtti-audit.md)
 - [4.6 row-level RTTI-verified family map](rk-v4.6-profile-family-rtti-map.csv)
+- [4.6 S98 profile details, features, and manifest-backed asset references](rk-v4.6-s98-profile-details.csv)
 - [4.6 `CDevG5KB` vtable, ApplySetting, and settings paths](rk-v4.6-cdevg5-settings-and-vtable-audit.md)
 - [4.6 G5 command-5 payload source trace](rk-v4.6-cdevg5-command05-payload-source-audit.md)
 - [4.6 brightness profile-to-G5-writer follow-up](rk-v4.6-brightness-profile-to-writer-follow-up.md)
@@ -267,7 +269,8 @@
 - [Every profile option field and value](rk-profile-schema-fields.csv)
 - [Profile section shapes](rk-profile-section-shapes.csv)
 - [Per-key comments and mapping rows](rk-profile-key-records.csv)
-- [S98 profile variants](rk-s98-profile-variants.csv)
+- [Installed 4.06 S98 profile variants](rk-s98-profile-variants.csv)
+- [Present-device PnP identity snapshot and profile-catalog comparison](rk-connected-device-pnp-snapshot-2026-10-25.md)
 
 ## Native APIs, device paths, and system calls
 
