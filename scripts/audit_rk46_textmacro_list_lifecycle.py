@@ -85,6 +85,37 @@ FACTS: dict[int, tuple[str, str, str]] = {
     0x00480C0A: ("f6463c18", "picker-dialog-close-helper", "Tests modal/window state flags."),
     0x00480C15: ("ff908c000000", "picker-dialog-close-helper", "Conditionally calls CKeyFunPickDlg slot +0x8C."),
     0x00480C21: ("ff15c0655a00", "picker-dialog-close-helper", "Calls USER32 EndDialog through its IAT slot."),
+    0x0041D135: ("e8c6240000", "picker-parent-construction", "Calls picker constructor 0x0041F600 on a stack object."),
+    0x0041D157: ("e88a400600", "picker-parent-modal-call", "Calls modal wrapper 0x004811E6."),
+    0x0041D15C: ("83f801", "picker-parent-modal-result", "Tests modal return value against 1."),
+    0x0041D15F: ("0f854d010000", "picker-parent-modal-result", "Non-1 modal result branches to parent cleanup at 0x0041D2B2."),
+    0x0041D267: ("e8e4190000", "picker-parent-follow-up", "Calls follow-up handler 0x0041EC50 after the result-1 path."),
+    0x0041EC50: ("833d00a2620000", "picker-follow-up-profile-gate", "Selects a follow-up branch using global state at 0x0062A200."),
+    0x0041EC6C: ("8b8584210000", "picker-follow-up-selection", "Loads the selected row index from parent object +0x2184."),
+    0x0041ECD5: ("8b5734", "picker-follow-up-layer", "Loads the active layer index from the current mapping object."),
+    0x0041ED1C: ("894c3a38", "picker-follow-up-map-write", "Begins copying the selected 16-byte record into the active mapping row."),
+    0x0041ED23: ("8d543a38", "picker-follow-up-map-write", "Computes the active mapping row destination for the record copy."),
+    0x0041ED27: ("894a04", "picker-follow-up-map-write", "Stores the second DWORD of the selected record."),
+    0x0041ED2D: ("894a08", "picker-follow-up-map-write", "Stores the third DWORD of the selected record."),
+    0x0041ED33: ("894a0c", "picker-follow-up-map-write", "Stores the fourth DWORD of the selected record."),
+    0x0041ED3D: ("c7473001000000", "picker-follow-up-map-dirty", "Sets current mapping object field +0x30 to 1 after the record copy."),
+    0x0041ED44: ("8b8dac210000", "picker-follow-up-worker-signal", "Loads parent object field +0x21AC for the update helper."),
+    0x0041ED4A: ("e8419bffff", "picker-follow-up-worker-signal", "Calls helper 0x00418890 after updating the mapping row."),
+    0x0041ED62: ("8b15fca16200", "picker-follow-up-profile-save", "Loads profile path/global argument 0x0062A1FC."),
+    0x0041ED69: ("e832200400", "picker-follow-up-profile-save", "Calls the existing pro.dct writer 0x00460DA0 on this update branch."),
+    0x0041F1A2: ("8b15fca16200", "picker-follow-up-profile-save", "Loads profile path/global argument 0x0062A1FC on the alternate branch."),
+    0x0041F1A9: ("e8f21b0400", "picker-follow-up-profile-save", "Calls the existing pro.dct writer 0x00460DA0 on the alternate update branch."),
+    0x0041F62B: ("6a6a", "picker-constructor-resource", "Passes dialog resource ID 106 to the base dialog constructor."),
+    0x0041F62F: ("e891150600", "picker-constructor-base-dialog", "Calls base dialog constructor 0x00480BC5."),
+    0x0041F63E: ("c7060c535d00", "picker-constructor-vtable", "Installs CKeyFunPickDlg vtable 0x005D530C."),
+    0x0048113E: ("ff15b8655a00", "picker-dialog-create", "Calls USER32!CreateDialogIndirectParamW through the IAT."),
+    0x0048130E: ("e84ab2ffff", "picker-message-loop", "Calls modal message-loop helper 0x0047C55D."),
+    0x004813A9: ("8b4644", "picker-modal-return", "Loads modal result from dialog object +0x44."),
+    0x0047C5B4: ("ff1538665a00", "picker-message-loop", "Calls USER32!PeekMessageW through the IAT."),
+    0x0048A53C: ("e943d5feff", "picker-tls-exception-edge", "Null TLS-object result jumps to shared C++ exception stub 0x00477A84."),
+    0x00477A84: ("8bff558bec5168b0f15e008d45fc50c745fcc8736000e81f081000", "shared-cpp-exception-stub", "Builds an exception object and calls shared RaiseException helper 0x005782BE."),
+    0x00578300: ("ff15a4625a00", "shared-cpp-exception-raise", "Calls KERNEL32!RaiseException through the IAT."),
+    0x005CC030: ("63736de0", "shared-cpp-exception-code", "Exception template begins with MSVC C++ exception code 0xE06D7363."),
     0x0047C6A9: ("894144", "picker-slot-8c-target", "Stores dialog result in object field +0x44."),
     0x0047C6AC: ("8b413c", "picker-slot-8c-target", "Loads modal state flags from object +0x3C."),
     0x0047C6C1: ("ff153c675a00", "picker-slot-8c-target", "Conditionally calls USER32 PostMessageW through its IAT slot."),
@@ -248,6 +279,58 @@ def main() -> int:
             "EndDialog IAT mapping changed")
     require(iat_names.get(0x005A673C) == ("USER32.dll", "PostMessageW"),
             "PostMessageW IAT mapping changed")
+    modal_apis = {
+        0x005A65B8: ("USER32.dll", "CreateDialogIndirectParamW"),
+        0x005A6638: ("USER32.dll", "PeekMessageW"),
+        0x005A65C0: ("USER32.dll", "EndDialog"),
+        0x005A62A4: ("KERNEL32.dll", "RaiseException"),
+    }
+    for va, expected in modal_apis.items():
+        require(iat_names.get(va) == expected,
+                f"picker modal/exception IAT mapping changed at 0x{va:08X}: {iat_names.get(va)!r}")
+        rows.append({"binary_sha256": digest, "evidence_va": f"0x{va:08X}", "bytes": "",
+                     "stage": "picker-modal-exception-api-import",
+                     "observation": f"IAT slot resolves to {expected[0]}!{expected[1]}.",
+                     "scope": "static import table; runtime API call and return unobserved"})
+
+    # RTTI for the object constructed by the shared C++ throw stub.
+    throw_vtable = struct.unpack("<I", raw(0x006073C8, 4))[0]
+    require(throw_vtable == 0x005A708C, f"exception object vtable changed: 0x{throw_vtable:08X}")
+    throw_col = struct.unpack("<I", raw(throw_vtable - 4, 4))[0]
+    require(throw_col == 0x005E49D0, f"exception object COL changed: 0x{throw_col:08X}")
+    throw_col_fields = struct.unpack("<5I", raw(throw_col, 20))
+    require(throw_col_fields == (0, 0, 0, 0x00607174, 0x005E49E4),
+            f"exception object COL fields changed: {throw_col_fields!r}")
+    throw_type = b".?AVCInvalidArgException@@\0"
+    require(raw(0x00607174 + 8, len(throw_type)) == throw_type,
+            "exception object RTTI type name changed")
+    rows.append({"binary_sha256": digest, "evidence_va": "0x0060717C", "bytes": throw_type.hex().upper(),
+                 "stage": "shared-cpp-exception-rtti",
+                 "observation": "Throw-object vtable/COL resolves to RTTI name .?AVCInvalidArgException@@.",
+                 "scope": "static RTTI for shared throw-object template; higher-level catch behavior unobserved"})
+
+    decoder = Cs(CS_ARCH_X86, CS_MODE_32)
+    # Count direct calls to the shared modal wrapper in executable bytes. This
+    # is a candidate-instruction census, not a reachability proof.
+    modal_call_count = 0
+    for section in pe.sections:
+        if not section.Characteristics & 0x20000000:
+            continue
+        chunk = section.get_data()
+        section_va = pe.OPTIONAL_HEADER.ImageBase + section.VirtualAddress
+        for offset in range(len(chunk) - 4):
+            if chunk[offset] != 0xE8:
+                continue
+            call_va = section_va + offset
+            target = call_va + 5 + struct.unpack_from("<i", chunk, offset + 1)[0]
+            if target == 0x004811E6:
+                ins = next(decoder.disasm(chunk[offset:offset + 15], call_va, count=1), None)
+                require(ins is not None and ins.mnemonic == "call"
+                        and int(ins.op_str, 16) == 0x004811E6,
+                        f"modal-wrapper call candidate at 0x{call_va:08X} did not decode")
+                modal_call_count += 1
+    require(modal_call_count == 31,
+            f"modal-wrapper direct-call census changed: {modal_call_count}")
     tls_apis = {
         0x005A63C4: "LocalAlloc",
         0x005A630C: "TlsAlloc",
@@ -298,7 +381,6 @@ def main() -> int:
                        for va, code in HEAD_LOADS.items()]
     require(sorted(hits) == sorted(literal_offsets),
             f"head literal census changed: {[hex(x) for x in hits]}")
-    decoder = Cs(CS_ARCH_X86, CS_MODE_32)
     for va, expected_hex in HEAD_LOADS.items():
         add(va, expected_hex, "absolute-head-load", "Decoded instruction loads the head pointer from 0x00619DCC.")
         off = pe.get_offset_from_rva(va - pe.OPTIONAL_HEADER.ImageBase)
@@ -339,7 +421,7 @@ def main() -> int:
         writer = csv.DictWriter(stream, fieldnames=("binary_sha256", "evidence_va", "bytes", "stage", "observation", "scope"))
         writer.writeheader()
         writer.writerows(rows)
-    print(f"Verified {len(FACTS)} exact instruction facts, both dialog RTTI/vtable links, static list bytes, {len(HEAD_LOADS)} absolute head loads, and {len(writer_calls)} direct writer calls.")
+    print(f"Verified {len(FACTS)} exact instruction facts, picker exception RTTI/API imports, both dialog RTTI/vtable links, static list bytes, {len(HEAD_LOADS)} absolute head loads, {len(writer_calls)} direct writer calls, and {modal_call_count} modal-wrapper callsites.")
     return 0
 
 

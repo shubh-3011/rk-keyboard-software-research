@@ -25,10 +25,12 @@ caller writes a separate `pro.dct` before cleanup; another can persist
 profile state to `pro.dct` after cleanup. In the picker handler, the direct
 `textmacro.dct` save path and cleanup path are mutually exclusive at the local
 state gate. The shared virtual tail resolves to a dialog-close path with no
-direct file-writer call. The first-use MFC helper's normal TLS setup and
-per-thread object creation are now mapped; its exceptional path and parent
-modal-result handling remain open, so this does not rule out every later
-persistence route.
+direct file-writer call. Its normal modal result now traces through the
+parent's result check: `1` continues to a follow-up at `0x0041EC50`, while
+other results branch to cleanup. The TLS helper's null/failure path raises a
+C++ exception beyond the immediate picker frames. Higher-level exception
+recovery and the later follow-up handler remain open, so this does not rule
+out every later persistence route.
 
 ## Evidence
 
@@ -113,17 +115,41 @@ audit](rk-v4.6-textmacro-path-audit.md):
 | Cleanup call | Local static path result | Boundary |
 | --- | --- | --- |
 | `0x0040381B` | `0x00460DA0` (`pro.dct` writer) is called before the cleanup gate. After cleanup, the examined slice has no direct `0x0041F540` text-macro writer or `0x00459F50` save/load wrapper call. | Other indirect dispatch is not excluded. |
-| `0x0041D0A4` | The handler can call `0x0041EC50` after cleanup; depending on profile-state branches, it can reach `0x00460DA0` or `0x0041F1A9`, both host `pro.dct` persistence paths. | This is profile-file persistence, not `textmacro.dct`; runtime guards and indirect paths remain unobserved. |
-| `0x00421640` | The cleanup gate requires picker state not equal to `5`. The direct `textmacro.dct` writer call at `0x004215DE` belongs to the state-5 save branch, which skips cleanup. Both paths converge on the virtual call at `0x00421650`. | Local save and cleanup branches are mutually exclusive. The shared slot resolves to a dialog-close path, with MFC guard and parent modal-result paths still open. |
+| `0x0041D0A4` | The handler can call `0x0041EC50` after cleanup. On eligible selection/update paths, that handler writes a 16-byte row into the active mapping object, calls helper `0x00418890`, and calls the existing `pro.dct` writer at `0x00460DA0`. | This is profile-file persistence, not `textmacro.dct`; selection guards and runtime behavior remain unobserved. |
+| `0x00421640` | The cleanup gate requires picker state not equal to `5`. The direct `textmacro.dct` writer call at `0x004215DE` belongs to the state-5 save branch, which skips cleanup. Both paths converge on the virtual call at `0x00421650`. After modal result `1`, the parent reaches `0x0041EC50`, whose eligible update branches can modify the active mapping row and save `pro.dct`. | Local macro save and cleanup branches are mutually exclusive. The normal selection path can persist profile state, but the bounded follow-up contains no direct `textmacro.dct` writer call. The null/failure TLS path raises a C++ exception beyond the immediate picker frames; higher-level handling remains open. |
 
 The `textmacro.dct` writer at `0x0041F540` has two direct callers in the
 examined executable: `0x004215DE` and `0x0045A057`. This static direct-call
 census does not prove a complete interprocedural call graph. The current
 evidence therefore shows no direct write of the reclaimed buffer on the
-cleanup branches or within the resolved dialog-close target. It cannot exclude
-persistence reached through the first-use helper's unresolved lazy callback,
-exception handling, parent modal-result processing, or a caller outside the
-bounded paths.
+cleanup branches or within the resolved dialog-close target. The normal
+parent result route is mapped through `0x0041EC50`: on eligible branches it
+copies a 16-byte selected record into the active mapping row, calls update
+helper `0x00418890`, and reaches the `pro.dct` writer at `0x00460DA0`. No
+direct `textmacro.dct` writer call appears in that bounded follow-up. Later
+vtable methods, higher-level exception recovery, and callers outside the
+bounded paths may still lead to other persistence.
+
+### Picker construction and modal return
+
+The parent constructs the picker at `0x0041D135` using constructor
+`0x0041F600`, which passes resource ID `106` to the base dialog constructor
+and installs the `CKeyFunPickDlg` vtable (`0x005D530C`). It calls modal
+wrapper `0x004811E6` at `0x0041D157`. That wrapper reaches
+`USER32!CreateDialogIndirectParamW`, optionally runs the message loop through
+`0x0047C55D`/`USER32!PeekMessageW`, and returns the dialog's stored field
+`+0x44`. A byte scan finds 31 direct call candidates to the shared wrapper;
+the picker parent is one of them. This is a static callsite census, not proof
+that each caller executes.
+
+After the virtual close path calls `USER32!EndDialog`, the parent compares
+the wrapper result with `1` at `0x0041D15C`. Other results branch to parent
+cleanup at `0x0041D2B2`; result `1` continues through selection checks and
+calls `0x0041EC50` at `0x0041D267`. The semantics and subsequent call graph of
+that handler are partly resolved below: its guarded update branches can copy a
+selected record into the active mapping row and persist the profile through
+`0x00460DA0` (`pro.dct`). The exact runtime-selected branch and its visible
+UI meaning remain unobserved.
 
 ### Picker virtual tail
 
@@ -136,10 +162,9 @@ the result and conditionally calls `USER32!PostMessageW`; it then calls
 `USER32!EndDialog` through IAT slot `0x005A65C0`. No direct text-macro writer
 or save/load wrapper call occurs in these resolved methods.
 
-The normal exception-frame epilogue restores the saved frame and returns, but
-the exceptional continuation is not semantically mapped. Parent handling
-after `EndDialog` is also outside this local method trace. Thus this closes the
-immediate virtual target, not every deferred or exceptional route.
+The normal exception-frame epilogue restores the saved frame and returns.
+This closes the immediate virtual target and its normal parent modal-result
+route, not every deferred or exceptional route.
 
 ### Picker first-use thread-local object
 
@@ -155,18 +180,26 @@ object through `LocalAlloc`, sets vtable `0x005AA724`, and clears fields
 The traced helper slice uses TLS APIs, critical sections, and local/global
 allocation to manage the context and per-thread tables. No file, registry,
 network, or HID API call appears in this bounded normal-path helper/callback
-trace. That observation does not classify later methods reached through the
-new object's vtable, the MFC/SEH exceptional continuations, other callsites of
-the helper, or the parent dialog's modal-result handling. It therefore closes
-the lazy callback's basic initialization mechanics, not the full picker
-behavior or every possible persistence route.
+trace. If the guard receives a null result, it branches to shared stub
+`0x00477A84`, which constructs an exception object and reaches
+`KERNEL32!RaiseException`; RTTI for the throw-object template names
+`CInvalidArgException`. The helper and callback frames have cleanup/unwind
+paths but no local catch blocks. In the picker validation method
+`0x0047C312`, the accessor call happens before its protected state begins, so
+that method's local catch does not cover this exception. It propagates beyond
+the immediate picker methods; higher-level catch/UI recovery is not traced.
+This concerns a shared helper with 28 direct callsites, not a picker-exclusive
+mechanism. It does not classify later methods reached through the new object's
+vtable or prove that an exception occurs at runtime.
 
 ## Evidence and reproduction
 
 The [instruction ledger](rk-v4.6-textmacro-list-lifecycle.csv) records exact
-bytes for 114 instructions, the two initial object images, both dialog RTTI
-tables, all nine absolute head-field loads, the RTTI/vtable linkage, and the
-two relative calls to the text-macro writer. The
+bytes for the picker normal modal route, its conditional mapping-row/profile
+save follow-up, and the shared throw stub, plus the two initial object images,
+both dialog RTTI tables, all nine absolute head-field loads, the RTTI/vtable
+linkage, and the two relative calls to the text-macro writer. The verifier
+also checks the throw-object RTTI and relevant IAT imports. The
 [verifier](../scripts/audit_rk46_textmacro_list_lifecycle.py)
 pins the executable size and SHA-256 before checking the bytes and censuses.
 
@@ -183,8 +216,8 @@ launched, and no keyboard, HID, updater, or firmware interface was opened.
   active mapping/profile objects are represented.
 - Whether the initializer's zero-return branch executes in an actual process
   and what `0x00448880` initializes.
-- Whether the exceptional continuation or parent modal-result handling can
-  reach a persistence writer, and whether cleared records later appear in a
-  `textmacro.dct` write.
+- Whether higher-level exception recovery or the `0x0041EC50` parent handler
+  reach a `textmacro.dct` writer beyond the bounded traces, and whether
+  cleared records later appear in a `textmacro.dct` write.
 - Which exact user actions select each cleanup branch and what runtime objects
   are active.
