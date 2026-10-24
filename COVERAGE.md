@@ -526,7 +526,7 @@ For current blockers and the recommended reverse-engineering order, see the
   decoders through private message `0x07EB`, the `COemDrvDlg` mapping-cell
   tag `0x0A00005B`, a non-allocating macro lookup, and host `SendInput`. It
   identifies the code path, not the physical key gesture, active profile,
-  runtime message delivery, or API success. See the [trigger report](docs/rk-v4.6-textmacro-device-trigger.md), [evidence ledger](docs/rk-v4.6-textmacro-device-trigger.csv), and [verifier](scripts/audit_rk46_textmacro_device_trigger.py).
+  runtime message delivery, or API success. See the [trigger report](docs/rk-v4.6-textmacro-device-trigger.md), [evidence ledger](docs/rk-v4.6-textmacro-device-trigger.csv), and [verifier](scripts/audit_rk46_textmacro_device_trigger.py). A cleanup helper scans four groups of 132 mapping cells per linked-list node for the same tag/key pair, then clears unmatched records across the full `0x404`-byte span. Three direct-call candidates are found by the executable-section byte-linear sweep; runtime list identity and whether any call actually reclaims a record remain unknown. See the [reclamation report](docs/rk-v4.6-textmacro-record-reclamation.md) and [verifier](scripts/audit_rk46_textmacro_reclamation.py).
 - In the same package, `Dev/01AF/Update.exe` and its `.upf` have hashes
   identical to the installed 4.06 updater and update package. The existing
   updater and firmware-readback findings therefore apply byte-for-byte to
