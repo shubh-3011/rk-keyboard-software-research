@@ -58,16 +58,21 @@ nearby code calls `SHELL32!SHGetSpecialFolderPathW`, constructs a path using
 `%s\\Log.txt`, and passes the mode string `w` to internal helper
 `0x005761BA`. On the helper's failure branch it calls the debug-output target
 with the string `Open Log failed`; on the other branch it can install
-`0x0040D090` as the shared callback. This supports a **file-log callback
-inference**, but the helper's file-open/write semantics and a successful
-end-to-end file write have not been recovered.
+`0x0040D090` as the shared callback. The helper is a CRT-style wide-file-open
+wrapper. Its nested open path reaches `KERNEL32!CreateFileW` at `0x0058AAC0`.
+The callback body then formats timestamped text through the CRT stream helpers;
+its conditional stream-flush path reaches `KERNEL32!WriteFile` at
+`0x00582D95`. This establishes a static file-sink path in the binary, though
+not a successful runtime write.
 
 The `0x0040D090` body checks the selector, passes mode string `a` to the same
 internal helper, emits `Open Log failed` through `OutputDebugStringW` on its
 failure branch, and otherwise calls `KERNEL32!GetLocalTime` and formats a
-timestamp. The strings and API calls support an append-style logging
-interpretation. They do not prove which helper writes the formatted data or
-that the file is successfully updated.
+timestamp. The stream path is `0x0040D120 -> 0x00576334 -> 0x005762A1`, with a
+conditional flush through `0x0057ADEE -> 0x00583268 -> 0x00582B35` and
+`WriteFile` callsites in that writer. This supports an append-style text-log
+sink inference; flush conditions, API success, and runtime file contents are
+not observed.
 
 ## Targeted initialization path
 
@@ -89,9 +94,17 @@ and the initializer keeps the `OutputDebugStringW` callback target
 `0x0040D000`; a missing key also uses the code's default zero. A non-package
 configuration with selector 2 can take the conditional `Log.txt` branch and
 replace that target with `0x0040D090` if the internal setup helper succeeds.
-This is a static conditional interpretation. The global path prefix at
-`0x006354B8`, actual file selection, execution, and runtime callback value
-remain unobserved; see the [native API path report](rk-v4.6-native-api-call-path-audit.md).
+The initializer calls `SHGetSpecialFolderPathW` with `CSIDL=0` and
+`fCreate=0`, then formats `%s\\Log.txt` into `0x00620948`; it does not test the
+API's Boolean return before using that buffer. Microsoft defines `CSIDL=0` as
+the virtual Desktop, while `CSIDL_DESKTOPDIRECTORY` (`0x10`) is the filesystem
+directory, and documents that `SHGetSpecialFolderPathW` fails for virtual
+folders ([CSIDL table](https://learn.microsoft.com/en-us/windows/win32/shell/csidl),
+[API documentation](https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetspecialfolderpathw)).
+Therefore the static path expression is known, but the resolved filename and
+whether this branch can open a usable file are not established. The global path
+prefix at `0x006354B8`, actual config-file selection, execution, and runtime
+callback value remain unobserved; see the [native API path report](rk-v4.6-native-api-call-path-audit.md).
 
 Thus the 234 rooted callsites have a constrained **candidate** target set of
 `0x0040D000` or `0x0040D090` if this initializer runs and the cell is not
@@ -116,7 +129,9 @@ be logging dispatches, not keyboard transfers.
   or aliases have not been excluded.
 - The callback cell's runtime value, initialization order, caller-specific
   message argument semantics, actual config-file selection, and whether the
-  candidate file target completes a write are unobserved.
+  conditional CRT flush reaches a successful `WriteFile` are unobserved. The
+  initializer uses `SHGetSpecialFolderPathW(CSIDL=0)` without checking its
+  return, so the path buffer's runtime contents are unresolved.
 
 The call chain narrows the 232 additional rooted sites to a shared callback
 whose statically identified target selection depends on the selector and log

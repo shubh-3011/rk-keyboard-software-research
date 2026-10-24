@@ -339,6 +339,8 @@ def main() -> int:
         0x005A63E0: "KERNEL32.dll!GetPrivateProfileIntW",
         0x005A6458: "KERNEL32.dll!GetLocalTime",
         0x005A645C: "KERNEL32.dll!OutputDebugStringW",
+        0x005A646C: "KERNEL32.dll!WriteFile",
+        0x005A6474: "KERNEL32.dll!CreateFileW",
         0x005A6478: "KERNEL32.dll!GetModuleFileNameW",
         0x005A6534: "SHELL32.dll!SHGetSpecialFolderPathW",
     }
@@ -347,9 +349,11 @@ def main() -> int:
             raise SystemExit(f"Unexpected IAT mapping at {hx(address)}: {imports.get(address)!r}")
     expected_import_calls = {
         0x0040D068: 0x005A645C,
+        0x0040D15F: 0x005A6534,
         0x0040D0C8: 0x005A645C,
         0x0040D0D7: 0x005A6458,
-        0x0040D15F: 0x005A6534,
+        0x0058AAC0: 0x005A6474,
+        0x00582D95: 0x005A646C,
     }
     for site, iat in expected_import_calls.items():
         instruction = decode_at(pe, decoder, site)
@@ -360,6 +364,16 @@ def main() -> int:
             or absolute_mem_operand(instruction.operands[0]) != iat
         ):
             raise SystemExit(f"Unexpected imported call at {hx(site)}")
+    expected_stream_calls = {
+        0x0040D0B7: 0x005761BA,
+        0x0040D120: 0x00576334,
+        0x00576349: 0x005762A1,
+        0x0057638A: 0x0057ADEE,
+        0x0057AE24: 0x00583268,
+        0x00583302: 0x00582B35,
+    }
+    for site, target in expected_stream_calls.items():
+        verify_direct_call(site, target)
     expected_strings = {
         0x005D16A4: "a",
         0x005D16A8: "Open Log failed",
@@ -426,6 +440,9 @@ def main() -> int:
     print(f"selector_linear_sweep_refs={len(selector_references)} selector_ref_mnemonics=cmp-only")
     print("targeted_selector_store=0x00456592 via GetPrivateProfileIntW IAT=0x005A63E0")
     print("targeted_direct_call_chain=0x00448188->0x00456520->0x00456597->0x0040D140")
+    print("log_open=0x0040D0B7->0x005761BA->...->CreateFileW@0x0058AAC0")
+    print("log_stream=0x0040D120->0x00576334->0x00576349->0x005762A1->0x0057638A->0x0057ADEE->0x0057AE24->0x00583268->0x00583302->0x00582B35->WriteFile@0x00582D95")
+    print("log_path_api=SHGetSpecialFolderPathW@0x0040D15F csidl=0; return unchecked; Log.txt path remains conditional")
     print(f"linear_sweep_initializer_control_refs={len(control_references_to_init)}")
     print("initializer_raw_va_pointers=0 raw_rva_pointers=0 exports=0 tls_callbacks=0")
     print(f"cfg_sha256={cfg_hash} package_debug_value=0 runtime_cfg_selection=unobserved")

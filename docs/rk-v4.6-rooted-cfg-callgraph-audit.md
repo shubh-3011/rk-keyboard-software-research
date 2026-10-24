@@ -96,9 +96,12 @@ chain (`0x00448188 -> 0x00456520 -> 0x00456597 -> 0x0040D140`) and a
 missed these instruction boundaries, so its zero-reference conclusion was
 incorrect. The actual runtime config selection and callback target remain
 unobserved; the conservative 3,558 / 3,554 unresolved totals below are retained
-because the callback target is conditional. The follow-up also records 258
-full-section linear-sweep calls and explains the different instruction-boundary
-counts between scans.
+because the callback target is conditional. A follow-up traces the file target
+through the CRT stream/flush path to `CreateFileW` and `WriteFile`; the
+initializer's `SHGetSpecialFolderPathW` call uses virtual folder ID 0 and
+ignores its return, so a usable log path is not established. The follow-up also
+records 258 full-section linear-sweep calls and explains the different
+instruction-boundary counts between scans.
 
 Before the manual follow-up, the raw call ledger had 1,648 register-operand and
 1,920 memory-operand unresolved call contexts. Reclassifying the two `ESI`
@@ -266,9 +269,11 @@ presence does not prove API success, device access, or keyboard effect.
 The shared callback follow-up identifies a static initializer call chain and a
 conditional logger target set for 232 additional rooted callsites, but does not
 reclassify those as single-target resolved edges because the runtime selector
-and log setup outcome are unknown. Its separate 258-call linear-sweep count is
-not added to the rooted totals; 31 rooted call addresses are absent from that
-sweep, and 55 swept addresses are absent from the rooted edge ledger.
+and log setup outcome are unknown. One target has a static file-open and
+conditional `WriteFile` path, though its special-folder argument and unchecked
+return leave the destination unresolved. Its separate 258-call linear-sweep
+count is not added to the rooted totals; 31 rooted call addresses are absent
+from that sweep, and 55 swept addresses are absent from the rooted edge ledger.
 
 This report narrows the function/dispatch gap with reproducible root-seeded
 evidence; it does not close it or supersede the

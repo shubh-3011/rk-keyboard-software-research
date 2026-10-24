@@ -227,14 +227,19 @@ no keyboard report or device-I/O operation.
 
 The 4.6 package manifest identifies `app/Cfg.ini` with SHA-256
 `AB9C84BB951BCFEC99E18E0C6A77ECE913E14376265C33276E3B176C030B6CC5`. Its
-`[OPT]` section sets `appdir=RKKB`. In `DeviceDriver.exe`,
-`0x00456520` builds a `cfg.ini` path from global prefix `0x006354B8` and the
-UTF-16 `cfg.ini` literal; the prefix's runtime contents are not recovered.
-It calls `GetPrivateProfileStringW` at `0x0045693D` (IAT
+`[OPT]` section sets `appdir=RKKB`. In `DeviceDriver.exe`, startup calls
+`GetModuleFileNameW` at `0x00448114` (IAT `0x005A6478`) with a null module
+handle. The path splitter at `0x0057695A` separates drive and directory, and
+`0x00577833` rebuilds those components as a trailing-separator executable
+directory prefix in global `0x006354B8`. The API return is not checked, so its
+actual runtime value and truncation behavior remain unknown. Config loader
+`0x00456520` formats that prefix plus the UTF-16 `cfg.ini` literal into a
+stack buffer, then reads `[OPT] Debug` and `[OPT] appdir` from that constructed
+path. Its `GetPrivateProfileStringW` call is at `0x0045693D` (IAT
 `0x005A63D8`) for `[OPT] appdir`. The default is empty; the destination is
 global wide buffer `0x00629F64` with size `0x1E`. The package entry contains
-`appdir=RKKB`, but the evidence does not establish that `0x006354B8` resolves
-to the package `app/` directory at runtime.
+`appdir=RKKB`, but the evidence does not establish which on-disk `cfg.ini` is
+selected or that the packaged `app/Cfg.ini` is read at runtime.
 
 The initialization path in `0x00448030` calls `0x00456520` and, when its
 return is nonzero, calls `0x00453220`. That path calls
