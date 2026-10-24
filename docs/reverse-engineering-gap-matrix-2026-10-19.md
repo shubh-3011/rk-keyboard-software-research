@@ -107,13 +107,12 @@ See the [coverage ledger](../COVERAGE.md), [4.6 package snapshot](rk-v4.6-packag
   `pro.dct`; no direct `textmacro.dct` call appears in the traced follow-up.
   A conditional semaphore notification is connected to a shared queue worker:
   the worker waits on a semaphore and event, dequeues values, and has a gated
-  `FindWindowW`/`WM_CLOSE` host-window path. The UI target, queue-value
-  meanings, full worker dispatch, higher-level exception recovery, and runtime
-  behavior remain open. See the [picker lifecycle report](rk-v4.6-textmacro-list-lifecycle.md).
+  `FindWindowW`/`WM_CLOSE` host-window path. At the 2026-10-24 checkpoint, the UI target, queue-value meanings, full worker
+  dispatch, higher-level exception recovery, and runtime behavior remained open. See the [picker lifecycle report](rk-v4.6-textmacro-list-lifecycle.md).
 - The picker TLS helper's null/failure route reaches a shared MSVC C++ throw
   stub; static RTTI names `CInvalidArgException`. The immediate helper and
   picker validation frames have cleanup paths but no active local catch for
-  this call. Higher-level recovery remains untraced.
+  this call. The wrapper-level recovery tables had not yet been traced at that checkpoint.
 - The two S98 feature-read consumers previously analyzed in 01BF now have
   static counterparts in Thai PID `0x0223`, despite a distinct `.text` hash.
   The verification path compares readback against the host `.upf`; this remains
@@ -170,6 +169,11 @@ See the [coverage ledger](../COVERAGE.md), [4.6 package snapshot](rk-v4.6-packag
   output-buffer consumer or file sink is proven; computed dispatch remains
   outside the census. See the [caller/alias report](rk-v4.6-g5-command88-caller-alias-census.md)
   and [reproduction script](../scripts/audit_rk46_g5_cmd88_alias_census.py).
+
+## Subsequent bounded delta (2026-10-25)
+
+- The hash-pinned static exception follow-up closes the bounded TLS throw-to-parent recovery-table gap for the 4.6 text-macro picker. ThrowInfo at `0x005EF1B0` includes catchable descriptors for `.PAVCInvalidArgException@@` and `.PAVCException@@`. Modal wrapper `0x004811E6` has one `CException*` handler active in EH state 0 around its modal-loop call; that handler sets result `-1`, and parent `0x0041CF20` routes non-1 to cleanup. This is a conditional static route: runtime exception occurrence, message-loop dispatch, propagation, and handler execution remain unobserved. The verifier checks the exact binary hash and emits a 56-row evidence ledger. See the [recovery report](rk-v4.6-textmacro-exception-recovery.md), [ledger](rk-v4.6-textmacro-exception-recovery.csv), and [verifier](../scripts/audit_rk46_textmacro_exception_recovery.py).
+- The 4.6 GDI follow-up maps argument order and return handling for 13 register-indirect GDI32 wrappers. A hash-pinned verifier confirms 56 caller edges from the bounded root-seeded CFG and 20 slots across the `CDC`, `CClientDC`, `CWindowDC`, and `CPaintDC` vtables. These are static wrapper/caller relationships; runtime execution remains unobserved. See the [wrapper audit](rk-v4.6-gdi-register-wrapper-audit-2026-10-25.md), [evidence ledger](rk-v4.6-gdi-register-wrapper-evidence-2026-10-25.csv), and [verifier](../scripts/audit_rk46_gdi_register_wrappers.py).
 
 ## Priority matrix
 

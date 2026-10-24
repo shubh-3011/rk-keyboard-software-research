@@ -127,8 +127,8 @@ parent result route is mapped through `0x0041EC50`: on eligible branches it
 copies a 16-byte selected record into the active mapping row, calls update
 helper `0x00418890`, and reaches the `pro.dct` writer at `0x00460DA0`. No
 direct `textmacro.dct` writer call appears in that bounded follow-up. Later
-vtable methods, higher-level exception recovery, and callers outside the
-bounded paths may still lead to other persistence.
+vtable methods and callers outside the bounded paths may still lead to other
+persistence.
 
 ### Picker construction and modal return
 
@@ -217,16 +217,20 @@ The traced helper slice uses TLS APIs, critical sections, and local/global
 allocation to manage the context and per-thread tables. No file, registry,
 network, or HID API call appears in this bounded normal-path helper/callback
 trace. If the guard receives a null result, it branches to shared stub
-`0x00477A84`, which constructs an exception object and reaches
-`KERNEL32!RaiseException`; RTTI for the throw-object template names
-`CInvalidArgException`. The helper and callback frames have cleanup/unwind
-paths but no local catch blocks. In the picker validation method
-`0x0047C312`, the accessor call happens before its protected state begins, so
-that method's local catch does not cover this exception. It propagates beyond
-the immediate picker methods; higher-level catch/UI recovery is not traced.
-This concerns a shared helper with 28 direct callsites, not a picker-exclusive
-mechanism. It does not classify later methods reached through the new object's
-vtable or prove that an exception occurs at runtime.
+`0x00477A84`, which supplies object `0x006073C8` and ThrowInfo `0x005EF1B0`
+to a helper that calls `KERNEL32!RaiseException`. The ThrowInfo's catchable
+types include `.PAVCInvalidArgException@@` and `.PAVCException@@`. The TLS
+helper has no local try blocks. In validation method `0x0047C312`, the accessor
+call happens before its protected state begins, so its local catches do not
+cover this call. A focused static follow-up finds a matching `CException*`
+handler in modal wrapper `0x004811E6`, active at state 0 around its modal-loop
+call. If the exception propagates through that frame without interception, the
+handler sets the modal result to `-1`; the parent at `0x0041CF20` routes any
+non-1 result to cleanup and skips the success follow-up. Runtime occurrence,
+message-loop dispatch, exception propagation, and handler execution remain
+unobserved. This concerns a shared helper with 28 direct callsites, not a
+picker-exclusive mechanism. See the [static recovery follow-up](rk-v4.6-textmacro-exception-recovery.md)
+and [hash-pinned verifier](../scripts/audit_rk46_textmacro_exception_recovery.py).
 
 ## Evidence and reproduction
 
@@ -253,8 +257,8 @@ launched, and no keyboard, HID, updater, or firmware interface was opened.
   active mapping/profile objects are represented.
 - Whether the initializer's zero-return branch executes in an actual process
   and what `0x00448880` initializes.
-- Whether higher-level exception recovery or the `0x0041EC50` parent handler
-  reach a `textmacro.dct` writer beyond the bounded traces, and whether
-  cleared records later appear in a `textmacro.dct` write.
+- Whether this modal recovery route is taken at runtime, whether a path through
+  the shared helper reaches a `textmacro.dct` writer beyond bounded traces, and
+  whether cleared records later appear in a `textmacro.dct` write.
 - Which exact user actions select each cleanup branch and what runtime objects
   are active.
