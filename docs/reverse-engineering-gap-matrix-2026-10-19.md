@@ -1,16 +1,16 @@
-# Full-suite reverse-engineering gap matrix — status updated 2026-10-21
+# Full-suite reverse-engineering gap matrix — status updated 2026-10-24
 
 ## Scope of this review
 
 This audit combines the repo's coverage ledger, artifact index, package
-manifests, and component reports with the hash-pinned static analyses added on
-2026-10-20. It identifies the largest remaining evidence gaps and the next
+manifests, and component reports with hash-pinned static analyses through
+2026-10-24. It identifies the largest remaining evidence gaps and the next
 static work that would reduce them. It does not claim that the vendor suite
 has been fully reverse engineered.
 
-The dated catalog/package evidence below was refreshed through 2026-10-20. The
-repo still has bounded evidence sets rather than a proof of the complete RK
-release universe:
+The dated catalog/package evidence below was refreshed through 2026-10-20; the
+bounded 2026-10-24 additions are summarized below. The repo still has bounded
+evidence sets rather than a proof of the complete RK release universe:
 
 - The installed Windows Hub package labeled 4.06: 810 inventoried files,
   including the main driver, updater, setup helper, uninstall helper, and
@@ -97,6 +97,53 @@ See the [coverage ledger](../COVERAGE.md), [4.6 package snapshot](rk-v4.6-packag
 [4.6/4.06 binary delta](rk-v4.6-native-binary-delta-audit.md),
 [Drive audit](rk-drive-web-app-audit.md), and
 [official distribution boundary](rk-official-driver-distribution-audit.md).
+
+## Subsequent bounded deltas (2026-10-24)
+
+- The 4.6 text-macro picker trace now covers construction, resource ID 106,
+  modal creation and close, the parent result check, and the conditional
+  follow-up. On eligible branches the follow-up copies a 16-byte selection to
+  the active map row, marks row state, invalidates the stored HWND, and saves
+  `pro.dct`; no direct `textmacro.dct` call appears in the traced follow-up.
+  A conditional semaphore notification is connected to a shared queue worker:
+  the worker waits on a semaphore and event, dequeues values, and has a gated
+  `FindWindowW`/`WM_CLOSE` host-window path. The UI target, queue-value
+  meanings, full worker dispatch, higher-level exception recovery, and runtime
+  behavior remain open. See the [picker lifecycle report](rk-v4.6-textmacro-list-lifecycle.md).
+- The picker TLS helper's null/failure route reaches a shared MSVC C++ throw
+  stub; static RTTI names `CInvalidArgException`. The immediate helper and
+  picker validation frames have cleanup paths but no active local catch for
+  this call. Higher-level recovery remains untraced.
+- The two S98 feature-read consumers previously analyzed in 01BF now have
+  static counterparts in Thai PID `0x0223`, despite a distinct `.text` hash.
+  The verification path compares readback against the host `.upf`; this remains
+  insufficient to claim arbitrary firmware export or to characterize other
+  Thai updater paths. See the [cross-build consumer report](rk-s98-feature-read-consumer-audit-2026-10-24.md).
+- The same 01BF `.text` scan now finds a third bounded `HidD_GetFeature`
+  routine at `0x00402880`. It reads a six-byte `05 72` feature response, saves
+  bytes `+2..+5`, and encodes those values into a later `05 77`
+  `HidD_SetFeature` report. A second read in the helper is not consumed in its
+  bounded tail. The routine is not a firmware dump; its field meanings and
+  runtime result are unknown, and no direct link to the separate `WriteFile`
+  wrapper is established. The full `.text` scan found four explicit
+  `HidD_GetFeature` call instructions in 01BF and two in Thai. See the
+  [cross-build consumer report](rk-s98-feature-read-consumer-audit-2026-10-24.md)
+  and its [verifier](../scripts/audit_s98_feature_read_consumer.py).
+- A separate 4.6 UI dispatch trace resolves `CClrPanelDlg` message `0x0801`
+  for selector values `0x0877–0x0879` through vtable slot `+0x0C` to
+  `CAfxStringMgr` helper `0x00477DED`, which atomically increments a reference
+  count and returns an adjusted pointer for an internal string helper. This
+  explains the selected indirect edge but not the private message's feature
+  meaning or runtime behavior. See the [dispatch evidence note](rk-v4.6-clr-string-manager-dispatch.md)
+  and its [hash-pinned verifier](../scripts/audit_rk46_clr_string_manager_dispatch.py).
+- A hash-pinned V4.6 G5 command-`0x88` census confirms zero direct calls to
+  the read wrapper, one internal helper call, 77 `+0x70` indirect calls, three
+  tail jumps, and zero same-register `+0x70` load-to-call/jump aliases in its
+  bounded pass. Review of the three tail relays found known caller shapes that
+  do not match the G5 buffer/length signature, or no direct entry. No G5
+  output-buffer consumer or file sink is proven; computed dispatch remains
+  outside the census. See the [caller/alias report](rk-v4.6-g5-command88-caller-alias-census.md)
+  and [reproduction script](../scripts/audit_rk46_g5_cmd88_alias_census.py).
 
 ## Priority matrix
 

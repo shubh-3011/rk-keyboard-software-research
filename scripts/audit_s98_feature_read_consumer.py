@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify two bounded HidD_GetFeature consumers in the S98 01BF updater."""
+"""Verify bounded HidD_GetFeature consumers in the S98 updater builds."""
 
 from __future__ import annotations
 
@@ -8,6 +8,8 @@ import csv
 import hashlib
 from pathlib import Path
 
+from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+from capstone.x86 import X86_OP_MEM
 import pefile
 
 EXPECTED_SHA256 = "475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6"
@@ -18,6 +20,19 @@ THAI_EXPECTED_TEXT_SHA256 = "bfc4506d668ee1ff8809a0455abd5f589545e45ff1d0b358a5f
 IMAGE_BASE = 0x00400000
 
 FACTS: dict[int, tuple[str, str]] = {
+    0x004026FD: ("e87e010000", "The caller invokes the read-to-command helper at 0x00402880."),
+    0x00402702: ("84c0", "The caller tests the helper's AL return value."),
+    0x00402899: ("8b3de0a15500", "Loads the HidD_SetFeature IAT pointer into EDI."),
+    0x004028C1: ("66c7060572", "Initializes the six-byte feature buffer with prefix 05 72."),
+    0x004028C6: ("8b35c8a15500", "Loads the HidD_GetFeature IAT pointer into ESI."),
+    0x004028CD: ("ffd6", "Calls HidD_GetFeature through the loaded IAT pointer."),
+    0x004028D8: ("0fb64a02", "Reads response byte +2 after the first feature read."),
+    0x004028DC: ("0fb64203", "Reads response byte +3 after the first feature read."),
+    0x004028E0: ("0fb65a04", "Reads response byte +4 after the first feature read."),
+    0x004028EC: ("0fb64205", "Reads response byte +5 after the first feature read."),
+    0x004028F5: ("ffd6", "Makes a second HidD_GetFeature call through the same loaded IAT pointer."),
+    0x0040294F: ("66c7020577", "Encodes the saved response fields in a later report with prefix 05 77."),
+    0x0040295A: ("ffd7", "Sends the 05 77 report through the previously loaded HidD_SetFeature pointer."),
     0x004029F7: ("c70305520000", "Builds update-verification feature request prefix 05 52."),
     0x00402A03: ("ff15e0a15500", "Calls HidD_SetFeature through IAT slot 0x0055A1E0."),
     0x00402A5C: ("6802080000", "Allocates a 0x802-byte response buffer."),
@@ -90,6 +105,24 @@ def main() -> int:
         offset = pe.get_offset_from_rva(va - IMAGE_BASE)
         return data[offset:offset + size]
 
+    text_section = next(section for section in pe.sections
+                        if section.Name.rstrip(b"\0") == b".text")
+    text_start = IMAGE_BASE + int(text_section.VirtualAddress)
+    decoder = Cs(CS_ARCH_X86, CS_MODE_32)
+    decoder.detail = True
+    getfeature_refs = []
+    for instruction in decoder.disasm(text_section.get_data(), text_start):
+        if any(operand.type == X86_OP_MEM and operand.mem.base == 0
+               and operand.mem.index == 0 and operand.mem.disp == 0x0055A1C8
+               for operand in instruction.operands):
+            getfeature_refs.append(instruction.address)
+    expected_refs = [0x004028C6, 0x00402AFD, 0x0040924D]
+    if getfeature_refs != expected_refs:
+        raise SystemExit(
+            "HidD_GetFeature absolute IAT-reference scan mismatch: "
+            f"{[hex(va) for va in getfeature_refs]}"
+        )
+
     rows = []
     for va, (expected_hex, note) in FACTS.items():
         expected = bytes.fromhex(expected_hex)
@@ -149,6 +182,7 @@ def main() -> int:
     thai_summary = (f", plus {len(THAI_FACTS)} Thai counterpart facts and Thai .text hash {thai_text_sha256}"
                     if args.thai_binary else "")
     print(f"Verified {len(FACTS)} 01BF instruction facts, .text hash, and HID feature imports{thai_summary}.")
+    print("Verified all three decoded absolute HidD_GetFeature IAT references in 01BF .text.")
     return 0
 
 

@@ -151,6 +151,42 @@ selected record into the active mapping row and persist the profile through
 `0x00460DA0` (`pro.dct`). The exact runtime-selected branch and its visible
 UI meaning remain unobserved.
 
+After the row copy, helper `0x00418890` bounds the row index to `0x84` entries
+(132), stores the supplied dirty-state value in a per-row slot with `0x24`
+byte stride, and calls `USER32!InvalidateRect` for the HWND stored at object
+`+0x20`, passing a null rectangle and `TRUE` for erase. If global flag
+`0x0062A234` is set, the same follow-up also calls notifier `0x00401100(1)`.
+That helper clears bit `0x8000` in its argument and calls
+`KERNEL32!ReleaseSemaphore` with the handle at `0x006356C4`, release count 1,
+and null previous-count pointer. The worker consumer is now traced to a shared
+queue loop; the queue values' application meanings and the global flags remain
+unresolved. The indirect call later in the notifier is not resolved here.
+
+### Shared queue worker and semaphore
+
+The initializer at `0x00401160` creates an event handle at global
+`0x006356C8` and a semaphore at `0x006356C4`, then passes handle block
+`0x006356C0` and worker entry `0x00401290` to a CRT thread wrapper. The wrapper
+reaches `KERNEL32!CreateThread`. The worker copies handle-block fields `+4`
+and `+8` into a two-element array, then calls
+`KERNEL32!WaitForMultipleObjects(2, handles, FALSE, INFINITE)`. Result index
+`0` enters queue processing; result index `1` returns from the worker.
+
+After a semaphore wake, the worker loads queue pointer `0x006356D8` and calls
+dequeue helper `0x0043E780`. The producer `0x00401100` clears bit `0x8000`
+from its input, enqueues the resulting value through `0x0043E6C0`, then
+releases the same semaphore. A second bounded producer at `0x0045DF24` queues
+value `2` and releases that semaphore. This proves a static queue/wakeup path
+and one worker's wait/dispatch loop; the meaning of each queue value, the
+worker's full virtual-dispatch semantics, all producers, and runtime
+scheduling remain unresolved. One later host-window branch is identifiable:
+the worker loads a window-name pointer from the shared UI object, calls
+`USER32!FindWindowW(NULL, name)`, and, after virtual callback and global-flag
+gates, may post `USER32!PostMessageW(hwnd, WM_CLOSE, 0, 0)` to the returned
+window. The target window's identity and the callback results' meaning remain
+unresolved; this is a host UI path, not evidence of a keyboard command. The
+executable was not run.
+
 ### Picker virtual tail
 
 The call at `0x00421650` loads slot `+0x158` through the `CKeyFunPickDlg`
@@ -196,10 +232,11 @@ vtable or prove that an exception occurs at runtime.
 
 The [instruction ledger](rk-v4.6-textmacro-list-lifecycle.csv) records exact
 bytes for the picker normal modal route, its conditional mapping-row/profile
-save follow-up, and the shared throw stub, plus the two initial object images,
-both dialog RTTI tables, all nine absolute head-field loads, the RTTI/vtable
-linkage, and the two relative calls to the text-macro writer. The verifier
-also checks the throw-object RTTI and relevant IAT imports. The
+save follow-up, row-state/invalidation helper, guarded semaphore notifier,
+shared queue worker, and shared throw stub, plus the two initial object
+images, both dialog RTTI tables, all nine absolute head-field loads, the
+RTTI/vtable linkage, and the two relative calls to the text-macro writer. The
+verifier also checks the throw-object RTTI and relevant IAT imports. The
 [verifier](../scripts/audit_rk46_textmacro_list_lifecycle.py)
 pins the executable size and SHA-256 before checking the bytes and censuses.
 

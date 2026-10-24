@@ -1,4 +1,17 @@
 binary_sha256,evidence_va,bytes,observation,scope
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004026FD,E87E010000,The caller invokes the read-to-command helper at 0x00402880.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402702,84C0,The caller tests the helper's AL return value.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402899,8B3DE0A15500,Loads the HidD_SetFeature IAT pointer into EDI.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028C1,66C7060572,Initializes the six-byte feature buffer with prefix 05 72.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028C6,8B35C8A15500,Loads the HidD_GetFeature IAT pointer into ESI.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028CD,FFD6,Calls HidD_GetFeature through the loaded IAT pointer.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028D8,0FB64A02,Reads response byte +2 after the first feature read.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028DC,0FB64203,Reads response byte +3 after the first feature read.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028E0,0FB65A04,Reads response byte +4 after the first feature read.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028EC,0FB64205,Reads response byte +5 after the first feature read.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004028F5,FFD6,Makes a second HidD_GetFeature call through the same loaded IAT pointer.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040294F,66C7020577,Encodes the saved response fields in a later report with prefix 05 77.,static bytes only; updater/device execution and HID results unobserved
+475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x0040295A,FFD7,Sends the 05 77 report through the previously loaded HidD_SetFeature pointer.,static bytes only; updater/device execution and HID results unobserved
 475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x004029F7,C70305520000,Builds update-verification feature request prefix 05 52.,static bytes only; updater/device execution and HID results unobserved
 475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402A03,FF15E0A15500,Calls HidD_SetFeature through IAT slot 0x0055A1E0.,static bytes only; updater/device execution and HID results unobserved
 475e8d7b97adfbd861c3b7b16721ad598df04095b81228e381319b6be23129e6,0x00402A5C,6802080000,Allocates a 0x802-byte response buffer.,static bytes only; updater/device execution and HID results unobserved

@@ -2,7 +2,7 @@
 
 ## Scope and artifact identity
 
-This follow-up examines two `HidD_GetFeature` consumers in the selector's
+This follow-up examines three bounded `HidD_GetFeature` consumers in the selector's
 English-UK S98 Tri-mode RGB updater,
 `S98-Tri-RGB-01BF-L10-20260527170338_1467.exe`. The file is 2,140,176 bytes
 with SHA-256
@@ -48,6 +48,38 @@ API result, it checks response byte `+2` against `0x61` and reads byte `+5`
 into updater state selection logic. The enumerated values map to state fields;
 their protocol names and meanings are unresolved.
 
+## Read-to-command helper at `0x00402880`
+
+A third 01BF routine allocates a six-byte buffer and initializes it with
+prefix `05 72` (`0x004028C1`). It loads `HidD_GetFeature` from IAT slot
+`0x0055A1C8` at `0x004028C6` and calls it at `0x004028CD` with the buffer and
+length 6. It then reads response bytes `+2` through `+5`, combines them into
+two 16-bit values, and makes a second six-byte `HidD_GetFeature` call at
+`0x004028F5`. The bounded method does not use the second call's return value
+or response bytes before reinitializing the buffer.
+
+The values saved from the first response are re-encoded at
+`0x0040294F–0x00402957` into a report beginning `05 77` and sent through
+`HidD_SetFeature` at `0x0040295A`. The routine has a direct caller at
+`0x004026FD`, which tests its return value at `0x00402702`. The report fields'
+protocol meaning and the routine's runtime reachability remain unknown. This
+is a narrow feature-read-to-command path, not evidence of a firmware image
+export.
+
+The full `.text` IAT-reference scan found four explicit 01BF
+`HidD_GetFeature` call instructions: the two calls in this helper plus the
+verification and status-query calls documented above. The Thai build has the
+two previously documented direct call instructions; no byte-matched Thai
+counterpart for the new routine was identified. This is a bounded static
+scan, not a complete function or dynamic-resolution proof.
+
+The 01BF image also contains a separate `WriteFile` call at `0x0042D28A`
+inside a generic file wrapper. Its caller-supplied buffer is written by that
+wrapper, but no direct call edge connects the bounded feature-read routine or
+its direct caller to it. Therefore the file-write path does not establish
+that feature-read data is exported. Unresolved indirect dispatch elsewhere
+means this scan cannot rule out all possible connections.
+
 ## Thai PID `0x0223` counterpart build
 
 The Thai package
@@ -65,9 +97,10 @@ for both read consumers:
 
 The verifier accepts the Thai binary as an optional `--thai-binary` input,
 checks its file and `.text` hashes plus HID import slots, and records 14 exact
-instruction facts for the relocated consumers in the same evidence ledger.
-This establishes static correspondence for these two routines only; it does
-not prove the rest of the Thai build equivalent to 01BF.
+instruction facts for the two previously documented relocated consumers in
+the same evidence ledger. It establishes static correspondence for those two
+routines only; it does not prove the rest of the Thai build equivalent to
+01BF.
 
 Reproduce both checks and regenerate the combined ledger with:
 
@@ -86,6 +119,9 @@ python scripts/audit_s98_feature_read_consumer.py `
 - The update-verification path compares response data with the host `.upf`
   image; it is not evidence that the same operation reads arbitrary keyboard
   firmware or saves a dump.
+- The new `0x00402880` path forwards four bytes from a feature response into a
+  `05 77` feature command. The command's meaning is unknown, and its presence
+  does not establish a keyboard firmware export.
 - This audit does not prove that an export path is impossible elsewhere. Other
   updater functions, transitive callers, remaining Thai functions, and other
   package families remain separate work.

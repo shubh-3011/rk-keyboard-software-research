@@ -105,6 +105,61 @@ FACTS: dict[int, tuple[str, str, str]] = {
     0x0041ED69: ("e832200400", "picker-follow-up-profile-save", "Calls the existing pro.dct writer 0x00460DA0 on this update branch."),
     0x0041F1A2: ("8b15fca16200", "picker-follow-up-profile-save", "Loads profile path/global argument 0x0062A1FC on the alternate branch."),
     0x0041F1A9: ("e8f21b0400", "picker-follow-up-profile-save", "Calls the existing pro.dct writer 0x00460DA0 on the alternate update branch."),
+    0x0041ED4F: ("833d34a2620000", "picker-follow-up-notification-gate", "Tests global flag 0x0062A234 before optional semaphore notification."),
+    0x0041ED5A: ("e8a123feff", "picker-follow-up-notification", "Calls helper 0x00401100 with value 1 on the enabled branch."),
+    0x00418890: ("3d84000000", "mapping-row-state-helper", "Bounds direct row indices against 0x84 (132 rows)."),
+    0x0041889B: ("8b8180000000", "mapping-row-state-helper", "For a negative index, loads the fallback row index from object +0x80."),
+    0x004188A8: ("6a01", "mapping-row-state-helper", "Prepares InvalidateRect erase flag TRUE."),
+    0x004188AA: ("899481ac000000", "mapping-row-state-helper", "Stores the supplied state in the indexed row slot at object +0xAC with 0x24-byte stride."),
+    0x004188B1: ("8b4120", "mapping-row-state-helper", "Loads the target HWND from object +0x20."),
+    0x004188B4: ("6a00", "mapping-row-state-helper", "Passes a null rectangle to InvalidateRect."),
+    0x004188B6: ("50", "mapping-row-state-helper", "Passes the stored HWND to InvalidateRect."),
+    0x004188B7: ("ff1544675a00", "mapping-row-state-helper", "Calls USER32!InvalidateRect through the IAT."),
+    0x00401100: ("81642404ff7fffff", "shared-semaphore-notifier", "Clears bit 0x8000 in the notifier's stack argument."),
+    0x0040111D: ("6a00", "shared-semaphore-notifier", "Passes a null previous-count output pointer to ReleaseSemaphore."),
+    0x0040111F: ("6a01", "shared-semaphore-notifier", "Requests one semaphore release."),
+    0x00401121: ("51", "shared-semaphore-notifier", "Passes the semaphore handle loaded from global 0x006356C4."),
+    0x00401122: ("ff15a4645a00", "shared-semaphore-notifier", "Calls KERNEL32!ReleaseSemaphore through the IAT."),
+    0x0040110D: ("a1d8566300", "shared-semaphore-queue", "Loads the shared circular-queue object pointer from global 0x006356D8."),
+    0x00401112: ("e8a9d50300", "shared-semaphore-queue", "Enqueues the adjusted notification value through helper 0x0043E6C0."),
+    0x00401117: ("8b0dc4566300", "shared-semaphore-queue", "Loads the worker semaphore handle from global 0x006356C4."),
+    0x00401183: ("8b1db0645a00", "shared-worker-init", "Loads the CreateEventW IAT slot for worker-handle initialization."),
+    0x004011B4: ("ffd3", "shared-worker-init", "Calls the loaded CreateEventW import."),
+    0x004011BB: ("a3c8566300", "shared-worker-init", "Stores the created event handle at global 0x006356C8."),
+    0x004011C0: ("ff15a0645a00", "shared-worker-init", "Calls KERNEL32!CreateSemaphoreW through the IAT."),
+    0x004011C8: ("a3c4566300", "shared-worker-init", "Stores the created semaphore handle at global 0x006356C4."),
+    0x00401261: ("68c0566300", "shared-worker-init", "Passes the global handle block at 0x006356C0 to the thread wrapper."),
+    0x00401267: ("6890124000", "shared-worker-init", "Passes worker entrypoint 0x00401290 to the thread wrapper."),
+    0x0040126C: ("e8ba421700", "shared-worker-init", "Calls the CRT thread-creation wrapper at 0x0057552B."),
+    0x0057559F: ("ff1568645a00", "shared-worker-init", "CRT wrapper calls KERNEL32!CreateThread through the IAT."),
+    0x00401290: ("83ec0c", "shared-worker-entry", "Begins the worker routine passed to the CRT thread wrapper."),
+    0x004012A2: ("8b442424", "shared-worker-entry", "Loads the thread parameter, the global handle block pointer."),
+    0x004012A6: ("8b4804", "shared-worker-entry", "Loads handle-block field +4 as wait handle zero (global semaphore)."),
+    0x004012A9: ("8b5008", "shared-worker-entry", "Loads handle-block field +8 as wait handle one (global event)."),
+    0x004012CC: ("ff159c645a00", "shared-worker-wait", "Calls KERNEL32!WaitForMultipleObjects on two handles."),
+    0x004012D2: ("3bc3", "shared-worker-wait", "Routes wait result zero to queue processing; nonzero results go to the result check."),
+    0x004012DA: ("8b542420", "shared-worker-queue", "Reloads the shared handle block after a semaphore wake."),
+    0x004012DE: ("8b7218", "shared-worker-queue", "Loads the circular-queue pointer from handle-block field +0x18."),
+    0x004012EA: ("e891d40300", "shared-worker-queue", "Dequeues one notification value through helper 0x0043E780."),
+    0x0040148F: ("83f801", "shared-worker-exit", "Tests whether the second wait handle produced result index 1."),
+    0x00401492: ("0f8528feffff", "shared-worker-exit", "Non-1 wait result loops; result 1 falls through to worker return."),
+    0x0040130E: ("8b08", "shared-worker-window-dispatch", "Loads a window-name pointer from the shared UI object."),
+    0x00401310: ("51", "shared-worker-window-dispatch", "Passes the window-name pointer to FindWindowW."),
+    0x00401311: ("6a00", "shared-worker-window-dispatch", "Passes a null class-name argument to FindWindowW."),
+    0x00401313: ("ff1538675a00", "shared-worker-window-dispatch", "Calls USER32!FindWindowW through the IAT."),
+    0x00401319: ("8bd8", "shared-worker-window-dispatch", "Keeps the FindWindowW result HWND in EBX for the later close message."),
+    0x004013AB: ("85db", "shared-worker-window-close", "Requires a non-null FindWindowW result before posting a close message."),
+    0x004013B3: ("6a00", "shared-worker-window-close", "Passes zero as WM_CLOSE lParam."),
+    0x004013B5: ("6a00", "shared-worker-window-close", "Passes zero as WM_CLOSE wParam."),
+    0x004013B7: ("6a10", "shared-worker-window-close", "Passes WM_CLOSE message value 0x0010."),
+    0x004013B9: ("53", "shared-worker-window-close", "Passes the located HWND as PostMessageW's target."),
+    0x004013BA: ("ff153c675a00", "shared-worker-window-close", "Calls USER32!PostMessageW through the IAT."),
+    0x0045DF24: ("a1d8566300", "shared-semaphore-queue-producer", "Loads the same shared circular-queue pointer."),
+    0x0045DF29: ("8d54240c", "shared-semaphore-queue-producer", "Passes a local notification value to the queue helper."),
+    0x0045DF2E: ("c744241002000000", "shared-semaphore-queue-producer", "Sets the queued notification value to 2."),
+    0x0045DF36: ("e88507feff", "shared-semaphore-queue-producer", "Enqueues the notification through helper 0x0043E6C0."),
+    0x0045DF3B: ("a1c4566300", "shared-semaphore-queue-producer", "Loads the same worker semaphore handle at global 0x006356C4."),
+    0x0045DF45: ("ff15a4645a00", "shared-semaphore-queue-producer", "Releases the worker semaphore through KERNEL32!ReleaseSemaphore."),
     0x0041F62B: ("6a6a", "picker-constructor-resource", "Passes dialog resource ID 106 to the base dialog constructor."),
     0x0041F62F: ("e891150600", "picker-constructor-base-dialog", "Calls base dialog constructor 0x00480BC5."),
     0x0041F63E: ("c7060c535d00", "picker-constructor-vtable", "Installs CKeyFunPickDlg vtable 0x005D530C."),
@@ -292,6 +347,23 @@ def main() -> int:
                      "stage": "picker-modal-exception-api-import",
                      "observation": f"IAT slot resolves to {expected[0]}!{expected[1]}.",
                      "scope": "static import table; runtime API call and return unobserved"})
+    ui_update_apis = {
+        0x005A6744: ("USER32.dll", "InvalidateRect"),
+        0x005A64A4: ("KERNEL32.dll", "ReleaseSemaphore"),
+        0x005A64A0: ("KERNEL32.dll", "CreateSemaphoreW"),
+        0x005A64B0: ("KERNEL32.dll", "CreateEventW"),
+        0x005A6468: ("KERNEL32.dll", "CreateThread"),
+        0x005A649C: ("KERNEL32.dll", "WaitForMultipleObjects"),
+        0x005A6738: ("USER32.dll", "FindWindowW"),
+        0x005A673C: ("USER32.dll", "PostMessageW"),
+    }
+    for va, expected in ui_update_apis.items():
+        require(iat_names.get(va) == expected,
+                f"picker update IAT mapping changed at 0x{va:08X}: {iat_names.get(va)!r}")
+        rows.append({"binary_sha256": digest, "evidence_va": f"0x{va:08X}", "bytes": "",
+                     "stage": "picker-update-api-import",
+                     "observation": f"IAT slot resolves to {expected[0]}!{expected[1]}.",
+                     "scope": "static import table; runtime API call and return unobserved"})
 
     # RTTI for the object constructed by the shared C++ throw stub.
     throw_vtable = struct.unpack("<I", raw(0x006073C8, 4))[0]
@@ -421,7 +493,7 @@ def main() -> int:
         writer = csv.DictWriter(stream, fieldnames=("binary_sha256", "evidence_va", "bytes", "stage", "observation", "scope"))
         writer.writeheader()
         writer.writerows(rows)
-    print(f"Verified {len(FACTS)} exact instruction facts, picker exception RTTI/API imports, both dialog RTTI/vtable links, static list bytes, {len(HEAD_LOADS)} absolute head loads, {len(writer_calls)} direct writer calls, and {modal_call_count} modal-wrapper callsites.")
+    print(f"Verified {len(FACTS)} exact instruction facts, picker exception/update API imports, both dialog RTTI/vtable links, static list bytes, {len(HEAD_LOADS)} absolute head loads, {len(writer_calls)} direct writer calls, and {modal_call_count} modal-wrapper callsites.")
     return 0
 
 
