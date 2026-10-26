@@ -60,8 +60,10 @@ The new native app is still an early reconstruction milestone, not a same-
 function or pixel-matched RK replacement. Its RK Drive editor uses publicly
 declared ordered symbolic slots, layers, OS tables, and per-effect controls
 only to save local drafts; the bundle does not provide physical key geometry.
-Hardware communication is now limited to explicit endpoint metadata discovery
-and an experimental lighting query, validated for one observed runtime path.
+Hardware communication includes explicit endpoint metadata discovery and
+experimental lighting queries validated on observed 20-byte receiver and
+520-byte wired G5 interfaces. The wired query discovers its report ID from
+descriptor metadata and isolates synchronous native calls in a bounded helper.
 A narrowly evidence-gated Off/first-effect mode write now has a verified native
 hardware round trip on one 20-byte-path fixture. General settings writes,
 complete RK-native serialization, TFT/media and
@@ -69,6 +71,13 @@ performance workflows, updates, firmware, and full workflow parity remain
 unimplemented or unresolved. The research archive and rebuild are distinct
 deliverables in this repository; the companion Keydeck web app remains a
 separate product.
+
+The 0.6 preview adds an unsigned per-user MSI with exact payload inspection,
+a disposable-runner installation lifecycle harness, and actual offline WPF
+rendering checks for nine pages without vendor assets or hardware access.
+These are narrower gates than installer readiness or complete interactive
+workflow validation. See [wired reader validation](docs/rk406-native-g5-reader-validation-2026-10-27.md)
+and the [loaded-profile scalar correction](docs/rk406-loaded-profile-scalar-correction-2026-10-27.md).
 
 ## Reconstruction target
 
