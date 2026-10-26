@@ -16,6 +16,7 @@ import threading
 import time
 
 import frida
+from rk_lighting_tree_guard import validate_tree
 
 SHA256 = 'c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6'
 
@@ -65,6 +66,17 @@ def main():
     while item and len(items) < 25:
         items.append(item)
         item = message(0x110A, 1, item)  # TVGN_NEXT
+    # THIS runner is scoped to the observed lighting fixture, NOT an
+    # arbitrary SysTreeView32. Connection changes can recreate the window and
+    # leave a profile tree visible; selecting that tree can apply keymaps.
+    # Reject it before any selection/mouse message. Use a separate validated
+    # runner for a different profile/layout instead of weakening this guard.
+    # The verified page has 19 configuration rows, optionally followed by
+    # a separate Music item. Neither shape matches the three-row profile tree.
+    try:
+        validate_tree(items, original, item, row_height)
+    except ValueError as error:
+        parser.error(str(error))
     if args.click_x is not None and (args.click_x < 1 or args.click_x > 100 or original not in items or item or row_height < 10 or row_height > 80):
         parser.error('Tree geometry is outside the observed bounded lighting fixture')
     def select(item):

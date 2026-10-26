@@ -22,7 +22,21 @@ namespace RkRebuild
 
         public static async Task<string> ReadAsync(string identity)
         {
-            if (identity == null || !Regex.IsMatch(identity, "^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{4}$"))
+            using var lease = LightingOperationLease.Acquire();
+            HidEndpoint selected = ResolveEndpoint(identity);
+            byte[] block = await WirelessLightingReader.ReadAsync(selected, TimeSpan.FromSeconds(8)).ConfigureAwait(false);
+            return JsonSerializer.Serialize(new {
+                Format = "rk-rebuild-experimental-lighting-read", SchemaVersion = 1,
+                selected.VendorId, selected.ProductId, selected.VersionNumber, selected.UsagePage, selected.Usage,
+                LightingBlockHex = Convert.ToHexString(block), SettingsWritesPerformed = false,
+                QueryCommand = "44", Transport = "20-byte wireless configuration endpoint",
+                Boundary = "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
+            }, new JsonSerializerOptions { WriteIndented = true });
+        }
+
+        internal static HidEndpoint ResolveEndpoint(string identity)
+        {
+            if (identity == null || !Regex.IsMatch(identity, "\\A[0-9A-Fa-f]{4}:[0-9A-Fa-f]{4}\\z"))
                 throw new ArgumentException("Use an explicit VID:PID, such as the identity shown by HID diagnostics.");
             RequireVendorUtilityClosed();
             string[] parts = identity.Split(':');
@@ -37,15 +51,7 @@ namespace RkRebuild
                 endpoint.InputReportBytes == 20 && endpoint.OutputReportBytes == 20 && String.IsNullOrEmpty(endpoint.Error)).ToArray();
             if (candidates.Length != 1)
                 throw new InvalidOperationException("Need exactly one matching 20-byte vendor endpoint; found " + candidates.Length + ". No query was sent.");
-            HidEndpoint selected = candidates[0];
-            byte[] block = await WirelessLightingReader.ReadAsync(selected, TimeSpan.FromSeconds(8));
-            return JsonSerializer.Serialize(new {
-                Format = "rk-rebuild-experimental-lighting-read", SchemaVersion = 1,
-                selected.VendorId, selected.ProductId, selected.VersionNumber, selected.UsagePage, selected.Usage,
-                LightingBlockHex = Convert.ToHexString(block), SettingsWritesPerformed = false,
-                QueryCommand = "44", Transport = "20-byte wireless configuration endpoint",
-                Boundary = "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
-            }, new JsonSerializerOptions { WriteIndented = true });
+            return candidates[0];
         }
     }
 }

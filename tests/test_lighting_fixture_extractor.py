@@ -29,8 +29,17 @@ class LightingFixtureExtractorTests(unittest.TestCase):
         expected = json.loads((ROOT / 'rebuild/windows/tests/fixtures/rk406-wireless-lighting-roundtrip.json').read_text(encoding='utf-8'))
         self.assertEqual(extract(self.path), expected)
 
+    def test_reconnected_fixture_is_exactly_reproducible(self):
+        path = ROOT / 'docs/runtime-evidence/rk406-wireless-lighting-reconnected-roundtrip-frida-2026-10-26.json'
+        expected = json.loads((ROOT / 'rebuild/windows/tests/fixtures/rk406-wireless-lighting-reconnected-roundtrip.json').read_text(encoding='utf-8'))
+        self.assertEqual(extract(path), expected)
+
     def test_wrong_executable_is_not_attributed(self):
         self.reject(lambda source: source.update(binary_sha256='0' * 64))
+
+    def test_excluded_profile_tree_probe_is_not_lighting_evidence(self):
+        with self.assertRaises(ValueError):
+            extract(ROOT / 'docs/runtime-evidence/rk406-excluded-profile-tree-probe-2026-10-26.json')
 
     def test_failed_ui_restoration_is_rejected(self):
         self.reject(lambda source: source.update(restored_tree_selection=False))

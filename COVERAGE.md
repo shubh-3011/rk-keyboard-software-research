@@ -29,7 +29,12 @@ For current blockers and the recommended reverse-engineering order, see the
   A separate vendor-UI round trip observed ordinary G5 Apply through its
   3632 child, 62 lighting-only reports, and a one-byte mode change followed
   by exact restoration, independently confirmed by the native read.
-  Key and macro edits are local drafts, and lighting writes, hardware
+  Version 0.5.0 additionally completed its own native Off/first-effect/Off
+  configuration round trip, with echoed frames, full transaction readback,
+  independent queries, and exact final restoration. The writer is gated by
+  two complete observed-state fingerprints; unknown configurations remain
+  write-disabled, even on an otherwise matching keyboard.
+  Key and macro edits are local drafts, and general lighting writes, hardware
   settings, screen transfer, updates, reset, and firmware operations remain
   unavailable. The native reconstruction is incomplete and is not a full RK
   clone. See the

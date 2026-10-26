@@ -32,6 +32,17 @@ foreach ($endpoint in $metadata.Endpoints) {
 $invalidPath = $report + ".invalid-query.json"
 $invalidQuery = Start-Process -FilePath $exe -ArgumentList @("--read-wireless-lighting", "not-an-identity", ('"' + $invalidPath + '"')) -PassThru -Wait
 if ($invalidQuery.ExitCode -eq 0 -or (Test-Path -LiteralPath $invalidPath)) { throw "Invalid query identity was not rejected before I/O." }
+$unconfirmedPath = $report + ".unconfirmed-apply.json"
+$unconfirmedApply = Start-Process -FilePath $exe -ArgumentList @("--apply-observed-wireless-mode", "258A:0150", "1", ('"' + $report + '"'), ('"' + $unconfirmedPath + '"')) -PassThru -Wait
+if ($unconfirmedApply.ExitCode -eq 0 -or (Test-Path -LiteralPath $unconfirmedPath)) { throw "Unconfirmed lighting write was not rejected before I/O." }
+$overwriteApply = Start-Process -FilePath $exe -ArgumentList @("--apply-observed-wireless-mode", "258A:0150", "1", ('"' + $report + '"'), ('"' + $report + '"'), "--confirm-experimental-write") -PassThru -Wait
+if ($overwriteApply.ExitCode -eq 0 -or (Get-FileHash -LiteralPath $report -Algorithm SHA256).Hash -ne $original) { throw "Apply output overwrite guard failed." }
+$failedApplyPath = $report + ".failed-apply.json"
+$failedApply = Start-Process -FilePath $exe -ArgumentList @("--apply-observed-wireless-mode", "invalid", "1", ('"' + $report + '"'), ('"' + $failedApplyPath + '"'), "--confirm-experimental-write") -PassThru -Wait
+if ($failedApply.ExitCode -eq 0) { throw "Invalid apply identity unexpectedly succeeded." }
+$failureReport = Get-Content -LiteralPath $failedApplyPath -Raw | ConvertFrom-Json
+if ($failureReport.Format -ne "rk-rebuild-experimental-lighting-apply-failure" -or $failureReport.VerifiedByQuery) { throw "Apply failure was not retained accurately." }
 Write-Host "PASS: published EXE exported 444 catalogued-only entries; overwrite/missing-argument checks failed safely."
 Write-Host "PASS: HID metadata export excludes device paths; invalid lighting query refused without report I/O."
+Write-Host "PASS: unconfirmed apply and output overwrite refused before device access."
 Write-Host "Report retained: $report"

@@ -12,7 +12,14 @@ internal static class CapturedLightingTests
     private static byte[][] Frames(JsonElement phase, string name) => phase.GetProperty(name).EnumerateArray().Select(value => Convert.FromHexString(value.GetString())).ToArray();
     private static void Main()
     {
-        using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LightingFixture.json");
+        VerifyFixture("LightingFixture.json");
+        VerifyFixture("ReconnectedFixture.json");
+        Console.WriteLine("PASS captured lighting: " + checks + " assertions; no hardware opened by tests.");
+    }
+
+    private static void VerifyFixture(string nameOfResource)
+    {
+        using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(nameOfResource);
         using JsonDocument document = JsonDocument.Parse(stream);
         JsonElement root = document.RootElement;
         Check(root.GetProperty("BinarySha256").GetString() == "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6", "exact source snapshot");
@@ -44,6 +51,5 @@ internal static class CapturedLightingTests
         JsonElement first = phases.GetProperty("select-first-effect"), restore = phases.GetProperty("restore-original-effect");
         Check(first.GetProperty("WriteBlockHex").GetString() == restore.GetProperty("ReadBlockHex").GetString(), "later device query reflects first write");
         Check(first.GetProperty("ReadBlockHex").GetString() == restore.GetProperty("WriteBlockHex").GetString(), "restoration output equals original block");
-        Console.WriteLine("PASS captured lighting: " + checks + " assertions; no hardware opened by tests.");
     }
 }

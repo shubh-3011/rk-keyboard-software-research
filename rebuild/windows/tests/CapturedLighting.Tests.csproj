@@ -12,5 +12,6 @@
     <Compile Include="..\WirelessLightingReader.cs" Link="WirelessLightingReader.cs" />
     <Compile Include="CapturedLightingTests.cs" />
     <EmbeddedResource Include="fixtures\rk406-wireless-lighting-roundtrip.json" LogicalName="LightingFixture.json" />
+    <EmbeddedResource Include="fixtures\rk406-wireless-lighting-reconnected-roundtrip.json" LogicalName="ReconnectedFixture.json" />
   </ItemGroup>
 </Project>

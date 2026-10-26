@@ -32,6 +32,38 @@ namespace RkRebuild
         {
             try
             {
+                if (args.Length > 0 && String.Equals(args[0], "--apply-observed-wireless-mode", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (args.Length != 6 || args[5] != "--confirm-experimental-write" || (args[2] != "0" && args[2] != "1"))
+                        throw new ArgumentException("Usage: RK-Rebuild.exe --apply-observed-wireless-mode <VID:PID> <0|1> <baseline-read.json> <new-result.json> --confirm-experimental-write");
+                    if (File.Exists(args[4])) throw new IOException("Output file already exists.");
+                    // Reserve output BEFORE a hardware operation: invalid/unwritable output
+                    // paths must fail before settings are applied. Failures are retained
+                    // as failures, never a false success/restoration report.
+                    using (FileStream output = new FileStream(args[4], FileMode.CreateNew, FileAccess.Write))
+                    {
+                        string result;
+                        try { result = WirelessLightingApplyCommand.ApplyAsync(args[1], args[3], args[2] == "0" ? (byte)0 : (byte)1).GetAwaiter().GetResult(); }
+                        catch (Exception error)
+                        {
+                            WirelessLightingTransactionException transactionError = error as WirelessLightingTransactionException;
+                            Exception cause = transactionError?.InnerException;
+                            using StreamWriter failure = new StreamWriter(output, new UTF8Encoding(false));
+                            failure.Write(JsonSerializer.Serialize(new {
+                                Format = "rk-rebuild-experimental-lighting-apply-failure", SchemaVersion = 1,
+                                VerifiedByQuery = false, Error = error.Message,
+                                ConfigurationWritesAttempted = transactionError?.WritesAttempted,
+                                MutationUncertain = transactionError?.MutationUncertain,
+                                CauseKind = cause?.GetType().Name,
+                                ProtocolReason = cause is InvalidDataException || cause is TimeoutException ? cause.Message : null,
+                                Recovery = "Do not assume original settings were restored. No automatic retry or rollback was attempted. Re-query the lighting block before any further write."
+                            }, new JsonSerializerOptions { WriteIndented = true }));
+                            throw;
+                        }
+                        using StreamWriter writer = new StreamWriter(output, new UTF8Encoding(false)); writer.Write(result);
+                    }
+                    return;
+                }
                 if (args.Length > 0 && String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase))
                 {
                     if (args.Length != 3) throw new ArgumentException("Usage: RK-Rebuild.exe --read-wireless-lighting <VID:PID> <new-json-path>");
@@ -70,7 +102,7 @@ namespace RkRebuild
             }
             catch (Exception ex)
             {
-                if (args.Length > 0 && (String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase)))
+                if (args.Length > 0 && (String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--apply-observed-wireless-mode", StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.Error.WriteLine(ex.Message);
                     Environment.ExitCode = 1;
@@ -844,7 +876,7 @@ namespace RkRebuild
             Border spacer = new Border { Height = 1, Background = Brush(70, 70, 70), Margin = new Thickness(4, 20, 4, 13) };
             nav.Children.Add(spacer);
             nav.Children.Add(new TextBlock { Text = "Local profile drafts", Foreground = Brush(220, 220, 220), FontSize = 11, Margin = new Thickness(5, 0, 5, 5) });
-            nav.Children.Add(new TextBlock { Text = "No settings are applied. Experimental lighting queries require an explicit action.", Foreground = Brush(160, 160, 160), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(5, 0, 5, 0) });
+            nav.Children.Add(new TextBlock { Text = "Draft pages stay local. Compatibility offers explicit, evidence-gated experimental lighting operations.", Foreground = Brush(160, 160, 160), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(5, 0, 5, 0) });
 
             Grid main = new Grid { Margin = new Thickness(12, 0, 20, 14) };
             main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(60) });
@@ -1199,7 +1231,7 @@ namespace RkRebuild
             info.Child = infoBody;
             infoBody.Children.Add(Kicker("REBUILD STATUS"));
             infoBody.Children.Add(new TextBlock { Text = "This is a native Windows desktop process. It runs locally and does not open a browser, start a localhost server, or include Python.", Foreground = Brush(58, 66, 78), FontSize = 12, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0) });
-            infoBody.Children.Add(new TextBlock { Text = "Model identification and product photography use Windows/online metadata. The Compatibility page offers explicit experimental lighting queries on eligible endpoints. Configuration writes, macro transfer, display control, updater actions, and firmware access remain unavailable.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+            infoBody.Children.Add(new TextBlock { Text = "Model identification and product photography use Windows/online metadata. Compatibility offers explicit lighting queries and a narrowly evidence-gated mode write. General configuration writes, macro transfer, display control, updater actions, and firmware access remain unavailable.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
             _pageBody.Children.Add(info);
         }
 
@@ -1425,7 +1457,7 @@ namespace RkRebuild
                 slots.Children.Add(card);
             }
             _pageBody.Children.Add(slots);
-            _pageBody.Children.Add(CardWithText("Only a local profile-bound draft can be saved here. Hardware lighting changes, effect transfer, and readback remain unavailable while model-specific call paths are validated."));
+            _pageBody.Children.Add(CardWithText("Only a local profile-bound draft can be saved here. The Compatibility page separately offers experimental lighting queries and a narrowly validated mode write; these drafts do not enable general effect, brightness or color transfer."));
         }
 
         private void RenderMacros()
@@ -2460,6 +2492,11 @@ namespace RkRebuild
 
         private void ExitApplication()
         {
+            if (_lightingQueryRunning)
+            {
+                MessageBox.Show(this, "Wait for the bounded lighting operation to finish before exiting. Closing during configuration transfer could leave device state uncertain.", "Lighting operation in progress", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
             _allowClose = true;
             if (_tray != null) { _tray.Visible = false; _tray.Dispose(); }
             Close();

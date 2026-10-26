@@ -1,0 +1,179 @@
+{
+  "format": "rk-runtime-lighting-roundtrip",
+  "binary_sha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+  "script_sha256": "516d19e0c9958c847f654d4cc446ea6e2652524725e3b52f4caf7d0af5d00315",
+  "pid": 17376,
+  "started_unix": 1793036081.815804,
+  "restored_tree_selection": true,
+  "limitations": [
+    "Observed vendor calls only; a restored UI selection is not confirmed hardware state.",
+    "One connected fixture does not validate other models/revisions."
+  ],
+  "observation_summary": {
+    "counts": {
+      "g5_apply": 2,
+      "g5_access": 9
+    },
+    "emitted": 15,
+    "dropped": 0,
+    "detached": 11
+  },
+  "events": [
+    {
+      "type": "send",
+      "payload": {
+        "phase": "baseline",
+        "timestamp_ms": 1793036085549,
+        "kind": "ready",
+        "hook_count": 11,
+        "observed_root": "CDevG5KB",
+        "source": "installed-4.06"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036085552,
+        "kind": "phase"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036085577,
+        "kind": "native_entry",
+        "name": "g5_apply"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036085732,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036090769,
+        "kind": "phase"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036090785,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036090867,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036090940,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091023,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091082,
+        "kind": "native_entry",
+        "name": "g5_apply"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091238,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091317,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091401,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091485,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 3
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036091744,
+        "kind": "configuration_command_metadata",
+        "api": "HidD_SetFeature",
+        "length": 520,
+        "command": 5
+      }
+    }
+  ],
+  "finished_unix": 1793036096.005477
+}

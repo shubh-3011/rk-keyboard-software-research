@@ -103,6 +103,7 @@ namespace RkRebuild
                             {
                                 string report = await Task.Run(() => WirelessLightingCommand.ReadAsync(identity));
                                 endpointPanel.Children.Add(Paragraph("Received a complete 128-byte lighting block with the expected signature. No settings were applied. This validates this query, not every workflow/model.", 12));
+                                await AddObservedLightingActionsAsync(endpointPanel, identity, report);
                                 SaveFileDialog save = new SaveFileDialog { FileName = "rk-lighting-read.json", Filter = "Lighting read report (*.json)|*.json" };
                                 if (save.ShowDialog(this) == true) File.WriteAllText(save.FileName, report, new UTF8Encoding(false));
                             }
@@ -129,6 +130,45 @@ namespace RkRebuild
             };
             _pageBody.Children.Add(grid);
             _pageBody.Children.Add(Paragraph("Declared protocol labels describe their original source only. Unsupported devices remain visible as unknown; a transport backend requires its own model/revision and feature validation before activation.", 12));
+        }
+
+        private async Task AddObservedLightingActionsAsync(StackPanel panel, string identity, string baselineReport)
+        {
+            HidEndpoint endpoint = await Task.Run(() => WirelessLightingCommand.ResolveEndpoint(identity));
+            byte[] block = LightingBaseline.Parse(baselineReport, endpoint);
+            string rejection = LightingWritePolicy.Rejection(endpoint, block, 0);
+            if (rejection != null)
+            {
+                panel.Children.Add(Paragraph("Configuration writes remain disabled: " + rejection, 12));
+                return;
+            }
+            panel.Children.Add(Paragraph("Experimental mode control is eligible for this exact configuration fingerprint. Only Off (wire 0) and the observed first effect (wire 1) are enabled. Other models, effects, brightness and colors are not validated by this evidence.", 12));
+            var controls = new StackPanel { Orientation = Orientation.Horizontal };
+            panel.Children.Add(controls);
+            foreach (byte target in new byte[] { 0, 1 })
+            {
+                byte mode = target;
+                Button apply = ActionButton(mode == 0 ? "Apply Off · experimental" : "Apply first effect · experimental", false);
+                controls.Children.Add(apply);
+                apply.Click += async delegate {
+                    if (_lightingQueryRunning) return;
+                    if (MessageBox.Show(this, "Apply " + (mode == 0 ? "Off" : "the observed first lighting effect") + " to the keyboard? This writes a 128-byte configuration while changing only its validated mode byte, then verifies readback. A timeout can leave device state uncertain; no automatic rollback is attempted. All other lighting settings are preserved. Continue?", "Confirm experimental hardware write", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                    _lightingQueryRunning = true;
+                    controls.IsEnabled = false;
+                    try
+                    {
+                        string result = await Task.Run(() => WirelessLightingApplyCommand.ApplyReportAsync(identity, baselineReport, mode));
+                        panel.Children.Add(Paragraph("Hardware mode verified by a fresh, complete lighting query. Re-query before another change; this baseline is now retired.", 12));
+                        SaveFileDialog save = new SaveFileDialog { FileName = "rk-lighting-apply.json", Filter = "Verified lighting operation (*.json)|*.json" };
+                        if (save.ShowDialog(this) == true) File.WriteAllText(save.FileName, result, new UTF8Encoding(false));
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(this, ex.Message + "\n\nDo not assume restoration. Re-query before any further write; no automatic retry or rollback was attempted.", "Lighting operation stopped", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    finally { _lightingQueryRunning = false; } // Retire on both success and uncertainty.
+                };
+            }
         }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "Format": "rk-rebuild-experimental-lighting-apply-failure",
+  "SchemaVersion": 1,
+  "VerifiedByQuery": false,
+  "Error": "Lighting transaction failed. No configuration write was attempted. Inspect/requery the device before another attempt; no retry or rollback was performed.",
+  "ConfigurationWritesAttempted": 0,
+  "MutationUncertain": false,
+  "CauseKind": "TimeoutException",
+  "ProtocolReason": "Lighting transaction deadline expired.",
+  "Recovery": "Do not assume original settings were restored. No automatic retry or rollback was attempted. Re-query the lighting block before any further write."
+}

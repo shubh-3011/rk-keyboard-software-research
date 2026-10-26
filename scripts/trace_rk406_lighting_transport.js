@@ -18,6 +18,9 @@ function capture(api, handle, pointer, length, incoming) {
     try {
         if (length !== 20 && length !== 520) return;
         const header = bytes(pointer, 8), command = header[1];
+        // Metadata for other vendor-wrapper commands helps distinguish an
+        // initialization/status path from lighting without retaining payloads.
+        if (!incoming) log({ kind: 'configuration_command_metadata', api, length, command });
         if (length === 20 && (header[0] !== 0x13 || (command !== 4 && command !== 0x44))) return;
         if (length === 520 && command !== 4 && command !== 0x84) return;
         if (incoming && !handles.has(handle)) return;

@@ -61,9 +61,44 @@ WebView2.
 
 ## Experimental lighting-configuration read
 
+**0.5.0 adds one strictly evidence-gated writing operation:** switch between
+the observed Off/first-effect wire modes while preserving every other byte.
+After a successful query, eligible configurations offer explicit apply buttons
+on the Compatibility page. All other configurations stay write-disabled.
+See [the operation policy and failure boundary](../../docs/rk406-experimental-lighting-write-2026-10-26.md).
+
+The gate requires the observed endpoint metadata **and** the entire known
+configuration fingerprint (excluding only the mode byte). Even the same keyboard
+with other lighting settings will be refused. Do not copy fixture bytes onto a
+device to force a match. This is not general model support or universal RK
+compatibility; it is an incremental, reproducible operation in a general app.
+
+Headless apply requires a matching native read report and explicit confirmation:
+
+```powershell
+./dist/RK-Rebuild.exe --apply-observed-wireless-mode <VID:PID> <0|1> ./lighting-read.json ./new-apply-result.json --confirm-experimental-write
+```
+
+The output must be new and is reserved before hardware access. The current
+block is re-queried on the same handle; a stale baseline causes refusal before
+configuration writes. A successful change requires echoed frames and a fresh
+complete query matching the patched block. A partial write, timeout or failed
+verification may leave hardware state uncertain: there is no automatic retry
+or rollback. Re-query before another write. The UI retires a baseline after
+every attempted apply, and application exit is blocked during its operation.
+
+**Hardware validation:** the replacement completed Off → first effect → Off
+over the 20-byte 2.4 GHz path, including both transaction readbacks and separate
+independent queries. Only offset `0x0A` changed; the final 128 bytes matched the
+original exactly. The vendor utility was restarted afterward. See the
+[retained native check](../../docs/runtime-evidence/native-verified-lighting-mode-roundtrip-2026-10-26.json).
+Earlier failed attempts and the recovered 200/15/50 ms timing intervals are
+documented in the operation report; this was not universal hardware validation.
+
 Version **0.4.0** adds actual HID endpoint discovery and a narrowly bounded
 lighting query. This is no longer entirely a disconnected draft editor,
-but configuration **writes remain disabled** in the application.
+but that version did not apply settings. Version 0.5.0 adds only the operation
+described above, not unrestricted configuration writes.
 
 1. Open **All-model compatibility** and click **Inspect HID endpoint metadata**.
    Discovery obtains VID/PID, device version, usage page/usage, and report sizes
@@ -194,8 +229,8 @@ metadata only. A shared wireless-receiver VID/PID may identify several product
 labels, so the app asks you to select the matching photo in that case. The
 reported USB identity does not confirm shell finish, keycap color, firmware
 revision, or the keyboard's live lighting mode/color.
-Outside the explicit experimental lighting query above, this build does not
-read/write HID reports. It does not apply key mappings or lighting, capture or transfer macros,
+Outside the explicit experimental lighting operations above, this build does not
+read/write HID reports. It does not apply key mappings or general lighting drafts, capture or transfer macros,
 control displays, run updates, or read/write firmware. Its key labels, macro
 timelines/notes, key layer/table choices, and lighting values are local drafts, not
 RK-native serialized settings. Ordered slot mappings are a community draft

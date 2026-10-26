@@ -1,0 +1,148 @@
+{
+  "Format": "native-verified-lighting-mode-roundtrip",
+  "SchemaVersion": 1,
+  "Limitations": [
+    "One connected fixture, one protocol path, two complete configuration fingerprints; not model certification.",
+    "Native CLI tested; WPF apply interactions not yet manually exercised."
+  ],
+  "SourceRecordSha256": {
+    "On/summary": "fe96544546fbb43a687027cd0e278445149fc17890031704805f8051bc20e07f",
+    "On/before": "3ffd5f04a92b82b1756faa452de9244dfd27aa3092c80cc3c4fe43846cf84db1",
+    "On/apply": "dd73239ed79271308ce2cd0f70d6c48cdafc485e6df764c85134644f23578c01",
+    "On/after": "4fab5f49a2f48daa6660550ee03bef35f68fbc140690961e960f17943001eeae",
+    "Off/summary": "4ae962a646439c9b2860e342dc30a6ea7369284f82a1dcd2cc1088fec75605b9",
+    "Off/before": "4fab5f49a2f48daa6660550ee03bef35f68fbc140690961e960f17943001eeae",
+    "Off/apply": "65cb8292dd8189222c98b79fbdb0604b74f16cc3257eaf927b6c36e27d0678b8",
+    "Off/after": "3ffd5f04a92b82b1756faa452de9244dfd27aa3092c80cc3c4fe43846cf84db1"
+  },
+  "On": {
+    "summary": {
+      "Format": "native-single-mode-hardware-check",
+      "TargetMode": 1,
+      "AppAssemblySha256": "9cdfae4b42cd07d9cad8d67b6f3b07483f8e16c0724890bf21c2c633fb1b8bb5",
+      "VendorSha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+      "AutomaticRetryOrRollback": false,
+      "PreflightExit": 0,
+      "ApplyExit": 0,
+      "IndependentQueryExit": 0,
+      "IndependentQueryMatchesIntendedBlock": true,
+      "ObservedModeAfter": 1,
+      "ChangedOffsets": [
+        10
+      ],
+      "VendorRestartRequested": true
+    },
+    "before": {
+      "Format": "rk-rebuild-experimental-lighting-read",
+      "SchemaVersion": 1,
+      "VendorId": "258A",
+      "ProductId": "0150",
+      "VersionNumber": 518,
+      "UsagePage": "FF02",
+      "Usage": "0002",
+      "LightingBlockHex": "0003030400000404070000200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "SettingsWritesPerformed": false,
+      "QueryCommand": "44",
+      "Transport": "20-byte wireless configuration endpoint",
+      "Boundary": "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
+    },
+    "apply": {
+      "Format": "rk-rebuild-experimental-lighting-apply",
+      "SchemaVersion": 1,
+      "VendorId": "258A",
+      "ProductId": "0150",
+      "VersionNumber": 518,
+      "UsagePage": "FF02",
+      "Usage": "0002",
+      "BaselineBlockHex": "0003030400000404070000200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "VerifiedBlockHex": "0003030400000404070001200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "ModeBefore": 0,
+      "ModeAfter": 1,
+      "ChangedOffset": 10,
+      "ConfigurationReportsSent": 10,
+      "NoOp": false,
+      "VerifiedByQuery": true,
+      "Evidence": "rk406-wireless-lighting-roundtrip-frida-2026-10-26",
+      "Boundary": "Only a validated mode byte was patched; every other byte was preserved. Successful writes require echoes and full-block readback. This operation is not a universal model certification."
+    },
+    "after": {
+      "Format": "rk-rebuild-experimental-lighting-read",
+      "SchemaVersion": 1,
+      "VendorId": "258A",
+      "ProductId": "0150",
+      "VersionNumber": 518,
+      "UsagePage": "FF02",
+      "Usage": "0002",
+      "LightingBlockHex": "0003030400000404070001200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "SettingsWritesPerformed": false,
+      "QueryCommand": "44",
+      "Transport": "20-byte wireless configuration endpoint",
+      "Boundary": "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
+    }
+  },
+  "Off": {
+    "summary": {
+      "Format": "native-single-mode-hardware-check",
+      "TargetMode": 0,
+      "AppAssemblySha256": "9cdfae4b42cd07d9cad8d67b6f3b07483f8e16c0724890bf21c2c633fb1b8bb5",
+      "VendorSha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+      "AutomaticRetryOrRollback": false,
+      "PreflightExit": 0,
+      "ApplyExit": 0,
+      "IndependentQueryExit": 0,
+      "IndependentQueryMatchesIntendedBlock": true,
+      "ObservedModeAfter": 0,
+      "ChangedOffsets": [
+        10
+      ],
+      "VendorRestartRequested": true
+    },
+    "before": {
+      "Format": "rk-rebuild-experimental-lighting-read",
+      "SchemaVersion": 1,
+      "VendorId": "258A",
+      "ProductId": "0150",
+      "VersionNumber": 518,
+      "UsagePage": "FF02",
+      "Usage": "0002",
+      "LightingBlockHex": "0003030400000404070001200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "SettingsWritesPerformed": false,
+      "QueryCommand": "44",
+      "Transport": "20-byte wireless configuration endpoint",
+      "Boundary": "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
+    },
+    "apply": {
+      "Format": "rk-rebuild-experimental-lighting-apply",
+      "SchemaVersion": 1,
+      "VendorId": "258A",
+      "ProductId": "0150",
+      "VersionNumber": 518,
+      "UsagePage": "FF02",
+      "Usage": "0002",
+      "BaselineBlockHex": "0003030400000404070001200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "VerifiedBlockHex": "0003030400000404070000200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "ModeBefore": 1,
+      "ModeAfter": 0,
+      "ChangedOffset": 10,
+      "ConfigurationReportsSent": 10,
+      "NoOp": false,
+      "VerifiedByQuery": true,
+      "Evidence": "rk406-wireless-lighting-roundtrip-frida-2026-10-26",
+      "Boundary": "Only a validated mode byte was patched; every other byte was preserved. Successful writes require echoes and full-block readback. This operation is not a universal model certification."
+    },
+    "after": {
+      "Format": "rk-rebuild-experimental-lighting-read",
+      "SchemaVersion": 1,
+      "VendorId": "258A",
+      "ProductId": "0150",
+      "VersionNumber": 518,
+      "UsagePage": "FF02",
+      "Usage": "0002",
+      "LightingBlockHex": "0003030400000404070000200100000000000000040400FF14000000000000000300000000000000000000000000000000004A0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+      "SettingsWritesPerformed": false,
+      "QueryCommand": "44",
+      "Transport": "20-byte wireless configuration endpoint",
+      "Boundary": "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
+    }
+  }
+}

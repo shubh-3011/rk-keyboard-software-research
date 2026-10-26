@@ -1,0 +1,2439 @@
+{
+  "format": "rk-runtime-lighting-roundtrip",
+  "binary_sha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+  "script_sha256": "516d19e0c9958c847f654d4cc446ea6e2652524725e3b52f4caf7d0af5d00315",
+  "pid": 17376,
+  "started_unix": 1793036384.6833816,
+  "restored_tree_selection": true,
+  "limitations": [
+    "Observed vendor calls only; a restored UI selection is not confirmed hardware state.",
+    "One connected fixture does not validate other models/revisions."
+  ],
+  "observation_summary": {
+    "counts": {
+      "g5_apply": 2,
+      "g5_lighting_query": 2,
+      "ordinary_packer": 2,
+      "wireless_access": 2
+    },
+    "emitted": 91,
+    "dropped": 0,
+    "detached": 11
+  },
+  "events": [
+    {
+      "type": "send",
+      "payload": {
+        "phase": "baseline",
+        "timestamp_ms": 1793036388896,
+        "kind": "ready",
+        "hook_count": 11,
+        "observed_root": "CDevG5KB",
+        "source": "installed-4.06"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036388898,
+        "kind": "phase"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389048,
+        "kind": "native_entry",
+        "name": "g5_apply"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389178,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 68
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389178,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          88
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389190,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          0,
+          14,
+          0,
+          3,
+          3,
+          4,
+          0,
+          0,
+          4,
+          4,
+          7,
+          0,
+          0,
+          32,
+          1,
+          0,
+          251
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389223,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          1,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          0,
+          255,
+          20,
+          0,
+          0,
+          0,
+          221
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389231,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          2,
+          14,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          198
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389240,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          3,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          74,
+          1,
+          0,
+          0,
+          0,
+          37,
+          52
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389249,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          4,
+          14,
+          255,
+          255,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          197
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389257,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          5,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          243
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389265,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          6,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          4,
+          71,
+          20
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389273,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          7,
+          14,
+          7,
+          71,
+          7,
+          71,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          219
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389284,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          8,
+          14,
+          7,
+          68,
+          7,
+          68,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          135
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389291,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          9,
+          2,
+          90,
+          165,
+          0,
+          20,
+          44,
+          0,
+          0,
+          20,
+          25,
+          128,
+          0,
+          20,
+          25,
+          0,
+          215
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389292,
+        "kind": "native_entry",
+        "name": "ordinary_packer"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389337,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389337,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          0,
+          14,
+          0,
+          3,
+          3,
+          4,
+          0,
+          0,
+          4,
+          4,
+          7,
+          0,
+          1,
+          32,
+          1,
+          0,
+          106
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389346,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          0,
+          14,
+          0,
+          3,
+          3,
+          4,
+          0,
+          0,
+          4,
+          4,
+          7,
+          0,
+          1,
+          32,
+          1,
+          0,
+          106
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389361,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389361,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          1,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          0,
+          255,
+          20,
+          0,
+          0,
+          0,
+          75
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389370,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          1,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          0,
+          255,
+          20,
+          0,
+          0,
+          0,
+          75
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389386,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389386,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          2,
+          14,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          52
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389394,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          2,
+          14,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          52
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389409,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389409,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          3,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          74,
+          1,
+          0,
+          0,
+          0,
+          37,
+          162
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389418,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          3,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          74,
+          1,
+          0,
+          0,
+          0,
+          37,
+          162
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389433,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389433,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          4,
+          14,
+          255,
+          255,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          51
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389443,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          4,
+          14,
+          255,
+          255,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          51
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389459,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389459,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          5,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          97
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389467,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          5,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          97
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389482,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389482,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          6,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          4,
+          71,
+          130
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389491,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          6,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          4,
+          71,
+          130
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389506,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389506,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          7,
+          14,
+          7,
+          71,
+          7,
+          71,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          73
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389515,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          7,
+          14,
+          7,
+          71,
+          7,
+          71,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          73
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389530,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389531,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          8,
+          14,
+          7,
+          68,
+          7,
+          68,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          245
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389539,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          8,
+          14,
+          7,
+          68,
+          7,
+          68,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          245
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389556,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389556,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          9,
+          2,
+          90,
+          165,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          43
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "select-first-effect",
+        "timestamp_ms": 1793036389571,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          9,
+          2,
+          90,
+          165,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          43
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394134,
+        "kind": "phase"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394281,
+        "kind": "native_entry",
+        "name": "g5_apply"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394412,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 68
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394412,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          88
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394423,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          0,
+          14,
+          0,
+          3,
+          3,
+          4,
+          0,
+          0,
+          4,
+          4,
+          7,
+          0,
+          1,
+          32,
+          1,
+          0,
+          252
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394431,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          1,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          0,
+          255,
+          20,
+          0,
+          0,
+          0,
+          221
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394440,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          2,
+          14,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          198
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394447,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          3,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          74,
+          1,
+          0,
+          0,
+          0,
+          37,
+          52
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394455,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          4,
+          14,
+          255,
+          255,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          197
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394464,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          5,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          243
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394475,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          6,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          4,
+          71,
+          20
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394484,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          7,
+          14,
+          7,
+          71,
+          7,
+          71,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          219
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394494,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          8,
+          14,
+          7,
+          68,
+          7,
+          68,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          135
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394504,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 68,
+        "bytes": [
+          19,
+          68,
+          10,
+          9,
+          2,
+          90,
+          165,
+          0,
+          20,
+          44,
+          0,
+          0,
+          20,
+          25,
+          128,
+          0,
+          20,
+          25,
+          0,
+          215
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394504,
+        "kind": "native_entry",
+        "name": "ordinary_packer"
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394550,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394550,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          0,
+          14,
+          0,
+          3,
+          3,
+          4,
+          0,
+          0,
+          4,
+          4,
+          7,
+          0,
+          0,
+          32,
+          1,
+          0,
+          105
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394560,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          0,
+          14,
+          0,
+          3,
+          3,
+          4,
+          0,
+          0,
+          4,
+          4,
+          7,
+          0,
+          0,
+          32,
+          1,
+          0,
+          105
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394577,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394577,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          1,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          0,
+          255,
+          20,
+          0,
+          0,
+          0,
+          75
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394585,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          1,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          0,
+          255,
+          20,
+          0,
+          0,
+          0,
+          75
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394600,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394600,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          2,
+          14,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          52
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394609,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          2,
+          14,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          52
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394625,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394625,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          3,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          74,
+          1,
+          0,
+          0,
+          0,
+          37,
+          162
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394633,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          3,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          74,
+          1,
+          0,
+          0,
+          0,
+          37,
+          162
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394649,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394649,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          4,
+          14,
+          255,
+          255,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          51
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394658,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          4,
+          14,
+          255,
+          255,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          51
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394673,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394673,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          5,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          97
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394681,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          5,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          97
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394696,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394696,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          6,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          4,
+          71,
+          130
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394706,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          6,
+          14,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          20,
+          23,
+          4,
+          71,
+          130
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394722,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394722,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          7,
+          14,
+          7,
+          71,
+          7,
+          71,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          73
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394729,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          7,
+          14,
+          7,
+          71,
+          7,
+          71,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          7,
+          68,
+          73
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394744,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394744,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          8,
+          14,
+          7,
+          68,
+          7,
+          68,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          245
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394755,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          8,
+          14,
+          7,
+          68,
+          7,
+          68,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          245
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394770,
+        "kind": "configuration_command_metadata",
+        "api": "WriteFile",
+        "length": 20,
+        "command": 4
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394770,
+        "kind": "lighting_report",
+        "api": "WriteFile",
+        "direction": "out",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          9,
+          2,
+          90,
+          165,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          43
+        ]
+      }
+    },
+    {
+      "type": "send",
+      "payload": {
+        "phase": "restore-original-effect",
+        "timestamp_ms": 1793036394787,
+        "kind": "lighting_report",
+        "api": "vendor_3632_dispatch",
+        "direction": "in",
+        "length": 20,
+        "command": 4,
+        "bytes": [
+          19,
+          4,
+          10,
+          9,
+          2,
+          90,
+          165,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          43
+        ]
+      }
+    }
+  ],
+  "finished_unix": 1793036399.348189
+}

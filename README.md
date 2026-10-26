@@ -29,11 +29,16 @@ compatibility** page keeps Hub/RK Drive entries and shared USB identities
 separate; catalogue presence is not certified hardware support. No physical
 keyboard's results will be generalized to every RK product.
 
+**0.5.0:** adds an explicit evidence-gated Off/first-effect mode transaction
+with stale-baseline protection and complete readback verification. Unknown
+configurations remain write-disabled. This does not establish universal RK
+support; see the [operation scope](docs/rk406-experimental-lighting-write-2026-10-26.md).
+
 **0.4.0 transport milestone:** the native app can now enumerate real HID
 endpoint capabilities and perform an **explicit experimental 20-byte-family
 lighting-configuration query**. Its own transport successfully read 128 bytes
 from the connected fixture and matched the original vendor-read block exactly.
-The app still does not apply settings. See the
+That milestone did not apply settings. See the
 [current operation and safety scope](rebuild/windows/README.md#experimental-lighting-configuration-read).
 
 **Installed-suite verification (2026-10-26):** [comprehensive handoff and workflow index](docs/rk-installed-suite-audit-2026-10-26.md),
