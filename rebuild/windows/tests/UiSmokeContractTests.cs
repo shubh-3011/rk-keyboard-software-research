@@ -42,7 +42,9 @@ internal static class UiSmokeContractTests
             GuardBefore(app, "private void SetStartup(bool enabled)", "Registry.CurrentUser");
             Check(app.Contains("if (!_offlineUiSmoke) _tray = BuildTray();"), "No offline tray.");
             Check(Regex.IsMatch(app, @"if \(!_offlineUiSmoke\)\s*\{\s*RefreshPnpDevices\(true\);\s*_pnpTimer"), "No offline initial PnP or timer.");
-            Check(app.Contains("_settings.ResourceRoot = UiSmoke.NewMissingResourceRoot();\n            else if"), "Offline resource root bypasses vendor discovery.");
+            Check(Regex.IsMatch(app, @"if \(_offlineUiSmoke\)\s+_settings\.ResourceRoot = UiSmoke\.NewMissingResourceRoot\(\);\s+else if"), "Offline resource root bypasses vendor discovery.");
+            foreach (string editor in new[] { "MacroTimelineEditor.cs", "LightingDraftEditor.cs" })
+                Check(!File.ReadAllText(Path.Combine(root, "rebuild", "windows", editor)).Contains("SettingsStore.Save(_settings)"), "Partial MainWindow must share guarded persistence: " + editor);
             Check(smoke.Contains("FileMode.CreateNew"), "Never overwrite report.");
             Check(smoke.IndexOf("FileMode.CreateNew", StringComparison.Ordinal) < smoke.IndexOf("ModelCatalog.Load()", StringComparison.Ordinal), "Reserve report before application work.");
             Check(!smoke.Contains("SettingsStore.Load("), "No persisted settings load in harness.");
