@@ -1,0 +1,2 @@
+# Preserve exact original REA record bytes: summary.json records their SHA-256.
+docs/installed-suite-audit-*/rea/*.json -text whitespace=cr-at-eol

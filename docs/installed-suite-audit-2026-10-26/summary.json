@@ -1,0 +1,543 @@
+{
+  "schema_version": 1,
+  "scope": "installed Cfg.ini Ver=0x406 byte snapshot, not every RK release",
+  "safety": "offline only; no vendor execution, HID, serial, network capture, startup changes or firmware writes",
+  "source_ledgers": {
+    "docs/rk-installed-package-manifest.csv": "4f83d002d840f4dd8ed03823ce48ea7af1ccb5c1b3bdb092d5b861385a7d7ea0",
+    "docs/rk-resource-group-inventory.csv": "497bb51ed69a8a380827b8f682c281bdfd6c5ecb6ae15f7ff8e975cd8472ebbd",
+    "docs/rk-localization-file-inventory.csv": "ef1ffb69d8081157c73a60b26b78a3cba86c068e4f5a450c9b87cc219eaaf220",
+    "docs/rk-native-api-xrefs.csv": "c4eea99b85bde7e028600a89a7d4375cc0ff51bd6587f1504be038d91d9a70c2",
+    "docs/rk-profile-driver-family-map.csv": "fd7dba1afe74114ea2d7c1b078101252bed523d0bfbbc21adc55b40a71e20a62",
+    "models.json": "d7b877dbeef81432ec9914c19bc86af0583497b095f18558575e983e31b8fcf7"
+  },
+  "files": 810,
+  "bytes": 78070176,
+  "groups": {
+    "Font files": {
+      "files": 4,
+      "bytes": 883684
+    },
+    "Generic localized LED dictionaries": {
+      "files": 5,
+      "bytes": 21110
+    },
+    "Global Cartoon effect-pattern data": {
+      "files": 12,
+      "bytes": 3871
+    },
+    "Global ET effect-pattern data": {
+      "files": 74,
+      "bytes": 22956
+    },
+    "Per-profile ET/Cartoon pattern files": {
+      "files": 198,
+      "bytes": 68360
+    },
+    "Per-profile KB.ini configuration": {
+      "files": 189,
+      "bytes": 1013544
+    },
+    "Per-profile firmware package": {
+      "files": 1,
+      "bytes": 193652
+    },
+    "Per-profile keyboard artwork": {
+      "files": 204,
+      "bytes": 64042805
+    },
+    "Per-profile screen GIF samples": {
+      "files": 2,
+      "bytes": 3050220
+    },
+    "Per-profile updater executable": {
+      "files": 1,
+      "bytes": 2109952
+    },
+    "Profile-localized LED dictionaries": {
+      "files": 10,
+      "bytes": 8558
+    },
+    "Root application, config, and installer files": {
+      "files": 7,
+      "bytes": 4275764
+    },
+    "Skins and UI chrome": {
+      "files": 96,
+      "bytes": 2225168
+    },
+    "UI localization XML": {
+      "files": 7,
+      "bytes": 150532
+    }
+  },
+  "localization": [
+    {
+      "path": "Dev/014E/en/led.xml",
+      "family": "profile LED label table",
+      "locale": "en",
+      "sha256": "1e54e0921b7951a4a955e2e56604ba19f0dabea3fca0ae77c7035cd80cfae866",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 3,
+      "unique_leaf_count": 3,
+      "key_set_sha256": "b2bb9f774de62bcf3fdb56d5a3b618982563feb3e1c3f18ce1523d1a2f5863f1"
+    },
+    {
+      "path": "Dev/014E/sc/led.xml",
+      "family": "profile LED label table",
+      "locale": "sc",
+      "sha256": "ab843b88e2fc9456de8d91918a506c44aa05f8ff960c96f0b83175d758477b20",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 3,
+      "unique_leaf_count": 3,
+      "key_set_sha256": "b2bb9f774de62bcf3fdb56d5a3b618982563feb3e1c3f18ce1523d1a2f5863f1"
+    },
+    {
+      "path": "Dev/015B/en/led.xml",
+      "family": "profile LED label table",
+      "locale": "en",
+      "sha256": "946ef3b1677b2174c4e006f04c15bc3a88fb65e3d2e6d49747f8e06595b96166",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/015B/sc/led.xml",
+      "family": "profile LED label table",
+      "locale": "sc",
+      "sha256": "b304e6e77b0e0909cfdc75b947051bac2cba3642370965a049816cf5967286b2",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/01C7/en/led.xml",
+      "family": "profile LED label table",
+      "locale": "en",
+      "sha256": "946ef3b1677b2174c4e006f04c15bc3a88fb65e3d2e6d49747f8e06595b96166",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/01C7/sc/led.xml",
+      "family": "profile LED label table",
+      "locale": "sc",
+      "sha256": "b304e6e77b0e0909cfdc75b947051bac2cba3642370965a049816cf5967286b2",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/020B/en/led.xml",
+      "family": "profile LED label table",
+      "locale": "en",
+      "sha256": "946ef3b1677b2174c4e006f04c15bc3a88fb65e3d2e6d49747f8e06595b96166",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/020B/sc/led.xml",
+      "family": "profile LED label table",
+      "locale": "sc",
+      "sha256": "b304e6e77b0e0909cfdc75b947051bac2cba3642370965a049816cf5967286b2",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/023D/en/led.xml",
+      "family": "profile LED label table",
+      "locale": "en",
+      "sha256": "946ef3b1677b2174c4e006f04c15bc3a88fb65e3d2e6d49747f8e06595b96166",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/023D/sc/led.xml",
+      "family": "profile LED label table",
+      "locale": "sc",
+      "sha256": "b304e6e77b0e0909cfdc75b947051bac2cba3642370965a049816cf5967286b2",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 13,
+      "unique_leaf_count": 13,
+      "key_set_sha256": "1bed67995d6682a3d4ad1ca6e1c691883924d20beaf0d9039f1a4506d900c8d9"
+    },
+    {
+      "path": "Dev/en/led.xml",
+      "family": "generic LED label table",
+      "locale": "en",
+      "sha256": "3be84ee40a92471744a17a5f514f49028d4fa3e6e29affdd93508a1021bc0882",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 60,
+      "unique_leaf_count": 60,
+      "key_set_sha256": "e7217340ddd3b2dbcbdbe98e5dc3783c48024c3211ca84467c290ab26c870a2c"
+    },
+    {
+      "path": "Dev/Japanese/led.xml",
+      "family": "generic LED label table",
+      "locale": "Japanese",
+      "sha256": "d997db2008d9dc4362f0887229680b9c344c3f3766dedc1ae6907f264ec16187",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 60,
+      "unique_leaf_count": 60,
+      "key_set_sha256": "e7217340ddd3b2dbcbdbe98e5dc3783c48024c3211ca84467c290ab26c870a2c"
+    },
+    {
+      "path": "Dev/Korean/led.xml",
+      "family": "generic LED label table",
+      "locale": "Korean",
+      "sha256": "1e9d670bf7a74b075a2760ec85464742baa13d787ab63c89ac2745cd287e4808",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 60,
+      "unique_leaf_count": 60,
+      "key_set_sha256": "e7217340ddd3b2dbcbdbe98e5dc3783c48024c3211ca84467c290ab26c870a2c"
+    },
+    {
+      "path": "Dev/sc/led.xml",
+      "family": "generic LED label table",
+      "locale": "sc",
+      "sha256": "e14df6fe59c0b6f3a140ead0ac345d9895251b1a7af17bfdf45271d71d1a3a61",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 60,
+      "unique_leaf_count": 60,
+      "key_set_sha256": "e7217340ddd3b2dbcbdbe98e5dc3783c48024c3211ca84467c290ab26c870a2c"
+    },
+    {
+      "path": "Dev/tw/led.xml",
+      "family": "generic LED label table",
+      "locale": "tw",
+      "sha256": "f6d4fd32f5e65fea54a0e4422896a82d91c60e807f3c50e19675cecb62106c68",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 60,
+      "unique_leaf_count": 60,
+      "key_set_sha256": "e7217340ddd3b2dbcbdbe98e5dc3783c48024c3211ca84467c290ab26c870a2c"
+    },
+    {
+      "path": "Text/en/text.xml",
+      "family": "UI string table",
+      "locale": "en",
+      "sha256": "85b26e0c7cd8317adeb136d37b6877601b0c3e7f6fb072867f937aa46c73de8c",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    },
+    {
+      "path": "Text/Japanese/text.xml",
+      "family": "UI string table",
+      "locale": "Japanese",
+      "sha256": "7bce6b5edf28dab92a47c983b559966da889c73f32a449261feb43e02cd4e6d6",
+      "raw_status": "malformed; metrics use in-memory normalization",
+      "raw_defect": "mismatched tag: line 266, column 3",
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    },
+    {
+      "path": "Text/Korean/text.xml",
+      "family": "UI string table",
+      "locale": "Korean",
+      "sha256": "7d07f568f3a402c7ddaa3833c7b89d42ec8de3f75fe9f5adceb508e3e99e96cb",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    },
+    {
+      "path": "Text/Russian/text.xml",
+      "family": "UI string table",
+      "locale": "Russian",
+      "sha256": "b66c4d828a1c523e3af7662491575786995c283b92c81b6b717be48068db67af",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    },
+    {
+      "path": "Text/sc/text.xml",
+      "family": "UI string table",
+      "locale": "sc",
+      "sha256": "5fc159c030017bbd116dd7cf47f8075e5fb5dcaafa7bf84743906dc74e634624",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    },
+    {
+      "path": "Text/Turkish/text.xml",
+      "family": "UI string table",
+      "locale": "Turkish",
+      "sha256": "7155793b5c028afec9ab6a4421f36673a2e21191022f2a53f67fc234a3ef2e91",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    },
+    {
+      "path": "Text/tw/text.xml",
+      "family": "UI string table",
+      "locale": "tw",
+      "sha256": "6e74bb3710841d30d9256d86fdc199ced3e404f266f274529a43709908770b3d",
+      "raw_status": "well-formed",
+      "raw_defect": null,
+      "leaf_count": 247,
+      "unique_leaf_count": 247,
+      "key_set_sha256": "172fc348ed84ca1bccc57bb8186d7b5d332bff45369cbcfe4baf2b9dbe9c6fdf"
+    }
+  ],
+  "profiles": {
+    "named": 188,
+    "kb_ini": 189,
+    "unregistered": [
+      "01C7"
+    ],
+    "static_families": {
+      "CDevRKKB": 125,
+      "CDevG5KB": 63
+    },
+    "hardware_compatibility": "not established"
+  },
+  "binaries": [
+    {
+      "path": "Dev/01AF/Update.exe",
+      "sha256": "27894463b0dfe5bc3f5dc19d4d3351d9dfb692c402bf277bde3889d37e4a206c",
+      "bytes": 2109952,
+      "machine": 332,
+      "image_base": "0x00400000",
+      "entrypoint_rva": "0x001341E2",
+      "imports": {
+        "ordinary": 618
+      },
+      "rea_resources": {
+        "evidence_id": "ev_c9c1f7d52304d2da8c1ed8bebd733cccde9f286009a95e6bc00d5fed8f1738df",
+        "provider": {
+          "id": "rea-pe-resources",
+          "name": "REA PE resource parser",
+          "version": "1"
+        },
+        "resource_count": 60,
+        "coverage": {
+          "status": "complete",
+          "examined_entries": 130,
+          "resources": 60
+        },
+        "limitations": [
+          "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+          "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+          "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+        ],
+        "type_counts": {
+          "1": 16,
+          "12": 15,
+          "14": 1,
+          "16": 1,
+          "2": 2,
+          "24": 1,
+          "3": 5,
+          "4": 1,
+          "5": 4,
+          "6": 14
+        },
+        "record_sha256": "411131d5cce8aff589d05e503d60ae4575786edec7eb802a9af889d430ec2b16",
+        "record_file": "rea/27894463b0dfe5bc3f5dc19d4d3351d9dfb692c402bf277bde3889d37e4a206c.json"
+      }
+    },
+    {
+      "path": "DeviceDriver.exe",
+      "sha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+      "bytes": 2326528,
+      "machine": 332,
+      "image_base": "0x00400000",
+      "entrypoint_rva": "0x0016D9B0",
+      "imports": {
+        "ordinary": 672,
+        "delay": 3
+      },
+      "rea_resources": {
+        "evidence_id": "ev_4ec8eb22b33b06bfb3596bae7c656d07df096cc97125cdf6beaac60a69835009",
+        "provider": {
+          "id": "rea-pe-resources",
+          "name": "REA PE resource parser",
+          "version": "1"
+        },
+        "resource_count": 61,
+        "coverage": {
+          "status": "complete",
+          "examined_entries": 131,
+          "resources": 61
+        },
+        "limitations": [
+          "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+          "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+          "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+        ],
+        "type_counts": {
+          "1": 16,
+          "12": 15,
+          "14": 1,
+          "16": 1,
+          "2": 2,
+          "24": 1,
+          "3": 1,
+          "5": 10,
+          "6": 14
+        },
+        "record_sha256": "c858470216687a46165d603ba152d36f583ceddaed5e7c812062355095cf3acb",
+        "record_file": "rea/c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6.json"
+      }
+    },
+    {
+      "path": "InitSetup.dll",
+      "sha256": "59db7bfd9a92cc9a0998260807f17c536ec71159b727df10d08b998bc94de301",
+      "bytes": 69000,
+      "machine": 332,
+      "image_base": "0x10000000",
+      "entrypoint_rva": "0x00001866",
+      "imports": {
+        "ordinary": 76
+      },
+      "rea_resources": {
+        "evidence_id": "ev_745521921289cef539797d03a13102a31ee01c3117aaf125a4b7f9c80db9cfe4",
+        "provider": {
+          "id": "rea-pe-resources",
+          "name": "REA PE resource parser",
+          "version": "1"
+        },
+        "resource_count": 2,
+        "coverage": {
+          "status": "complete",
+          "examined_entries": 6,
+          "resources": 2
+        },
+        "limitations": [
+          "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+          "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+          "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+        ],
+        "type_counts": {
+          "16": 1,
+          "24": 1
+        },
+        "record_sha256": "a953adc13fd6351e111b1cd344eca0d5a762aa22f4cdc1ebb8e7f9bcfa775a62",
+        "record_file": "rea/59db7bfd9a92cc9a0998260807f17c536ec71159b727df10d08b998bc94de301.json"
+      }
+    },
+    {
+      "path": "unins000.exe",
+      "sha256": "b4ca28b192d5a50307d2b28f3323b58b39cb51edd6682e75706cac2dd69a4a14",
+      "bytes": 1316301,
+      "machine": 332,
+      "image_base": "0x00400000",
+      "entrypoint_rva": "0x000F8E34",
+      "imports": {
+        "ordinary": 519
+      },
+      "rea_resources": {
+        "evidence_id": "ev_231599d8022f3010fa29891b2220141e579ac064aabb7eddebd441dcf0d0fc7f",
+        "provider": {
+          "id": "rea-pe-resources",
+          "name": "REA PE resource parser",
+          "version": "1"
+        },
+        "resource_count": 72,
+        "coverage": {
+          "status": "complete",
+          "examined_entries": 154,
+          "resources": 72
+        },
+        "limitations": [
+          "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+          "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+          "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+        ],
+        "type_counts": {
+          "1": 7,
+          "10": 13,
+          "12": 7,
+          "14": 1,
+          "16": 1,
+          "2": 13,
+          "24": 1,
+          "3": 9,
+          "5": 2,
+          "6": 18
+        },
+        "record_sha256": "2933d33d39f5fc032342890a0564ccd1d4c339eb4d073f00f8614b40e3406670",
+        "record_file": "rea/b4ca28b192d5a50307d2b28f3323b58b39cb51edd6682e75706cac2dd69a4a14.json"
+      }
+    },
+    {
+      "path": "uninstall.dll",
+      "sha256": "9ca1ebc49998b8b2971debc1776e7aff6086aeb86adcca6cfb95e9fb399eb03c",
+      "bytes": 146944,
+      "machine": 332,
+      "image_base": "0x10000000",
+      "entrypoint_rva": "0x000013A2",
+      "imports": {
+        "ordinary": 30
+      },
+      "rea_resources": {
+        "evidence_id": "ev_4a262f8a0b2e46769a047eb5cff0d44b9f426258231978a6f3598812da980ebc",
+        "provider": {
+          "id": "rea-pe-resources",
+          "name": "REA PE resource parser",
+          "version": "1"
+        },
+        "resource_count": 11,
+        "coverage": {
+          "status": "complete",
+          "examined_entries": 25,
+          "resources": 11
+        },
+        "limitations": [
+          "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+          "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+          "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+        ],
+        "type_counts": {
+          "14": 1,
+          "24": 1,
+          "3": 9
+        },
+        "record_sha256": "fcb628a9de852c3aefc9aef467a3634fdcfa7c68b53edbe04fe123588c5d6eb7",
+        "record_file": "rea/9ca1ebc49998b8b2971debc1776e7aff6086aeb86adcca6cfb95e9fb399eb03c.json"
+      }
+    }
+  ],
+  "import_rows": 1918,
+  "limitations": [
+    "Resource completeness applies only to PE resource trees, not code or UI workflows.",
+    "Profile names/codes and membership are rechecked; full tuple semantics are not.",
+    "Import identities are freshly parsed; callsite lists reuse the hashed prior ledger.",
+    "Static references do not establish reachability, execution, device acceptance or parity."
+  ]
+}

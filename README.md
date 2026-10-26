@@ -22,6 +22,12 @@ vendor utility.
 
 **Native rebuild source:** [`rebuild/windows/`](rebuild/windows/) · **Rebuild status:** [roadmap](REBUILD-ROADMAP.md) · **Audit scope:** [coverage and open work](COVERAGE.md)
 
+**Installed-suite verification (2026-10-26):** [comprehensive handoff and workflow index](docs/rk-installed-suite-audit-2026-10-26.md),
+with a fresh 810-file / 14-group census, all 22 localization XML files,
+188 named profiles, 1,918 native import identities, and complete REA resource
+Evidence for all five installed PE files. This verifies the installed snapshot,
+not full protocol recovery or hardware/UI parity.
+
 This is independent community research, not the official RK software, and it
 is not affiliated with RK. No vendor executable, DLL, installer, firmware
 image, or copied artwork is included. The new native app is an early local
