@@ -1,0 +1,14 @@
+{
+  "Format": "rk-rebuild-experimental-lighting-read",
+  "SchemaVersion": 1,
+  "VendorId": "258A",
+  "ProductId": "0150",
+  "VersionNumber": 518,
+  "UsagePage": "FF02",
+  "Usage": "0002",
+  "LightingBlockHex": "0003030400000404070000200100000000000000040400FF1400000000000000030000000000000000000000000000000000FF0100000025FFFF14171417141714171417141714171417141714171417141714171417141714171417141714170447074707470744074407440744074407440744040404040404040404045AA5",
+  "SettingsWritesPerformed": false,
+  "QueryCommand": "44",
+  "Transport": "20-byte wireless configuration endpoint",
+  "Boundary": "An explicit query request was sent. This is lighting configuration, not firmware, and does not establish a physical model from a shared ID. No guessed response checksum was applied."
+}

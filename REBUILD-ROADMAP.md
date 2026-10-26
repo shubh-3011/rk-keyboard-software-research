@@ -60,7 +60,9 @@ The new native app is still an early reconstruction milestone, not a same-
 function or pixel-matched RK replacement. Its RK Drive editor uses publicly
 declared ordered symbolic slots, layers, OS tables, and per-effect controls
 only to save local drafts; the bundle does not provide physical key geometry.
-Hardware communication, RK-native settings serialization, TFT/media and
+Hardware communication is now limited to explicit endpoint metadata discovery
+and an experimental lighting query, validated for one observed runtime path.
+Applying settings, complete RK-native serialization, TFT/media and
 performance workflows, updates, firmware, and full workflow parity remain
 unimplemented or unresolved. The research archive and rebuild are distinct
 deliverables in this repository; the companion Keydeck web app remains a
@@ -100,7 +102,7 @@ separate product.
 | Tray and autostart | Configuration/Exit tray menu and opt-in per-user startup in the native milestone | Verify behavior on supported Windows configurations and document any remaining differences |
 | Model recognition | Present-device PnP metadata matching, profile-prioritized photo matching, selectable photos for ambiguous IDs, and manual S98 appearance photos; no HID communication or firmware-revision detection | Evidence-backed device identification with physical revision and ambiguous IDs shown as unknown |
 | Keymap, macro, lighting, screen, audio | Layout viewer, local key-label and macro-note drafts, plus RK Drive layer/table/effect drafts with descriptor-checked JSON import/export; no device controls | Reconstructed control paths, data models, and model-specific availability |
-| Hardware configuration | Disabled | Protocol and write paths must be independently mapped; no claim from profile labels alone |
+| Hardware configuration | Metadata discovery and explicit experimental 20-byte lighting query; configuration writes disabled | Validate per-family settings transactions and model/revision compatibility; no claim from profile labels alone |
 | Firmware updater/readback | Not implemented | Complete static updater analysis and safe documented boundaries; current evidence does not show a reachable complete read-only S98 firmware export |
 | Vendor artwork/assets | Not included | Clean-room replacements; no copied vendor art in the public repo |
 

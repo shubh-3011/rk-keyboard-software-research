@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\ProtocolFrames.cs" Link="ProtocolFrames.cs" />
+    <Compile Include="..\HidDiscovery.cs" Link="HidDiscovery.cs" />
+    <Compile Include="..\WirelessLightingReader.cs" Link="WirelessLightingReader.cs" />
+    <Compile Include="CapturedLightingTests.cs" />
+    <EmbeddedResource Include="fixtures\rk406-wireless-lighting-roundtrip.json" LogicalName="LightingFixture.json" />
+  </ItemGroup>
+</Project>

@@ -19,10 +19,16 @@ For current blockers and the recommended reverse-engineering order, see the
   Its standalone EXE is built by the project script; it does not need Python,
   a browser, or WebView2.
 - The app uses Windows SetupAPI's present-device list and reads USB/HID PnP
-  properties to match known VID/PID pairs to catalog entries. The app itself
-  does not open a keyboard interface, read HID reports, or learn current RGB
-  color/mode. Separately, the reverse-engineering report records a read-only
-  HID inspection of the attached device; it did not write to the keyboard.
+  properties to match known VID/PID pairs to catalog entries. Version 0.4.0
+  additionally opens zero-access metadata handles for endpoint capabilities
+  and offers one explicit experimental lighting-query operation on eligible
+  20-byte vendor endpoints. Its native transport read a complete 128-byte
+  block and matched the connected fixture's original vendor-read data exactly.
+  That query actively sends command `44`; it is not passive observation or
+  firmware readback. Catalogue candidates are not certified physical models.
+  A separate vendor-UI round trip observed ordinary G5 Apply through its
+  3632 child, 62 lighting-only reports, and a one-byte mode change followed
+  by exact restoration, independently confirmed by the native read.
   Key and macro edits are local drafts, and lighting writes, hardware
   settings, screen transfer, updates, reset, and firmware operations remain
   unavailable. The native reconstruction is incomplete and is not a full RK

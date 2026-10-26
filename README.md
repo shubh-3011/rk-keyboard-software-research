@@ -29,6 +29,13 @@ compatibility** page keeps Hub/RK Drive entries and shared USB identities
 separate; catalogue presence is not certified hardware support. No physical
 keyboard's results will be generalized to every RK product.
 
+**0.4.0 transport milestone:** the native app can now enumerate real HID
+endpoint capabilities and perform an **explicit experimental 20-byte-family
+lighting-configuration query**. Its own transport successfully read 128 bytes
+from the connected fixture and matched the original vendor-read block exactly.
+The app still does not apply settings. See the
+[current operation and safety scope](rebuild/windows/README.md#experimental-lighting-configuration-read).
+
 **Installed-suite verification (2026-10-26):** [comprehensive handoff and workflow index](docs/rk-installed-suite-audit-2026-10-26.md),
 with a fresh 810-file / 14-group census, all 22 localization XML files,
 188 named profiles, 1,918 native import identities, and complete REA resource
@@ -73,8 +80,9 @@ and builds as a self-contained C# WPF app. It provides local profile browsing,
 a separate RK Drive keyboard directory, official model-photo links, a manual
 S98 finish-photo gallery, read-only Windows Plug and Play identification,
 key-label drafts, macro notes, tray
-restore/exit, and opt-in startup. It does not yet implement HID communication
-or full RK workflows. The
+restore/exit, and opt-in startup. HID communication is limited to metadata
+discovery and an opt-in experimental lighting query; full RK workflows are
+not implemented. The
 Windows rebuild reads RK's skin, fonts, and installed profile artwork locally;
 those assets are not included in the repo or executable. Feature-control
 placement is reconstructed because complete runtime coordinates are not

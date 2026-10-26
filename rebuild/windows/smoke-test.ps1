@@ -21,5 +21,17 @@ if ((Export-Report) -eq 0 -or (Get-FileHash -LiteralPath $report -Algorithm SHA2
 }
 $missing = Start-Process -FilePath $exe -ArgumentList @("--compatibility-report") -PassThru -Wait
 if ($missing.ExitCode -eq 0) { throw "Missing-argument check failed." }
+$metadataPath = $report + ".hid.json"
+$metadataProcess = Start-Process -FilePath $exe -ArgumentList @("--hid-diagnostics", ('"' + $metadataPath + '"')) -PassThru -Wait
+if ($metadataProcess.ExitCode -ne 0) { throw "Published HID metadata export failed." }
+$metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
+if ($metadata.Format -ne "rk-rebuild-hid-metadata" -or $metadata.HardwareWritesAllowed) { throw "HID metadata schema mismatch." }
+foreach ($endpoint in $metadata.Endpoints) {
+    if ($endpoint.PSObject.Properties.Name -contains "DevicePath") { throw "Opaque device path leaked in metadata export." }
+}
+$invalidPath = $report + ".invalid-query.json"
+$invalidQuery = Start-Process -FilePath $exe -ArgumentList @("--read-wireless-lighting", "not-an-identity", ('"' + $invalidPath + '"')) -PassThru -Wait
+if ($invalidQuery.ExitCode -eq 0 -or (Test-Path -LiteralPath $invalidPath)) { throw "Invalid query identity was not rejected before I/O." }
 Write-Host "PASS: published EXE exported 444 catalogued-only entries; overwrite/missing-argument checks failed safely."
+Write-Host "PASS: HID metadata export excludes device paths; invalid lighting query refused without report I/O."
 Write-Host "Report retained: $report"

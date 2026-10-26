@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
@@ -40,6 +41,7 @@ namespace RkRebuild
     internal sealed partial class MainWindow
     {
         private CompatibilityCatalog _compatibility;
+        private bool _lightingQueryRunning;
 
         private void RenderCompatibility()
         {
@@ -63,7 +65,56 @@ namespace RkRebuild
                 catch (Exception ex) { MessageBox.Show(this, ex.Message, "Catalogue export", MessageBoxButton.OK, MessageBoxImage.Warning); }
             };
             actions.Children.Add(export);
+            Button inspectHid = ActionButton("Inspect HID endpoint metadata", false);
+            inspectHid.Margin = new Thickness(10, 0, 0, 0);
+            actions.Children.Add(inspectHid);
             _pageBody.Children.Add(actions);
+            StackPanel endpointPanel = new StackPanel();
+            _pageBody.Children.Add(endpointPanel);
+            inspectHid.Click += async delegate {
+                inspectHid.IsEnabled = false;
+                endpointPanel.Children.Clear();
+                endpointPanel.Children.Add(Paragraph("Inspecting endpoint capabilities only; no report reads or writes…", 12));
+                try
+                {
+                    HidDiscoveryResult found = await Task.Run(() => WindowsHidDiscovery.Enumerate());
+                    endpointPanel.Children.Clear();
+                    var candidates = found.Endpoints.Select(endpoint => new {
+                        endpoint.VendorId, endpoint.ProductId, endpoint.VersionNumber, endpoint.UsagePage, endpoint.Usage,
+                        endpoint.InputReportBytes, endpoint.OutputReportBytes, endpoint.FeatureReportBytes,
+                        CatalogueCandidates = _compatibility.Match(endpoint.VendorId, endpoint.ProductId).Count,
+                        endpoint.Error
+                    }).Where(endpoint => endpoint.CatalogueCandidates > 0).ToArray();
+                    endpointPanel.Children.Add(Paragraph(found.Endpoints.Count + " HID endpoints inspected; " + candidates.Length + " match catalogue identities; " + found.Errors.Count + " discovery errors. These are candidates, not verified writable endpoints.", 12));
+                    DataGrid endpoints = new DataGrid { AutoGenerateColumns = true, IsReadOnly = true, CanUserAddRows = false, CanUserDeleteRows = false,
+                        Height = 180, ItemsSource = candidates, HeadersVisibility = DataGridHeadersVisibility.Column };
+                    endpointPanel.Children.Add(endpoints);
+                    string[] wirelessIds = candidates.Where(endpoint => endpoint.UsagePage == "FF02" && endpoint.Usage == "0002" && endpoint.InputReportBytes == 20 && endpoint.OutputReportBytes == 20)
+                        .Select(endpoint => endpoint.VendorId + ":" + endpoint.ProductId).Distinct().ToArray();
+                    foreach (string identity in wirelessIds)
+                    {
+                        Button read = ActionButton("Experimental lighting query · " + identity, false);
+                        read.Click += async delegate {
+                            if (_lightingQueryRunning) return;
+                            if (MessageBox.Show(this, "This sends the recovered command 44 to query a lighting block, but does not apply settings or read firmware. Close the vendor utility first. Shared device IDs do not prove model compatibility. Continue?", "Experimental configuration query", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                            _lightingQueryRunning = true;
+                            read.IsEnabled = false;
+                            try
+                            {
+                                string report = await Task.Run(() => WirelessLightingCommand.ReadAsync(identity));
+                                endpointPanel.Children.Add(Paragraph("Received a complete 128-byte lighting block with the expected signature. No settings were applied. This validates this query, not every workflow/model.", 12));
+                                SaveFileDialog save = new SaveFileDialog { FileName = "rk-lighting-read.json", Filter = "Lighting read report (*.json)|*.json" };
+                                if (save.ShowDialog(this) == true) File.WriteAllText(save.FileName, report, new UTF8Encoding(false));
+                            }
+                            catch (Exception ex) { MessageBox.Show(this, ex.Message, "Lighting query unavailable", MessageBoxButton.OK, MessageBoxImage.Warning); }
+                            finally { _lightingQueryRunning = false; read.IsEnabled = true; }
+                        };
+                        endpointPanel.Children.Add(read);
+                    }
+                }
+                catch (Exception ex) { endpointPanel.Children.Clear(); endpointPanel.Children.Add(Paragraph("Endpoint inspection failed: " + ex.Message, 12)); }
+                finally { inspectHid.IsEnabled = true; }
+            };
             DataGrid grid = new DataGrid {
                 AutoGenerateColumns = false, IsReadOnly = true, CanUserAddRows = false, CanUserDeleteRows = false,
                 EnableRowVirtualization = true, EnableColumnVirtualization = true, Height = 460,

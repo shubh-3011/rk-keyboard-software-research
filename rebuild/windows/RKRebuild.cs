@@ -32,11 +32,25 @@ namespace RkRebuild
         {
             try
             {
-                // Headless, offline catalogue export: no settings, tray, startup or device access.
-                if (args.Length > 0 && String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase))
+                if (args.Length > 0 && String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (args.Length != 2) throw new ArgumentException("Usage: RK-Rebuild.exe --compatibility-report <new-json-path>");
-                    string report = CompatibilityResources.Report(CompatibilityResources.Load());
+                    if (args.Length != 3) throw new ArgumentException("Usage: RK-Rebuild.exe --read-wireless-lighting <VID:PID> <new-json-path>");
+                    if (File.Exists(args[2])) throw new IOException("Output file already exists.");
+                    string result = WirelessLightingCommand.ReadAsync(args[1]).GetAwaiter().GetResult();
+                    using (FileStream output = new FileStream(args[2], FileMode.CreateNew, FileAccess.Write))
+                    using (StreamWriter writer = new StreamWriter(output, new UTF8Encoding(false))) writer.Write(result);
+                    return;
+                }
+                // Headless catalogue export or metadata diagnostics. Neither starts the UI.
+                if (args.Length > 0 && (String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (args.Length != 2) throw new ArgumentException("Usage: RK-Rebuild.exe " + args[0] + " <new-json-path>");
+                    // Refuse overwrite BEFORE metadata enumeration, too.
+                    if (File.Exists(args[1])) throw new IOException("Output file already exists.");
+                    CompatibilityCatalog compatibility = CompatibilityResources.Load();
+                    string report = String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase)
+                        ? HidDiagnostics.Report(WindowsHidDiscovery.Enumerate(), compatibility)
+                        : CompatibilityResources.Report(compatibility);
                     using (FileStream output = new FileStream(args[1], FileMode.CreateNew, FileAccess.Write))
                     using (StreamWriter writer = new StreamWriter(output, new UTF8Encoding(false)))
                         writer.Write(report);
@@ -56,7 +70,7 @@ namespace RkRebuild
             }
             catch (Exception ex)
             {
-                if (args.Length > 0 && String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase))
+                if (args.Length > 0 && (String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.Error.WriteLine(ex.Message);
                     Environment.ExitCode = 1;
@@ -830,7 +844,7 @@ namespace RkRebuild
             Border spacer = new Border { Height = 1, Background = Brush(70, 70, 70), Margin = new Thickness(4, 20, 4, 13) };
             nav.Children.Add(spacer);
             nav.Children.Add(new TextBlock { Text = "Local profile drafts", Foreground = Brush(220, 220, 220), FontSize = 11, Margin = new Thickness(5, 0, 5, 5) });
-            nav.Children.Add(new TextBlock { Text = "No keyboard commands are sent by this build.", Foreground = Brush(160, 160, 160), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(5, 0, 5, 0) });
+            nav.Children.Add(new TextBlock { Text = "No settings are applied. Experimental lighting queries require an explicit action.", Foreground = Brush(160, 160, 160), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(5, 0, 5, 0) });
 
             Grid main = new Grid { Margin = new Thickness(12, 0, 20, 14) };
             main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(60) });
@@ -1185,7 +1199,7 @@ namespace RkRebuild
             info.Child = infoBody;
             infoBody.Children.Add(Kicker("REBUILD STATUS"));
             infoBody.Children.Add(new TextBlock { Text = "This is a native Windows desktop process. It runs locally and does not open a browser, start a localhost server, or include Python.", Foreground = Brush(58, 66, 78), FontSize = 12, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0) });
-            infoBody.Children.Add(new TextBlock { Text = "Model identification and product photography use read-only Windows/online metadata. Live lighting reads, hardware configuration writes, macro transfer, display control, updater actions, and firmware access remain unavailable.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
+            infoBody.Children.Add(new TextBlock { Text = "Model identification and product photography use Windows/online metadata. The Compatibility page offers explicit experimental lighting queries on eligible endpoints. Configuration writes, macro transfer, display control, updater actions, and firmware access remain unavailable.", Foreground = Brush(111, 120, 133), FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0) });
             _pageBody.Children.Add(info);
         }
 

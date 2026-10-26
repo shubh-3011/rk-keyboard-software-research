@@ -59,6 +59,84 @@ WebView2.
   with Windows is an opt-in per-user setting and can be changed in Preferences
   or the tray.
 
+## Experimental lighting-configuration read
+
+Version **0.4.0** adds actual HID endpoint discovery and a narrowly bounded
+lighting query. This is no longer entirely a disconnected draft editor,
+but configuration **writes remain disabled** in the application.
+
+1. Open **All-model compatibility** and click **Inspect HID endpoint metadata**.
+   Discovery obtains VID/PID, device version, usage page/usage, and report sizes
+   through zero-access metadata handles. It does not read input reports.
+2. An eligible catalogue-matching vendor endpoint (`FF02:0002`, 20-byte
+   input/output reports) offers **Experimental lighting query**. This is an
+   explicit active query: it sends command `44`, receives a 128-byte lighting
+   block, and checks packet order/count/length plus its `5A A5` signature.
+3. Close the vendor utility normally first. The app refuses a query while
+   `DeviceDriver.exe` is running, refuses ambiguous multiple matching endpoints,
+   and applies one absolute timeout. There are no retries or fallback probes.
+4. The result can be exported without device paths or serial strings. No
+   configuration, macro, keymap, reset, bootloader or firmware command is sent.
+
+Headless alternatives (output paths must be new):
+
+```powershell
+./dist/RK-Rebuild.exe --hid-diagnostics ./hid-metadata.json
+./dist/RK-Rebuild.exe --read-wireless-lighting <VID:PID> ./lighting-read.json
+```
+
+The second command is intentionally opt-in and experimental, not automatic
+device detection. It requires exactly one eligible endpoint for the supplied
+catalogued identity. The metadata export omits opaque HID paths and does not
+retrieve serial strings. Device version numbers are not certified firmware IDs.
+
+### What was hardware-validated
+
+The native reader successfully queried all **128 bytes** from the connected
+fixture; its result exactly matched the original block observed through the
+vendor utility. The vendor utility was closed normally for this test and
+restarted with its original `-s` background argument afterward.
+
+Separately, the vendor's ordinary G5 → 3632-child path was observed during
+an effect-off → first-effect → effect-off round trip. The trace retained 62
+allowlisted lighting reports. Only block offset `0x0A` changed (`0→1→0`);
+the second query returned the first changed block, the final outgoing block
+and echoes equalled the initial block, and the independent native query
+confirmed final restoration. No keymap/macro input was captured.
+
+This validates a **query operation and one observed path**, not every model
+sharing `258A:0150` or every workflow. The runtime root was `CDevG5KB`, but the
+actual reports used its 20-byte child rather than the 520-byte G5 feature
+transport. Shared VID/PID alone would not have established that distinction.
+
+### Code and reproducibility
+
+- `HidDiscovery.cs`: metadata only, safe-handle disposal and bounded enumeration.
+- `WirelessLightingReader.cs`: one query, cancellable bounded reads, strict
+  10-frame assembly and no arbitrary-command/configuration-write API.
+- `G5FeatureCodec.cs`: separate pure offline 520-byte framing, not a claim of
+  validated G5 feature transport. Its header differs from the screen writer.
+- `tests/fixtures/rk406-wireless-lighting-roundtrip.json`: derived, reviewed
+  lighting-only golden frames; no paths, serials, keymaps or artwork.
+- `scripts/extract_rk406_lighting_fixture.py`: regenerates/validates the fixture
+  from the saved direct-Frida trace. Such traces are not relabeled REA Evidence.
+
+Retained records:
+- [REA active-device/vtable snapshot](../../docs/runtime-evidence/rk406-lighting-device-state-2026-10-26.json),
+  Evidence `ev_892d00024fee1046dd72bc16e91277be1f43587518da7930a9539f0912f28318`.
+- [Direct-Frida lighting-only round trip](../../docs/runtime-evidence/rk406-wireless-lighting-roundtrip-frida-2026-10-26.json).
+- [Independent native lighting read](../../docs/runtime-evidence/native-wireless-lighting-read-2026-10-26.json).
+
+REA's snapshot still reports artifact identity unavailable: the host supplied
+the executable path/hash check. The direct-Frida report and native read are
+separate authored observation records, not canonical REA Evidence. Vendor
+screenshots remain local and are not included or relicensed.
+
+Captured query-response checksum bytes do **not** match the outgoing additive
+rule. The native vendor consumer does not check them; this implementation
+does not invent a response checksum. The signature/framing checks are not
+authentication or proof of complete protocol understanding.
+
 ## Not a full RK replacement yet
 
 ### General compatibility, not an S98-only build
@@ -116,8 +194,8 @@ metadata only. A shared wireless-receiver VID/PID may identify several product
 labels, so the app asks you to select the matching photo in that case. The
 reported USB identity does not confirm shell finish, keycap color, firmware
 revision, or the keyboard's live lighting mode/color.
-This build does not communicate with the keyboard. It does not read or write
-HID reports, apply key mappings or lighting, capture or transfer macros,
+Outside the explicit experimental lighting query above, this build does not
+read/write HID reports. It does not apply key mappings or lighting, capture or transfer macros,
 control displays, run updates, or read/write firmware. Its key labels, macro
 timelines/notes, key layer/table choices, and lighting values are local drafts, not
 RK-native serialized settings. Ordered slot mappings are a community draft
@@ -150,7 +228,7 @@ catalog and does not require a separate .NET installation on its target PC.
 The build script writes a SHA-256 sidecar. Settings are local to the current
 Windows user.
 
-`./test.ps1` runs the five dependency-free native test suites; after building,
+`./test.ps1` runs the dependency-free native test suites; after building,
 `./smoke-test.ps1` executes only the published EXE's headless catalogue export
 and error paths. It does not start the WPF UI or touch a device. The
 [Windows CI workflow](../../.github/workflows/windows-native.yml) repeats these
@@ -187,7 +265,7 @@ key/Drive drafts and macro notes are preserved.
   See the [codec evidence and limits](../../docs/rk-406-command04-offline-codec-2026-10-26.md).
 
 Neither helper is wired to a keyboard, nor do synthetic tests establish model
-compatibility. `test.ps1` isolates all five projects' intermediate/output
+compatibility. `test.ps1` isolates all projects' intermediate/output
 directories to prevent cross-project cached-executable false positives.
 
 ### Macro workflow
