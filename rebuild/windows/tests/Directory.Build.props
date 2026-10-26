@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Set before SDK imports: projects in one directory must not share
+         generated assembly metadata, restore assets, apphost or output DLLs. -->
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\</BaseOutputPath>
+  </PropertyGroup>
+</Project>

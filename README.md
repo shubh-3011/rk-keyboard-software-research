@@ -28,6 +28,12 @@ with a fresh 810-file / 14-group census, all 22 localization XML files,
 Evidence for all five installed PE files. This verifies the installed snapshot,
 not full protocol recovery or hardware/UI parity.
 
+**Continued reconstruction:** the [4.06 brightness setter correction](docs/rk-406-brightness-record-base-correction-2026-10-26.md)
+now proves the previously missed UI-to-record field identity with exact native
+instruction checks. The native app also has a structured local macro timeline
+editor; see [its current scope](rebuild/windows/README.md). Neither finding
+establishes device-write parity.
+
 This is independent community research, not the official RK software, and it
 is not affiliated with RK. No vendor executable, DLL, installer, firmware
 image, or copied artwork is included. The new native app is an early local
@@ -107,7 +113,7 @@ as confirmed.
 - [Follow-up on the ten unresolved imported API rows](docs/rk-unresolved-native-api-relative-reference-followup.md)
 - [R99 CH375 helper IOCTL read/write buffers](docs/rk-r99-ch375-ioctl-read-write-audit-2026-10-25.md)
 - [R99 `CreateFileA` to CH375 call path](docs/rk-r99-createfile-ch375-call-path-2026-10-25.md)
-- [4.06 brightness UI path and unresolved writer boundary](docs/rk-406-brightness-handler-field-boundary.md)
+- [4.06 brightness setter and corrected record-base alias](docs/rk-406-brightness-record-base-correction-2026-10-26.md)
 - [Official RK Web, Hub, model-selected driver, firmware, and QMK/VIA distribution paths](docs/rk-official-driver-distribution-audit.md)
 - [Model profile and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
 - [Static profile-to-family and protocol coverage](docs/rk-profile-family-protocol-coverage.md)

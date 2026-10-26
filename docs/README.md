@@ -1,5 +1,15 @@
 # Audit files
 
+## 2026-10-26 implementation follow-up
+
+- [Corrected installed brightness UI setter and record-base identity](rk-406-brightness-record-base-correction-2026-10-26.md).
+- [Ordinary/firmware-2 command-4 offline patch codec](rk-406-command04-offline-codec-2026-10-26.md).
+- [3632 offline request framing and response classifier](rk-3632-offline-framing-2026-10-26.md).
+- [Native 0.3.0 local macro timeline and lighting drafts](../rebuild/windows/README.md).
+
+The earlier no-brightness-store claim was a record-base normalization error.
+The corrected static path and synthetic tests are not hardware/UI parity.
+
 - [Prioritized full-suite reverse-engineering gap matrix](reverse-engineering-gap-matrix-2026-10-19.md)
 
 ## Package and model catalog

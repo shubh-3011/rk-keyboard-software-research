@@ -111,8 +111,10 @@ particular run or identify the user-visible label/behavior of the control.
 - Whether the initialized `+0x9E0` value is later overwritten, what action
   delivers the private messages to the child handlers, and what visible label
   or behavior the control represents remain unresolved.
-- The message path does not prove a brightness adjustment, a family-specific
-  serializer selection, or any physical keyboard effect.
+- The later [record-base correction](rk-406-brightness-record-base-correction-2026-10-26.md)
+  verifies the slider mouse-up → selection-state → parent-handler path and
+  brightness-field write. This supersedes the missing-setter inference;
+  runtime delivery, family-specific execution and physical effects remain unproven.
 
 ## Related evidence
 

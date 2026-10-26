@@ -1,5 +1,12 @@
 # Reverse-engineering progress
 
+> **2026-10-26 follow-up:** The earlier missing-brightness-setter conclusion
+> below is superseded by the [record-base correction](docs/rk-406-brightness-record-base-correction-2026-10-26.md).
+> The UI helper writes canonical brightness `+0x04` through alias `+0x0C`.
+> Native 0.3.0 adds structured local macro timelines and profile-bound lighting
+> drafts, plus pure offline 3632 framing and ordinary/firmware-2 command-4
+> codecs. No device-write, full UI-equivalence or measured lag-fix claim is made.
+
 **Snapshot date:** 2026-10-25
 **Repository:** [`shubh-3011/rk-keyboard-software-research`](https://github.com/shubh-3011/rk-keyboard-software-research)
 **Local path:** `C:\Users\shubh\Downloads\sshorcale\rk-keyboard-software-research`

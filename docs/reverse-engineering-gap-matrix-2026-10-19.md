@@ -1,5 +1,13 @@
 # Full-suite reverse-engineering gap matrix — status updated 2026-10-25
 
+> **2026-10-26 correction:** The earlier missing UI-to-brightness-store gap
+> below is superseded by the [normalized record-base trace](rk-406-brightness-record-base-correction-2026-10-26.md).
+> Setter alias `+0x0C` is canonical brightness `+0x04`; the mouse-up/parent
+> handler bridge is statically established. Separate ordinary/firmware-2
+> [offline codecs](rk-406-command04-offline-codec-2026-10-26.md) now preserve
+> unknown seed bytes. Runtime family selection, physical units/acceptance,
+> other control workflows and measured UI/performance parity remain open.
+
 ## Scope of this review
 
 This audit combines the repo's coverage ledger, artifact index, package

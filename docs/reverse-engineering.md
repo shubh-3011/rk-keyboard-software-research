@@ -687,10 +687,12 @@ still unresolved.
 
 The [brightness handler field-boundary audit](rk-406-brightness-handler-field-boundary.md)
 traces private messages `0x0800` and `0x0801` through the UI state-copy helper.
-That helper updates several lighting-record fields but not the brightness
-index at `+0x04`; the report therefore does not connect this UI event to the
-family-specific writer, even though separate conditional serializer paths
-translate `DefBri`/`LightHW` values into protocol payloads.
+Its earlier no-brightness-store conclusion was incorrect: the setter uses
+`config+0x2138`, so its `+0x0C` store is canonical record `+0x04` at
+`config+0x2140`. The [2026-10-26 correction](rk-406-brightness-record-base-correction-2026-10-26.md)
+verifies the slider mouse-up/selection-state/parent-handler/setter bridge and
+the matching refresh/serializer field. The parent can signal Apply mask `2`
+and persist state; runtime family selection and physical effects remain open.
 
 The separate per-key mapping flow is now traced farther: `CLedDlg` handlers
 `0x0481` and `0x0482` copy 132 position values into the active profile's color

@@ -1,5 +1,15 @@
 # RK 4.06 brightness handler to writer boundary
 
+> **Correction — 2026-10-26:** The no-brightness-store conclusion below is
+> superseded by the [record-base correction](rk-406-brightness-record-base-correction-2026-10-26.md).
+> The helper uses an alias based at `config+0x2138`, not canonical record
+> `config+0x2140`. Its `[alias+0x0C]` store at `0x004254F9` **does write
+> canonical brightness `+0x04`**. A hash-pinned verifier checks 53 instruction
+> facts and the mouse-up/parent-message bridge. The sections below retain the
+> historical analysis, including its erroneous negative claims, and must not
+> be read as current evidence that the UI setter is missing. Runtime dispatch,
+> concrete family and physical effects remain unverified.
+
 ## Scope and identity
 
 This static follow-up narrows the unresolved brightness path in the 4.06

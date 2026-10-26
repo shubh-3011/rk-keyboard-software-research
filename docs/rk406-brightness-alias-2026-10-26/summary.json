@@ -1,0 +1,48 @@
+{
+  "binary_sha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+  "instruction_facts": 53,
+  "mfc_rows": [
+    {
+      "va": "0x005D5E00",
+      "message": "0x0202",
+      "target": "0x0044D150"
+    },
+    {
+      "va": "0x005D5E30",
+      "message": "0x0800",
+      "target": "0x0044DA80"
+    },
+    {
+      "va": "0x005CD030",
+      "message": "0x0800",
+      "target": "0x00422190"
+    }
+  ],
+  "canonical_record_base": "config+0x2140+row*0x30",
+  "setter_alias_base": "config+0x2138+row*0x30",
+  "alias_member_to_canonical_member": {
+    "0x08": "0x00",
+    "0x0C": "0x04",
+    "0x18": "0x10",
+    "0x34": "0x2C"
+  },
+  "conclusion": "Selected-row UI state-copy helper writes canonical brightness offset +0x04; prior negative claim was a base-normalization error.",
+  "limitations": [
+    "Static conditional paths only; runtime event delivery and physical brightness remain unobserved.",
+    "The getter optionally translates a selection through a value table; its invocation is proven, not every possible control configuration.",
+    "UI-to-worker continuation is guard-dependent and concrete runtime family remains unknown."
+  ],
+  "rea_source": {
+    "evidence_id": "ev_3cd9be563f80334bed8ef1a62351127206977c720e5f87b695d9c1574454eb74",
+    "record_sha256": "a478c8218daafb9d2eb7547cbc89abfc37ebdb461d6ce075c285938488f22973",
+    "completion_status": "unknown",
+    "output_truncated": true,
+    "limitations": [
+      "The executable version and supported formats are reported as unknown because no reliable version probe was performed.",
+      "A non-zero process exit is preserved as an observed command result.",
+      "The provider command ended before completion could be confirmed; captured output is partial.",
+      "When both are available, pre-run and post-run digests detect artifact changes across the provider call but cannot prove the exact bytes consumed during the call."
+    ],
+    "retention": "Full partial-output record retained locally; selected exact lines in instructions.csv are derived excerpts, not replacement canonical Evidence."
+  }
+}

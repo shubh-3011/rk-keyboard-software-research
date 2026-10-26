@@ -836,19 +836,24 @@ For current blockers and the recommended reverse-engineering order, see the
   One LightUI-based construction path stores selector `0x95` in the `+0x9E0`
   field of `CLedDlg+0x1A6C`, constructed as RTTI-identified `CPngSliderBar`.
   Its recovered MFC map binds `0x0800`/`0x0801` to the matching sender pair,
-  and the parent `CLedDlg` map has corresponding handlers. Runtime dispatch,
-  visible label/meaning, and widget-to-writer association remain unresolved.
-  A full-code reference census
+   and the parent `CLedDlg` map has corresponding handlers. A 2026-10-26
+   correction verifies the mouse-up/selection-state/parent-handler setter
+   bridge. Runtime dispatch and physical effect remain unobserved.
+   A full-code reference census
   finds `LightUI` writes only in the profile loader. A separate record census
-  traces `DefBri` into runtime `+0x04` during initialization; the selected-row
-  helper and five direct callers do not write that field. The `0x0800` parent
+   traces `DefBri` into runtime `+0x04` during initialization. The earlier claim
+   that the selected-row helper does not write that field was a base error:
+   `[config+0x2138+row*0x30+0x0C]` is canonical record `+0x04`.
+   The setter calls the brightness child getter and stores its result there.
+   The `0x0800` parent
   handler can conditionally signal worker mask `0x02` and save eligible
   `0x3E74`-byte objects to `pro.dct`, including current brightness bytes; its
   observed save-loop mutation is selected-row `+0x213C`, not brightness
   `+0x04`. Recovered family serializers can conditionally consume the existing
-  value through `LightHW`, but the runtime receiver and UI-to-value-writer edge
-  remain unresolved. Physical brightness
-  units and the widget-to-writer path remain unresolved. See the
+   value through `LightHW`; the UI-to-value field identity is now established
+   statically, while the concrete runtime receiver and physical brightness
+   units/effects remain unresolved. See the
+   [record-base correction](docs/rk-406-brightness-record-base-correction-2026-10-26.md),
   [brightness trace](docs/reverse-engineering.md#brightness-profile-ui-and-serializer-path)
   and the [UI-to-handler follow-up](docs/rk-lighting-brightness-ui-handler-audit.md),
   [field-boundary follow-up](docs/rk-406-brightness-handler-field-boundary.md),

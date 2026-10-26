@@ -59,6 +59,8 @@ namespace RkRebuild
         public bool StartWithWindows { get; set; }
         public Dictionary<string, string> KeyLabelDrafts { get; set; }
         public Dictionary<string, List<string>> MacroDrafts { get; set; }
+        public Dictionary<string, List<MacroTimeline>> MacroTimelines { get; set; }
+        public Dictionary<string, LightingDraft> LightingDrafts { get; set; }
         public Dictionary<string, DriveDraft> DriveDrafts { get; set; }
         public Dictionary<string, string> PhotoVariantOverrides { get; set; }
         public Dictionary<string, string> AppearanceVariantOverrides { get; set; }
@@ -70,6 +72,8 @@ namespace RkRebuild
             StartWithWindows = false;
             KeyLabelDrafts = new Dictionary<string, string>();
             MacroDrafts = new Dictionary<string, List<string>>();
+            MacroTimelines = new Dictionary<string, List<MacroTimeline>>();
+            LightingDrafts = new Dictionary<string, LightingDraft>();
             DriveDrafts = new Dictionary<string, DriveDraft>();
             PhotoVariantOverrides = new Dictionary<string, string>();
             AppearanceVariantOverrides = new Dictionary<string, string>();
@@ -153,6 +157,8 @@ namespace RkRebuild
                     {
                         if (saved.KeyLabelDrafts == null) saved.KeyLabelDrafts = new Dictionary<string, string>();
                         if (saved.MacroDrafts == null) saved.MacroDrafts = new Dictionary<string, List<string>>();
+                        if (saved.MacroTimelines == null) saved.MacroTimelines = new Dictionary<string, List<MacroTimeline>>();
+                        if (saved.LightingDrafts == null) saved.LightingDrafts = new Dictionary<string, LightingDraft>();
                         if (saved.DriveDrafts == null) saved.DriveDrafts = new Dictionary<string, DriveDraft>();
                         if (saved.PhotoVariantOverrides == null) saved.PhotoVariantOverrides = new Dictionary<string, string>();
                         if (saved.AppearanceVariantOverrides == null) saved.AppearanceVariantOverrides = new Dictionary<string, string>();
@@ -188,6 +194,7 @@ namespace RkRebuild
         public List<int> LightingSlots = new List<int>();
         public List<string> Layers = new List<string>();
         public List<LayoutKey> Keys = new List<LayoutKey>();
+        public Dictionary<string, string> Options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
     internal sealed class PnpKeyboard
@@ -559,6 +566,9 @@ namespace RkRebuild
                 profile.LayoutId = GetString(item, "layoutId");
                 profile.DirectPid = GetBool(item, "isDirectPid");
                 profile.KeyCount = GetInt(item, "keyCount");
+                JsonElement options = GetValue(GetValue(item, "profileData"), "options");
+                if (options.ValueKind == JsonValueKind.Object)
+                    foreach (JsonProperty option in options.EnumerateObject()) profile.Options[option.Name] = option.Value.ToString();
                 JsonElement features = GetValue(item, "features");
                 if (features.ValueKind == JsonValueKind.Object)
                 {
@@ -628,7 +638,7 @@ namespace RkRebuild
         public override string ToString() { return Name; }
     }
 
-    internal sealed class MainWindow : Window
+    internal sealed partial class MainWindow : Window
     {
         private static readonly MediaColor Ink = MediaColor.FromRgb(35, 42, 53);
         private static readonly MediaColor Muted = MediaColor.FromRgb(111, 120, 133);
@@ -1351,6 +1361,7 @@ namespace RkRebuild
         private void RenderLighting()
         {
             AddIntro("Lighting profile data", "This page shows the option slots recorded in the selected software profile. Slot availability is evidence, not proof of names, hardware support, or a working write path.");
+            RenderLightingDraft();
             Border summary = Card();
             StackPanel head = new StackPanel { Margin = new Thickness(20) };
             summary.Child = head;
@@ -1371,12 +1382,14 @@ namespace RkRebuild
                 slots.Children.Add(card);
             }
             _pageBody.Children.Add(slots);
-            _pageBody.Children.Add(CardWithText("Lighting control, brightness adjustment, effect transfer, and readback are intentionally unavailable while hardware call paths remain under static review."));
+            _pageBody.Children.Add(CardWithText("Only a local profile-bound draft can be saved here. Hardware lighting changes, effect transfer, and readback remain unavailable while model-specific call paths are validated."));
         }
 
         private void RenderMacros()
         {
-            AddIntro("Local macro notes", "Create simple text notes in this profile library. This editor does not capture key input, encode RK macro records, or send them to a keyboard.");
+            _pageBody.Children.Clear();
+            RenderMacroTimelines();
+            _pageBody.Children.Add(Headline("Legacy local notes (preserved separately)", 16));
             List<string> macros;
             if (!_settings.MacroDrafts.TryGetValue(_selected.Code, out macros))
             {
@@ -1401,7 +1414,7 @@ namespace RkRebuild
                 inner.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
                 inner.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 item.Child = inner;
-                inner.Children.Add(new TextBlock { Text = macros[i], Foreground = Brush(52, 60, 72), FontSize = 12, TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center });
+                inner.Children.Add(new TextBlock { Text = macros[i], Foreground = Brush(220, 220, 220), FontSize = 12, TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center });
                 Button remove = ActionButton("Remove", false);
                 Grid.SetColumn(remove, 1);
                 remove.Click += delegate { macros.RemoveAt(index); SettingsStore.Save(_settings); RenderMacros(); };

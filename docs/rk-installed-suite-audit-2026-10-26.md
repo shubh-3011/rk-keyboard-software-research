@@ -120,9 +120,11 @@ translated caption as a working control:
    and [RGB payload audit](rk-rgb-lighting-color-payload-audit.md).
    Candidate rows are not independently numbered child controls. Complete
    label/value → payload → physical-effect mappings are not established.
-5. **Brightness/speed/color:** profile records and serializers are partially
-   linked; the UI-to-brightness-record writer remains unresolved. See the
-   [brightness boundary](rk-406-brightness-handler-field-boundary.md).
+5. **Brightness/speed/color:** the subsequent
+   [record-base correction](rk-406-brightness-record-base-correction-2026-10-26.md)
+   closes the static UI-to-brightness-record writer gap: setter alias `+0x0C`
+   equals canonical record `+0x04`. Runtime family and physical effects remain
+   unverified. The earlier negative report is retained as superseded history.
 6. **Macro create/import/export/edit/record:** the
    [format audit](rk-macro-format-and-path-audit.md) documents `0x342`-byte
    records and the two-bit rotation used for `.mck` persistence. The
@@ -279,8 +281,9 @@ appropriate rights, plus verified layout/event behavior.
 
 Next parity work should close one bounded end-to-end workflow at a time:
 
-1. Resolve the installed brightness UI → runtime value-write edge and the
-   active-family serializer, without conflating label drawing with device I/O.
+1. The installed brightness UI → runtime value-write field identity is now
+   corrected and statically verified; continue the remaining active-family,
+   payload-schema and hardware-acceptance work without treating it as execution.
 2. Produce pure offline per-family codecs with fixtures and strict bounds;
    identify unknown fields instead of inserting guessed defaults.
 3. Port structured local macro editing to the native app with round-trip
