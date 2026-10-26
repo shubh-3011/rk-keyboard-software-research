@@ -89,6 +89,27 @@ namespace RkRebuild
                     DataGrid endpoints = new DataGrid { AutoGenerateColumns = true, IsReadOnly = true, CanUserAddRows = false, CanUserDeleteRows = false,
                         Height = 180, ItemsSource = candidates, HeadersVisibility = DataGridHeadersVisibility.Column };
                     endpointPanel.Children.Add(endpoints);
+                    string[] g5Ids = candidates.Where(endpoint => endpoint.UsagePage == "FF02" && endpoint.Usage == "0002" && endpoint.FeatureReportBytes == 520 && endpoint.OutputReportBytes == 0 && endpoint.InputReportBytes <= 20)
+                        .Select(endpoint => endpoint.VendorId + ":" + endpoint.ProductId).Distinct().ToArray();
+                    foreach (string identity in g5Ids)
+                    {
+                        Button readG5 = ActionButton("Experimental G5 lighting query · " + identity, false);
+                        endpointPanel.Children.Add(readG5);
+                        readG5.Click += async delegate {
+                            if (_lightingQueryRunning) return;
+                            if (MessageBox.Show(this, "Send one command 84 feature query to the selected 520-byte G5 endpoint? Close the vendor utility first. This is an active configuration query, not a settings write or firmware read. Descriptor report IDs must be unambiguous; no fallback protocol will be tried.", "Experimental G5 configuration query", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                            _lightingQueryRunning = true; readG5.IsEnabled = false;
+                            try
+                            {
+                                string report = await G5LightingCommand.ReadAsync(identity);
+                                endpointPanel.Children.Add(Paragraph("Received a complete 128-byte G5 lighting block with its expected signature. No G5 settings writes are enabled by this read.", 12));
+                                SaveFileDialog save = new SaveFileDialog { FileName = "rk-g5-lighting-read.json", Filter = "G5 lighting query (*.json)|*.json" };
+                                if (save.ShowDialog(this) == true) File.WriteAllText(save.FileName, report, new UTF8Encoding(false));
+                            }
+                            catch (Exception ex) { MessageBox.Show(this, ex.Message, "G5 lighting query unavailable", MessageBoxButton.OK, MessageBoxImage.Warning); }
+                            finally { _lightingQueryRunning = false; readG5.IsEnabled = true; }
+                        };
+                    }
                     string[] wirelessIds = candidates.Where(endpoint => endpoint.UsagePage == "FF02" && endpoint.Usage == "0002" && endpoint.InputReportBytes == 20 && endpoint.OutputReportBytes == 20)
                         .Select(endpoint => endpoint.VendorId + ":" + endpoint.ProductId).Distinct().ToArray();
                     foreach (string identity in wirelessIds)

@@ -3,6 +3,15 @@ $ErrorActionPreference = "Stop"
 $exe = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "dist\RK-Rebuild.exe")).Path
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $report = Join-Path (Resolve-Path -LiteralPath $OutputDirectory).Path ("compatibility-" + [guid]::NewGuid().ToString("N") + ".json")
+$uiReport = $report + ".ui.json"
+$uiProcess = Start-Process -FilePath $exe -ArgumentList @("--ui-smoke-test", ('"' + $uiReport + '"')) -PassThru
+try {
+    if (-not $uiProcess.WaitForExit(30000)) { $uiProcess.Kill(); throw "Offline UI smoke exceeded its deadline." }
+    if ($uiProcess.ExitCode -ne 0) { throw "Offline UI rendering failed." }
+} finally { $uiProcess.Dispose() }
+$ui = Get-Content -LiteralPath $uiReport -Raw | ConvertFrom-Json
+if (-not $ui.Passed -or $ui.Pages.Count -ne 9 -or -not $ui.MissingVendorResources -or $ui.SettingsPersistence -or $ui.Network -or $ui.DeviceAccess) { throw "Offline UI smoke scope/rendering mismatch." }
+Write-Host "PASS: all nine WPF pages rendered without vendor resources, settings persistence, network or device access."
 function Export-Report {
     $process = Start-Process -FilePath $exe -ArgumentList @("--compatibility-report", ('"' + $report + '"')) -PassThru -Wait
     return $process.ExitCode
@@ -32,6 +41,23 @@ foreach ($endpoint in $metadata.Endpoints) {
 $invalidPath = $report + ".invalid-query.json"
 $invalidQuery = Start-Process -FilePath $exe -ArgumentList @("--read-wireless-lighting", "not-an-identity", ('"' + $invalidPath + '"')) -PassThru -Wait
 if ($invalidQuery.ExitCode -eq 0 -or (Test-Path -LiteralPath $invalidPath)) { throw "Invalid query identity was not rejected before I/O." }
+$invalidG5Path = $report + ".invalid-g5.json"
+$invalidG5 = Start-Process -FilePath $exe -ArgumentList @("--read-g5-lighting", "not-an-identity", ('"' + $invalidG5Path + '"')) -PassThru -Wait
+if ($invalidG5.ExitCode -eq 0 -or (Test-Path -LiteralPath $invalidG5Path)) { throw "Invalid G5 query identity was not rejected before worker/native I/O." }
+$worker = New-Object System.Diagnostics.Process
+$worker.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+$worker.StartInfo.FileName = $exe
+$worker.StartInfo.Arguments = "--internal-g5-lighting-query invalid"
+$worker.StartInfo.UseShellExecute = $false
+$worker.StartInfo.CreateNoWindow = $true
+$worker.StartInfo.RedirectStandardOutput = $true
+try {
+    if (-not $worker.Start()) { throw "Cannot start published query worker." }
+    $workerOutput = $worker.StandardOutput.ReadToEndAsync()
+    if (-not $worker.WaitForExit(12000)) { $worker.Kill(); throw "Published query worker did not exit in its bounded interval." }
+    $workerReport = $workerOutput.GetAwaiter().GetResult()
+    if ($worker.ExitCode -eq 0 -or ($workerReport | ConvertFrom-Json).ErrorCode -ne "InvalidEndpointOrIdentity") { throw "Published worker did not fail closed before native I/O." }
+} finally { $worker.Dispose() }
 $unconfirmedPath = $report + ".unconfirmed-apply.json"
 $unconfirmedApply = Start-Process -FilePath $exe -ArgumentList @("--apply-observed-wireless-mode", "258A:0150", "1", ('"' + $report + '"'), ('"' + $unconfirmedPath + '"')) -PassThru -Wait
 if ($unconfirmedApply.ExitCode -eq 0 -or (Test-Path -LiteralPath $unconfirmedPath)) { throw "Unconfirmed lighting write was not rejected before I/O." }

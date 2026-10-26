@@ -30,8 +30,28 @@ namespace RkRebuild
         [STAThread]
         private static void Main(string[] args)
         {
+            // Keep smoke failures headless and bypass all persisted settings/startup work.
+            if (args.Length > 0 && String.Equals(args[0], "--ui-smoke-test", StringComparison.OrdinalIgnoreCase))
+            {
+                Environment.ExitCode = UiSmoke.Run(args);
+                return;
+            }
             try
             {
+                if (args.Length > 0 && String.Equals(args[0], "--internal-g5-lighting-query", StringComparison.OrdinalIgnoreCase))
+                {
+                    Environment.ExitCode = args.Length == 2 ? G5LightingCommand.RunWorker(args[1]) : 1;
+                    return;
+                }
+                if (args.Length > 0 && String.Equals(args[0], "--read-g5-lighting", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (args.Length != 3) throw new ArgumentException("Usage: RK-Rebuild.exe --read-g5-lighting <VID:PID> <new-json-path>");
+                    if (File.Exists(args[2])) throw new IOException("Output file already exists.");
+                    string result = G5LightingCommand.ReadAsync(args[1]).GetAwaiter().GetResult();
+                    using FileStream output = new FileStream(args[2], FileMode.CreateNew, FileAccess.Write);
+                    using StreamWriter writer = new StreamWriter(output, new UTF8Encoding(false)); writer.Write(result);
+                    return;
+                }
                 if (args.Length > 0 && String.Equals(args[0], "--apply-observed-wireless-mode", StringComparison.OrdinalIgnoreCase))
                 {
                     if (args.Length != 6 || args[5] != "--confirm-experimental-write" || (args[2] != "0" && args[2] != "1"))
@@ -102,7 +122,7 @@ namespace RkRebuild
             }
             catch (Exception ex)
             {
-                if (args.Length > 0 && (String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--apply-observed-wireless-mode", StringComparison.OrdinalIgnoreCase)))
+                if (args.Length > 0 && (String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--hid-diagnostics", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--read-wireless-lighting", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--apply-observed-wireless-mode", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--read-g5-lighting", StringComparison.OrdinalIgnoreCase) || String.Equals(args[0], "--internal-g5-lighting-query", StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.Error.WriteLine(ex.Message);
                     Environment.ExitCode = 1;
@@ -735,8 +755,9 @@ namespace RkRebuild
         private string _page = "Device";
         private bool _allowClose;
 
-        public MainWindow(ModelCatalog catalog, DriveDirectory driveDirectory, List<AppearancePhoto> appearancePhotos, AppSettings settings)
+        public MainWindow(ModelCatalog catalog, DriveDirectory driveDirectory, List<AppearancePhoto> appearancePhotos, AppSettings settings, bool offlineUiSmoke = false)
         {
+            _offlineUiSmoke = offlineUiSmoke;
             _catalog = catalog;
             _driveDirectory = driveDirectory;
             _appearancePhotos = appearancePhotos ?? new List<AppearancePhoto>();
@@ -746,7 +767,9 @@ namespace RkRebuild
                 _knownDeviceIds.Add(_catalog.VendorId + ":" + NormalizeDeviceId(profile.Code));
             foreach (DriveConnection connection in _driveDirectory.Models.SelectMany(model => model.Connections))
                 _knownDeviceIds.Add(NormalizeDeviceId(connection.VendorId) + ":" + NormalizeDeviceId(connection.ProductId));
-            if (String.IsNullOrWhiteSpace(_settings.ResourceRoot))
+            if (_offlineUiSmoke)
+                _settings.ResourceRoot = UiSmoke.NewMissingResourceRoot();
+            else if (String.IsNullOrWhiteSpace(_settings.ResourceRoot))
                 _settings.ResourceRoot = FindInstalledResourceRoot();
             else
                 _settings.ResourceRoot = NormalizeResourceRoot(_settings.ResourceRoot);
@@ -762,15 +785,18 @@ namespace RkRebuild
             Background = Brush(20, 20, 20);
             FontFamily = LoadRkFont();
             BuildShell();
-            _tray = BuildTray();
+            if (!_offlineUiSmoke) _tray = BuildTray();
             Closing += OnClosing;
             StateChanged += OnStateChanged;
             SelectProfile(_selected, false);
-            RefreshPnpDevices(true);
-            _pnpTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
-            _pnpTimer.Tick += delegate { RefreshPnpDevices(true); };
-            _pnpTimer.Start();
-            SetStartup(_settings.StartWithWindows);
+            if (!_offlineUiSmoke)
+            {
+                RefreshPnpDevices(true);
+                _pnpTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
+                _pnpTimer.Tick += delegate { RefreshPnpDevices(true); };
+                _pnpTimer.Start();
+                SetStartup(_settings.StartWithWindows);
+            }
         }
 
         private void BuildShell()
@@ -1036,7 +1062,7 @@ namespace RkRebuild
                 _profileSelector.Text = profile.Name;
             }
             _profileHeader.Text = profile.Name + "  ·  reference profile " + profile.Code + "  ·  not a detected device";
-            if (save) SettingsStore.Save(_settings);
+            if (save) SaveSettings();
             RenderPage();
         }
 
@@ -1177,7 +1203,7 @@ namespace RkRebuild
                     card.Click += delegate {
                         appearance = option;
                         _settings.AppearanceVariantOverrides[appearancePreferenceKey] = option.Id;
-                        SettingsStore.Save(_settings);
+                        SaveSettings();
                         photoKicker.Text = "USER-SELECTED FINISH PHOTO";
                         appearanceLabel.Text = "Selected finish: " + option.Name + ". This photo is your choice; USB identity does not report physical color.";
                         foreach (Button appearanceCard in appearanceCards)
@@ -1210,7 +1236,7 @@ namespace RkRebuild
                     DriveModel selectedPhoto = photoSelector.SelectedItem as DriveModel;
                     if (selectedPhoto == null) return;
                     _settings.PhotoVariantOverrides[photoPreferenceKey] = selectedPhoto.Name;
-                    SettingsStore.Save(_settings);
+                    SaveSettings();
                     LoadDriveImage(image, selectedPhoto.ImageUrl, photoStatus);
                 };
                 artStack.Children.Add(photoSelector);
@@ -1237,6 +1263,7 @@ namespace RkRebuild
 
         private async void RefreshPnpDevices(bool redraw)
         {
+            if (_offlineUiSmoke) { _smokePnpRequestsSuppressed++; return; }
             if (_pnpScanRunning) return;
             _pnpScanRunning = true;
             try
@@ -1428,7 +1455,7 @@ namespace RkRebuild
             if (dialog.ShowDialog() == true)
             {
                 _settings.KeyLabelDrafts[draftKey] = dialog.Value;
-                SettingsStore.Save(_settings);
+                SaveSettings();
                 RenderKeymap();
             }
         }
@@ -1492,7 +1519,7 @@ namespace RkRebuild
                 inner.Children.Add(new TextBlock { Text = macros[i], Foreground = Brush(220, 220, 220), FontSize = 12, TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center });
                 Button remove = ActionButton("Remove", false);
                 Grid.SetColumn(remove, 1);
-                remove.Click += delegate { macros.RemoveAt(index); SettingsStore.Save(_settings); RenderMacros(); };
+                remove.Click += delegate { macros.RemoveAt(index); SaveSettings(); RenderMacros(); };
                 inner.Children.Add(remove);
                 item.Margin = new Thickness(0, 0, 0, 9);
                 _pageBody.Children.Add(item);
@@ -1508,7 +1535,7 @@ namespace RkRebuild
                 List<string> macros;
                 if (!_settings.MacroDrafts.TryGetValue(_selected.Code, out macros)) _settings.MacroDrafts[_selected.Code] = macros = new List<string>();
                 macros.Add(dialog.Value);
-                SettingsStore.Save(_settings);
+                SaveSettings();
                 RenderMacros();
             }
         }
@@ -1876,7 +1903,7 @@ namespace RkRebuild
                                 working.KeyMappings[slotSelector.Key] = selectedChoice.KeyCode.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
                         }
                         _settings.DriveDrafts[draftKey] = working;
-                        SettingsStore.Save(_settings);
+                        SaveSettings();
                         keymapStatus.Text = "Saved to this PC only.";
                     };
                     keymapSaveRow.Children.Add(saveKeymap);
@@ -1936,7 +1963,7 @@ namespace RkRebuild
                             working.Color = color.Text.Trim();
                             working.MixColor = mixColor.IsChecked == true;
                             _settings.DriveDrafts[draftKey] = working;
-                            SettingsStore.Save(_settings);
+                            SaveSettings();
                             saveStatus.Text = "Saved to this PC only.";
                         };
                         saveRow.Children.Add(save);
@@ -2058,7 +2085,7 @@ namespace RkRebuild
                         if (stale != MessageBoxResult.Yes) return;
                     }
                     _settings.DriveDrafts[GetDriveDraftKey(model, connection)] = CopyDriveDraft(package.Draft);
-                    SettingsStore.Save(_settings);
+                    SaveSettings();
                     draftFileStatus.Text = "Imported into this PC's local draft settings only.";
                     redraw();
                 }
@@ -2320,6 +2347,12 @@ namespace RkRebuild
         private async void LoadDriveImage(Image target, string imageUrl, TextBlock status)
         {
             target.Source = null;
+            if (_offlineUiSmoke)
+            {
+                _smokeImageRequestsSuppressed++;
+                status.Text = "Network images disabled for offline UI smoke test.";
+                return;
+            }
             Uri uri;
             if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps
                 || !(String.Equals(uri.Host, "drive.rkgaming.com", StringComparison.OrdinalIgnoreCase)
@@ -2406,12 +2439,13 @@ namespace RkRebuild
         {
             _settings.StartWithWindows = enabled;
             SetStartup(enabled);
-            SettingsStore.Save(_settings);
+            SaveSettings();
             UpdateTrayStartupText();
         }
 
         private void SetStartup(bool enabled)
         {
+            if (_offlineUiSmoke) { _smokeStartupRequestsSuppressed++; return; }
             const string keyPath = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
             try
             {
@@ -2512,7 +2546,7 @@ namespace RkRebuild
                 if (dialog.ShowDialog() == Forms.DialogResult.OK)
                 {
                     _settings.ResourceRoot = NormalizeResourceRoot(dialog.SelectedPath);
-                    SettingsStore.Save(_settings);
+                    SaveSettings();
                     FontFamily = LoadRkFont();
                     BuildShell();
                     SelectProfile(_selected, false);

@@ -65,7 +65,7 @@ namespace RkRebuild
                 {
                     LightingDraftRules.Validate(draft, _selected.LightingSlots, ui);
                     _settings.LightingDrafts[_selected.Code] = new LightingDraft { ProfileSlot = draft.ProfileSlot, BrightnessIndex = draft.BrightnessIndex };
-                    SettingsStore.Save(_settings);
+                    SaveSettings();
                     status.Text = "Saved locally for " + _selected.Code + ". Keyboard unchanged.";
                 }
                 catch (Exception ex) { MessageBox.Show(this, ex.Message, "Local lighting draft", MessageBoxButton.OK, MessageBoxImage.Warning); }

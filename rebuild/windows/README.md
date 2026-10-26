@@ -8,6 +8,27 @@ WebView2.
 
 ## Included now
 
+### 0.6 preview: wired query, MSI and offline UI checks
+
+The USB G5 lighting reader has been hardware-validated with the published
+EXE on one observed `258A:01AF` revision. It discovers the Feature report ID
+from HID metadata and uses an isolated, deadline-bounded helper. This does
+not enable wired settings writes or certify other models/revisions.
+
+```powershell
+.\RK-Rebuild.exe --read-g5-lighting 258A:01AF new-g5-read.json
+.\RK-Rebuild.exe --ui-smoke-test new-offline-ui-report.json
+```
+
+Close the vendor utility normally before the active lighting query. The UI
+smoke renders nine pages without vendor assets, network, settings persistence
+or device access; it does not exercise hardware buttons or prove feature parity.
+The independent unsigned per-user MSI is built with
+`installer\build-installer.ps1`; see [installer notes](installer/README.md).
+See [validation and limits](../../docs/rk406-native-g5-reader-validation-2026-10-27.md).
+
+### Existing capabilities
+
 - A local profile catalog built from the 265 entries in the separately
   documented RK 4.6-labeled package snapshot.
 - A second, distinct RK Drive directory built from the public web app's

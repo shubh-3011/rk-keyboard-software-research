@@ -1,0 +1,14 @@
+{
+  "Format": "published-native-g5-query-check",
+  "SchemaVersion": 1,
+  "ExecutableSha256": "1e685139a9bfcf98ad5672f3cbc1a3f646721633542efb86b4159df303f50c3f",
+  "VendorSha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+  "Identity": "258A:01AF",
+  "ConfigurationWritesPerformed": false,
+  "ExitCode": 0,
+  "BlockBytes": 128,
+  "ReportIdHex": "09",
+  "QueryReportSha256": "375d4abda3993baca4c63617a76eb9e0af4bf0f24e11ceb7e5edc75ba332a249",
+  "ValidatedQueryResult": true,
+  "VendorRestartRequested": true
+}

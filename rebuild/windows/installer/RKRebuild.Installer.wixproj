@@ -1,0 +1,17 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputName>RK-Rebuild-$(PackageVersion)-win-x64-experimental</OutputName>
+    <DefineConstants>PackageVersion=$(PackageVersion);SourceExe=$(SourceExe);LicenseFile=$(LicenseFile);ProductCode=$(ProductCode)</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- ICE91 warns that LocalAppData cannot serve per-machine installs. That is
+         intentional: Scope=perUser and NOT ALLUSERS explicitly forbid them. -->
+    <SuppressIces>ICE91</SuppressIces>
+    <PdbType>none</PdbType>
+  </PropertyGroup>
+  <Target Name="RequirePackagingInputs" BeforeTargets="BeforeBuild">
+    <Error Condition="'$(PackageVersion)' == '' Or '$(SourceExe)' == '' Or '$(LicenseFile)' == '' Or '$(ProductCode)' == ''"
+           Text="Use installer/build-installer.ps1 to validate the executable and supply packaging inputs." />
+  </Target>
+</Project>

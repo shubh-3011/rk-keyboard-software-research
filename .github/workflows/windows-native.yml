@@ -25,7 +25,7 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -44,9 +44,32 @@ jobs:
       - name: Build self-contained Windows executable
         shell: pwsh
         run: ./rebuild/windows/build.ps1
-      - name: Smoke-test published EXE without device access
+      - name: Smoke-test published EXE without protocol traffic
         shell: pwsh
         run: ./rebuild/windows/smoke-test.ps1 -OutputDirectory "$env:RUNNER_TEMP/rk-smoke"
+      - name: Build and inspect per-user MSI without installing
+        shell: pwsh
+        run: ./rebuild/windows/installer/build-installer.ps1
+      - name: Check out immutable previous release for upgrade testing
+        uses: actions/checkout@v4
+        with:
+          ref: 911a50e7f91a2fa8ffd19ea0f4dadda93c526821
+          path: .ci-previous
+      - name: Build previous executable and package using current installer tooling
+        shell: pwsh
+        run: |
+          ./.ci-previous/rebuild/windows/build.ps1
+          ./rebuild/windows/installer/build-installer.ps1 -SourceExe './.ci-previous/rebuild/windows/dist/RK-Rebuild.exe' -VersionProject './.ci-previous/rebuild/windows/RKRebuild.csproj' -OutputDirectory "$env:RUNNER_TEMP/rk-previous-installer"
+      - name: Exercise installer lifecycle only on disposable hosted runner
+        shell: pwsh
+        run: ./rebuild/windows/installer/test-installer-lifecycle.ps1 -CurrentMsiPath './rebuild/windows/dist/installer/RK-Rebuild-0.6.0-win-x64-experimental.msi' -PreviousMsiPath "$env:RUNNER_TEMP/rk-previous-installer/RK-Rebuild-0.5.0-win-x64-experimental.msi" -SourceExe './rebuild/windows/dist/RK-Rebuild.exe' -ConfirmDisposableVm
+      - name: Retain installer lifecycle logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RK-Rebuild-installer-lifecycle
+          path: ${{ runner.temp }}/rk-installer-lifecycle-*/
+          if-no-files-found: warn
       - name: Upload native Windows build
         uses: actions/upload-artifact@v4
         with:
@@ -54,4 +77,6 @@ jobs:
           path: |
             rebuild/windows/dist/RK-Rebuild.exe
             rebuild/windows/dist/RK-Rebuild.exe.sha256
+            rebuild/windows/dist/installer/*.msi
+            rebuild/windows/dist/installer/*.msi.sha256
           if-no-files-found: error

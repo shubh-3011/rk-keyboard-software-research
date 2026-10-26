@@ -61,7 +61,7 @@ namespace RkRebuild
                 if (timelines.Count >= MacroTimelineCodec.MaxTimelines) throw new InvalidDataException("Local limit: 100 timelines per profile.");
                 _activeTimeline = new MacroTimeline();
                 timelines.Add(_activeTimeline);
-                SettingsStore.Save(_settings);
+                SaveSettings();
                 RenderMacros();
             }));
             library.Children.Add(MacroButton("Import local JSON", delegate {
@@ -72,7 +72,7 @@ namespace RkRebuild
                 // Always append. Imported drafts cannot overwrite another timeline or legacy note.
                 timelines.Add(imported);
                 _activeTimeline = imported;
-                SettingsStore.Save(_settings);
+                SaveSettings();
                 RenderMacros();
             }));
             _pageBody.Children.Add(library);
@@ -95,7 +95,7 @@ namespace RkRebuild
                 if (String.IsNullOrWhiteSpace(name.Text)) throw new InvalidDataException("Enter a timeline name.");
                 timeline.Name = name.Text.Trim(); timeline.LoopMode = (string)loop.SelectedItem; timeline.LoopCount = count;
                 MacroTimelineCodec.Validate(timeline);
-                SettingsStore.Save(_settings); RenderMacros();
+                SaveSettings(); RenderMacros();
             }));
             header.Children.Add(MacroButton("Export saved JSON", delegate {
                 string json = MacroTimelineCodec.Export(timeline);
@@ -104,7 +104,7 @@ namespace RkRebuild
             }));
             header.Children.Add(MacroButton("Delete timeline", delegate {
                 if (MessageBox.Show(this, "Delete this structured local timeline? Legacy notes are unaffected.", "Local macro draft", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
-                timelines.Remove(timeline); _activeTimeline = null; SettingsStore.Save(_settings); RenderMacros();
+                timelines.Remove(timeline); _activeTimeline = null; SaveSettings(); RenderMacros();
             }));
             body.Children.Add(header);
 
@@ -133,7 +133,7 @@ namespace RkRebuild
                 MacroTimelineCodec.Validate(new MacroTimeline { Steps = new List<MacroStep> { step } });
                 return step;
             };
-            Action persistRows = delegate { MacroTimelineCodec.Validate(timeline); SettingsStore.Save(_settings); rows.Items.Refresh(); summary.Text = timeline.Steps.Count + " / 200 rows · total specified wait: " + timeline.Steps.Sum(step => (long)step.DelayMs) + " ms per pass (not execution duration)"; };
+            Action persistRows = delegate { MacroTimelineCodec.Validate(timeline); SaveSettings(); rows.Items.Refresh(); summary.Text = timeline.Steps.Count + " / 200 rows · total specified wait: " + timeline.Steps.Sum(step => (long)step.DelayMs) + " ms per pass (not execution duration)"; };
             WrapPanel controls = new WrapPanel();
             Action<bool> insert = before => {
                 if (timeline.Steps.Count >= MacroTimelineCodec.MaxRows) throw new InvalidDataException("Local limit: 200 rows.");
