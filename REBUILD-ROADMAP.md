@@ -5,13 +5,41 @@ Windows reconstruction developed from the evidence in this repository. It is
 separate from [Keydeck RK Studio](https://github.com/shubh-3011/keydeck-rk-studio),
 the companion web/profile editor.
 
+## Product scope: general RK support, not a single-keyboard build
+
+The target is one installable replacement for Royal Kludge keyboard owners,
+not an S98-specific utility or a build bound to the developer's connected
+keyboard. Hardware on this PC is one potential test fixture, not the product
+scope or evidence for other models.
+
+- Keep model/revision/connection descriptors separate from reusable protocol
+  backends. USB, receiver and Bluetooth variants may differ for one model name.
+- Keep installed 4.06, Hub 4.6 and RK Drive source snapshots distinct. A profile
+  or protocol label is a declaration, not a hardware-validation result.
+- Preserve every candidate for shared VID/PIDs. Neither a chosen photograph
+  nor a manual profile selection proves firmware/revision compatibility.
+- Add backends and fixtures by protocol family, with per-feature validation
+  for concrete device revisions. Do not add model-name conditionals to a common
+  codec to make one physical keyboard appear universally supported.
+- Show unsupported/unknown devices and the reason a feature is unavailable.
+  Never send speculative configuration commands to an unknown interface.
+- Require a reproducible build/install path, original redistributable assets,
+  contribution fixtures and an explicit tested-device list before broad release.
+
+The app's **All-model compatibility** page and offline JSON export present
+catalogue entries without calling them supported devices. The first-run
+reference profile has no hardcoded S98 preference. Saved user choices remain
+intact. This is a foundation for general support, not a universal-compatibility
+claim; no keyboard revision has certified hardware writes in the current app.
+
 ## Current status: first native milestone built from source
 
 The source in [`rebuild/windows/`](rebuild/windows/) is a new C# WPF Windows
 application with its own process and no Python, browser, WebView, or local web
 server. It contains the first native shell, local profile/layout browser,
-local key-label and macro-note drafts, an RK Drive ordered-slot keymap and
-layer/table/effect draft editor with descriptor-checked local JSON import/export,
+local key-label drafts, structured macro timelines and legacy notes, an RK
+Drive ordered-slot keymap and layer/table/effect draft editor with
+descriptor-checked local JSON import/export,
 tray restore/exit, opt-in start-with-Windows, and a separate directory for the
 public RK Drive keyboard registry. It checks present Windows PnP records,
 matches catalogued product IDs, resolves model photos using profile and region
@@ -78,10 +106,14 @@ separate product.
 
 ## Safety and evidence boundary
 
-The ongoing analysis remains static. The RK app/updater will not be launched,
-the keyboard HID interface will not be opened, and no keyboard report or
-command will be sent. Therefore, hardware behavior and full write-path parity
-cannot be certified by active testing in this project. Reports must keep
+Earlier reports were deliberately static. On 2026-10-26 the user authorized
+runtime investigation and tool execution to pursue general RK compatibility.
+That permission enables scoped vendor-UI/transport observations; it does not
+make an unobserved path hardware-validated. Declare the target, capture scope,
+device/connection and action for each runtime session, avoid capturing typed
+user input, and preserve before/after state where possible. Firmware flashing,
+bootloader transitions and factory resets are not part of ordinary compatibility
+testing and remain excluded unless separately planned. Reports must keep
 **proven**, **inferred**, and **unresolved** findings separate. A firmware
 readback routine is not considered safe merely because it contains a read
 call; current updater evidence includes write-before-verify operations and

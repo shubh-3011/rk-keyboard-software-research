@@ -22,6 +22,13 @@ vendor utility.
 
 **Native rebuild source:** [`rebuild/windows/`](rebuild/windows/) · **Rebuild status:** [roadmap](REBUILD-ROADMAP.md) · **Audit scope:** [coverage and open work](COVERAGE.md)
 
+**Product goal:** one installable, general Royal Kludge replacement, not a
+keyboard-specific fork. Support is developed by protocol family and explicit
+model/revision/connection descriptors. The native app's **All-model
+compatibility** page keeps Hub/RK Drive entries and shared USB identities
+separate; catalogue presence is not certified hardware support. No physical
+keyboard's results will be generalized to every RK product.
+
 **Installed-suite verification (2026-10-26):** [comprehensive handoff and workflow index](docs/rk-installed-suite-audit-2026-10-26.md),
 with a fresh 810-file / 14-group census, all 22 localization XML files,
 188 named profiles, 1,918 native import identities, and complete REA resource

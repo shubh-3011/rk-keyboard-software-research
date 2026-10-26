@@ -61,6 +61,56 @@ WebView2.
 
 ## Not a full RK replacement yet
 
+### General compatibility, not an S98-only build
+
+The product goal is a single application for RK owners across models and
+protocol families. **All-model compatibility** lists the embedded Hub 4.6 and
+RK Drive keyboard source entries, allows filtering/export, and shows every
+candidate for matching present PnP VID/PIDs. Shared IDs are not resolved by
+guessing a physical model. Mouse descriptors are excluded. There is no
+hardcoded S98 first-run preference; saved profile/photo choices still work.
+
+An entry is currently **catalogued only**: all entries explicitly report that
+hardware writes are unavailable. Declared protocol names remain source labels,
+not an automatic binding to a transport or firmware family. Separate models,
+revisions and connection types will need evidence-backed feature validation.
+
+Version 0.3.1 preserves **444 source entries**, not 444 certified keyboards:
+265 Hub profiles, 177 ordinary RK Drive connection descriptors, and two
+specialized keyboard profiles. The compatibility test suite checks all real
+source records, direct identities, source separation, ambiguous matches,
+invalid identities and mouse exclusion (11 tests / 4,513 assertions).
+
+For automation, the following exports the full catalogue without starting the
+UI, touching settings/startup or accessing hardware. The output path must be
+new; existing files are never overwritten by this CLI command:
+
+```powershell
+./dist/RK-Rebuild.exe --compatibility-report ./rk-compatibility.json
+```
+
+Unlike the general UI launch, this command does not fetch photos or enumerate
+devices. A failed export returns a nonzero process exit code without a modal
+dialog.
+
+### Runtime observation boundary
+
+With the user's runtime authorization, REA 6.7.0 attached to the already-running
+installed x86 `DeviceDriver.exe` and observed six known lighting-function entry
+counters for 1,803 ms. All six counts were zero during that idle window; the
+script detached all six interceptors. No control was changed and no argument,
+typed input, device report or configuration buffer was captured. This verifies
+the observation route, **not** an executed brightness workflow or device support.
+The [complete runtime result](../../docs/runtime-evidence/rk406-lighting-counters-2026-10-26.json)
+contains Evidence `ev_b72c93e83943aa3b5082cab9a994acab648243b9fc8bfeca1733403d30b93084`.
+REA reports artifact identity unavailable and lacks OS/architecture metadata;
+the host separately checked the installed path and SHA-256
+`c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6`
+before attaching. The script asserts x86 and checks relocated entry witnesses.
+The snapshot's `state=running` precedes REA's cleanup; cleanup reports no error.
+The reproducible [counter-only script](../../scripts/observe_rk406_lighting_counts.js)
+must not be used with other executable hashes.
+
 PnP discovery uses Windows SetupAPI's present-device list and reads device
 metadata only. A shared wireless-receiver VID/PID may identify several product
 labels, so the app asks you to select the matching photo in that case. The
@@ -100,6 +150,14 @@ catalog and does not require a separate .NET installation on its target PC.
 The build script writes a SHA-256 sidecar. Settings are local to the current
 Windows user.
 
+`./test.ps1` runs the five dependency-free native test suites; after building,
+`./smoke-test.ps1` executes only the published EXE's headless catalogue export
+and error paths. It does not start the WPF UI or touch a device. The
+[Windows CI workflow](../../.github/workflows/windows-native.yml) repeats these
+checks plus the Python synthetic tests on a clean runner and uploads the EXE
+and checksum as a downloadable build artifact. This is an unsigned Windows
+x64 preview, not a signed installer or a universal hardware-support release.
+
 ## Local macro timeline editor
 
 Release 0.3.0 adds the editor below, profile-bound lighting drafts, and pure
@@ -129,7 +187,7 @@ key/Drive drafts and macro notes are preserved.
   See the [codec evidence and limits](../../docs/rk-406-command04-offline-codec-2026-10-26.md).
 
 Neither helper is wired to a keyboard, nor do synthetic tests establish model
-compatibility. `test.ps1` isolates all four projects' intermediate/output
+compatibility. `test.ps1` isolates all five projects' intermediate/output
 directories to prevent cross-project cached-executable false positives.
 
 ### Macro workflow

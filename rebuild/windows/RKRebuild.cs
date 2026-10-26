@@ -32,6 +32,16 @@ namespace RkRebuild
         {
             try
             {
+                // Headless, offline catalogue export: no settings, tray, startup or device access.
+                if (args.Length > 0 && String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (args.Length != 2) throw new ArgumentException("Usage: RK-Rebuild.exe --compatibility-report <new-json-path>");
+                    string report = CompatibilityResources.Report(CompatibilityResources.Load());
+                    using (FileStream output = new FileStream(args[1], FileMode.CreateNew, FileAccess.Write))
+                    using (StreamWriter writer = new StreamWriter(output, new UTF8Encoding(false)))
+                        writer.Write(report);
+                    return;
+                }
                 AppSettings settings = SettingsStore.Load();
                 ModelCatalog catalog = ModelCatalog.Load();
                 DriveDirectory driveDirectory = DriveDirectory.Load();
@@ -46,6 +56,12 @@ namespace RkRebuild
             }
             catch (Exception ex)
             {
+                if (args.Length > 0 && String.Equals(args[0], "--compatibility-report", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.Error.WriteLine(ex.Message);
+                    Environment.ExitCode = 1;
+                    return;
+                }
                 MessageBox.Show("RK Rebuild could not start.\n\n" + ex.Message,
                     "RK Rebuild", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -67,7 +83,7 @@ namespace RkRebuild
 
         public AppSettings()
         {
-            SelectedCode = "021E";
+            SelectedCode = "";
             ResourceRoot = "";
             StartWithWindows = false;
             KeyLabelDrafts = new Dictionary<string, string>();
@@ -544,7 +560,16 @@ namespace RkRebuild
 
     internal sealed class ModelCatalog
     {
+        public string VendorId = "";
         public List<ModelProfile> Models = new List<ModelProfile>();
+        private static string NormalizeCatalogVendorId(string raw)
+        {
+            string value = (raw ?? "").Trim();
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) value = value.Substring(2);
+            if (value.Length < 1 || value.Length > 4 || !Regex.IsMatch(value, "^[0-9a-fA-F]+$"))
+                throw new InvalidDataException("The model catalog must declare a valid vendor ID.");
+            return value.PadLeft(4, '0').ToUpperInvariant();
+        }
         public static ModelCatalog Load()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -556,6 +581,7 @@ namespace RkRebuild
             if (!root.TryGetProperty("models", out models)) throw new InvalidDataException("The embedded model catalog has an unexpected format.");
             JsonElement layouts = GetValue(root, "layouts");
             ModelCatalog catalog = new ModelCatalog();
+            catalog.VendorId = NormalizeCatalogVendorId(GetString(root, "vendorId"));
             foreach (JsonElement item in models.EnumerateArray())
             {
                 ModelProfile profile = new ModelProfile();
@@ -669,8 +695,9 @@ namespace RkRebuild
             _driveDirectory = driveDirectory;
             _appearancePhotos = appearancePhotos ?? new List<AppearancePhoto>();
             _settings = settings;
+            if (String.IsNullOrWhiteSpace(settings.SelectedCode)) _page = "Compatibility";
             foreach (ModelProfile profile in _catalog.Models.Where(item => item.DirectPid))
-                _knownDeviceIds.Add("258A:" + NormalizeDeviceId(profile.Code));
+                _knownDeviceIds.Add(_catalog.VendorId + ":" + NormalizeDeviceId(profile.Code));
             foreach (DriveConnection connection in _driveDirectory.Models.SelectMany(model => model.Connections))
                 _knownDeviceIds.Add(NormalizeDeviceId(connection.VendorId) + ":" + NormalizeDeviceId(connection.ProductId));
             if (String.IsNullOrWhiteSpace(_settings.ResourceRoot))
@@ -693,7 +720,7 @@ namespace RkRebuild
             Closing += OnClosing;
             StateChanged += OnStateChanged;
             SelectProfile(_selected, false);
-            RefreshPnpDevices(false);
+            RefreshPnpDevices(true);
             _pnpTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
             _pnpTimer.Tick += delegate { RefreshPnpDevices(true); };
             _pnpTimer.Start();
@@ -797,6 +824,7 @@ namespace RkRebuild
             nav.Children.Add(NavCaption("PROFILES"));
             AddNav(nav, "Models", "Model profiles");
             AddNav(nav, "RK Drive directory", "RK Drive directory");
+            AddNav(nav, "Compatibility", "All-model compatibility");
             nav.Children.Add(NavCaption("SOFTWARE"));
             AddNav(nav, "Preferences", "Preferences");
             Border spacer = new Border { Height = 1, Background = Brush(70, 70, 70), Margin = new Thickness(4, 20, 4, 13) };
@@ -816,7 +844,7 @@ namespace RkRebuild
             Grid.SetRow(pageHeader, 0);
             main.Children.Add(pageHeader);
             StackPanel heading = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-            _pageName = new TextBlock { Text = "Device overview", Foreground = Brush(235, 235, 235), FontSize = 17, FontWeight = FontWeights.SemiBold };
+            _pageName = new TextBlock { Text = _page == "Compatibility" ? "All-model compatibility" : "Device overview", Foreground = Brush(235, 235, 235), FontSize = 17, FontWeight = FontWeights.SemiBold };
             _profileHeader = new TextBlock { Text = "", Foreground = Brush(175, 175, 175), FontSize = 10, Margin = new Thickness(0, 2, 0, 0) };
             heading.Children.Add(_pageName);
             heading.Children.Add(_profileHeader);
@@ -920,7 +948,7 @@ namespace RkRebuild
             _pageName.Text = title;
             foreach (Button button in FindVisualButtons(this))
             {
-                if (button.Tag is string && new[] { "Device", "Key mapping", "Lighting", "Macros", "RK Drive editor", "Models", "RK Drive directory", "Preferences" }.Contains((string)button.Tag))
+                if (button.Tag is string && new[] { "Device", "Key mapping", "Lighting", "Macros", "RK Drive editor", "Models", "RK Drive directory", "Compatibility", "Preferences" }.Contains((string)button.Tag))
                 {
                     bool active = (string)button.Tag == page;
                     button.Background = active ? Brush(60, 31, 15) : Brushes.Transparent;
@@ -961,7 +989,7 @@ namespace RkRebuild
                 if (_profileSelector.SelectedItem != profile) _profileSelector.SelectedItem = profile;
                 _profileSelector.Text = profile.Name;
             }
-            _profileHeader.Text = profile.Name + "  ·  profile " + profile.Code;
+            _profileHeader.Text = profile.Name + "  ·  reference profile " + profile.Code + "  ·  not a detected device";
             if (save) SettingsStore.Save(_settings);
             RenderPage();
         }
@@ -977,6 +1005,7 @@ namespace RkRebuild
             else if (_page == "RK Drive editor") RenderDriveEditor();
             else if (_page == "Models") RenderModels();
             else if (_page == "RK Drive directory") RenderDriveDirectory();
+            else if (_page == "Compatibility") RenderCompatibility();
             else RenderPreferences();
         }
 
@@ -1173,7 +1202,7 @@ namespace RkRebuild
                     .OrderBy(value => value, StringComparer.OrdinalIgnoreCase));
                 if (String.Equals(snapshot, _pnpSnapshot, StringComparison.Ordinal)) return;
                 _pnpSnapshot = snapshot;
-                if (redraw && _page == "Device") RenderPage();
+                if (redraw && (_page == "Device" || _page == "Compatibility")) RenderPage();
             }
             catch { }
             finally { _pnpScanRunning = false; }
@@ -1190,7 +1219,7 @@ namespace RkRebuild
 
         private ModelProfile FindProfileForDevice(PnpKeyboard device)
         {
-            if (device == null || !String.Equals(device.VendorId, "258A", StringComparison.OrdinalIgnoreCase)) return null;
+            if (device == null || !String.Equals(device.VendorId, _catalog.VendorId, StringComparison.OrdinalIgnoreCase)) return null;
             List<ModelProfile> matches = _catalog.Models.Where(profile => profile.DirectPid && String.Equals(profile.Code, device.ProductId, StringComparison.OrdinalIgnoreCase)).ToList();
             return matches.Count == 1 ? matches[0] : null;
         }
