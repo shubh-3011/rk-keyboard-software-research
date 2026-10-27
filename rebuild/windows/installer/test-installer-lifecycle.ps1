@@ -123,6 +123,50 @@ function Get-UninstallEntries {
     }
 }
 
+function Get-ProductContexts([string]$Code) {
+    Assert-ProductCode $Code
+    if (-not ('RkMsiContextEvidence' -as [type])) {
+        Add-Type -TypeDefinition @'
+using System.Runtime.InteropServices;
+using System.Text;
+public static class RkMsiContextEvidence {
+    [DllImport("msi.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+    public static extern uint MsiEnumProductsExW(string product, string userSid,
+        uint contexts, uint index, StringBuilder installedProduct,
+        out uint installedContext, StringBuilder installedSid, ref uint sidCharacters);
+}
+'@
+    }
+    # Query only this package's GUID, for the current user and machine. Do not
+    # use WMI product inventory or enumerate unrelated products/other users.
+    for ([uint32]$index = 0; $index -lt 4; $index++) {
+        $product = [Text.StringBuilder]::new(39)
+        $sid = [Text.StringBuilder]::new(256)
+        [uint32]$sidCharacters = 256
+        [uint32]$context = 0
+        $result = [RkMsiContextEvidence]::MsiEnumProductsExW($Code, $null, 7, $index, $product, [ref]$context, $sid, [ref]$sidCharacters)
+        if ($result -eq 259) { return } # ERROR_NO_MORE_ITEMS
+        Assert-Lifecycle ($result -eq 0 -and $sidCharacters -lt 256) "Cannot read bounded MSI context evidence for $Code (status $result)"
+        [pscustomobject]@{ Code = $product.ToString(); Context = $context; UserSid = $sid.ToString() }
+    }
+    throw 'MSI context enumeration exceeded its current-user/machine bound.'
+}
+
+function Assert-RegisteredPerUser($Package) {
+    $contexts = @(Get-ProductContexts $Package.ProductCode)
+    $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    # MSIINSTALLCONTEXT_USERUNMANAGED=2, MACHINE=4. The ARP registry hive
+    # alone does not establish install context, even for a standard-user install.
+    Assert-Lifecycle ($contexts.Count -eq 1 -and $contexts[0].Code -eq $Package.ProductCode -and $contexts[0].Context -eq 2 -and $contexts[0].UserSid -eq $sid) 'Product must be registered only in this standard user unmanaged MSI context'
+    Assert-Lifecycle ([string]$installer.ProductInfo($Package.ProductCode, 'AssignmentType') -eq '0') 'MSI assignment must remain per-user'
+    Assert-Lifecycle ([string]$installer.ProductInfo($Package.ProductCode, 'VersionString') -eq $Package.Version.ToString()) 'Registered MSI version mismatch'
+    $entries = @(Get-UninstallEntries | Where-Object { $_.Code -eq $Package.ProductCode })
+    Assert-Lifecycle ($entries.Count -gt 0) 'Visible uninstall registration missing'
+    foreach ($entry in $entries) {
+        Assert-Lifecycle ($entry.Values.DisplayVersion -eq $Package.Version.ToString() -and $entry.Values.WindowsInstaller -eq 1) 'Uninstall registration version/provider mismatch'
+    }
+}
+
 function Assert-NoAutoLaunch {
     Assert-Lifecycle (@(Get-Process -Name 'RK-Rebuild' -ErrorAction SilentlyContinue).Count -eq 0) 'Application process exists (installer must not auto-launch)'
     $run = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Microsoft\Windows\CurrentVersion\Run', $false)
@@ -136,9 +180,9 @@ function Assert-CurrentState {
     Assert-Lifecycle ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -eq $exeHash) 'Installed EXE hash differs from current source'
     Assert-Lifecycle ((Get-FileHash -LiteralPath $installedLicense -Algorithm SHA256).Hash -eq $licenseHash) 'Installed LICENSE hash differs from project license'
     $entries = @(Get-UninstallEntries)
-    Assert-Lifecycle (@($entries | Where-Object { $_.Hive -eq 'CurrentUser' -and $_.Code -eq $current.ProductCode -and $_.Values.DisplayVersion -eq $current.Version.ToString() }).Count -gt 0) 'Current HKCU uninstall registration missing/wrong version'
+    Assert-RegisteredPerUser $current
     Assert-Lifecycle (@($entries | Where-Object { $_.Code -eq $previous.ProductCode }).Count -eq 0) 'Previous registration survived upgrade'
-    Assert-Lifecycle (@($entries | Where-Object { $_.Hive -eq 'LocalMachine' }).Count -eq 0) 'Unexpected HKLM uninstall registration'
+    Assert-Lifecycle (@(Get-ProductContexts $previous.ProductCode).Count -eq 0) 'Previous MSI context survived upgrade'
     Assert-Lifecycle (Test-Path -LiteralPath $shortcut -PathType Leaf) 'Current-user shortcut missing'
     $shell = New-Object -ComObject WScript.Shell
     $link = $null
@@ -214,6 +258,7 @@ try {
         Assert-Lifecycle (-not (Test-Path -LiteralPath $path)) "Pre-existing path; refusing to overwrite: $path"
     }
     Assert-Lifecycle (@(Get-UninstallEntries).Count -eq 0) 'Pre-existing product registration; refusing to proceed'
+    Assert-Lifecycle (@(Get-ProductContexts $current.ProductCode).Count -eq 0 -and @(Get-ProductContexts $previous.ProductCode).Count -eq 0) 'Pre-existing MSI context; refusing to proceed'
     $marker = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\RK Rebuild\Installer', $false)
     if ($null -ne $marker) { $marker.Dispose(); throw 'Pre-existing installer component key; refusing to proceed' }
     Assert-Lifecycle (@($installer.RelatedProducts('{12D50DE5-7286-4B6E-99D9-B4F9FC1F7996}')).Count -eq 0) 'Pre-existing related MSI product'
@@ -240,7 +285,8 @@ try {
         catch { $registrationDiagnostics[$property] = 'Unavailable' }
     }
     $registrationDiagnostics | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $work 'previous-msi-registration-diagnostics.json') -Encoding utf8
-    Assert-Lifecycle (@($previousEntries | Where-Object { $_.Code -eq $previous.ProductCode -and $_.Hive -eq 'CurrentUser' -and $_.Values.DisplayVersion -eq $previous.Version.ToString() }).Count -gt 0) ('Previous HKCU registration missing/wrong version: ' + ($registrationDiagnostics | ConvertTo-Json -Depth 10 -Compress))
+    @(Get-ProductContexts $previous.ProductCode) | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $work 'previous-msi-context.json') -Encoding utf8
+    Assert-RegisteredPerUser $previous
     Assert-NoAutoLaunch
     $attemptedProducts.Add($current.ProductCode)
     Invoke-Msi '/i' $current.Path '02-upgrade-current'
@@ -312,6 +358,7 @@ try {
     Invoke-Msi '/x' $current.ProductCode '05-uninstall-current'
     foreach ($path in @($installedExe, $installedLicense, $shortcut)) { Assert-Lifecycle (-not (Test-Path -LiteralPath $path)) "Owned installed file remains: $path" }
     Assert-Lifecycle (@(Get-UninstallEntries).Count -eq 0) 'Uninstall registration remains'
+    Assert-Lifecycle (@(Get-ProductContexts $current.ProductCode).Count -eq 0 -and @(Get-ProductContexts $previous.ProductCode).Count -eq 0) 'MSI context remains after uninstall'
     $remainingMarker = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\RK Rebuild\Installer', $false)
     if ($null -ne $remainingMarker) {
         try { Assert-Lifecycle (@($remainingMarker.GetValueNames() | Where-Object { $_ -in @('Application', 'StartMenuShortcut') }).Count -eq 0) 'Owned component registration remains' }
@@ -339,7 +386,7 @@ finally {
                 try {
                     Assert-DisposableRunner
                     Assert-ProductCode $code
-                    if (@(Get-UninstallEntries | Where-Object { $_.Code -eq $code -and $_.Hive -eq 'CurrentUser' }).Count -gt 0) {
+                    if (@(Get-ProductContexts $code | Where-Object { $_.Context -eq 2 -and $_.UserSid -eq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }).Count -gt 0) {
                         Invoke-Msi '/x' $code ('cleanup-' + $code.Trim('{}'))
                     }
                 }

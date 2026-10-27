@@ -171,9 +171,16 @@ state for disposal with the entire runner, never touching a real user profile.
 This distinction matters: run `40438125217` installed successfully under the
 elevated runner's account with MSI assignment type 0, but its uninstall entry
 appeared under HKLM. That run did **not** establish standard-user/no-admin
-installation or pass the lifecycle. The standard-user test retains the strict
-HKCU registration and absent-HKLM checks instead of accepting that observation
-as sufficient.
+installation or pass the lifecycle. Subsequent standard-user run `40443207831`
+also registered its visible uninstall entry under HKLM with assignment type 0.
+Thus the earlier HKCU-only uninstall-key expectation was not a valid MSI
+context test on this runner. Scope is now checked using bounded
+`MsiEnumProductsExW` enumeration for the exact owned ProductCode: exactly one
+`USERUNMANAGED` context (2), the actual standard-user token SID, assignment
+type 0 and the expected registered version are required. Machine context (4)
+is refused regardless of where the visible uninstall entry is stored. Both
+registry views/hives are still inspected for correct ARP version/provider and
+for cleanup. This does not relax the no-administrator execution requirement.
 
 The Windows Server hosted image also reported `DisableMSI=1`, rejecting the
 standard-user install with status 1625 before installation in run
@@ -194,7 +201,8 @@ package downgrade → repair after deleting only the verified owned EXE → inst
 `--compatibility-report` smoke (exactly 444 `CataloguedOnly` entries) → installed
 `--ui-smoke-test` (all nine pages) → uninstall.
 Checks cover current EXE/license SHA-256, previous registration removal, current
-HKCU registration, no HKLM registration, exact current-user shortcut target,
+current-user unmanaged MSI context with no machine context, visible uninstall
+registration, exact current-user shortcut target,
 no shared/desktop/startup shortcut and no auto-launch. Downgrade must leave
 payload, shortcut and uninstall registration unchanged. The installed UI check
 renders actual nontrivial page pixels under the standard-user account, without
@@ -211,7 +219,8 @@ client is terminated: the Windows Installer service is never killed. Because its
 transaction might continue, further MSI operations (including cleanup) are
 refused. Exit 1618 similarly blocks concurrent cleanup. Other failures trigger
 bounded uninstall attempts only for this invocation's attempted ProductCodes
-that are registered in HKCU; no generic file/registry deletion is performed.
+that are registered in the actual current-user unmanaged MSI context; no generic
+file/registry deletion is performed.
 Keep logs and discard the ephemeral runner, especially after a timeout. This
 does not test reboot recovery, locked-file rollback, other users, or hardware.
 

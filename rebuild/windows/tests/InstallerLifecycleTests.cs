@@ -115,6 +115,14 @@ internal static class InstallerLifecycleTests
                 "$env:LOCALAPPDATA='';try{Get-LifecycleFolder 'LocalApplicationData';throw 'Empty path accepted'}catch{if($_.Exception.Message -notlike '*Known folder has no configured path*'){throw}};exit 0";
             var lifecycleFolderResult = RunPowerShell(lifecycleFolderTest);
             Check(lifecycleFolderResult.ExitCode == 0, "Lifecycle folder helper after runtime folder caching: " + lifecycleFolderResult.Output);
+            foreach (string guard in new[] { "MsiEnumProductsExW", "Context -eq 2", "$contexts[0].UserSid -eq $sid", "'AssignmentType') -eq '0'", "'Registered MSI version mismatch'", "'MSI context remains after uninstall'", "$index -lt 4", "$result -eq 259" })
+                Check(script.Contains(guard, StringComparison.Ordinal), "Canonical current-user MSI registration check missing: " + guard);
+            string contextInteropTest = "$errors=$null;$tokens=$null;$ast=[System.Management.Automation.Language.Parser]::ParseFile(" + Quote(path) + ",[ref]$tokens,[ref]$errors);" +
+                "$definitions=@($ast.FindAll({param($n) $n -is [System.Management.Automation.Language.StringConstantExpressionAst] -and $n.Value -like '*public static class RkMsiContextEvidence*'},$true));if($definitions.Count -ne 1){throw 'Expected one native context definition'};" +
+                "Add-Type -TypeDefinition $definitions[0].Value;$method=[RkMsiContextEvidence].GetMethod('MsiEnumProductsExW');if($method.GetParameters().Count -ne 8){throw 'Context API signature mismatch'};" +
+                "$attribute=$method.GetCustomAttributes([Runtime.InteropServices.DllImportAttribute],$false)[0];if($attribute.Value -ne 'msi.dll' -or -not $attribute.ExactSpelling){throw 'Wrong native context import'};exit 0";
+            var contextInteropResult = RunPowerShell(contextInteropTest);
+            Check(contextInteropResult.ExitCode == 0, "Compile and reflect context interop without calling native MSI APIs: " + contextInteropResult.Output);
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.
