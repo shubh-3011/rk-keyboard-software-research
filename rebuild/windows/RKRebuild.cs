@@ -323,18 +323,25 @@ namespace RkRebuild
         private static extern bool SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);
 
         // SetupAPI lists present devices and reads their PnP properties. It never opens a device handle.
-        public static List<PnpKeyboard> Enumerate()
+        public static List<PnpKeyboard> Enumerate(List<string> errors = null)
         {
             List<PnpKeyboard> devices = new List<PnpKeyboard>();
             IntPtr deviceInfoSet = IntPtr.Zero;
             try
             {
                 deviceInfoSet = SetupDiGetClassDevs(IntPtr.Zero, null, IntPtr.Zero, DigcfPresent | DigcfAllClasses);
-                if (deviceInfoSet == new IntPtr(-1)) return devices;
+                if (deviceInfoSet == new IntPtr(-1)) {
+                    errors?.Add("SetupDiGetClassDevs failed (" + System.Runtime.InteropServices.Marshal.GetLastWin32Error() + ").");
+                    return devices;
+                }
                 for (uint index = 0; ; index++)
                 {
                     SpDevInfoData info = new SpDevInfoData { Size = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(SpDevInfoData)) };
-                    if (!SetupDiEnumDeviceInfo(deviceInfoSet, index, ref info)) break;
+                    if (!SetupDiEnumDeviceInfo(deviceInfoSet, index, ref info)) {
+                        int code = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                        if (code != 259) errors?.Add("SetupDiEnumDeviceInfo failed (" + code + ").");
+                        break;
+                    }
 
                     string hardwareId = ReadProperty(deviceInfoSet, ref info, SpdrpHardwareId);
                     Match vendor = VendorPattern.Match(hardwareId);
@@ -351,7 +358,7 @@ namespace RkRebuild
                     });
                 }
             }
-            catch { }
+            catch (Exception error) { errors?.Add("PnP scan failed: " + error.GetType().Name); }
             finally
             {
                 if (deviceInfoSet != IntPtr.Zero && deviceInfoSet != new IntPtr(-1))
@@ -762,7 +769,6 @@ namespace RkRebuild
             _driveDirectory = driveDirectory;
             _appearancePhotos = appearancePhotos ?? new List<AppearancePhoto>();
             _settings = settings;
-            if (String.IsNullOrWhiteSpace(settings.SelectedCode)) _page = "Compatibility";
             foreach (ModelProfile profile in _catalog.Models.Where(item => item.DirectPid))
                 _knownDeviceIds.Add(_catalog.VendorId + ":" + NormalizeDeviceId(profile.Code));
             foreach (DriveConnection connection in _driveDirectory.Models.SelectMany(model => model.Connections))
@@ -867,7 +873,7 @@ namespace RkRebuild
             StackPanel topTools = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
             Grid.SetColumn(topTools, 1);
             titleBar.Children.Add(topTools);
-            TextBlock modelLabel = new TextBlock { Text = "DEVICE", Foreground = Brush(175, 175, 175), FontSize = 9, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 9, 0) };
+            TextBlock modelLabel = new TextBlock { Text = "REFERENCE PROFILE", Foreground = Brush(175, 175, 175), FontSize = 9, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 9, 0) };
             topTools.Children.Add(modelLabel);
             ComboBox selector = new ComboBox { Width = 276, Height = 32, Padding = new Thickness(8, 4, 8, 4), Background = Brush(20, 20, 20), BorderBrush = Brush(91, 91, 91), Foreground = Brush(220, 220, 220), ItemsSource = _catalog.Models.OrderBy(m => m.Name).ThenBy(m => m.Code).ToList(), DisplayMemberPath = "Name", Text = _selected.Name };
             selector.SelectionChanged += delegate { if (selector.SelectedItem is ModelProfile) SelectProfile((ModelProfile)selector.SelectedItem, true); };
@@ -909,12 +915,13 @@ namespace RkRebuild
             Grid.SetRow(pageHeader, 0);
             main.Children.Add(pageHeader);
             StackPanel heading = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-            _pageName = new TextBlock { Text = _page == "Compatibility" ? "All-model compatibility" : "Device overview", Foreground = Brush(235, 235, 235), FontSize = 17, FontWeight = FontWeights.SemiBold };
+            _pageName = new TextBlock { Text = "Device overview", Foreground = Brush(235, 235, 235), FontSize = 17, FontWeight = FontWeights.SemiBold };
             _profileHeader = new TextBlock { Text = "", Foreground = Brush(175, 175, 175), FontSize = 10, Margin = new Thickness(0, 2, 0, 0) };
             heading.Children.Add(_pageName);
             heading.Children.Add(_profileHeader);
             pageHeader.Children.Add(heading);
-            TextBlock status = new TextBlock { Text = "LOCAL MODE", Foreground = Brush(255, 128, 0), FontSize = 9, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 6, 0) };
+            TextBlock status = new TextBlock { Text = _offlineUiSmoke ? "OFFLINE RENDER" : "SCANNING DEVICES", Foreground = Brush(255, 128, 0), FontSize = 9, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 6, 0) };
+            _connectionStatusText = status;
             Grid.SetColumn(status, 1);
             pageHeader.Children.Add(status);
 
@@ -1068,7 +1075,8 @@ namespace RkRebuild
 
         private void RenderDevice()
         {
-            AddIntro("Keyboard overview", "Windows Plug and Play device records are checked for a supported RK model. Device reports are not opened by this identification pass.");
+            RenderDeviceConnections();
+            AddIntro("Keyboard overview", "Live device detection is shown above. The reference profile below is separate from detection and never grants hardware write permissions.");
             Grid grid = new Grid { Margin = new Thickness(0, 10, 0, 0) };
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.25, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(16) });
@@ -1098,7 +1106,7 @@ namespace RkRebuild
                 ? appearanceVariants.FirstOrDefault(item => String.Equals(item.Id, savedAppearanceId, StringComparison.OrdinalIgnoreCase))
                 : null;
             summary.Children.Add(Kicker(connected == null ? "SELECTED SOFTWARE PROFILE" : "CONNECTED KEYBOARD"));
-            summary.Children.Add(Headline(connected == null ? _selected.Name : detectedProfile == null ? "Selected profile · " + _selected.Name : DescribeDeviceModel(connected, detectedProfile), 23));
+            summary.Children.Add(Headline(connected == null ? "Reference profile · " + _selected.Name : detectedProfile == null ? "Detected device · " + connected.Identity : DescribeDeviceModel(connected, detectedProfile), 23));
             summary.Children.Add(Paragraph(connected == null
                 ? "Catalog code " + _selected.Code + "  ·  Family " + Blank(_selected.Family) + "  ·  " + Blank(_selected.Region)
                 : "Windows reports VID " + connected.VendorId + "  ·  PID " + connected.ProductId + "  ·  " + connected.Name + (detectedProfile == null ? "  ·  selected profile is not confirmed by this device ID" : ""), 13));
@@ -1249,21 +1257,48 @@ namespace RkRebuild
         private async void RefreshPnpDevices(bool redraw)
         {
             if (_offlineUiSmoke) { _smokePnpRequestsSuppressed++; return; }
-            if (_pnpScanRunning) return;
+            if (_pnpScanRunning || _lightingQueryRunning) return;
             _pnpScanRunning = true;
             try
             {
-                List<PnpKeyboard> devices = await Task.Run(() => WindowsPnpDiscovery.Enumerate());
-                _pnpDevices = devices;
+                var scan = await Task.Run(() => {
+                    var errors = new List<string>();
+                    var devices = WindowsPnpDiscovery.Enumerate(errors);
+                    var endpoints = WindowsHidDiscovery.Enumerate();
+                    return (Devices: devices, Endpoints: endpoints, Errors: errors);
+                });
+                _pnpDevices = scan.Devices;
+                _deviceEndpoints = scan.Endpoints;
+                if (_compatibility == null) _compatibility = CompatibilityResources.Load();
+                _detectedConnections = DetectedConnection.Build(_deviceEndpoints, _compatibility);
+                _deviceScanError = String.Join(" ", scan.Errors.Concat(_deviceEndpoints.Errors));
+                UpdateConnectionStatus();
                 string snapshot = String.Join("|", FindKnownRkDevices()
                     .Select(device => device.Identity + ":" + device.Name)
-                    .OrderBy(value => value, StringComparer.OrdinalIgnoreCase));
-                if (String.Equals(snapshot, _pnpSnapshot, StringComparison.Ordinal)) return;
+                    .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)) + "|" + _deviceScanError + "|" +
+                    String.Join("|", _detectedConnections.Select(device => device.Identity + ":" + device.EndpointCount + ":" + device.QueryKind));
+                bool firstScan = !_deviceScanCompleted;
+                _deviceScanCompleted = true;
+                _pnpScanRunning = false;
+                if (!firstScan && String.Equals(snapshot, _pnpSnapshot, StringComparison.Ordinal)) return;
+                if (_lightingQueryRunning) return; // Defer changed-page rendering, not just its controls.
                 _pnpSnapshot = snapshot;
-                if (redraw && (_page == "Device" || _page == "Compatibility")) RenderPage();
+                if (redraw && !_lightingQueryRunning && (_page == "Device" || _page == "Compatibility" || _page == "Lighting")) RenderPage();
             }
-            catch { }
-            finally { _pnpScanRunning = false; }
+            catch (Exception error) {
+                _deviceScanError = "Device discovery failed: " + error.GetType().Name;
+                _pnpSnapshot = "";
+                _deviceScanCompleted = true;
+                _pnpScanRunning = false;
+                _deviceEndpoints = null;
+                _detectedConnections = Array.Empty<DetectedConnection>();
+                _pnpDevices.Clear();
+                UpdateConnectionStatus();
+                if (redraw && !_lightingQueryRunning && (_page == "Device" || _page == "Lighting")) RenderPage();
+            }
+            finally {
+                _pnpScanRunning = false;
+            }
         }
 
         private List<PnpKeyboard> FindKnownRkDevices()
@@ -1447,6 +1482,7 @@ namespace RkRebuild
 
         private void RenderLighting()
         {
+            RenderDeviceConnections();
             AddIntro("Lighting profile data", "This page shows the option slots recorded in the selected software profile. Slot availability is evidence, not proof of names, hardware support, or a working write path.");
             RenderLightingDraft();
             Border summary = Card();

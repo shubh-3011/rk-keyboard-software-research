@@ -65,7 +65,7 @@ jobs:
           & "$env:GITHUB_WORKSPACE/rebuild/windows/installer/build-installer.ps1" -SourceExe "$previous/rebuild/windows/dist/RK-Rebuild.exe" -VersionProject "$previous/rebuild/windows/RKRebuild.csproj" -OutputDirectory "$env:RUNNER_TEMP/rk-previous-installer"
       - name: Exercise installer lifecycle only on disposable hosted runner
         shell: pwsh
-        run: ./rebuild/windows/installer/test-installer-standard-user.ps1 -CurrentMsiPath './rebuild/windows/dist/installer/RK-Rebuild-0.6.1-win-x64-experimental.msi' -PreviousMsiPath "$env:RUNNER_TEMP/rk-previous-installer/RK-Rebuild-0.5.0-win-x64-experimental.msi" -SourceExe './rebuild/windows/dist/RK-Rebuild.exe' -ConfirmDisposableVm
+        run: ./rebuild/windows/installer/test-installer-standard-user.ps1 -CurrentMsiPath './rebuild/windows/dist/installer/RK-Rebuild-0.6.2-win-x64-experimental.msi' -PreviousMsiPath "$env:RUNNER_TEMP/rk-previous-installer/RK-Rebuild-0.5.0-win-x64-experimental.msi" -SourceExe './rebuild/windows/dist/RK-Rebuild.exe' -ConfirmDisposableVm
       - name: Retain installer lifecycle logs
         if: always()
         uses: actions/upload-artifact@v4

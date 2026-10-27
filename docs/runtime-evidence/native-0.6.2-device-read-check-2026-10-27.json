@@ -1,0 +1,37 @@
+{
+  "Format": "rk-rebuild-device-detection-and-lighting-read-check",
+  "SchemaVersion": 1,
+  "AppVersion": "0.6.2",
+  "AppSha256": "c93f5a3807ecd229e6ebfc2f3a8e64d1f35e75d60b91d417bb69ae670c23b870",
+  "Identity": "258A:0150",
+  "Metadata": {
+    "HidCollections": 10,
+    "ConfigurationUsagePage": "FF02",
+    "ConfigurationUsage": "0002",
+    "InputReportBytes": 20,
+    "OutputReportBytes": 20,
+    "VersionNumber": 518,
+    "CandidateModelLabels": 46,
+    "PhysicalModelConfirmed": false
+  },
+  "RunningWpfUiObservation": {
+    "DeviceDetectedStatusObserved": true,
+    "DetectedIdentityObserved": true,
+    "ReadCurrentLightingButtonObserved": true,
+    "FullQueryInteractionAutomationPassed": false,
+    "Limitation": "The confirmation dialog was not observed reliably by the interaction harness. Do not attribute confirmation or successful UI querying to automation."
+  },
+  "SeparatePublishedExeCliRead": {
+    "ExitCode": 0,
+    "LightingBlockBytes": 128,
+    "TrailerHex": "5AA5",
+    "CompleteBlockWithSignature": true,
+    "SettingsWritesRequested": false,
+    "SettingsWritesPerformed": false,
+    "AutomaticRetryOrRollback": false,
+    "VendorClosedThroughNormalExit": true,
+    "VendorRestartRequested": true,
+    "Passed": true
+  },
+  "Scope": "Device/receiver presence and one lighting read on this endpoint. No general model identification, effect/brightness/color, keymap, macro, screen or firmware validation. No new hardware write permission."
+}

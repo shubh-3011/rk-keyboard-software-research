@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\HidDiscovery.cs" Link="HidDiscovery.cs" />
+    <Compile Include="..\CompatibilityCatalog.cs" Link="CompatibilityCatalog.cs" />
+    <Compile Include="..\DetectedConnection.cs" Link="DetectedConnection.cs" />
+    <Compile Include="DetectedConnectionTests.cs" />
+    <EmbeddedResource Include="..\..\..\models-4.6.json" LogicalName="Hub.json" />
+    <EmbeddedResource Include="..\..\..\rk-drive-catalog.json" LogicalName="Drive.json" />
+  </ItemGroup>
+</Project>

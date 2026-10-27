@@ -1,5 +1,21 @@
 # RK Windows UI reconstruction
 
+## 0.6.2: connected-device visibility before reference profiles
+
+The Device page is now the startup view and displays a live HID/PnP connection
+panel before catalogue/reference content. A shared receiver VID/PID no longer
+gets headed only as a selected profile, and the global state no longer says
+LOCAL MODE regardless of detection. Metadata scanning and errors are visible;
+the existing explicit lighting readers are accessible on Device and Lighting.
+Duplicate eligible endpoints are not resolved by guessing a physical model.
+
+The running local WPF window was observed showing `258A:0150`, ten HID
+collections and a read button. A separate read through the same published
+0.6.2 EXE succeeded without settings writes. UI query-confirmation automation
+did not pass and is not described as validated end-to-end. The retained
+[runtime check](runtime-evidence/native-0.6.2-device-read-check-2026-10-27.json)
+records that distinction. General configuration functionality remains incomplete.
+
 ## 2026-10-27: replacement UI work resumed after installer validation
 
 The original text below describes an earlier vendor-resource-assisted shell;
