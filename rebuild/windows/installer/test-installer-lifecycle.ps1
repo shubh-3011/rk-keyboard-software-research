@@ -47,6 +47,14 @@ function Assert-ProductCode([string]$Code) {
     Assert-Lifecycle ($Code -cmatch '^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$') 'ProductCode must be a braced GUID, not an msiexec argument fragment'
 }
 
+function Test-ShortcutDirectory([string]$Actual, [string]$Expected) {
+    # MSI directory properties include a trailing backslash; WScript can retain
+    # it. Ignore only that suffix, not relative paths, arguments or other folders.
+    return (-not [string]::IsNullOrWhiteSpace($Actual) -and
+        -not [string]::IsNullOrWhiteSpace($Expected) -and
+        [string]::Equals($Actual.TrimEnd([char]92), $Expected.TrimEnd([char]92), [StringComparison]::OrdinalIgnoreCase))
+}
+
 function Read-Table($Database, [string]$Table, [string[]]$Columns) {
     $names = ($Columns | ForEach-Object { '`' + $_ + '`' }) -join ', '
     $view = $Database.OpenView('SELECT ' + $names + ' FROM `' + $Table + '`')
@@ -196,7 +204,11 @@ function Assert-CurrentState {
     $link = $null
     try {
         $link = $shell.CreateShortcut($shortcut)
-        Assert-Lifecycle ($link.TargetPath -eq $installedExe -and $link.WorkingDirectory -eq $target -and [string]::IsNullOrEmpty($link.Arguments)) 'Shortcut target/working directory/arguments incorrect'
+        [ordered]@{ ActualTarget = $link.TargetPath; ExpectedTarget = $installedExe
+            ActualWorkingDirectory = $link.WorkingDirectory; ExpectedWorkingDirectory = $target
+            Arguments = $link.Arguments; ShortcutPath = $shortcut
+        } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $work 'current-shortcut-evidence.json') -Encoding utf8
+        Assert-Lifecycle ($link.TargetPath -eq $installedExe -and (Test-ShortcutDirectory $link.WorkingDirectory $target) -and [string]::IsNullOrEmpty($link.Arguments)) 'Shortcut target/working directory/arguments incorrect'
     }
     finally {
         if ($null -ne $link) { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($link) }

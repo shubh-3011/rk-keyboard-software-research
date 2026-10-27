@@ -129,6 +129,13 @@ internal static class InstallerLifecycleTests
                 "$r=[RkMsiContextFake]::EnumerateCurrentUser('{00000000-0000-0000-0000-000000000001}',0,$p,[ref]$c,$s,[ref]$n);if($r -ne 259){throw 'Fake native enumeration failed'};exit 0";
             var contextInteropResult = RunPowerShell(contextInteropTest);
             Check(contextInteropResult.ExitCode == 0, "Compile and reflect context interop without calling native MSI APIs: " + contextInteropResult.Output);
+            string shortcutTest = "$errors=$null;$tokens=$null;$ast=[System.Management.Automation.Language.Parser]::ParseFile(" + Quote(path) + ",[ref]$tokens,[ref]$errors);" +
+                "$fn=@($ast.FindAll({param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Test-ShortcutDirectory'},$true));if($fn.Count -ne 1){throw 'Missing shortcut helper'};. ([ScriptBlock]::Create($fn[0].Extent.Text));" +
+                "$expected='C:\\Users\\Standard\\AppData\\Local\\Programs\\RK Rebuild';if(-not (Test-ShortcutDirectory ($expected+'\') $expected)){throw 'MSI trailing slash rejected'};" +
+                "foreach($bad in @('', 'RK Rebuild', ($expected+'2'), ($expected+'\\child'), ($expected+'\\..'), ($expected+' --unsafe'))){if(Test-ShortcutDirectory $bad $expected){throw ('Wrong shortcut directory accepted: '+$bad)}};exit 0";
+            var shortcutResult = RunPowerShell(shortcutTest);
+            Check(shortcutResult.ExitCode == 0, "Shortcut trailing-backslash equivalence and wrong-path rejection: " + shortcutResult.Output);
+            Check(script.Contains("current-shortcut-evidence.json", StringComparison.Ordinal), "Retain actual and expected shortcut evidence before assertion.");
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.

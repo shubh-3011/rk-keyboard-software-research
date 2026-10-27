@@ -185,6 +185,14 @@ Run `40443985447` exposed an API-binding error before installation: PowerShell
 converted the requested null SID into an empty string (MSI error 87). The
 current-user wrapper now passes a literal null inside C#. A fake-native
 regression checks this argument boundary without invoking MSI on the local host.
+Run `40444782590` passed previous installation, current upgrade and the canonical
+current-user MSI context checks. Its shortcut assertion compared the working
+directory literally against a path without a trailing backslash, although the
+MSI log's `ShortcutCreate` operation used the correct target and directory with
+that suffix. The comparison now ignores only trailing backslashes and retains
+actual/expected shortcut evidence before asserting. Wrong folders and nonempty
+shortcut arguments remain rejected; the remaining lifecycle stages still need
+an end-to-end passing run.
 
 The Windows Server hosted image also reported `DisableMSI=1`, rejecting the
 standard-user install with status 1625 before installation in run
