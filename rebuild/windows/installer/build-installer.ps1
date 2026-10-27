@@ -77,6 +77,7 @@ try {
     & $dotnetPath build (Join-Path $PSScriptRoot "RKRebuild.Installer.wixproj") --configuration Release `
         "-p:PackageVersion=$version" "-p:SourceExe=$SourceExe" "-p:LicenseFile=$licenseFile" `
         "-p:ProductCode=$productCode" "-p:OutputPath=$outputDirectory\" `
+        "-p:IntermediateOutputPath=obj\$version\Release\" `
         "-p:RestoreConfigFile=$(Join-Path $PSScriptRoot 'NuGet.Config')"
     if ($LASTEXITCODE -ne 0) { throw "WiX MSI build failed with exit code $LASTEXITCODE." }
     if ((Get-FileHash -LiteralPath $SourceExe -Algorithm SHA256).Hash.ToLowerInvariant() -ne $exeHash) {

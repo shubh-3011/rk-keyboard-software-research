@@ -52,6 +52,11 @@ the two-version CI test, build actual `0.5.0` source in an immutable previous
 checkout and package its real EXE with that checkout's project, then separately
 package the current `0.6.0` EXE. The current installer authoring is used for both.
 
+WiX intermediates are isolated under `obj/<version>/Release/`. Packaging the
+current and previous versions sequentially must not reuse the other version's
+incremental outputs; selecting a different final output directory alone is not
+sufficient to isolate WiX's cache.
+
 Output, for app version `0.5.0`:
 
 ```text

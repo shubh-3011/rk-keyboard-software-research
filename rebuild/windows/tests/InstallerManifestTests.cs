@@ -101,6 +101,7 @@ internal static class InstallerManifestTests
             Check(project.Descendants("TreatWarningsAsErrors").Single().Value == "true", "Other WiX validation warnings fail the build.");
 
             string script = File.ReadAllText(Path.Combine(root, "build-installer.ps1"));
+            Check(script.Contains("-p:IntermediateOutputPath=obj\\$version\\Release\\", StringComparison.Ordinal), "Different MSI versions must not share WiX incremental outputs.");
             foreach (string required in new[] { ".dotnet\\dotnet.exe", "Get-Command dotnet", "-PathType Leaf", "-getProperty:Version", "FileVersionInfo", "ProductVersion", "FileMajorPart", "255", "65535", "SHA256", "dist\\installer", "test-installer.ps1", ".sha256", "$LASTEXITCODE", "NUGET_PACKAGES", "DOTNET_CLI_HOME", "DOTNET_GENERATE_ASPNET_CERTIFICATE = \"false\"", "DOTNET_NOLOGO = \"true\"", "finally" })
                 Check(script.Contains(required, StringComparison.Ordinal), "Missing build guard: " + required);
             foreach (string forbiddenCommand in new[] { "Start-Process", "InstallProduct(", "OpenPackage(", "dotnet tool install", "Invoke-WebRequest", "Set-ItemProperty", "New-ItemProperty", "Register-ScheduledTask" })
