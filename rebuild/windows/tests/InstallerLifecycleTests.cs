@@ -109,6 +109,12 @@ internal static class InstallerLifecycleTests
                 "try {Get-RegisteredUserFolder 'Absent';throw 'Missing registration accepted'}catch {if($_.Exception.Message -notlike '*shell folder is unregistered*'){throw}};exit 0";
             var helperResult = RunPowerShell(helperTest);
             Check(helperResult.ExitCode == 0, "Registered-folder helper with contaminated inherited environment: " + helperResult.Output);
+            string lifecycleFolderTest = "$errors=$null;$tokens=$null;$ast=[System.Management.Automation.Language.Parser]::ParseFile(" + Quote(path) + ",[ref]$tokens,[ref]$errors);" +
+                "$fn=@($ast.FindAll({param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -in @('Get-LifecycleFolder','Assert-Lifecycle')},$true));if($fn.Count -ne 2){throw 'Expected only pure folder/assertion helpers'};foreach($f in $fn){. ([ScriptBlock]::Create($f.Extent.Text))};" +
+                "$before=[Environment]::GetFolderPath('LocalApplicationData');$env:LOCALAPPDATA='C:\\SyntheticStandardUser\\AppData\\Local';$resolved=Get-LifecycleFolder 'LocalApplicationData';if($resolved -cne $env:LOCALAPPDATA){throw 'Cached runtime folder leaked into expected installation path'};" +
+                "$env:LOCALAPPDATA='';try{Get-LifecycleFolder 'LocalApplicationData';throw 'Empty path accepted'}catch{if($_.Exception.Message -notlike '*Known folder has no configured path*'){throw}};exit 0";
+            var lifecycleFolderResult = RunPowerShell(lifecycleFolderTest);
+            Check(lifecycleFolderResult.ExitCode == 0, "Lifecycle folder helper after runtime folder caching: " + lifecycleFolderResult.Output);
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.

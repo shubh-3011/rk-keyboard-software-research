@@ -31,7 +31,14 @@ function Assert-Lifecycle([bool]$Condition, [string]$Message) {
 function Get-LifecycleFolder([Environment+SpecialFolder]$Folder) {
     # A fresh standard-user profile need not have a Desktop/Startup directory
     # yet. Resolve the configured path without creating it or requiring it to exist.
-    $path = [Environment]::GetFolderPath($Folder, [Environment+SpecialFolderOption]::DoNotVerify)
+    # In a credential-launched PowerShell, .NET can retain the original runner's
+    # LocalApplicationData path even after profile/environment correction. The
+    # wrapper resolves LOCALAPPDATA from this token's actual user registration.
+    $path = if ($Folder -eq [Environment+SpecialFolder]::LocalApplicationData) {
+        $env:LOCALAPPDATA
+    } else {
+        [Environment]::GetFolderPath($Folder, [Environment+SpecialFolderOption]::DoNotVerify)
+    }
     Assert-Lifecycle (-not [string]::IsNullOrWhiteSpace($path)) "Known folder has no configured path: $Folder"
     return $path
 }
