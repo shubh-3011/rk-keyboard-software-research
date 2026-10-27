@@ -36,7 +36,7 @@ $uncertain = $false
 try {
     $passwordBytes = [Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
     $secret = ConvertTo-SecureString ([Convert]::ToBase64String($passwordBytes) + '!Aa9') -AsPlainText -Force
-    $account = New-LocalUser -Name $name -Password $secret -AccountNeverExpires -PasswordNeverExpires -Description 'Temporary disposable-runner RK MSI lifecycle test'
+    $account = New-LocalUser -Name $name -Password $secret -AccountNeverExpires -PasswordNeverExpires -Description 'Disposable RK MSI lifecycle test'
     $created = $true
     Add-LocalGroupMember -SID 'S-1-5-32-545' -Member $account
     New-Item -ItemType Directory -Path $scratch | Out-Null

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 internal static class InstallerLifecycleTests
@@ -81,6 +82,8 @@ internal static class InstallerLifecycleTests
             foreach (string guard in new[] { "RUNNER_ENVIRONMENT -cne 'github-hosted'", "-not $ConfirmDisposableVm", "New-LocalUser", "Add-LocalGroupMember -SID 'S-1-5-32-545'", "-Credential $credential -LoadUserProfile", "WaitForExit(1200000)", "Remove-LocalUser -SID $account.SID", "$created -and -not $uncertain", "RandomNumberGenerator", "icacls.exe" })
                 Check(wrapper.Contains(guard, StringComparison.Ordinal), "Missing standard-user safeguard: " + guard);
             Check(wrapper.IndexOf("throw 'REFUSED:", StringComparison.Ordinal) < wrapper.IndexOf("New-LocalUser", StringComparison.Ordinal), "Refuse outside disposable runner before account creation.");
+            Match description = Regex.Match(wrapper, @"New-LocalUser[^\r\n]*-Description '([^']*)'");
+            Check(description.Success && description.Groups[1].Value.Length <= 48, "Temporary account description must fit New-LocalUser's 48-character limit.");
             Check(script.Contains("IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)", StringComparison.Ordinal) && script.Contains("lifecycle installation must run as a standard user", StringComparison.Ordinal), "Lifecycle independently refuses administrator token.");
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
