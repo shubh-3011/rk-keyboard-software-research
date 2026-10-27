@@ -1,5 +1,31 @@
 # RK Windows UI reconstruction
 
+## 2026-10-27: replacement UI work resumed after installer validation
+
+The original text below describes an earlier vendor-resource-assisted shell;
+it is not a claim of current visual or functional parity. The observed installed
+4.06 lighting page has an approximately 80-pixel icon rail, a separate effect
+list, and a large keyboard preview. The previous reconstruction's 220-pixel text
+sidebar did not reproduce that structure.
+
+The 0.6.1 source now uses the narrow rail and independently authored vector
+navigation glyphs in `rebuild/windows/NavigationGlyphs.cs`. Every navigation
+button has a tooltip, accessible name and keyboard focus. The offline WPF smoke
+requires nine nonempty glyphs and accessible buttons with vendor files absent.
+No vendor icons were copied into the source or executable by this change.
+
+This is only the first layout correction. The separate effect list, faithful
+page geometry, recreated keyboard artwork, complete interaction behavior and
+general hardware operations remain unfinished. Catalogue slot numbers must not
+be relabeled as firmware effects using screenshot order alone. Existing static
+handler/serializer evidence remains useful, but this pass's fresh REA search
+was refused because the old snapshot failed integrity validation; it establishes
+no new decompilation finding. Historical snapshots are preserved.
+
+The 0.6.0 preview's full standard-user installer lifecycle passed in GitHub run
+`40445498306` for commit `0a79f46272b97b066a19b6c607b8330ae8822436`.
+That validates the bounded installer/offline-render scope, not replacement parity.
+
 ## Local source package
 
 The installed 4.06 package is under `C:\Program Files (x86)\RK Keyboard Software`.

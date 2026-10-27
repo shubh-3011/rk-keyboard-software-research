@@ -138,6 +138,8 @@ namespace RkRebuild
         public int ImageRequestsSuppressed { get; set; }
         public int PnpRequestsSuppressed { get; set; }
         public int StartupRequestsSuppressed { get; set; }
+        public int IndependentNavigationGlyphs { get; set; }
+        public bool NavigationAccessible { get; set; }
     }
 
     internal sealed partial class MainWindow
@@ -195,11 +197,21 @@ namespace RkRebuild
             RefreshPnpDevices(false);
             SetStartup(false);
             bool missing = !Directory.Exists(_settings.ResourceRoot) && !File.Exists(_settings.ResourceRoot);
+            var navigation = FindVisualButtons(this).Where(button => button.Content is System.Windows.Controls.Grid grid
+                && grid.Children.OfType<System.Windows.Controls.Viewbox>().Any()).ToArray();
+            int glyphs = navigation.Count(button => ((System.Windows.Controls.Grid)button.Content).Children
+                .OfType<System.Windows.Controls.Viewbox>().Any(box => box.Child is System.Windows.Shapes.Path path
+                    && path.Data != null && !path.Data.Bounds.IsEmpty && path.ActualWidth > 0));
+            bool accessible = navigation.Length == 9 && navigation.All(button =>
+                !String.IsNullOrWhiteSpace(System.Windows.Automation.AutomationProperties.GetName(button))
+                && !String.IsNullOrWhiteSpace(button.ToolTip as string) && button.Focusable);
             return new UiSmokeGuards
             {
                 Passed = missing && _tray == null && _pnpTimer == null && !_pnpScanRunning
                     && _smokeSettingsSavesSuppressed > 0 && _smokeImageRequestsSuppressed > 0
-                    && _smokePnpRequestsSuppressed > 0 && _smokeStartupRequestsSuppressed > 0,
+                    && _smokePnpRequestsSuppressed > 0 && _smokeStartupRequestsSuppressed > 0
+                    && glyphs == 9 && accessible,
+                IndependentNavigationGlyphs = glyphs, NavigationAccessible = accessible,
                 MissingVendorResources = missing, NoTray = _tray == null, NoPnpTimer = _pnpTimer == null,
                 SettingsSavesSuppressed = _smokeSettingsSavesSuppressed,
                 ImageRequestsSuppressed = _smokeImageRequestsSuppressed,

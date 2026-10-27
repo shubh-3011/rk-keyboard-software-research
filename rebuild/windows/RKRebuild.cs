@@ -809,7 +809,7 @@ namespace RkRebuild
             Grid root = new Grid();
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(72) });
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(220) });
+            root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
             root.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             window.Children.Add(root);
 
@@ -882,27 +882,20 @@ namespace RkRebuild
             windowActions.Children.Add(minimize);
             windowActions.Children.Add(exit);
 
-            Border sidebar = new Border { Background = new SolidColorBrush(MediaColor.FromArgb(220, 15, 15, 15)), Padding = new Thickness(13, 15, 13, 15) };
+            Border sidebar = new Border { Background = new SolidColorBrush(MediaColor.FromArgb(220, 15, 15, 15)), Padding = new Thickness(6, 4, 6, 4) };
             Grid.SetRow(sidebar, 1);
             root.Children.Add(sidebar);
             StackPanel nav = new StackPanel();
-            sidebar.Child = nav;
-            nav.Children.Add(NavCaption("KEYBOARD"));
+            sidebar.Child = new ScrollViewer { Content = nav, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
             AddNav(nav, "Device", "Device overview");
             AddNav(nav, "Key mapping", "Key mapping");
             AddNav(nav, "Lighting", "Lighting");
             AddNav(nav, "Macros", "Macro manager");
             AddNav(nav, "RK Drive editor", "RK Drive editor");
-            nav.Children.Add(NavCaption("PROFILES"));
             AddNav(nav, "Models", "Model profiles");
             AddNav(nav, "RK Drive directory", "RK Drive directory");
             AddNav(nav, "Compatibility", "All-model compatibility");
-            nav.Children.Add(NavCaption("SOFTWARE"));
             AddNav(nav, "Preferences", "Preferences");
-            Border spacer = new Border { Height = 1, Background = Brush(70, 70, 70), Margin = new Thickness(4, 20, 4, 13) };
-            nav.Children.Add(spacer);
-            nav.Children.Add(new TextBlock { Text = "Local profile drafts", Foreground = Brush(220, 220, 220), FontSize = 11, Margin = new Thickness(5, 0, 5, 5) });
-            nav.Children.Add(new TextBlock { Text = "Draft pages stay local. Compatibility offers explicit, evidence-gated experimental lighting operations.", Foreground = Brush(160, 160, 160), FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(5, 0, 5, 0) });
 
             Grid main = new Grid { Margin = new Thickness(12, 0, 20, 14) };
             main.RowDefinitions.Add(new RowDefinition { Height = new GridLength(60) });
@@ -936,16 +929,10 @@ namespace RkRebuild
 
         private void AddNav(StackPanel nav, string page, string label)
         {
-            string icon = NavIcon(page, page == _page);
             Grid content = new Grid();
-            content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(36) });
-            content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            Image navIcon = SkinImage(icon, 30, 30);
-            if (navIcon != null) { navIcon.HorizontalAlignment = HorizontalAlignment.Left; content.Children.Add(navIcon); }
-            TextBlock navText = new TextBlock { Text = label, Foreground = page == _page ? Brush(255, 255, 255) : Brush(210, 210, 210), FontSize = 11, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(navText, 1);
-            content.Children.Add(navText);
-            Button button = new Button { Content = content, Tag = page, Height = 42, Margin = new Thickness(0, 2, 0, 2), Padding = new Thickness(7, 0, 5, 0), HorizontalContentAlignment = HorizontalAlignment.Stretch, BorderThickness = new Thickness(0), FontSize = 11, Cursor = Cursors.Hand, Background = page == _page ? Brush(60, 31, 15) : Brushes.Transparent, Foreground = Brush(220, 220, 220) };
+            content.Children.Add(CreateNavigationGlyph(page));
+            Button button = new Button { Content = content, Tag = page, Height = 64, Margin = new Thickness(0, 2, 0, 2), Padding = new Thickness(12), HorizontalContentAlignment = HorizontalAlignment.Stretch, BorderThickness = new Thickness(0), Cursor = Cursors.Hand, ToolTip = label, Background = page == _page ? Brush(60, 31, 15) : Brushes.Transparent, Foreground = page == _page ? Brush(255, 128, 0) : Brush(210, 210, 210) };
+            System.Windows.Automation.AutomationProperties.SetName(button, label);
             button.Click += delegate { SetPage(page); };
             Style navStyle = new Style(typeof(Button));
             navStyle.Setters.Add(new Setter(Control.BackgroundProperty, Brushes.Transparent));
@@ -955,12 +942,10 @@ namespace RkRebuild
             button.MouseEnter += delegate
             {
                 if (_page != page) button.Background = Brush(45, 35, 28);
-                if (navIcon != null) navIcon.Source = LoadSkinBitmap(NavIcon(page, true));
             };
             button.MouseLeave += delegate
             {
                 if (_page != page) button.Background = Brushes.Transparent;
-                if (navIcon != null) navIcon.Source = LoadSkinBitmap(NavIcon(page, _page == page));
             };
             nav.Children.Add(button);
         }
@@ -1024,7 +1009,7 @@ namespace RkRebuild
                 {
                     bool active = (string)button.Tag == page;
                     button.Background = active ? Brush(60, 31, 15) : Brushes.Transparent;
-                    button.Foreground = active ? Brushes.White : Brush(210, 210, 210);
+                    button.Foreground = active ? Brush(255, 128, 0) : Brush(210, 210, 210);
                     Grid content = button.Content as Grid;
                     if (content != null)
                         foreach (UIElement child in content.Children)

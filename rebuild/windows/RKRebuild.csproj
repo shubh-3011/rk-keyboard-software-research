@@ -9,10 +9,10 @@
     <Nullable>disable</Nullable>
     <AssemblyName>RK-Rebuild</AssemblyName>
     <RootNamespace>RkRebuild</RootNamespace>
-    <Version>0.6.0</Version>
-    <AssemblyVersion>0.6.0.0</AssemblyVersion>
-    <FileVersion>0.6.0.0</FileVersion>
-    <InformationalVersion>0.6.0-isolated-g5-lighting-read-and-msi-preview</InformationalVersion>
+    <Version>0.6.1</Version>
+    <AssemblyVersion>0.6.1.0</AssemblyVersion>
+    <FileVersion>0.6.1.0</FileVersion>
+    <InformationalVersion>0.6.1-independent-navigation-rail-preview</InformationalVersion>
     <Company>Independent community project</Company>
     <Product>RK Rebuild</Product>
     <ApplicationManifest>app.manifest</ApplicationManifest>
