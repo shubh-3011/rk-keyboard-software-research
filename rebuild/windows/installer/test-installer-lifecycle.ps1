@@ -211,7 +211,15 @@ try {
     $oldMetadata = [Diagnostics.FileVersionInfo]::GetVersionInfo($installedExe)
     Assert-Lifecycle ($oldMetadata.FileMajorPart -eq $previous.Version.Major -and $oldMetadata.FileMinorPart -eq $previous.Version.Minor -and $oldMetadata.FileBuildPart -eq $previous.Version.Build) 'Previous installed EXE must really be the older version'
     Assert-Lifecycle ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -ne $exeHash) 'Previous payload must not be a relabelled current EXE'
-    Assert-Lifecycle (@(Get-UninstallEntries | Where-Object { $_.Code -eq $previous.ProductCode -and $_.Hive -eq 'CurrentUser' -and $_.Values.DisplayVersion -eq $previous.Version.ToString() }).Count -gt 0) 'Previous HKCU registration missing'
+    $previousEntries = @(Get-UninstallEntries)
+    $previousEntries | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $work 'previous-uninstall-registration.json') -Encoding utf8
+    $registrationDiagnostics = [ordered]@{ ExpectedCode = $previous.ProductCode; ExpectedVersion = $previous.Version.ToString(); Entries = $previousEntries }
+    foreach ($property in @('ProductName', 'VersionString', 'AssignmentType')) {
+        try { $registrationDiagnostics[$property] = $installer.ProductInfo($previous.ProductCode, $property) }
+        catch { $registrationDiagnostics[$property] = 'Unavailable' }
+    }
+    $registrationDiagnostics | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $work 'previous-msi-registration-diagnostics.json') -Encoding utf8
+    Assert-Lifecycle (@($previousEntries | Where-Object { $_.Code -eq $previous.ProductCode -and $_.Hive -eq 'CurrentUser' -and $_.Values.DisplayVersion -eq $previous.Version.ToString() }).Count -gt 0) ('Previous HKCU registration missing/wrong version: ' + ($registrationDiagnostics | ConvertTo-Json -Depth 10 -Compress))
     Assert-NoAutoLaunch
     $attemptedProducts.Add($current.ProductCode)
     Invoke-Msi '/i' $current.Path '02-upgrade-current'
