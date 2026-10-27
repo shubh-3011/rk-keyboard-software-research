@@ -253,7 +253,7 @@ try {
     Invoke-Msi '/fa' $current.Path '04-repair-current'
     Assert-CurrentState
 
-    # Headless embedded catalogue only: no HID discovery/report commands. Shadow
+    # Offline catalogue and guarded UI rendering: no HID discovery/report commands. Shadow
     # writable app/runtime locations into this invocation's new runner temp tree.
     $smoke = Join-Path $work 'smoke'
     New-Item -ItemType Directory -Path $smoke | Out-Null
@@ -276,11 +276,30 @@ try {
             Assert-Lifecycle ($app.ExitCode -eq 0) 'Installed compatibility-report failed'
         }
         finally { $app.Dispose() }
+        $uiReportPath = Join-Path $smoke 'installed-offline-ui.json'
+        Assert-Lifecycle (-not (Test-Path -LiteralPath $uiReportPath)) 'UI smoke output must be new'
+        $uiApp = Start-Process -FilePath $installedExe -ArgumentList "--ui-smoke-test `"$uiReportPath`"" -WorkingDirectory $smoke -RedirectStandardOutput (Join-Path $smoke 'ui-stdout.txt') -RedirectStandardError (Join-Path $smoke 'ui-stderr.txt') -PassThru
+        try {
+            if (-not $uiApp.WaitForExit(30000)) {
+                try { $uiApp.Kill() } catch { Write-Warning 'Could not terminate own offline UI smoke process.' }
+                throw 'Installed offline UI smoke exceeded 30 seconds'
+            }
+            Assert-Lifecycle ($uiApp.ExitCode -eq 0) 'Installed offline UI rendering failed'
+        }
+        finally { $uiApp.Dispose() }
     }
     finally { foreach ($name in $saved.Keys) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') } }
     $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
     Assert-Lifecycle ($report.Format -eq 'rk-rebuild-compatibility-catalog' -and $report.SchemaVersion -eq 1) 'Unexpected compatibility report format'
     Assert-Lifecycle (@($report.Entries).Count -eq 444 -and @($report.Entries | Where-Object { $_.Status -cne 'CataloguedOnly' }).Count -eq 0) 'Expected exactly 444 CataloguedOnly entries'
+    $uiReport = Get-Content -LiteralPath $uiReportPath -Raw | ConvertFrom-Json
+    Assert-Lifecycle ($uiReport.Format -eq 'rk-rebuild-offline-ui-smoke' -and $uiReport.SchemaVersion -eq 1 -and $uiReport.Passed -and $uiReport.Guards.Passed) 'Installed UI smoke schema/guard result'
+    Assert-Lifecycle ($uiReport.MissingVendorResources -and -not $uiReport.DeviceAccess -and -not $uiReport.Network -and -not $uiReport.SettingsPersistence -and -not $uiReport.StartupRegistryAccess -and -not $uiReport.TrayCreated) 'Installed UI smoke must remain offline without persistence or hardware'
+    $expectedPages = @('Compatibility', 'Device', 'Key mapping', 'Lighting', 'Macros', 'RK Drive editor', 'Models', 'RK Drive directory', 'Preferences')
+    Assert-Lifecycle (@($uiReport.Pages).Count -eq 9 -and (@($uiReport.Pages | ForEach-Object { $_.Page }) -join '|') -ceq ($expectedPages -join '|')) 'All nine installed UI pages must render in order'
+    foreach ($page in $uiReport.Pages) {
+        Assert-Lifecycle ($page.Passed -and $page.PageChildCount -gt 0 -and $page.DistinctPixelColors -gt 16 -and $page.PixelSha256 -match '^[0-9A-Fa-f]{64}$') "Installed UI page rendering failed: $($page.Page)"
+    }
     Assert-CurrentState
 
     Invoke-Msi '/x' $current.ProductCode '05-uninstall-current'
@@ -292,8 +311,16 @@ try {
         finally { $remainingMarker.Dispose() }
     }
     Assert-NoAutoLaunch
+    [ordered]@{
+        Format = 'rk-rebuild-standard-user-installer-lifecycle'; SchemaVersion = 1; Passed = $true
+        AdministratorToken = $false; CurrentVersion = $current.Version.ToString(); PreviousVersion = $previous.Version.ToString()
+        ExecutableSha256 = $exeHash.ToLowerInvariant()
+        Steps = @('InstallPrevious', 'UpgradeCurrent', 'RejectDowngrade', 'RepairCurrent', 'InstalledCatalogueExport', 'InstalledNinePageOfflineRender', 'UninstallCurrent')
+        HardwareAccess = $false
+        Scope = 'One disposable Windows runner with unmanaged per-user MSI permitted. Not a signature, reboot-recovery, broad OS or hardware compatibility certification.'
+    } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $work 'lifecycle-result.json') -Encoding utf8
     $completed = $true
-    Write-Host "PASS: previous install, current upgrade, rejected downgrade, repair, installed 444-entry catalogue smoke and uninstall. Logs: $work"
+    Write-Host "PASS: previous install, current upgrade, rejected downgrade, repair, installed catalogue and nine-page offline UI smoke, and uninstall. Logs: $work"
 }
 finally {
     if (-not $completed -and $attemptedProducts.Count -gt 0) {

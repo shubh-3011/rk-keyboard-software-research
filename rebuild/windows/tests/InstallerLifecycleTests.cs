@@ -67,7 +67,7 @@ internal static class InstallerLifecycleTests
                 "$remove=@($commands | Where-Object {$_.GetCommandName() -eq 'Remove-Item'}); " +
                 "if($remove.Count -ne 1 -or $remove[0].Extent.Text -cne 'Remove-Item -LiteralPath $installedExe'){throw 'Unsafe deletion AST'}; " +
                 "$launch=@($commands | Where-Object {$_.GetCommandName() -eq 'Start-Process'}); " +
-                "if($launch.Count -ne 2){throw 'Unexpected process launch AST'}; " +
+                "if($launch.Count -ne 3){throw 'Unexpected process launch AST'}; " +
                 "$top=@($ast.EndBlock.Statements | Where-Object {$_ -is [System.Management.Automation.Language.PipelineAst] -and $_.Extent.Text -notlike 'Set-StrictMode *'}); " +
                 "if($top[0].Extent.Text -cne 'Assert-DisposableRunner'){throw 'Guard must be first top-level command'}; " +
                 "Write-Output 'PASS: syntax and ownership AST'";
@@ -95,6 +95,8 @@ internal static class InstallerLifecycleTests
             Check(wrapper.IndexOf("$env:USERPROFILE = $profilePath", StringComparison.Ordinal) < wrapper.IndexOf("$env:LOCALAPPDATA = Get-RegisteredUserFolder", StringComparison.Ordinal), "Correct inherited profile environment before expanding registered shell folders.");
             Check(wrapper.Contains("DoNotExpandEnvironmentNames", StringComparison.Ordinal) && wrapper.Contains("Get-RegisteredUserFolder 'Local AppData'", StringComparison.Ordinal), "Resolve LocalAppData from the actual user's registry, not the inherited runner variable.");
             Check(script.Contains("expected-install-paths.json", StringComparison.Ordinal), "Retain expected paths for comparison with the actual MSI log.");
+            foreach (string guard in new[] { "--ui-smoke-test", "$uiApp.WaitForExit(30000)", "InstalledNinePageOfflineRender", "lifecycle-result.json", "$uiReport.Guards.Passed", "-not $uiReport.DeviceAccess", "-not $uiReport.SettingsPersistence", "-not $uiReport.Network", "$page.DistinctPixelColors -gt 16" })
+                Check(script.Contains(guard, StringComparison.Ordinal), "Missing installed offline UI validation: " + guard);
             Match bootstrap = Regex.Match(wrapper, @"(?s)\$bootstrap = @'\r?\n(.*?)\r?\n'@");
             Check(bootstrap.Success, "Find standard-user bootstrap for isolated helper test.");
             // Execute only the pure registry-expansion helper with a fake

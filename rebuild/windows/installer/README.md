@@ -191,13 +191,20 @@ family registrations, installer component keys, processes, or startup entries.
 
 The actual sequence is previous install → current major upgrade → rejected old
 package downgrade → repair after deleting only the verified owned EXE → installed
-`--compatibility-report` smoke (exactly 444 `CataloguedOnly` entries) → uninstall.
+`--compatibility-report` smoke (exactly 444 `CataloguedOnly` entries) → installed
+`--ui-smoke-test` (all nine pages) → uninstall.
 Checks cover current EXE/license SHA-256, previous registration removal, current
 HKCU registration, no HKLM registration, exact current-user shortcut target,
 no shared/desktop/startup shortcut and no auto-launch. Downgrade must leave
-payload, shortcut and uninstall registration unchanged. Smoke uses no HID command;
+payload, shortcut and uninstall registration unchanged. The installed UI check
+renders actual nontrivial page pixels under the standard-user account, without
+vendor assets, settings persistence, network, tray, startup registry or device
+access. It does not click hardware controls or establish full workflow parity.
+Both smoke checks use no HID command;
 its output, shadow writable app/runtime directories, stdout and stderr stay in a
 new GUID-named directory under `RUNNER_TEMP`, alongside verbose MSI logs.
+Only after every lifecycle check passes, `lifecycle-result.json` records the
+verified steps, current executable hash and explicitly bounded validation scope.
 
 Every `msiexec` client has a 120-second timeout. On timeout only this script's
 client is terminated: the Windows Installer service is never killed. Because its
