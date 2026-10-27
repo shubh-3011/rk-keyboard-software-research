@@ -58,8 +58,11 @@ jobs:
       - name: Build previous executable and package using current installer tooling
         shell: pwsh
         run: |
-          ./.ci-previous/rebuild/windows/build.ps1
-          ./rebuild/windows/installer/build-installer.ps1 -SourceExe './.ci-previous/rebuild/windows/dist/RK-Rebuild.exe' -VersionProject './.ci-previous/rebuild/windows/RKRebuild.csproj' -OutputDirectory "$env:RUNNER_TEMP/rk-previous-installer"
+          $previous = Join-Path $env:GITHUB_WORKSPACE '.ci-previous'
+          Push-Location
+          try { & "$previous/rebuild/windows/build.ps1" }
+          finally { Pop-Location }
+          & "$env:GITHUB_WORKSPACE/rebuild/windows/installer/build-installer.ps1" -SourceExe "$previous/rebuild/windows/dist/RK-Rebuild.exe" -VersionProject "$previous/rebuild/windows/RKRebuild.csproj" -OutputDirectory "$env:RUNNER_TEMP/rk-previous-installer"
       - name: Exercise installer lifecycle only on disposable hosted runner
         shell: pwsh
         run: ./rebuild/windows/installer/test-installer-lifecycle.ps1 -CurrentMsiPath './rebuild/windows/dist/installer/RK-Rebuild-0.6.0-win-x64-experimental.msi' -PreviousMsiPath "$env:RUNNER_TEMP/rk-previous-installer/RK-Rebuild-0.5.0-win-x64-experimental.msi" -SourceExe './rebuild/windows/dist/RK-Rebuild.exe' -ConfirmDisposableVm
