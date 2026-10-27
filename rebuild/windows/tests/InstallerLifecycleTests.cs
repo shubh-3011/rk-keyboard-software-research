@@ -88,6 +88,9 @@ internal static class InstallerLifecycleTests
             Check(script.Contains("[Environment+SpecialFolderOption]::DoNotVerify", StringComparison.Ordinal), "Resolve configured folders even when absent in a fresh profile.");
             Check(!script.Contains("[Environment]::GetFolderPath('", StringComparison.Ordinal), "All lifecycle folder resolution must use the checked helper.");
             Check(wrapper.Contains("$_.ScriptStackTrace", StringComparison.Ordinal) && wrapper.Contains("$_.InvocationInfo.PositionMessage", StringComparison.Ordinal), "Retain original worker failure location.");
+            foreach (string guard in new[] { "$hadDisableMsi", "$oldDisableMsi", "$policyChanged", "SetValue('DisableMSI', 0,", "SetValue('DisableMSI', $oldDisableMsi,", "DeleteValue('DisableMSI', $false)", "Unexpected DisableMSI registry type" })
+                Check(wrapper.Contains(guard, StringComparison.Ordinal), "Disposable fixture policy restoration missing: " + guard);
+            Check(!wrapper.Contains("SetValue('AlwaysInstallElevated'", StringComparison.OrdinalIgnoreCase), "Never enable elevated MSI installation policy.");
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.

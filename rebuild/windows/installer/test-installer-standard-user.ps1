@@ -33,6 +33,8 @@ $retained = Join-Path $env:RUNNER_TEMP ('rk-installer-lifecycle-standard-' + $id
 $created = $false
 $worker = $null
 $uncertain = $false
+$installerPolicy = $null
+$policyChanged = $false
 try {
     $passwordBytes = [Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
     $secret = ConvertTo-SecureString ([Convert]::ToBase64String($passwordBytes) + '!Aa9') -AsPlainText -Force
@@ -83,6 +85,21 @@ try {
     $credential = [Management.Automation.PSCredential]::new(($env:COMPUTERNAME + '\' + $name), $secret)
     $service = Get-Service -Name seclogon
     if ($service.Status -ne 'Running') { Start-Service -Name seclogon }
+    # Windows Server hosted images can default DisableMSI to 1, prohibiting
+    # unmanaged installs for standard users. Configure only this disposable
+    # fixture, restoring the exact prior value/absence in finally. Never enable
+    # AlwaysInstallElevated or change a user's machine to make our MSI work.
+    $machine = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, [Microsoft.Win32.RegistryView]::Registry64)
+    try { $installerPolicy = $machine.CreateSubKey('Software\Policies\Microsoft\Windows\Installer') }
+    finally { $machine.Dispose() }
+    $hadDisableMsi = 'DisableMSI' -in $installerPolicy.GetValueNames()
+    $oldDisableMsi = if ($hadDisableMsi) { $installerPolicy.GetValue('DisableMSI') } else { $null }
+    if ($hadDisableMsi -and $installerPolicy.GetValueKind('DisableMSI') -ne [Microsoft.Win32.RegistryValueKind]::DWord) {
+        throw 'Unexpected DisableMSI registry type; refuse to alter the fixture policy.'
+    }
+    $installerPolicy.SetValue('DisableMSI', 0, [Microsoft.Win32.RegistryValueKind]::DWord)
+    $policyChanged = $true
+    Write-Host 'Disposable fixture: permit unmanaged standard-user MSI installs; original DisableMSI value/absence will be restored.'
     $worker = Start-Process -FilePath (Join-Path $PSHOME 'pwsh.exe') -ArgumentList ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $bootstrapPath + '"') -Credential $credential -LoadUserProfile -WorkingDirectory $scratch -RedirectStandardOutput (Join-Path $results 'standard-user.stdout.log') -RedirectStandardError (Join-Path $results 'standard-user.stderr.log') -PassThru
     if (-not $worker.WaitForExit(1200000)) {
         $uncertain = $true
@@ -93,6 +110,14 @@ try {
     Write-Host 'PASS: complete MSI lifecycle executed under an independent standard Windows account, without administrator membership.'
 } finally {
     if ($null -ne $worker) { $worker.Dispose() }
+    if ($null -ne $installerPolicy) {
+        try {
+            if ($policyChanged) {
+                if ($hadDisableMsi) { $installerPolicy.SetValue('DisableMSI', $oldDisableMsi, [Microsoft.Win32.RegistryValueKind]::DWord) }
+                else { $installerPolicy.DeleteValue('DisableMSI', $false) }
+            }
+        } finally { $installerPolicy.Dispose() }
+    }
     if (Test-Path -LiteralPath (Join-Path $scratch 'results')) {
         New-Item -ItemType Directory -Path $retained | Out-Null
         Copy-Item -Path (Join-Path $scratch 'results\*') -Destination $retained -Recurse

@@ -175,6 +175,15 @@ installation or pass the lifecycle. The standard-user test retains the strict
 HKCU registration and absent-HKLM checks instead of accepting that observation
 as sufficient.
 
+The Windows Server hosted image also reported `DisableMSI=1`, rejecting the
+standard-user install with status 1625 before installation in run
+`40440108825`. The wrapper temporarily sets that one policy value to zero
+**only within the guarded disposable fixture**, restoring its original DWORD
+or absence afterward. It never enables `AlwaysInstallElevated`. This test
+models a machine where unmanaged per-user MSI installation is permitted;
+the distributed installer does not override enterprise policy, and no change
+to the developer's local machine is made by these tests.
+
 The lifecycle worker opens both MSI databases read-only,
 checks stable family identity, distinct GUID ProductCodes, strictly increasing
 versions and per-user destinations, and refuses existing target/menu paths,
