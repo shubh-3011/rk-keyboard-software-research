@@ -63,13 +63,27 @@ $env:GITHUB_ACTIONS = 'true'
 $env:RUNNER_ENVIRONMENT = 'github-hosted'
 $env:RUNNER_OS = 'Windows'
 $env:RUNNER_TEMP = Join-Path $PSScriptRoot 'results'
-$env:USERPROFILE = [Environment]::GetFolderPath('UserProfile', [Environment+SpecialFolderOption]::DoNotVerify)
+# CreateProcessWithLogon can inherit runneradmin's environment even when its
+# token/profile belong to our new user. Bind USERPROFILE to the token SID's
+# ProfileList entry before resolving expandable shell folder paths.
+$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+$profileKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey(('SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\' + $identity.User.Value), $false)
+if ($null -eq $profileKey) { throw 'The standard-user token has no loaded profile registration.' }
+try { $profilePath = [string]$profileKey.GetValue('ProfileImagePath') }
+finally { $profileKey.Dispose() }
+if ([string]::IsNullOrWhiteSpace($profilePath)) { throw 'The standard-user profile path is unavailable.' }
+$env:USERPROFILE = $profilePath
+$env:USERNAME = $identity.Name.Split('\')[-1]
+$env:USERDOMAIN = $identity.Name.Split('\')[0]
+$env:HOMEDRIVE = [IO.Path]::GetPathRoot($profilePath).TrimEnd('\')
+$env:HOMEPATH = $profilePath.Substring($env:HOMEDRIVE.Length)
 $env:APPDATA = [Environment]::GetFolderPath('ApplicationData', [Environment+SpecialFolderOption]::DoNotVerify)
 $env:LOCALAPPDATA = [Environment]::GetFolderPath('LocalApplicationData', [Environment+SpecialFolderOption]::DoNotVerify)
 $env:TEMP = $env:RUNNER_TEMP
 $env:TMP = $env:RUNNER_TEMP
 $env:DOTNET_BUNDLE_EXTRACT_BASE_DIR = Join-Path $env:RUNNER_TEMP 'bundle-cache'
 $env:DOTNET_CLI_HOME = $env:RUNNER_TEMP
+[ordered]@{ TokenName = $identity.Name; UserProfile = $env:USERPROFILE; LocalAppData = $env:LOCALAPPDATA; AppData = $env:APPDATA } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'standard-user-profile.json') -Encoding utf8
 try {
     & (Join-Path $PSScriptRoot 'rebuild\windows\installer\test-installer-lifecycle.ps1') -CurrentMsiPath (Join-Path $PSScriptRoot 'payload\current.msi') -PreviousMsiPath (Join-Path $PSScriptRoot 'payload\previous.msi') -SourceExe (Join-Path $PSScriptRoot 'payload\RK-Rebuild.exe') -ConfirmDisposableVm
     exit 0

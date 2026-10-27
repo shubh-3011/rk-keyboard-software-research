@@ -217,10 +217,11 @@ try {
     Assert-Lifecycle (-not (Test-Path -LiteralPath $work)) 'Scratch path must be new'
     New-Item -ItemType Directory -Path $work | Out-Null
     Write-Host "Lifecycle logs and smoke artifacts: $work"
+    [ordered]@{ Target = $target; Exe = $installedExe; License = $installedLicense; Menu = $menu; UserProfile = $env:USERPROFILE; LocalAppData = $env:LOCALAPPDATA } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $work 'expected-install-paths.json') -Encoding utf8
 
     $attemptedProducts.Add($previous.ProductCode)
     Invoke-Msi '/i' $previous.Path '01-install-previous'
-    Assert-Lifecycle ((Test-Path -LiteralPath $installedExe -PathType Leaf) -and (Test-Path -LiteralPath $installedLicense -PathType Leaf)) 'Previous payload missing'
+    Assert-Lifecycle ((Test-Path -LiteralPath $installedExe -PathType Leaf) -and (Test-Path -LiteralPath $installedLicense -PathType Leaf)) "Previous payload missing at expected paths: $installedExe; $installedLicense"
     $oldMetadata = [Diagnostics.FileVersionInfo]::GetVersionInfo($installedExe)
     Assert-Lifecycle ($oldMetadata.FileMajorPart -eq $previous.Version.Major -and $oldMetadata.FileMinorPart -eq $previous.Version.Minor -and $oldMetadata.FileBuildPart -eq $previous.Version.Build) 'Previous installed EXE must really be the older version'
     Assert-Lifecycle ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -ne $exeHash) 'Previous payload must not be a relabelled current EXE'

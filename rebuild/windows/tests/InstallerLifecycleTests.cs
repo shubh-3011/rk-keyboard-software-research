@@ -91,6 +91,9 @@ internal static class InstallerLifecycleTests
             foreach (string guard in new[] { "$hadDisableMsi", "$oldDisableMsi", "$policyChanged", "SetValue('DisableMSI', 0,", "SetValue('DisableMSI', $oldDisableMsi,", "DeleteValue('DisableMSI', $false)", "Unexpected DisableMSI registry type" })
                 Check(wrapper.Contains(guard, StringComparison.Ordinal), "Disposable fixture policy restoration missing: " + guard);
             Check(!wrapper.Contains("SetValue('AlwaysInstallElevated'", StringComparison.OrdinalIgnoreCase), "Never enable elevated MSI installation policy.");
+            Check(wrapper.Contains("ProfileList\\' + $identity.User.Value", StringComparison.Ordinal), "Bind profile registration to the actual standard-user token SID.");
+            Check(wrapper.IndexOf("$env:USERPROFILE = $profilePath", StringComparison.Ordinal) < wrapper.IndexOf("$env:LOCALAPPDATA = [Environment]::GetFolderPath", StringComparison.Ordinal), "Correct inherited profile environment before resolving shell folders.");
+            Check(script.Contains("expected-install-paths.json", StringComparison.Ordinal), "Retain expected paths for comparison with the actual MSI log.");
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.
