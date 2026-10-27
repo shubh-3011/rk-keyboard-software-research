@@ -119,8 +119,14 @@ internal static class InstallerLifecycleTests
                 Check(script.Contains(guard, StringComparison.Ordinal), "Canonical current-user MSI registration check missing: " + guard);
             string contextInteropTest = "$errors=$null;$tokens=$null;$ast=[System.Management.Automation.Language.Parser]::ParseFile(" + Quote(path) + ",[ref]$tokens,[ref]$errors);" +
                 "$definitions=@($ast.FindAll({param($n) $n -is [System.Management.Automation.Language.StringConstantExpressionAst] -and $n.Value -like '*public static class RkMsiContextEvidence*'},$true));if($definitions.Count -ne 1){throw 'Expected one native context definition'};" +
-                "Add-Type -TypeDefinition $definitions[0].Value;$method=[RkMsiContextEvidence].GetMethod('MsiEnumProductsExW');if($method.GetParameters().Count -ne 8){throw 'Context API signature mismatch'};" +
-                "$attribute=$method.GetCustomAttributes([Runtime.InteropServices.DllImportAttribute],$false)[0];if($attribute.Value -ne 'msi.dll' -or -not $attribute.ExactSpelling){throw 'Wrong native context import'};exit 0";
+                "Add-Type -TypeDefinition $definitions[0].Value;$method=[RkMsiContextEvidence].GetMethod('MsiEnumProductsExW',[Reflection.BindingFlags]'NonPublic,Static');if($method.GetParameters().Count -ne 8){throw 'Context API signature mismatch'};" +
+                "$attribute=$method.GetCustomAttributes([Runtime.InteropServices.DllImportAttribute],$false)[0];if($attribute.Value -ne 'msi.dll' -or -not $attribute.ExactSpelling){throw 'Wrong native context import'};" +
+                "$fake=$definitions[0].Value.Replace('RkMsiContextEvidence','RkMsiContextFake');" +
+                "$fake=[regex]::Replace($fake,'\\[DllImport\\([^\\r\\n]+\\)\\]','');" +
+                "$fake=$fake.Replace('private static extern uint','private static uint').Replace('ref uint sidCharacters);','ref uint sidCharacters) { if (userSid != null || contexts != 7 || index != 0 || product != \"{00000000-0000-0000-0000-000000000001}\" || sidCharacters != 256) throw new System.Exception(\"Incorrect native arguments\"); installedContext = 0; return 259; }');" +
+                "if($fake.Contains('DllImport') -or $fake.Contains('extern uint')){throw 'Fake must not bind native APIs'};Add-Type -TypeDefinition $fake;" +
+                "$p=[Text.StringBuilder]::new(39);$s=[Text.StringBuilder]::new(256);[uint32]$c=0;[uint32]$n=256;" +
+                "$r=[RkMsiContextFake]::EnumerateCurrentUser('{00000000-0000-0000-0000-000000000001}',0,$p,[ref]$c,$s,[ref]$n);if($r -ne 259){throw 'Fake native enumeration failed'};exit 0";
             var contextInteropResult = RunPowerShell(contextInteropTest);
             Check(contextInteropResult.ExitCode == 0, "Compile and reflect context interop without calling native MSI APIs: " + contextInteropResult.Output);
 

@@ -181,6 +181,10 @@ type 0 and the expected registered version are required. Machine context (4)
 is refused regardless of where the visible uninstall entry is stored. Both
 registry views/hives are still inspected for correct ARP version/provider and
 for cleanup. This does not relax the no-administrator execution requirement.
+Run `40443985447` exposed an API-binding error before installation: PowerShell
+converted the requested null SID into an empty string (MSI error 87). The
+current-user wrapper now passes a literal null inside C#. A fake-native
+regression checks this argument boundary without invoking MSI on the local host.
 
 The Windows Server hosted image also reported `DisableMSI=1`, rejecting the
 standard-user install with status 1625 before installation in run

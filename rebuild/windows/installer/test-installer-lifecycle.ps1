@@ -130,8 +130,16 @@ function Get-ProductContexts([string]$Code) {
 using System.Runtime.InteropServices;
 using System.Text;
 public static class RkMsiContextEvidence {
+    // PowerShell converts $null to an empty string for string parameters.
+    // Keep the required native NULL SID inside C#, not in a PowerShell call.
+    public static uint EnumerateCurrentUser(string product, uint index,
+        StringBuilder installedProduct, out uint installedContext,
+        StringBuilder installedSid, ref uint sidCharacters) {
+        return MsiEnumProductsExW(product, null, 7, index, installedProduct,
+            out installedContext, installedSid, ref sidCharacters);
+    }
     [DllImport("msi.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
-    public static extern uint MsiEnumProductsExW(string product, string userSid,
+    private static extern uint MsiEnumProductsExW(string product, string userSid,
         uint contexts, uint index, StringBuilder installedProduct,
         out uint installedContext, StringBuilder installedSid, ref uint sidCharacters);
 }
@@ -144,7 +152,7 @@ public static class RkMsiContextEvidence {
         $sid = [Text.StringBuilder]::new(256)
         [uint32]$sidCharacters = 256
         [uint32]$context = 0
-        $result = [RkMsiContextEvidence]::MsiEnumProductsExW($Code, $null, 7, $index, $product, [ref]$context, $sid, [ref]$sidCharacters)
+        $result = [RkMsiContextEvidence]::EnumerateCurrentUser($Code, $index, $product, [ref]$context, $sid, [ref]$sidCharacters)
         if ($result -eq 259) { return } # ERROR_NO_MORE_ITEMS
         Assert-Lifecycle ($result -eq 0 -and $sidCharacters -lt 256) "Cannot read bounded MSI context evidence for $Code (status $result)"
         [pscustomobject]@{ Code = $product.ToString(); Context = $context; UserSid = $sid.ToString() }
