@@ -92,8 +92,21 @@ internal static class InstallerLifecycleTests
                 Check(wrapper.Contains(guard, StringComparison.Ordinal), "Disposable fixture policy restoration missing: " + guard);
             Check(!wrapper.Contains("SetValue('AlwaysInstallElevated'", StringComparison.OrdinalIgnoreCase), "Never enable elevated MSI installation policy.");
             Check(wrapper.Contains("ProfileList\\' + $identity.User.Value", StringComparison.Ordinal), "Bind profile registration to the actual standard-user token SID.");
-            Check(wrapper.IndexOf("$env:USERPROFILE = $profilePath", StringComparison.Ordinal) < wrapper.IndexOf("$env:LOCALAPPDATA = [Environment]::GetFolderPath", StringComparison.Ordinal), "Correct inherited profile environment before resolving shell folders.");
+            Check(wrapper.IndexOf("$env:USERPROFILE = $profilePath", StringComparison.Ordinal) < wrapper.IndexOf("$env:LOCALAPPDATA = Get-RegisteredUserFolder", StringComparison.Ordinal), "Correct inherited profile environment before expanding registered shell folders.");
+            Check(wrapper.Contains("DoNotExpandEnvironmentNames", StringComparison.Ordinal) && wrapper.Contains("Get-RegisteredUserFolder 'Local AppData'", StringComparison.Ordinal), "Resolve LocalAppData from the actual user's registry, not the inherited runner variable.");
             Check(script.Contains("expected-install-paths.json", StringComparison.Ordinal), "Retain expected paths for comparison with the actual MSI log.");
+            Match bootstrap = Regex.Match(wrapper, @"(?s)\$bootstrap = @'\r?\n(.*?)\r?\n'@");
+            Check(bootstrap.Success, "Find standard-user bootstrap for isolated helper test.");
+            // Execute only the pure registry-expansion helper with a fake
+            // registry object. Never execute the bootstrap or any installer.
+            string helperTest = "$errors=$null;$tokens=$null;$ast=[System.Management.Automation.Language.Parser]::ParseInput(" + Quote(bootstrap.Groups[1].Value) + ",[ref]$tokens,[ref]$errors);" +
+                "$fn=@($ast.FindAll({param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Get-RegisteredUserFolder'},$true));if($fn.Count -ne 1){throw 'Missing pure helper'};" +
+                ". ([ScriptBlock]::Create($fn[0].Extent.Text));$env:USERPROFILE='C:\\SyntheticStandardUser';$env:LOCALAPPDATA='C:\\InheritedRunnerAdmin\\AppData\\Local';" +
+                "$shellFolders=New-Object PSObject;$shellFolders | Add-Member ScriptMethod GetValue {param($name,$fallback,$options) if($name -eq 'Local AppData'){return '%USERPROFILE%\\AppData\\Local'};return $null};" +
+                "$resolved=Get-RegisteredUserFolder 'Local AppData';if($resolved -cne 'C:\\SyntheticStandardUser\\AppData\\Local'){throw 'Inherited runner variable contaminated folder expansion'};" +
+                "try {Get-RegisteredUserFolder 'Absent';throw 'Missing registration accepted'}catch {if($_.Exception.Message -notlike '*shell folder is unregistered*'){throw}};exit 0";
+            var helperResult = RunPowerShell(helperTest);
+            Check(helperResult.ExitCode == 0, "Registered-folder helper with contaminated inherited environment: " + helperResult.Output);
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.

@@ -77,8 +77,20 @@ $env:USERNAME = $identity.Name.Split('\')[-1]
 $env:USERDOMAIN = $identity.Name.Split('\')[0]
 $env:HOMEDRIVE = [IO.Path]::GetPathRoot($profilePath).TrimEnd('\')
 $env:HOMEPATH = $profilePath.Substring($env:HOMEDRIVE.Length)
-$env:APPDATA = [Environment]::GetFolderPath('ApplicationData', [Environment+SpecialFolderOption]::DoNotVerify)
-$env:LOCALAPPDATA = [Environment]::GetFolderPath('LocalApplicationData', [Environment+SpecialFolderOption]::DoNotVerify)
+# .NET's LocalApplicationData lookup can reuse inherited LOCALAPPDATA. Read
+# the actual user's expandable registry definitions instead of querying it
+# with the runneradmin environment still present.
+$shellFolders = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders', $false)
+if ($null -eq $shellFolders) { throw 'The standard-user shell folder registration is unavailable.' }
+function Get-RegisteredUserFolder([string]$Name) {
+    $raw = [string]$shellFolders.GetValue($Name, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+    if ([string]::IsNullOrWhiteSpace($raw)) { throw "The standard-user shell folder is unregistered: $Name" }
+    return [Environment]::ExpandEnvironmentVariables($raw)
+}
+try {
+    $env:APPDATA = Get-RegisteredUserFolder 'AppData'
+    $env:LOCALAPPDATA = Get-RegisteredUserFolder 'Local AppData'
+} finally { $shellFolders.Dispose() }
 $env:TEMP = $env:RUNNER_TEMP
 $env:TMP = $env:RUNNER_TEMP
 $env:DOTNET_BUNDLE_EXTRACT_BASE_DIR = Join-Path $env:RUNNER_TEMP 'bundle-cache'
