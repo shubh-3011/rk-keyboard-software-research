@@ -74,13 +74,22 @@ internal static class InstallerLifecycleTests
             Check(parsed.ExitCode == 0, "PowerShell AST validation: " + parsed.Output);
             var parsedBuild = RunPowerShell("$errors=$null; $tokens=$null; $null=[System.Management.Automation.Language.Parser]::ParseFile(" + Quote(Path.Combine(root, "build-installer.ps1")) + ",[ref]$tokens,[ref]$errors); if($errors.Count){throw ($errors | Out-String)}");
             Check(parsedBuild.ExitCode == 0, "Build PowerShell syntax: " + parsedBuild.Output);
+            string wrapperPath = Path.Combine(root, "test-installer-standard-user.ps1");
+            string wrapper = File.ReadAllText(wrapperPath);
+            var parsedWrapper = RunPowerShell("$errors=$null; $tokens=$null; $null=[System.Management.Automation.Language.Parser]::ParseFile(" + Quote(wrapperPath) + ",[ref]$tokens,[ref]$errors); if($errors.Count){throw ($errors | Out-String)}");
+            Check(parsedWrapper.ExitCode == 0, "Standard-user wrapper syntax: " + parsedWrapper.Output);
+            foreach (string guard in new[] { "RUNNER_ENVIRONMENT -cne 'github-hosted'", "-not $ConfirmDisposableVm", "New-LocalUser", "Add-LocalGroupMember -SID 'S-1-5-32-545'", "-Credential $credential -LoadUserProfile", "WaitForExit(1200000)", "Remove-LocalUser -SID $account.SID", "$created -and -not $uncertain", "RandomNumberGenerator", "icacls.exe" })
+                Check(wrapper.Contains(guard, StringComparison.Ordinal), "Missing standard-user safeguard: " + guard);
+            Check(wrapper.IndexOf("throw 'REFUSED:", StringComparison.Ordinal) < wrapper.IndexOf("New-LocalUser", StringComparison.Ordinal), "Refuse outside disposable runner before account creation.");
+            Check(script.Contains("IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)", StringComparison.Ordinal) && script.Contains("lifecycle installation must run as a standard user", StringComparison.Ordinal), "Lifecycle independently refuses administrator token.");
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.
             string dummy = Path.Combine(Path.GetTempPath(), "rk-lifecycle-negative-" + Guid.NewGuid().ToString("N"));
+            foreach (string guardedPath in new[] { path, wrapperPath })
             for (int failingGuard = 0; failingGuard < 4; failingGuard++)
             {
-                string invocation = "$ErrorActionPreference='Stop'; try { & " + Quote(path) +
+                string invocation = "$ErrorActionPreference='Stop'; try { & " + Quote(guardedPath) +
                     " -CurrentMsiPath " + Quote(Path.Combine(dummy, "current.msi")) +
                     " -PreviousMsiPath " + Quote(Path.Combine(dummy, "previous.msi")) +
                     " -SourceExe " + Quote(Path.Combine(dummy, "RK-Rebuild.exe")) +

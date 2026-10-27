@@ -150,16 +150,32 @@ GitHub-hosted Windows job, after building both real versions and passing the
 read-only package checks, may explicitly invoke:
 
 ```powershell
-.\rebuild\windows\installer\test-installer-lifecycle.ps1 `
+.\rebuild\windows\installer\test-installer-standard-user.ps1 `
   -CurrentMsiPath '.\rebuild\windows\dist\installer\RK-Rebuild-0.6.0-win-x64-experimental.msi' `
   -PreviousMsiPath 'C:\ci-artifacts\previous-installer\RK-Rebuild-0.5.0-win-x64-experimental.msi' `
   -SourceExe '.\rebuild\windows\dist\RK-Rebuild.exe' `
   -ConfirmDisposableVm
 ```
 
-Before input IO or COM activation, the script requires all of
+Before account creation or input IO, the wrapper requires all of
 `GITHUB_ACTIONS=true`, `RUNNER_ENVIRONMENT=github-hosted`, `RUNNER_OS=Windows`,
-and the explicit confirmation switch. It opens both MSI databases read-only,
+and the explicit confirmation switch. It creates one uniquely named temporary
+standard account, adds it only to the built-in Users group, and confines test
+files to a new private scratch tree. Credentials are generated in memory and
+never written to scripts or logs. A separate PowerShell process loads that
+user's profile and invokes `test-installer-lifecycle.ps1`, which independently
+rejects an administrator token. The wrapper removes only its own temporary
+account after the process exits; after a timeout it leaves diagnostics/account
+state for disposal with the entire runner, never touching a real user profile.
+
+This distinction matters: run `40438125217` installed successfully under the
+elevated runner's account with MSI assignment type 0, but its uninstall entry
+appeared under HKLM. That run did **not** establish standard-user/no-admin
+installation or pass the lifecycle. The standard-user test retains the strict
+HKCU registration and absent-HKLM checks instead of accepting that observation
+as sufficient.
+
+The lifecycle worker opens both MSI databases read-only,
 checks stable family identity, distinct GUID ProductCodes, strictly increasing
 versions and per-user destinations, and refuses existing target/menu paths,
 family registrations, installer component keys, processes, or startup entries.

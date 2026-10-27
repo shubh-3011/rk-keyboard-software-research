@@ -19,6 +19,11 @@ function Assert-DisposableRunner {
 # This must precede even input resolution, COM activation, registry reads and scratch creation.
 Assert-DisposableRunner
 
+$principal = [Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent())
+if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    throw 'REFUSED: lifecycle installation must run as a standard user, not the elevated hosted-runner administrator. Use test-installer-standard-user.ps1.'
+}
+
 function Assert-Lifecycle([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw "Installer lifecycle validation failed: $Message" }
 }
