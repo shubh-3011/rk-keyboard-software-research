@@ -61,9 +61,9 @@ $env:GITHUB_ACTIONS = 'true'
 $env:RUNNER_ENVIRONMENT = 'github-hosted'
 $env:RUNNER_OS = 'Windows'
 $env:RUNNER_TEMP = Join-Path $PSScriptRoot 'results'
-$env:USERPROFILE = [Environment]::GetFolderPath('UserProfile')
-$env:APPDATA = [Environment]::GetFolderPath('ApplicationData')
-$env:LOCALAPPDATA = [Environment]::GetFolderPath('LocalApplicationData')
+$env:USERPROFILE = [Environment]::GetFolderPath('UserProfile', [Environment+SpecialFolderOption]::DoNotVerify)
+$env:APPDATA = [Environment]::GetFolderPath('ApplicationData', [Environment+SpecialFolderOption]::DoNotVerify)
+$env:LOCALAPPDATA = [Environment]::GetFolderPath('LocalApplicationData', [Environment+SpecialFolderOption]::DoNotVerify)
 $env:TEMP = $env:RUNNER_TEMP
 $env:TMP = $env:RUNNER_TEMP
 $env:DOTNET_BUNDLE_EXTRACT_BASE_DIR = Join-Path $env:RUNNER_TEMP 'bundle-cache'
@@ -71,7 +71,12 @@ $env:DOTNET_CLI_HOME = $env:RUNNER_TEMP
 try {
     & (Join-Path $PSScriptRoot 'rebuild\windows\installer\test-installer-lifecycle.ps1') -CurrentMsiPath (Join-Path $PSScriptRoot 'payload\current.msi') -PreviousMsiPath (Join-Path $PSScriptRoot 'payload\previous.msi') -SourceExe (Join-Path $PSScriptRoot 'payload\RK-Rebuild.exe') -ConfirmDisposableVm
     exit 0
-} catch { Write-Error $_; exit 1 }
+} catch {
+    [Console]::Error.WriteLine($_.Exception.ToString())
+    [Console]::Error.WriteLine($_.InvocationInfo.PositionMessage)
+    [Console]::Error.WriteLine($_.ScriptStackTrace)
+    exit 1
+}
 '@
     $bootstrapPath = Join-Path $scratch 'run-standard-user.ps1'
     Set-Content -LiteralPath $bootstrapPath -Value $bootstrap -Encoding utf8

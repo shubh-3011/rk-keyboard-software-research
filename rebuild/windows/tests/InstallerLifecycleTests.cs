@@ -85,6 +85,9 @@ internal static class InstallerLifecycleTests
             Match description = Regex.Match(wrapper, @"New-LocalUser[^\r\n]*-Description '([^']*)'");
             Check(description.Success && description.Groups[1].Value.Length <= 48, "Temporary account description must fit New-LocalUser's 48-character limit.");
             Check(script.Contains("IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)", StringComparison.Ordinal) && script.Contains("lifecycle installation must run as a standard user", StringComparison.Ordinal), "Lifecycle independently refuses administrator token.");
+            Check(script.Contains("[Environment+SpecialFolderOption]::DoNotVerify", StringComparison.Ordinal), "Resolve configured folders even when absent in a fresh profile.");
+            Check(!script.Contains("[Environment]::GetFolderPath('", StringComparison.Ordinal), "All lifecycle folder resolution must use the checked helper.");
+            Check(wrapper.Contains("$_.ScriptStackTrace", StringComparison.Ordinal) && wrapper.Contains("$_.InvocationInfo.PositionMessage", StringComparison.Ordinal), "Retain original worker failure location.");
 
             // Each invocation has at least one deliberately failed guard, even in real CI.
             // Nonexistent dummy inputs prove refusal precedes Resolve-Path/file/registry IO.

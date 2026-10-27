@@ -28,6 +28,14 @@ function Assert-Lifecycle([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw "Installer lifecycle validation failed: $Message" }
 }
 
+function Get-LifecycleFolder([Environment+SpecialFolder]$Folder) {
+    # A fresh standard-user profile need not have a Desktop/Startup directory
+    # yet. Resolve the configured path without creating it or requiring it to exist.
+    $path = [Environment]::GetFolderPath($Folder, [Environment+SpecialFolderOption]::DoNotVerify)
+    Assert-Lifecycle (-not [string]::IsNullOrWhiteSpace($path)) "Known folder has no configured path: $Folder"
+    return $path
+}
+
 function Assert-ProductCode([string]$Code) {
     Assert-Lifecycle ($Code -cmatch '^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$') 'ProductCode must be a braced GUID, not an msiexec argument fragment'
 }
@@ -183,17 +191,17 @@ try {
     Assert-Lifecycle ($metadata.FileMajorPart -eq $current.Version.Major -and $metadata.FileMinorPart -eq $current.Version.Minor -and $metadata.FileBuildPart -eq $current.Version.Build) 'Current source EXE version mismatch'
     $exeHash = (Get-FileHash -LiteralPath $SourceExe -Algorithm SHA256).Hash
     $licenseHash = (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot '..\..\..\LICENSE') -Algorithm SHA256).Hash
-    $target = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Programs\RK Rebuild'
+    $target = Join-Path (Get-LifecycleFolder 'LocalApplicationData') 'Programs\RK Rebuild'
     $installedExe = Join-Path $target 'RK-Rebuild.exe'
     $installedLicense = Join-Path $target 'LICENSE.txt'
-    $menu = Join-Path ([Environment]::GetFolderPath('Programs')) 'RK Rebuild'
+    $menu = Join-Path (Get-LifecycleFolder 'Programs') 'RK Rebuild'
     $shortcut = Join-Path $menu 'RK Rebuild.lnk'
     $forbiddenShortcuts = @(
-        (Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'RK Rebuild'),
-        (Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'RK Rebuild.lnk'),
-        (Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'RK Rebuild.lnk'),
-        (Join-Path ([Environment]::GetFolderPath('Startup')) 'RK Rebuild.lnk'),
-        (Join-Path ([Environment]::GetFolderPath('CommonStartup')) 'RK Rebuild.lnk')
+        (Join-Path (Get-LifecycleFolder 'CommonPrograms') 'RK Rebuild'),
+        (Join-Path (Get-LifecycleFolder 'DesktopDirectory') 'RK Rebuild.lnk'),
+        (Join-Path (Get-LifecycleFolder 'CommonDesktopDirectory') 'RK Rebuild.lnk'),
+        (Join-Path (Get-LifecycleFolder 'Startup') 'RK Rebuild.lnk'),
+        (Join-Path (Get-LifecycleFolder 'CommonStartup') 'RK Rebuild.lnk')
     )
     foreach ($path in (@($target, $menu) + $forbiddenShortcuts)) {
         Assert-Lifecycle (-not (Test-Path -LiteralPath $path)) "Pre-existing path; refusing to overwrite: $path"
