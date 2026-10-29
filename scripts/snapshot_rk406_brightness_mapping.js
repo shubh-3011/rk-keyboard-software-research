@@ -1,4 +1,4 @@
-// PREPARED ONLY: not executed during the 2026-10-26 static investigation.
+// Bounded scalar observation only; profile binding is not device identity.
 // Host MUST independently SHA-256-check the selected process's installed image,
 // then pass that digest to rpc.exports.snapshot(). A supplied digest is an
 // attestation, not an in-process hash check. See the companion next-step report.
@@ -24,7 +24,10 @@ function imageSource(va, size) {
 // Exact on-disk instruction bytes, with explicit HIGHLOW relocation operand
 // offsets. No wildcard operands: each relocated address is checked after rebasing.
 const witnesses = [
-    [0x4465e0, '8b158e156100', [2]], // selected profile-code global
+    [0x4465e0, '8b158e156100', [2]], // distinct constructor-scan scalar
+    [0x4513fb, '893d5c176100', [2]], // loader stores active profile scalar
+    [0x424aea, '8b0d5c176100', [2]], // lighting UI consumes active scalar
+    [0x447941, '891d5c176100', [2]], // active scalar has another mutation site
     [0x451426, 'a360176100', [1]],   // Fw
     [0x4514e8, 'a398176100', [1]],   // LedMask
     [0x4516b5, 'a3cc176100', [1]],   // GaoshouIndex
@@ -69,7 +72,9 @@ rpc.exports = {
             image.name.toLowerCase() !== 'devicedriver.exe' || hostVerifiedSha256 !== expectedSha)
             throw new Error('Requires independently hash-verified installed x86 4.06 image');
         guardInstructions(); // ALL address witnesses before any state source reads
-        const code = imageSource(0x61158e, 2).readU16();
+        const loaded = imageSource(0x61175c, 4).readU32();
+        const scan = imageSource(0x61158e, 2).readU16();
+        if (loaded === 0 || loaded > 0xffff) throw new Error('No valid loaded profile; brightness binding unavailable');
         const config = imageSource(0x62b388, 4).readPointer();
         if (config.isNull()) throw new Error('No selected configuration');
         readable(config.add(0x213c), 4);
@@ -95,7 +100,8 @@ rpc.exports = {
         const result = {
             kind: 'bounded_brightness_mapping', binary_sha256_host_attestation: expectedSha,
             instruction_witnesses_checked: witnesses.length,
-            profile_code: code.toString(16).padStart(4, '0').toUpperCase(),
+            loaded_profile_code_hex: loaded.toString(16).padStart(4, '0').toUpperCase(),
+            constructor_scan_code_hex: scan.toString(16).padStart(4, '0').toUpperCase(),
             fw: imageSource(0x611760, 4).readU32(),
             led_mask: imageSource(0x611798, 4).readU32(),
             gaoshou_index: imageSource(0x6117cc, 4).readU32(),
@@ -107,9 +113,9 @@ rpc.exports = {
             profile_default_brightness: translation(defaultBrightness),
             translation_capacity: 20, valid_translation_length: null,
             device_commands_issued_by_script: 0, vendor_functions_called_by_script: 0,
-            limitation: 'Not atomic; equal anchor rereads do not exclude concurrent state changes.'
+            limitation: 'Not atomic; equal anchor rereads do not exclude concurrent changes. Loaded scalar does not prove physical model, INI contents or endpoint binding.'
         };
-        if (imageSource(0x61158e, 2).readU16() !== code ||
+        if (imageSource(0x61175c, 4).readU32() !== loaded || imageSource(0x61158e, 2).readU16() !== scan ||
             !imageSource(0x62b388, 4).readPointer().equals(config) ||
             config.add(0x213c).readU32() !== selected || brightnessSource.readU32() !== brightness)
             throw new Error('Selection changed during snapshot; no result emitted');
