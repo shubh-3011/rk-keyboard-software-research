@@ -19,8 +19,8 @@ vendor UI actions were issued for this analysis.
   the direct G5 branch calls that transport with operation 1 and command 3;
   a separate 3632 branch calls a different transport. This is a matrix write,
   not a current-keymap read. Ghidra infers a void return for the transport
-  while its caller tests a return value; this calling-convention discrepancy
-  requires assembly-level review before relying on success/failure semantics.
+  while its caller tests a return value; the assembly cross-check below resolves
+  this decompiler discrepancy but identifies a separate conditional failure path.
 - `0x00411260`, evidence `ev_8f4376cbaa28f84bfbffeaf56b09f568b0175acd136532279e69874d8cce70f9`:
   the decompiled path iterates four layers of 132 source records, maps records
   to slots, and separately processes macro-tagged entries and buffer IDs. The
@@ -42,3 +42,25 @@ First recover the current-state and restoration semantics for the exact
 family/transport, then validate a reversible change and unrelated state on real
 hardware. Connection discovery and other feature families must be investigated
 independently; this G5-only cross-check does not generalize to all RK products.
+
+## Transport return and retry cross-check
+
+REA/Ghidra assembly evidence `ev_c95c52e1ea08c5e5dbe024710cb782a200ecba0bf29bf08015f76de052918b67`
+and `ev_6dd417a95c7f05471cb0b37ddccf53c3809b949b17bfd76f21b1a699d04dd5e3`
+are retained locally in `.research/rk406-g5-transport-return-assembly-20261029.json`.
+For this image, the transport sets `EAX=1` at `0x0040F79C` on the normal
+completion path and `EAX=0` on several failure paths; `SetMatrix` tests `EAX`
+at `0x0040FA1D`. Thus the decompiler's `void` signature is not a reliable
+representation of this return convention.
+
+There is a **static failure-fallthrough candidate**: at `0x0040F868` the retry
+counter is initialized to 3. On a failed SetFeature with a last-error value
+other than 1, `0x0040F897` decrements it; the negative test at `0x0040F89A`
+does not fire at zero. After the delay, `0x0040F8AC` loops only if the count is
+positive; zero falls through to `0x0040F8AE`. In the write branch, this can
+advance the chunk count and reach the `EAX=1` normal completion despite three
+failed calls. Error 1 branches separately to a zero return. This is conditional
+static control flow, not an observed real-world failure, and does not establish
+firmware behavior. The replacement must never interpret vendor-style success
+as independently verified device state; its own paths should fail on each
+failed send and use operation-specific readback where available.
