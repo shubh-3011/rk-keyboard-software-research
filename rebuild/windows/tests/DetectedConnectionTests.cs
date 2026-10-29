@@ -78,6 +78,13 @@ internal static class DetectedConnectionTests
             Check(ui.Contains("G5LightingCommand.ReadAsync") && ui.Contains("WirelessLightingCommand.ReadAsync"), "Real existing readers, not cosmetic handlers");
             Check(ui.Contains("Read current lighting") && ui.Contains("Lighting read failed:"), "Read action and failure visible without export dialogs");
             Check(ui.Contains("AddObservedLightingActionsAsync"), "Existing exact-fingerprint write gate reused, not replaced");
+            string actions = File.ReadAllText(Path.Combine(root, "rebuild", "windows", "CompatibilityPage.cs"));
+            int gate = actions.IndexOf("LightingWritePolicy.Rejection(endpoint, block, 0)", StringComparison.Ordinal);
+            int modeText = actions.IndexOf("Current verified-layout mode:", StringComparison.Ordinal);
+            Check(gate >= 0 && modeText > gate && actions.Substring(gate, modeText - gate).Contains("return;"), "Mode interpretation requires exact eligibility gate");
+            Check(actions.Contains("apply.IsEnabled = mode != block[10]"), "Current mode cannot trigger a redundant apply");
+            Check(actions.Contains("previous reading and its buttons are retired") && actions.Contains("finally { _lightingQueryRunning = false; }"), "Apply retires baseline on success and failure");
+            Check(actions.Contains("The hardware operation was verified, but the report could not be saved"), "Report save failure cannot be mistaken for hardware failure");
             Check(app.Contains("UpdateConnectionStatus();") && app.Contains("WindowsHidDiscovery.Enumerate()"), "Connection status updated through existing HID discovery");
             if (args.Contains("--live-metadata")) {
                 var actual = DetectedConnection.Build(WindowsHidDiscovery.Enumerate(), CompatibilityCatalog.Load(Resource("Hub.json"), Resource("Drive.json")));

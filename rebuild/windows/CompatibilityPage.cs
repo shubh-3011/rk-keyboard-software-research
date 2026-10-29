@@ -163,6 +163,7 @@ namespace RkRebuild
                 panel.Children.Add(Paragraph("Configuration writes remain disabled: " + rejection, 12));
                 return;
             }
+            panel.Children.Add(Paragraph("Current verified-layout mode: " + (block[10] == 0 ? "Off" : "observed first effect") + " (wire " + block[10] + "). This is the mode in the last read, not a continuously updated indicator.", 12));
             panel.Children.Add(Paragraph("Experimental mode control is eligible for this exact configuration fingerprint. Only Off (wire 0) and the observed first effect (wire 1) are enabled. Other models, effects, brightness and colors are not validated by this evidence.", 12));
             var controls = new StackPanel { Orientation = Orientation.Horizontal };
             panel.Children.Add(controls);
@@ -170,6 +171,7 @@ namespace RkRebuild
             {
                 byte mode = target;
                 Button apply = ActionButton(mode == 0 ? "Apply Off · experimental" : "Apply first effect · experimental", false);
+                apply.IsEnabled = mode != block[10];
                 controls.Children.Add(apply);
                 apply.Click += async delegate {
                     if (_lightingQueryRunning) return;
@@ -179,9 +181,15 @@ namespace RkRebuild
                     try
                     {
                         string result = await Task.Run(() => WirelessLightingApplyCommand.ApplyReportAsync(identity, baselineReport, mode));
-                        panel.Children.Add(Paragraph("Hardware mode verified by a fresh, complete lighting query. Re-query before another change; this baseline is now retired.", 12));
-                        SaveFileDialog save = new SaveFileDialog { FileName = "rk-lighting-apply.json", Filter = "Verified lighting operation (*.json)|*.json" };
-                        if (save.ShowDialog(this) == true) File.WriteAllText(save.FileName, result, new UTF8Encoding(false));
+                        panel.Children.Add(Paragraph("Hardware mode " + (mode == 0 ? "Off" : "observed first effect") + " verified by a fresh, complete lighting query. Re-query before another change; the previous reading and its buttons are retired.", 12));
+                        Button saveReport = ActionButton("Save verified operation report", false);
+                        saveReport.Click += delegate {
+                            var save = new SaveFileDialog { FileName = "rk-lighting-apply.json", Filter = "Verified lighting operation (*.json)|*.json" };
+                            if (save.ShowDialog(this) != true) return;
+                            try { File.WriteAllText(save.FileName, result, new UTF8Encoding(false)); }
+                            catch (Exception error) { MessageBox.Show(this, "The hardware operation was verified, but the report could not be saved: " + error.Message, "Report not saved", MessageBoxButton.OK, MessageBoxImage.Warning); }
+                        };
+                        panel.Children.Add(saveReport);
                     }
                     catch (Exception ex)
                     {
