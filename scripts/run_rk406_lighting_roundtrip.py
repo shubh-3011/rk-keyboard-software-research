@@ -30,11 +30,14 @@ def main():
     parser.add_argument('--move-pointer', action='store_true', help='Briefly position and restore the mouse pointer because the vendor uses cursor hit testing; no global click injection')
     parser.add_argument('--capture-first-effect', type=Path, help='Optional new local-only target-window screenshot while the first effect is selected')
     parser.add_argument('--main-hwnd', type=lambda value: int(value, 0), help='Main window handle required for the optional screenshot')
+    parser.add_argument('--inspect-brightness-hit', action='store_true', help='Passively inspect the window at the observed 1500x900 brightness-slider center while the first effect is selected; no click')
     args = parser.parse_args()
     if args.output.exists():
         parser.error('Output must be new')
-    if (args.capture_first_effect is None) != (args.main_hwnd is None):
-        parser.error('Screenshot path and main window handle must be supplied together')
+    if (args.capture_first_effect is not None or args.inspect_brightness_hit) and args.main_hwnd is None:
+        parser.error('Main window handle is required for visual or hit inspection')
+    if args.main_hwnd is not None and args.capture_first_effect is None and not args.inspect_brightness_hit:
+        parser.error('Main window handle requires an inspection action')
     if args.capture_first_effect is not None and args.capture_first_effect.exists():
         parser.error('Screenshot output must be new')
     process = json.loads(subprocess.check_output(['powershell', '-NoProfile', '-Command',
@@ -51,6 +54,12 @@ def main():
     user.GetCursorPos.argtypes = [ctypes.POINTER(w.POINT)]
     user.ClientToScreen.argtypes = [w.HWND, ctypes.POINTER(w.POINT)]
     user.SetCursorPos.argtypes = [ctypes.c_int, ctypes.c_int]
+    user.GetWindowRect.argtypes = [w.HWND, ctypes.POINTER(w.RECT)]
+    user.WindowFromPoint.argtypes = [w.POINT]
+    user.WindowFromPoint.restype = w.HWND
+    user.GetAncestor.argtypes = [w.HWND, w.UINT]
+    user.GetAncestor.restype = w.HWND
+    user.IsWindowVisible.argtypes = [w.HWND]
     hwnd = w.HWND(args.tree_hwnd)
     owner = w.DWORD()
     user.GetWindowThreadProcessId(hwnd, ctypes.byref(owner))
@@ -58,6 +67,18 @@ def main():
     user.GetClassNameW(hwnd, name, 100)
     if owner.value != args.pid or name.value != 'SysTreeView32':
         parser.error('Selected tree is not the target process lighting tree')
+    if args.inspect_brightness_hit:
+        main = w.HWND(args.main_hwnd)
+        main_owner = w.DWORD()
+        main_class = ctypes.create_unicode_buffer(100)
+        rect = w.RECT()
+        user.GetWindowThreadProcessId(main, ctypes.byref(main_owner))
+        user.GetClassNameW(main, main_class, 100)
+        if (main_owner.value != args.pid or main_class.value != '#32770'
+                or not user.IsWindowVisible(main) or user.GetAncestor(hwnd, 2) != main.value
+                or not user.GetWindowRect(main, ctypes.byref(rect))
+                or (rect.right - rect.left, rect.bottom - rect.top) != (1500, 900)):
+            parser.error('Visible vendor main window, tree ownership, or observed geometry mismatch')
     def message(code, first, second):
         value = ctypes.c_size_t()
         if not user.SendMessageTimeoutW(hwnd, code, first, second, 2, 2000, ctypes.byref(value)):
@@ -138,6 +159,31 @@ def main():
             subprocess.run(['powershell', '-NoProfile', '-File', str(capture), '-TargetPid', str(args.pid),
                             '-WindowHandle', str(args.main_hwnd), '-OutputPath', str(args.capture_first_effect.resolve())],
                            check=True, timeout=15)
+        if args.inspect_brightness_hit:
+            main = w.HWND(args.main_hwnd)
+            main_owner = w.DWORD()
+            main_class = ctypes.create_unicode_buffer(100)
+            user.GetWindowThreadProcessId(main, ctypes.byref(main_owner))
+            user.GetClassNameW(main, main_class, 100)
+            rect = w.RECT()
+            if (main_owner.value != args.pid or main_class.value != '#32770'
+                    or not user.IsWindowVisible(main) or user.GetAncestor(hwnd, 2) != main.value
+                    or not user.GetWindowRect(main, ctypes.byref(rect))
+                    or (rect.right - rect.left, rect.bottom - rect.top) != (1500, 900)):
+                raise RuntimeError('Vendor main window identity or observed geometry mismatch')
+            hit = user.WindowFromPoint(w.POINT(rect.left + 550, rect.top + 640))
+            hit_owner = w.DWORD()
+            hit_class = ctypes.create_unicode_buffer(100)
+            hit_rect = w.RECT()
+            if (not hit or not user.GetWindowThreadProcessId(hit, ctypes.byref(hit_owner))
+                    or hit_owner.value != args.pid or user.GetAncestor(hit, 2) != main.value
+                    or not user.GetClassNameW(hit, hit_class, 100)
+                    or not user.GetWindowRect(hit, ctypes.byref(hit_rect))):
+                raise RuntimeError('Brightness position is not an owned descendant; no interaction attempted')
+            state['brightness_hit'] = {'class': hit_class.value,
+                'relative_rect': [hit_rect.left - rect.left, hit_rect.top - rect.top,
+                                  hit_rect.right - rect.left, hit_rect.bottom - rect.top],
+                'point': [550, 640], 'click_sent': False}
     except Exception as error:
         state['error'] = str(error)
     finally:

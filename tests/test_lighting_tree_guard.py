@@ -29,7 +29,7 @@ class LightingTreeGuardTests(unittest.TestCase):
 
     def test_optional_capture_is_inside_restoration_scope(self):
         source = (Path(__file__).resolve().parents[1] / 'scripts' / 'run_rk406_lighting_roundtrip.py').read_text(encoding='utf-8')
-        self.assertIn('(args.capture_first_effect is None) != (args.main_hwnd is None)', source)
+        self.assertIn('(args.capture_first_effect is not None or args.inspect_brightness_hit) and args.main_hwnd is None', source)
         self.assertIn('args.capture_first_effect.exists()', source)
         capture = source.index("capture = Path(__file__).with_name('capture_rk_window.ps1')")
         changed = source.index('changed = True')
@@ -38,6 +38,24 @@ class LightingTreeGuardTests(unittest.TestCase):
         self.assertLess(capture, restoration)
         self.assertIn('check=True, timeout=15', source[capture:restoration])
         self.assertIn('select(original)', source[restoration:])
+
+    def test_hit_probe_is_passive_and_inside_restoration_scope(self):
+        source = (Path(__file__).resolve().parents[1] / 'scripts' / 'run_rk406_lighting_roundtrip.py').read_text(encoding='utf-8')
+        preflight = source.index('    if args.inspect_brightness_hit:')
+        selection = source.index('        if not select(first):')
+        self.assertLess(preflight, selection)
+        self.assertIn('user.IsWindowVisible(main)', source[preflight:selection])
+        self.assertIn('user.GetAncestor(hwnd, 2) != main.value', source[preflight:selection])
+        start = source.index('        if args.inspect_brightness_hit:')
+        end = source.index('    except Exception as error:', start)
+        probe = source[start:end]
+        self.assertIn('WindowFromPoint', probe)
+        self.assertIn('hit_owner.value != args.pid', probe)
+        self.assertIn('user.GetAncestor(hit, 2) != main.value', probe)
+        self.assertIn('(1500, 900)', probe)
+        self.assertIn("'click_sent': False", probe)
+        self.assertNotIn('PostMessageW', probe)
+        self.assertIn('select(original)', source[end:])
 
 
 if __name__ == '__main__':
