@@ -27,6 +27,18 @@ class LightingTreeGuardTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_tree(items, 19, tail, height)
 
+    def test_optional_capture_is_inside_restoration_scope(self):
+        source = (Path(__file__).resolve().parents[1] / 'scripts' / 'run_rk406_lighting_roundtrip.py').read_text(encoding='utf-8')
+        self.assertIn('(args.capture_first_effect is None) != (args.main_hwnd is None)', source)
+        self.assertIn('args.capture_first_effect.exists()', source)
+        capture = source.index("capture = Path(__file__).with_name('capture_rk_window.ps1')")
+        changed = source.index('changed = True')
+        restoration = source.index('finally:\n        if changed:', changed)
+        self.assertLess(changed, capture)
+        self.assertLess(capture, restoration)
+        self.assertIn('check=True, timeout=15', source[capture:restoration])
+        self.assertIn('select(original)', source[restoration:])
+
 
 if __name__ == '__main__':
     unittest.main()

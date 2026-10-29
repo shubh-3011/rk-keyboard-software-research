@@ -1,0 +1,22 @@
+{
+  "Format": "rk406-wired-brightness-control-layout-observation",
+  "SchemaVersion": 1,
+  "VendorImageSha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+  "Identity": "258A:01AF",
+  "ScreenWidth": 1500,
+  "ScreenHeight": 900,
+  "ObservedPage": "Lighting",
+  "SelectedEffect": "Fixed_on",
+  "ObservedBrightnessLabel": "Light Brightness",
+  "DisplayedBrightness": 20,
+  "ObservedSliderApproximateWindowCoordinates": { "Left": 431, "Right": 671, "Y": 640 },
+  "UiSelectionRestoredToOff": true,
+  "IndependentFullBlockRestoreConfirmed": true,
+  "IndependentReportSha256": "82e3e5605af478eb90324b45e49095f453f04e1cc7a3299a976a0de7b824ee9b",
+  "BrightnessValueChanged": false,
+  "Limitations": [
+    "Screen coordinates describe one window size and one capture, not a stable control identity or permission to click.",
+    "No slider interaction, brightness write, or causal byte attribution was tested.",
+    "Screenshot remains local and vendor artwork is not distributed."
+  ]
+}

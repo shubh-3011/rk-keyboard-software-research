@@ -28,9 +28,15 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--click-x', type=int, help='Explicit observed tree state-icon x; sends target-only mouse messages instead of selection-only messages')
     parser.add_argument('--move-pointer', action='store_true', help='Briefly position and restore the mouse pointer because the vendor uses cursor hit testing; no global click injection')
+    parser.add_argument('--capture-first-effect', type=Path, help='Optional new local-only target-window screenshot while the first effect is selected')
+    parser.add_argument('--main-hwnd', type=lambda value: int(value, 0), help='Main window handle required for the optional screenshot')
     args = parser.parse_args()
     if args.output.exists():
         parser.error('Output must be new')
+    if (args.capture_first_effect is None) != (args.main_hwnd is None):
+        parser.error('Screenshot path and main window handle must be supplied together')
+    if args.capture_first_effect is not None and args.capture_first_effect.exists():
+        parser.error('Screenshot output must be new')
     process = json.loads(subprocess.check_output(['powershell', '-NoProfile', '-Command',
         f'Get-CimInstance Win32_Process -Filter "ProcessId={args.pid}" | Select-Object ExecutablePath,CreationDate | ConvertTo-Json'], text=True))
     binary = Path(process['ExecutablePath'])
@@ -127,6 +133,11 @@ def main():
         if not select(first):
             raise RuntimeError('Effect selection failed')
         threading.Event().wait(5)
+        if args.capture_first_effect is not None:
+            capture = Path(__file__).with_name('capture_rk_window.ps1')
+            subprocess.run(['powershell', '-NoProfile', '-File', str(capture), '-TargetPid', str(args.pid),
+                            '-WindowHandle', str(args.main_hwnd), '-OutputPath', str(args.capture_first_effect.resolve())],
+                           check=True, timeout=15)
     except Exception as error:
         state['error'] = str(error)
     finally:
