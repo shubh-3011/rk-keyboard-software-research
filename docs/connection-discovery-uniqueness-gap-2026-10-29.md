@@ -1,4 +1,14 @@
-# Discovery: unresolved endpoint uniqueness on incomplete scans
+# Discovery: endpoint uniqueness and incomplete scans
+
+**Follow-up:** the replacement now separately tracks whether enumeration
+reached its natural end with every interface path obtained. Lighting queries
+are blocked if enumeration is incomplete or if a collection with the requested
+VID/PID has a metadata error. This is a partial mitigation, not proof of
+uniqueness: a metadata failure without an identifiable VID/PID remains
+unattributed, and grouping by VID/PID still does not establish physical-device
+identity. Metadata-only runtime validation on the connected host found 25
+collections, zero errors, and one eligible `258A:01AF` G5-shaped endpoint;
+it sent no device reports.
 
 The replacement's Windows HID discovery returns both metadata endpoints and
 per-interface or enumeration errors. `DetectedConnection.Build` displays
@@ -10,8 +20,8 @@ endpoint of their respective shape.
 That count is **not proof of physical uniqueness when a scan is incomplete**:
 an interface that could not be inspected may lack VID/PID or capabilities,
 and an enumeration or detail-path failure may hide an interface entirely.
-The displayed scan errors are useful, but the resolvers currently count the
-successful matching endpoints without incorporating those errors. Nor does
+Previously, the resolvers counted successful matching endpoints without
+incorporating those errors. Nor does
 grouping by VID/PID establish that the visible collections are one physical
 keyboard. This is a code-inspection finding, not a reproduced wrong-device
 operation. No device query was sent in this inspection.
@@ -26,6 +36,6 @@ query or write should have a separately defined conservative policy; a
 catalogue match or a visible endpoint alone cannot grant write permission.
 
 Relevant code: `rebuild/windows/HidDiscovery.cs`, `DetectedConnection.cs`,
-`WirelessLightingCommand.cs`, and `G5LightingCommand.cs`. The live .NET test
-could not be run in this environment on 2026-10-29 because `dotnet` reported
-that no SDK was installed; no SDK was downloaded for this inspection.
+`WirelessLightingCommand.cs`, and `G5LightingCommand.cs`. The follow-up used
+the Microsoft .NET 8.0.427 SDK downloaded to a local temporary directory and
+verified against Microsoft's published SHA-512.

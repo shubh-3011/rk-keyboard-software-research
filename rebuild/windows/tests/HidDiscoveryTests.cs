@@ -73,9 +73,16 @@ internal static class HidDiscoveryTests
             Check(property.SetMethod == null, "immutable endpoint " + property.Name);
         var endpoints = new List<HidEndpoint> { endpoint };
         var errors = new List<string> { "failure" };
-        var result = new HidDiscoveryResult(endpoints, errors);
+        var result = new HidDiscoveryResult(endpoints, errors, true);
         endpoints.Clear(); errors.Clear();
         Check(result.Endpoints.Count == 1 && result.Errors.Count == 1, "result takes defensive snapshots");
+        Check(result.EnumerationComplete, "enumeration completeness retained separately from metadata errors");
+        result.RequireCompleteEnumerationForIdentity("258A", "00AB");
+        var incomplete = new HidDiscoveryResult(new List<HidEndpoint> { endpoint }, new List<string>(), false);
+        Throws<InvalidOperationException>(() => incomplete.RequireCompleteEnumerationForIdentity("258A", "00AB"));
+        var targetFailure = new HidDiscoveryResult(new List<HidEndpoint> { endpoint, partial }, new List<string>(), true);
+        Throws<InvalidOperationException>(() => targetFailure.RequireCompleteEnumerationForIdentity("258a", "00ab"));
+        targetFailure.RequireCompleteEnumerationForIdentity("9999", "0001");
         Throws<NotSupportedException>(() => ((IList<HidEndpoint>)result.Endpoints).Add(failed));
         Throws<NotSupportedException>(() => ((IList<string>)result.Errors).Add("change"));
         Throws<ArgumentOutOfRangeException>(() => WindowsHidDiscovery.Enumerate(0));

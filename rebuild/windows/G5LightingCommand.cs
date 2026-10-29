@@ -71,7 +71,9 @@ namespace RkRebuild
             string[] parts = identity.Split(':');
             if (CompatibilityResources.Load().Match(parts[0], parts[1]).Count == 0)
                 throw new InvalidOperationException("Identity is absent from keyboard catalogues; no query was sent.");
-            HidEndpoint[] endpoints = WindowsHidDiscovery.Enumerate().Endpoints.Where(endpoint =>
+            HidDiscoveryResult discovery = WindowsHidDiscovery.Enumerate();
+            discovery.RequireCompleteEnumerationForIdentity(parts[0], parts[1]);
+            HidEndpoint[] endpoints = discovery.Endpoints.Where(endpoint =>
                 endpoint.VendorId.Equals(parts[0], StringComparison.OrdinalIgnoreCase) && endpoint.ProductId.Equals(parts[1], StringComparison.OrdinalIgnoreCase) &&
                 endpoint.UsagePage == "FF02" && endpoint.Usage == "0002" && endpoint.FeatureReportBytes == 520 && endpoint.OutputReportBytes == 0 && endpoint.InputReportBytes <= 20 && String.IsNullOrEmpty(endpoint.Error)).ToArray();
             if (endpoints.Length != 1) throw new InvalidOperationException("Need exactly one eligible 520-byte G5 vendor endpoint; no query was sent.");

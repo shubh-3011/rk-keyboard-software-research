@@ -44,6 +44,7 @@ namespace RkRebuild
             if (catalog.Match(parts[0], parts[1]).Count == 0)
                 throw new InvalidOperationException("This identity is absent from the keyboard catalogues; no probe was sent.");
             HidDiscoveryResult discovery = WindowsHidDiscovery.Enumerate();
+            discovery.RequireCompleteEnumerationForIdentity(parts[0], parts[1]);
             HidEndpoint[] candidates = discovery.Endpoints.Where(endpoint =>
                 endpoint.VendorId.Equals(parts[0], StringComparison.OrdinalIgnoreCase) &&
                 endpoint.ProductId.Equals(parts[1], StringComparison.OrdinalIgnoreCase) &&

@@ -41,13 +41,28 @@ namespace RkRebuild
     internal sealed class HidDiscoveryResult
     {
         public IReadOnlyList<HidEndpoint> Endpoints { get; }
+        // True only if enumeration reached its natural end and every interface
+        // path was obtained. Individual metadata failures are reported separately.
+        public bool EnumerationComplete { get; }
         // Messages identify only interface indices and native error codes, never paths.
         public IReadOnlyList<string> Errors { get; }
 
-        internal HidDiscoveryResult(List<HidEndpoint> endpoints, List<string> errors)
+        internal HidDiscoveryResult(List<HidEndpoint> endpoints, List<string> errors, bool enumerationComplete)
         {
             Endpoints = new List<HidEndpoint>(endpoints).AsReadOnly();
             Errors = new List<string>(errors).AsReadOnly();
+            EnumerationComplete = enumerationComplete;
+        }
+
+        internal void RequireCompleteEnumerationForIdentity(string vendor, string product)
+        {
+            if (!EnumerationComplete)
+                throw new InvalidOperationException("HID discovery is incomplete for this identity; no query was sent.");
+            foreach (HidEndpoint endpoint in Endpoints)
+                if (endpoint.VendorId.Equals(vendor, StringComparison.OrdinalIgnoreCase)
+                    && endpoint.ProductId.Equals(product, StringComparison.OrdinalIgnoreCase)
+                    && !String.IsNullOrEmpty(endpoint.Error))
+                    throw new InvalidOperationException("HID metadata is incomplete for this identity; no query was sent.");
         }
     }
 
@@ -70,10 +85,12 @@ namespace RkRebuild
             cancellationToken.ThrowIfCancellationRequested();
             var endpoints = new List<HidEndpoint>();
             var errors = new List<string>();
+            bool enumerationComplete = false;
+            bool allPathsRead = true;
             if (!OperatingSystem.IsWindows())
             {
                 errors.Add("HID metadata discovery requires Windows.");
-                return new HidDiscoveryResult(endpoints, errors);
+                return new HidDiscoveryResult(endpoints, errors, false);
             }
 
             try
@@ -84,7 +101,7 @@ namespace RkRebuild
                 if (devices.IsInvalid)
                 {
                     errors.Add(Win32Error("SetupDiGetClassDevs", Marshal.GetLastWin32Error()));
-                    return new HidDiscoveryResult(endpoints, errors);
+                    return new HidDiscoveryResult(endpoints, errors, false);
                 }
 
                 // One extra enumeration probe detects truncation without opening another path.
@@ -97,6 +114,7 @@ namespace RkRebuild
                         int code = Marshal.GetLastWin32Error();
                         if (code != ErrorNoMoreItems)
                             errors.Add("Interface " + index + ": " + Win32Error("SetupDiEnumDeviceInterfaces", code));
+                        else enumerationComplete = allPathsRead;
                         // A failed enum call cannot safely establish a usable interface or the next index.
                         break;
                     }
@@ -109,6 +127,7 @@ namespace RkRebuild
                     string path = ReadPath(devices, ref data, out string pathError);
                     if (path == null)
                     {
+                        allPathsRead = false;
                         errors.Add("Interface " + index + ": " + pathError);
                         continue;
                     }
@@ -121,17 +140,20 @@ namespace RkRebuild
             }
             catch (DllNotFoundException)
             {
+                enumerationComplete = false;
                 errors.Add("Windows HID metadata libraries are unavailable.");
             }
             catch (EntryPointNotFoundException)
             {
+                enumerationComplete = false;
                 errors.Add("A required Windows HID metadata entry point is unavailable.");
             }
             catch (BadImageFormatException)
             {
+                enumerationComplete = false;
                 errors.Add("Windows HID metadata libraries could not be loaded for this architecture.");
             }
-            return new HidDiscoveryResult(endpoints, errors);
+            return new HidDiscoveryResult(endpoints, errors, enumerationComplete);
         }
 
         internal static string FormatId(ushort value) => value.ToString("X4", CultureInfo.InvariantCulture);

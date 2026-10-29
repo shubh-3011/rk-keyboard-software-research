@@ -20,7 +20,7 @@ internal static class DetectedConnectionTests
             new WindowsHidDiscovery.HiddAttributes { VendorID = vendor, ProductID = product, VersionNumber = 1 },
             new WindowsHidDiscovery.HidpCaps { UsagePage = page, Usage = usage, InputReportByteLength = input,
                 OutputReportByteLength = output, FeatureReportByteLength = feature }, error);
-    private static HidDiscoveryResult Discovery(params HidEndpoint[] endpoints) => new HidDiscoveryResult(endpoints.ToList(), new List<string>());
+    private static HidDiscoveryResult Discovery(params HidEndpoint[] endpoints) => new HidDiscoveryResult(endpoints.ToList(), new List<string>(), true);
     private static string Resource(string name)
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
@@ -57,6 +57,9 @@ internal static class DetectedConnectionTests
                 Endpoint(input: 8, output: 0, feature: 519) })
                 Check(DetectedConnection.Build(Discovery(endpoint), catalog).Single().QueryKind == LightingQueryKind.None, "Unsupported shape or failed metadata cannot expose a query");
             Check(DetectedConnection.Build(Discovery(Endpoint(error: "metadata failed")), catalog).Single().HasMetadataErrors, "Metadata failure remains visible");
+            var incomplete = new HidDiscoveryResult(new List<HidEndpoint> { Endpoint() }, new List<string> { "enumeration failed" }, false);
+            Check(DetectedConnection.Build(incomplete, catalog).Single().QueryKind == LightingQueryKind.None, "Incomplete enumeration blocks queries");
+            Check(DetectedConnection.Build(Discovery(Endpoint(), Endpoint(error: "caps failed")), catalog).Single().QueryKind == LightingQueryKind.None, "Failed target metadata blocks queries even with a matching endpoint");
             var unknown = DetectedConnection.Build(Discovery(Endpoint(product: 999)), catalog).Single();
             Check(unknown.CandidateModels.Length == 0 && unknown.QueryKind == LightingQueryKind.None, "Unknown product is visible but not probed");
             Check(DetectedConnection.Build(Discovery(Endpoint(vendor: 0x9876)), catalog).Count == 0, "Unrelated vendor is not called RK");

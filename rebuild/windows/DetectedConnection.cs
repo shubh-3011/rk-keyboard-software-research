@@ -32,7 +32,8 @@ namespace RkRebuild
                     int wireless = usable.Count(endpoint => endpoint.InputReportBytes == 20 && endpoint.OutputReportBytes == 20);
                     int g5 = usable.Count(endpoint => endpoint.FeatureReportBytes == 520 && endpoint.OutputReportBytes == 0 && endpoint.InputReportBytes <= 20);
                     // No chooser can safely distinguish identical endpoints using VID/PID alone.
-                    LightingQueryKind kind = candidates.Count == 0 ? LightingQueryKind.None
+                    LightingQueryKind kind = !discovery.EnumerationComplete || endpoints.Any(endpoint => !String.IsNullOrEmpty(endpoint.Error)) ? LightingQueryKind.None
+                        : candidates.Count == 0 ? LightingQueryKind.None
                         : wireless + g5 > 1 ? LightingQueryKind.Ambiguous
                         : wireless == 1 ? LightingQueryKind.Wireless20
                         : g5 == 1 ? LightingQueryKind.G5Feature520 : LightingQueryKind.None;
@@ -41,7 +42,8 @@ namespace RkRebuild
                         CandidateModels = candidates.Select(entry => entry.ModelName).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(name => name).ToArray(),
                         HasMetadataErrors = endpoints.Any(endpoint => !String.IsNullOrEmpty(endpoint.Error)),
                         QueryKind = kind,
-                        QueryStatus = kind == LightingQueryKind.Wireless20 ? "20-byte configuration interface detected. Lighting query available; keyboard response not checked yet."
+                        QueryStatus = !discovery.EnumerationComplete || endpoints.Any(endpoint => !String.IsNullOrEmpty(endpoint.Error)) ? "Discovery incomplete for this identity. Query blocked until a complete rescan."
+                            : kind == LightingQueryKind.Wireless20 ? "20-byte configuration interface detected. Lighting query available; keyboard response not checked yet."
                             : kind == LightingQueryKind.G5Feature520 ? "520-byte G5 configuration interface detected. Lighting query available; keyboard response not checked yet."
                             : kind == LightingQueryKind.Ambiguous ? "Multiple configuration interfaces share this identity. Query blocked; disconnect duplicate devices before rescanning."
                             : candidates.Count == 0 ? "Device present, but this product ID is not in the keyboard catalogue. No protocol probe will be sent."
