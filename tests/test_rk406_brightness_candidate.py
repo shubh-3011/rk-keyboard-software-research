@@ -5,7 +5,7 @@ from scripts.rk406_brightness_candidate import ordinary_candidate_offset, compar
 
 class BrightnessCandidateTests(unittest.TestCase):
     def inputs(self, **overrides):
-        values = dict(row=0, row_count=19, led_mask=0, mapping_gate_sum=0, special_row=17, selected_row=0)
+        values = dict(row=0, row_count=19, led_mask=0, mapping_gate_sum=0, special_row=17, selected_row=0, apply_flags=0)
         values.update(overrides)
         return values
 
@@ -20,7 +20,8 @@ class BrightnessCandidateTests(unittest.TestCase):
         for changes in ({'row': 19}, {'row': -1}, {'row_count': 25}, {'row_count': 0},
                         {'led_mask': 1}, {'led_mask': -1}, {'mapping_gate_sum': 1},
                         {'mapping_gate_sum': -1}, {'special_row': 24}, {'selected_row': 17},
-                        {'selected_row': 19}, {'row': True}):
+                        {'selected_row': 19}, {'apply_flags': 16}, {'apply_flags': 255},
+                        {'apply_flags': -1}, {'apply_flags': 256}, {'row': True}):
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 ordinary_candidate_offset(**self.inputs(**changes))
 

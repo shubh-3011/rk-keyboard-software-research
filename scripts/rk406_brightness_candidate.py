@@ -7,9 +7,9 @@ is accessed. The mapped branch and special-row override deliberately fail closed
 
 
 def ordinary_candidate_offset(*, row, row_count, led_mask, mapping_gate_sum,
-                              special_row, selected_row):
+                              special_row, selected_row, apply_flags):
     """Return a static candidate block offset for the narrowly selected branch."""
-    values = (row, row_count, led_mask, mapping_gate_sum, special_row, selected_row)
+    values = (row, row_count, led_mask, mapping_gate_sum, special_row, selected_row, apply_flags)
     if any(type(value) is not int for value in values):
         raise ValueError('All selector inputs must be integers')
     if not 1 <= row_count <= 24 or not 0 <= row < row_count:
@@ -18,6 +18,8 @@ def ordinary_candidate_offset(*, row, row_count, led_mask, mapping_gate_sum,
         raise ValueError('Selected row must be within the runtime row count')
     if not 0 <= led_mask <= 0xffffffff or not 0 <= special_row < 24:
         raise ValueError('Invalid mask or special row')
+    if not 0 <= apply_flags <= 255 or apply_flags & 0x10:
+        raise ValueError('Reset-item branch may write arbitrary offsets; it is not modeled')
     if mapping_gate_sum != 0:
         raise ValueError('Only the observed zero-sum non-mapped branch is modeled')
     if led_mask & (1 << row):
@@ -31,11 +33,11 @@ def ordinary_candidate_offset(*, row, row_count, led_mask, mapping_gate_sum,
 
 
 def compare_candidate(before, changed, restored, *, row, row_count, led_mask,
-                      mapping_gate_sum, special_row, selected_row):
+                      mapping_gate_sum, special_row, selected_row, apply_flags):
     """Describe differences; even a match never grants hardware write permission."""
     offset = ordinary_candidate_offset(row=row, row_count=row_count, led_mask=led_mask,
                                        mapping_gate_sum=mapping_gate_sum, special_row=special_row,
-                                       selected_row=selected_row)
+                                       selected_row=selected_row, apply_flags=apply_flags)
     for block in (before, changed, restored):
         if not isinstance(block, bytes) or len(block) != 128 or block[-2:] != b'\x5a\xa5':
             raise ValueError('Each block must be 128 bytes with a valid trailer')

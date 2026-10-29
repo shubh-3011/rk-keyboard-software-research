@@ -11,9 +11,17 @@ The existing static instruction audit, including REA objdump evidence
 `ev_3cd9be563f80334bed8ef1a62351127206977c720e5f87b695d9c1574454eb74`,
 corroborates selected field accesses but is partial, not a complete execution trace.
 
+Fresh REA/Ghidra 12.1.4 pseudocode evidence
+`ev_4dc2ac51b0908c98812ff8bc9d4cdefe507cdf89424985e3fe1364fc25b9f364`
+independently recovers this loop and a preceding conditional reset-item path:
+when apply flags contain `0x10`, configured index/value pairs can write other
+offsets. The offline model requires explicit flags and refuses that branch;
+it does not infer flags from a user-selected profile. This is decompiler output
+for a hash-bound static image, not proof of execution or device identity.
+
 `scripts/rk406_brightness_candidate.py` independently implements a **strict
 subset as an offline comparison aid**: bounded rows, exactly zero mapping sum,
-unmasked row, and no selected special row. It compares three caller-supplied
+unmasked row, no selected special row, and no `0x10` reset flag. It compares three caller-supplied
 128-byte blocks, reports every differing offset and exact restoration, and
 always returns `hardware_write_authorized: false`. It does not obtain inputs,
 change the keyboard, infer a family from VID/PID, or establish causation.
