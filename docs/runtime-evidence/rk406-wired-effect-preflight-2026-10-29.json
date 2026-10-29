@@ -1,0 +1,31 @@
+{
+  "Format": "rk406-wired-vendor-effect-preflight",
+  "SchemaVersion": 1,
+  "Identity": "258A:01AF",
+  "VendorImageSha256": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+  "Scope": "One wired fixture, vendor first-effect selection followed by original Off selection, then independent native read. Not a brightness experiment.",
+  "VendorObservation": {
+    "SelectionRestored": true,
+    "ApplyEntries": 2,
+    "G5LightingQueryEntries": 2,
+    "OrdinaryPackerEntries": 2,
+    "G5AccessEntries": 2,
+    "DroppedEvents": 0,
+    "PerPhaseLightingTraffic": ["HidD_SetFeature command 84", "HidD_GetFeature command 84", "HidD_SetFeature command 04"],
+    "ReportLength": 520,
+    "SettingsWritesPerformedByVendor": true
+  },
+  "IndependentBeforeAndAfter": {
+    "NativeExecutableSha256": "8ef4aa9971034ee9730b6403488b9ce3bc0854c7f6dbda4f65199be8b1f984398",
+    "BeforeReportSha256": "82e3e5605af478eb90324b45e49095f453f04e1cc7a3299a976a0de7b824ee9b",
+    "AfterReportSha256": "82e3e5605af478eb90324b45e49095f453f04e1cc7a3299a976a0de7b824ee9b",
+    "Complete128ByteBlocksEqual": true,
+    "ValidTrailer": true,
+    "NativeQuerySettingsWritesPerformed": false
+  },
+  "Limitations": [
+    "One observed wired device and vendor process; shared profile IDs do not identify all models or transports.",
+    "The vendor process was restarted for the independent read; equal before/after blocks establish final readback equality, not all intermediate behavior.",
+    "Brightness was not changed or verified; this evidence does not authorize any new hardware write."
+  ]
+}
