@@ -1,0 +1,35 @@
+{
+  "Format": "rk406-wired-brightness-preflight",
+  "SchemaVersion": 1,
+  "Scope": "One wired connection, separate device query and passive vendor state observation; no brightness change.",
+  "DeviceIdentity": "258A:01AF",
+  "OtherKnownRkIdentityPresentAtPreflight": false,
+  "NativeQuery": {
+    "ExecutableSha256": "8ef4aa9971034ee9730b6403488b9ce3bc0854c7f6dbda4f65199be8b1f984398",
+    "QueryReportSha256": "82e3e5605af478eb90324b45e49095f453f04e1cc7a3299a976a0de7b824ee9b",
+    "Command": "84",
+    "ReportId": "09",
+    "BlockBytes": 128,
+    "SignatureValid": true,
+    "BlockByte0A": 0,
+    "CandidateByte5E": 20,
+    "ConfigurationWritesPerformed": false,
+    "VendorClosedNormallyAndRestartRequested": true
+  },
+  "SeparateVendorStateObservation": {
+    "EvidenceId": "ev_9ba6ec38b175c547999087a4429ecdc886ae53084b610e52c872e9c97b1ba5ec",
+    "VendorFileSha256HostVerified": "c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6",
+    "LoadedProfileScalar": "01AF",
+    "ConstructorScanScalar": "023D",
+    "SelectedOrdinal": 18,
+    "BrightnessIndex": 5,
+    "LightUIByte": 20,
+    "LightHWByte": 20,
+    "DeviceCommandsIssuedByObserver": 0
+  },
+  "Limitations": [
+    "The query and passive observation were separate and non-atomic, after a vendor restart.",
+    "The matching candidate byte and lookup value do not establish causal meaning, current endpoint binding, model identity, or permission to write.",
+    "No brightness-only change, restoration, or follow-up hardware readback was performed."
+  ]
+}
